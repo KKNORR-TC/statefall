@@ -2,13 +2,15 @@
 
 _Status as of 12 September 2026. Game 1.10.5, plugin 1.10.4. Phase 0 complete; Phase 1 not started._
 
+This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
+
 ## 1. The design in one paragraph
 
 Deterministic lockstep with a thin relay. Every client runs the identical simulation from the same seed; only **commands** travel (attack here, build that, propose a pact), stamped with the tick they execute on. A small WebSocket relay orders and broadcasts them; it never simulates anything. Bandwidth is tiny, cheating is limited to what the command set allows, and the existing engine stays as it is. An authoritative server simulating the map was rejected: it would mean re-implementing the game server-side and paying CPU per match.
 
 ## 2. What is already done (Phase 0 — shipped in game 1.5.0–1.6.2)
 
-Everything below is in `index.html` and proven by headless tests.
+Everything below is in `game/index.html` and covered to the extent described by the repository's headless tests.
 
 **Determinism**
 - The simulation runs on the tick clock only (`tickN`, `simMs = tickN × TICK`, TICK = 100 ms). No `performance.now()` / `Date.now()` inside anything that affects state. Bot build cooldowns, bot think cadence and the Risky-start draft timer all moved to ticks.
@@ -29,16 +31,16 @@ Everything below is in `index.html` and proven by headless tests.
 - REST under `/wp-json/statefall/v1/saves` — GET list, GET/DELETE/POST(rename) `/saves/{id}`, POST create/update (`bySlot` for Autosave).
 - Game: autosave every 30 s (logged in), Save & quit on the pause modal, automatic replay of every finished match, Games & replays modal, `/play/?load=<id>&mode=resume|watch`. Logged-out users get a register/login card. No browser storage.
 
-**Proof harness** (sandbox, `/home/claude/build/`)
-- `harness.js` boots the engine headlessly with node-canvas and exposes `S` (sim internals) — also used for the trailers.
-- `determinism.js` — plays a scripted match through the command layer, replays it cold, compares hashes. Run: `SEED=X DIFF=easy GAR=1 QUICK=1 TICKS=3000 node determinism.js`.
-- `replaycheck.js <file.state>` — replays a real player's file and reports the first diverging tick. This is how the `click env` bug (fixed in 1.6.1) was found.
+**Proof harness** (repository `tools/` and `tests/`)
+- `tools/harness.js` boots the engine headlessly with node-canvas and exposes `S` (simulation internals); it is also used for trailers.
+- `tools/determinism.js` plays a scripted match through the command layer, replays it cold, and compares hashes. Run `npm run determinism`; set `SEED`, `DIFF`, `GAR`, `QUICK`, and `TICKS` as environment variables when needed.
+- `tools/replaycheck.js <file.state>` replays a real player's file and reports the first diverging tick. This is how the `click env` bug fixed in 1.6.1 was found.
 
 **Known limitation:** a replay is tied to the game version it was recorded on. A balance change can make an old save diverge; the loader warns. The site keeps the previous five game packages (Game package → Previous versions), so a save could be resumed on the build it was made with if that ever matters.
 
 ## 2b. Determinism log (what broke and how it was found)
 
-Every divergence so far was found by replaying the player's `.state` file in the sandbox (`tools-replaycheck.js`) and reading the first differing checkpoint. Keep doing that; it works.
+Every divergence so far was found by replaying the player's `.state` file with `tools/replaycheck.js` and reading the first differing checkpoint. Keep doing that; it works.
 
 | Cause | Symptom | Fix (game version) |
 |---|---|---|
@@ -91,14 +93,14 @@ Rules that came out of it: the sim reads only `tickN/simMs` and `srand`; UI/audi
 
 ## 8. Where the files are
 
-- Game source: the newest `statefall-index-x.y.z.html` in the Project (this snapshot: 1.10.5); release zips are built from it.
-- Plugin source: `plugin-*.php` in the Project (this snapshot: 1.10.4 — main file, includes/*, assets/*).
-- Build script for how-to pages: `build-howto.js`.
-- Tools (`tools-*.js`, run with Node + the `canvas` package): `harness.js` boots the engine headlessly; `determinism.js` records and replays a scripted match; `replaycheck.js <file.state>` replays a player's file and reports the first divergence with named differences; `kenbot.js` benchmarks a scripted human opening against a difficulty; `build-howto.js` and `build-flags.js` extract the how-to pages and `flags.js` for a release; `trailer.js`/`trailer2.js` render the promo videos.
+- Game source: `game/index.html` (this snapshot: 1.10.5).
+- Plugin source: `plugin/statefall-scores/` (this snapshot: 1.10.4).
+- Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
+- Release procedure: `docs/build-a-release.md`.
 
 ## 9. Working conventions
 
-- Every release bumps `GAME_VERSION` and the About changelog; package name matches. Plugin zips are versioned in the file name.
+- Every changed component receives the appropriate version and changelog update; package names match their embedded versions.
 - Plugin modules load through a guarded loader; a syntax error in a module is reported as an admin notice, never a white screen. Kill switch: `define('STATEFALL_DISABLED', true)`.
 - Static files are served from `/wp-content/uploads/statefall/…` (WP Engine does not route static extensions through WordPress).
-- Any determinism-relevant change must pass `determinism.js` before release.
+- Any determinism-relevant change must pass `npm test` before release.

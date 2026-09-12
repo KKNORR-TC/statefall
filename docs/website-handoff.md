@@ -1,5 +1,7 @@
 # Statefall RTS — Website Handoff
 
+> Historical design and build handoff. It is not authoritative for current implementation, production status, security disposition, or release operations. See `README.md`, `docs/current-status.md`, and `docs/build-a-release.md`.
+
 *One document for the web designer and the site build. **Part A** describes the game as it is, for copy, structure and screenshots. **Part B** is the build spec for the WordPress login, the global leaderboard and how the game plugs in, so the site, the plugin and the game can be built in parallel and meet at deploy. Everything is true of the current build (`index.html`, ~520 KB, single file); quote numbers as-is.*
 
 ---
