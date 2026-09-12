@@ -63,7 +63,8 @@ function statefall_rest_submit(WP_REST_Request $req) {
     $dup = $wpdb->get_var($wpdb->prepare("SELECT id FROM $t WHERE user_id=%d AND seed=%s AND played_at=%s", $uid, $r['seed'], gmdate('Y-m-d H:i:s', (int) ($r['when'] / 1000))));
     if ($dup) return ['ok' => true, 'id' => (int) $dup, 'duplicate' => true];
     $flagJson = null; if (isset($in['flag']) && is_array($in['flag']) && function_exists('statefall_validate_flag')) { $vf = statefall_validate_flag($in['flag']); if ($vf) { $vf['name'] = mb_substr(sanitize_text_field($in['flag']['name'] ?? ''), 0, 40); $flagJson = wp_json_encode($vf, JSON_UNESCAPED_UNICODE); } }
-    $botsJson = null; if (isset($in['botNations']) && is_array($in['botNations']) && count($in['botNations']) <= 3) { $botsJson = wp_json_encode(array_slice($in['botNations'], 0, 3), JSON_UNESCAPED_UNICODE); }
+    // Client-reported bot participation is not authoritative and must never mutate another account.
+    $botsJson = null;
     $stats = null; $statsNote = null; if (isset($in['stats']) && is_array($in['stats'])) { $enc = wp_json_encode($in['stats'], JSON_UNESCAPED_UNICODE); if (strlen($enc) <= 65536) $stats = $enc; else $statsNote = 'too_large'; }
     $ip = $_SERVER['REMOTE_ADDR'] ?? '';
     $ok = $wpdb->insert($t, [
@@ -77,7 +78,6 @@ function statefall_rest_submit(WP_REST_Request $req) {
     $id = (int) $wpdb->insert_id;
     $rank = 1 + (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE score > %d AND result<>%s", $r['score'], 'Abandoned'));
     $crank = 1 + (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE cls=%s AND score > %d AND result<>%s", $r['cls'], $r['score'], 'Abandoned'));
-    if ($botsJson && function_exists('statefall_bot_record_add')) statefall_bot_record_add(json_decode($botsJson, true));
     if (function_exists('statefall_pool_refresh')) statefall_pool_refresh($uid); if (function_exists('statefall_trophies_bust')) statefall_trophies_bust($uid);
     return ['ok' => true, 'id' => $id, 'rank' => $rank, 'classRank' => $crank, 'score' => $r['score'], 'stats' => $stats !== null, 'statsNote' => $statsNote];
 }
@@ -165,5 +165,6 @@ function statefall_rest_score_replay(WP_REST_Request $req) {
     $r = $wpdb->get_row($wpdb->prepare("SELECT id,data FROM $st WHERE user_id=%d AND kind='replay' AND seed=%s AND ABS(TIMESTAMPDIFF(MINUTE, created_at, %s)) <= 10 ORDER BY ABS(TIMESTAMPDIFF(SECOND, created_at, %s)) ASC LIMIT 1", (int) $row['user_id'], $row['seed'], $row['created_at'], $row['created_at']), ARRAY_A);
     if (!$r) return new WP_REST_Response(['error' => 'not_found', 'message' => 'No replay is stored for this match.'], 404);
     $d = json_decode($r['data'], true); if (!is_array($d) || empty($d['cmds'])) return new WP_REST_Response(['error' => 'not_found'], 404);
+    if (function_exists('statefall_public_replay_data')) $d = statefall_public_replay_data($d);
     return ['id' => (int) $r['id'], 'data' => $d];
 }

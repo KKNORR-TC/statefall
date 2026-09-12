@@ -15,7 +15,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Plugin PHP syntax check failed.' }
 $homePage = Invoke-WebRequest -Uri "$base/" -UseBasicParsing -TimeoutSec 60
 if ($homePage.StatusCode -ne 200) { throw "Home returned HTTP $($homePage.StatusCode)." }
 $play = Invoke-WebRequest -Uri "$base/play/" -UseBasicParsing -TimeoutSec 60
-if ($play.StatusCode -ne 200 -or $play.Content -notmatch "GAME_VERSION='1\.10\.5'") { throw 'Game route or embedded version check failed.' }
+if ($play.StatusCode -ne 200 -or $play.Content -notmatch "GAME_VERSION='1\.10\.6'") { throw 'Game route or embedded version check failed.' }
 $classes = Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/classes" -TimeoutSec 60
 if ($null -eq $classes) { throw 'Public classes endpoint returned no data.' }
 
@@ -41,7 +41,7 @@ try {
         slot = 'Sandbox integration check'
         data = @{
             v = 1
-            game = '1.10.5'
+            game = '1.10.6'
             seed = 'LOCALVERIFY'
             settings = @{map = 'random'; diff = 'normal'}
             cmds = @()

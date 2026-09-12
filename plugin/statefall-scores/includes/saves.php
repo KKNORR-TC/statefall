@@ -25,7 +25,9 @@ function statefall_saves_create_table() {
         updated_at DATETIME NOT NULL,
         PRIMARY KEY  (id),
         KEY user_kind (user_id, kind, updated_at)
-    ) $charset;");
+    ) ENGINE=InnoDB $charset;");
+    $engine = $wpdb->get_var($wpdb->prepare('SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=%s', $t));
+    if ($engine && strcasecmp($engine, 'InnoDB') !== 0) $wpdb->query("ALTER TABLE $t ENGINE=InnoDB");
 }
 define('STATEFALL_SAVE_MAX_BYTES', 98304); define('STATEFALL_SAVE_SLOTS', 10); define('STATEFALL_REPLAY_SLOTS', 20);
 
@@ -57,28 +59,74 @@ function statefall_saves_get(WP_REST_Request $req) {
     if (!$r) return new WP_REST_Response(['error' => 'not_found'], 404);
     return statefall_save_row_out($r, true);
 }
+/** Validate the user-controlled names and flags embedded in replay settings. */
+function statefall_replay_identity($value, $with_slot = false, $fallback = false) {
+    $raw_name = is_array($value) ? trim((string) ($value['name'] ?? '')) : '';
+    $decoded_name = html_entity_decode($raw_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $valid_name = $raw_name !== '' && mb_strlen($raw_name) <= 40 && !preg_match('/[<>\\x00-\\x1F\\x7F]/u', $decoded_name);
+    $name = $valid_name ? sanitize_text_field($raw_name) : '';
+    $flag = is_array($value) && function_exists('statefall_validate_flag') ? statefall_validate_flag(['layers' => $value['layers'] ?? null]) : false;
+    $slot = is_array($value) ? (int) ($value['slot'] ?? 0) : 0;
+    $valid_slot = !$with_slot || ($slot >= 0 && $slot <= 8);
+    if (!$valid_name || !$flag || !$valid_slot) {
+        if (!$fallback) return false;
+        return ['userId' => 0, 'name' => 'Unnamed nation', 'layers' => [['h', '#ffffff', '#0038a8']]] + ($with_slot ? ['slot' => max(0, min(8, $slot))] : []);
+    }
+    return ['userId' => max(0, (int) ($value['userId'] ?? 0)), 'name' => $name, 'layers' => $flag['layers']] + ($with_slot ? ['slot' => $slot] : []);
+}
+function statefall_validate_replay_settings(array &$data) {
+    $settings = is_array($data['settings'] ?? null) ? $data['settings'] : [];
+    if (isset($settings['customFlag'])) {
+        $clean = statefall_replay_identity($settings['customFlag']); if (!$clean) return false; $settings['customFlag'] = $clean;
+    }
+    if (isset($settings['customBots'])) {
+        if (!is_array($settings['customBots']) || count($settings['customBots']) > 9) return false;
+        $clean_bots = []; foreach ($settings['customBots'] as $bot) { $clean = statefall_replay_identity($bot, true); if (!$clean) return false; $clean_bots[] = $clean; }
+        $settings['customBots'] = $clean_bots;
+    }
+    $data['settings'] = $settings; return true;
+}
+/** Sanitize legacy stored identities before a replay is returned publicly. */
+function statefall_public_replay_data(array $data) {
+    $settings = is_array($data['settings'] ?? null) ? $data['settings'] : [];
+    if (isset($settings['customFlag'])) $settings['customFlag'] = statefall_replay_identity($settings['customFlag'], false, true);
+    if (isset($settings['customBots'])) { $bots = []; foreach (array_slice(is_array($settings['customBots']) ? $settings['customBots'] : [], 0, 9) as $bot) $bots[] = statefall_replay_identity($bot, true, true); $settings['customBots'] = $bots; }
+    $data['settings'] = $settings; return $data;
+}
 /** Create or update. Body: {kind, slot, data:{...replay file...}}. Updating: by id, or by slot for kind=save (the Autosave slot). */
 function statefall_saves_put(WP_REST_Request $req) {
     global $wpdb; $t = statefall_saves_table(); $uid = get_current_user_id(); $in = $req->get_json_params();
     if (!is_array($in) || empty($in['data']) || !is_array($in['data'])) return new WP_REST_Response(['error' => 'malformed', 'message' => 'No save data.'], 400);
-    $data = $in['data']; $enc = wp_json_encode($data, JSON_UNESCAPED_UNICODE); if (strlen($enc) > STATEFALL_SAVE_MAX_BYTES) return new WP_REST_Response(['error' => 'too_large', 'message' => 'Save is too large (' . size_format(strlen($enc)) . ').'], 413);
+    $data = $in['data'];
     if (!isset($data['cmds']) || !is_array($data['cmds']) || empty($data['seed'])) return new WP_REST_Response(['error' => 'malformed', 'message' => 'Not a Statefall save.'], 400);
+    if (!statefall_validate_replay_settings($data)) return new WP_REST_Response(['error' => 'invalid_replay', 'message' => 'Replay nation data is not valid.'], 422);
+    $enc = wp_json_encode($data, JSON_UNESCAPED_UNICODE); if (strlen($enc) > STATEFALL_SAVE_MAX_BYTES) return new WP_REST_Response(['error' => 'too_large', 'message' => 'Save is too large (' . size_format(strlen($enc)) . ').'], 413);
     $kind = ($in['kind'] ?? 'save') === 'replay' ? 'replay' : 'save';
     $slot = mb_substr(sanitize_text_field($in['slot'] ?? ''), 0, 80); if ($slot === '') $slot = $kind === 'replay' ? 'Replay' : 'Save';
+    $autosave = strcasecmp($slot, 'Autosave') === 0; if ($autosave && $kind !== 'save') return new WP_REST_Response(['error' => 'reserved_slot', 'message' => 'Autosave is reserved for saved games.'], 422); if ($autosave) $slot = 'Autosave';
     $st = is_array($data['settings'] ?? null) ? $data['settings'] : [];
     $fields = ['user_id' => $uid, 'kind' => $kind, 'slot' => $slot, 'seed' => substr(sanitize_text_field($data['seed']), 0, 20), 'map' => substr(sanitize_key($st['map'] ?? ''), 0, 20), 'country' => mb_substr(sanitize_text_field($in['country'] ?? ''), 0, 40), 'cls' => mb_substr(sanitize_text_field($in['cls'] ?? ''), 0, 80), 'diff' => substr(sanitize_key($st['diff'] ?? ''), 0, 16), 'result' => mb_substr(sanitize_text_field($data['result'] ?? ''), 0, 30), 'tick' => (int) ($data['tick'] ?? 0), 'game_version' => substr(sanitize_text_field($data['game'] ?? ''), 0, 16), 'size' => strlen($enc), 'data' => $enc, 'updated_at' => current_time('mysql', true)];
-    $id = (int) ($in['id'] ?? 0); $existing = null;
-    if ($id) $existing = $wpdb->get_row($wpdb->prepare("SELECT id FROM $t WHERE id=%d AND user_id=%d", $id, $uid), ARRAY_A);
-    elseif ($kind === 'save' && !empty($in['bySlot'])) $existing = $wpdb->get_row($wpdb->prepare("SELECT id FROM $t WHERE user_id=%d AND kind='save' AND slot=%s", $uid, $slot), ARRAY_A);
-    if ($existing) { $wpdb->update($t, $fields, ['id' => (int) $existing['id']]); return ['ok' => true, 'id' => (int) $existing['id'], 'updated' => true]; }
-    $limit = $kind === 'replay' ? STATEFALL_REPLAY_SLOTS : STATEFALL_SAVE_SLOTS;
-    $n = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE user_id=%d AND kind=%s", $uid, $kind));
-    $dropped = null; if ($n >= $limit) { $old = $wpdb->get_row($wpdb->prepare("SELECT id,slot FROM $t WHERE user_id=%d AND kind=%s AND slot<>'Autosave' ORDER BY updated_at ASC LIMIT 1", $uid, $kind), ARRAY_A); if ($old) { $wpdb->delete($t, ['id' => (int) $old['id']]); $dropped = $old['slot']; } }
-    $fields['created_at'] = current_time('mysql', true); $wpdb->insert($t, $fields);
-    return ['ok' => true, 'id' => (int) $wpdb->insert_id, 'dropped' => $dropped];
+    $lock_name = 'statefall_saves_' . $uid; $locked = (int) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 5)', $lock_name));
+    if ($locked !== 1) return new WP_REST_Response(['error' => 'busy', 'message' => 'Saves are busy; try again.'], 503);
+    try {
+        $id = (int) ($in['id'] ?? 0); $existing = null;
+        if ($id) { $existing = $wpdb->get_row($wpdb->prepare("SELECT id,kind,slot FROM $t WHERE id=%d AND user_id=%d", $id, $uid), ARRAY_A); if (!$existing) return new WP_REST_Response(['error' => 'not_found'], 404); if ($autosave !== (strcasecmp($existing['slot'], 'Autosave') === 0)) return new WP_REST_Response(['error' => 'reserved_slot', 'message' => 'Autosave is managed automatically.'], 422); }
+        elseif ($kind === 'save' && ($autosave || !empty($in['bySlot']))) $existing = $wpdb->get_row($wpdb->prepare("SELECT id,kind FROM $t WHERE user_id=%d AND kind='save' AND slot=%s ORDER BY id ASC LIMIT 1", $uid, $slot), ARRAY_A);
+        if ($existing) {
+            if ($existing['kind'] !== $kind) return new WP_REST_Response(['error' => 'immutable_kind', 'message' => 'A save cannot change kind.'], 422);
+            $ok = $wpdb->update($t, $fields, ['id' => (int) $existing['id']]); if ($ok === false) return new WP_REST_Response(['error' => 'server', 'message' => 'Could not update save.'], 500);
+            return ['ok' => true, 'id' => (int) $existing['id'], 'updated' => true];
+        }
+        $limit = $kind === 'replay' ? STATEFALL_REPLAY_SLOTS : STATEFALL_SAVE_SLOTS; $dropped = null;
+        if ($wpdb->query('START TRANSACTION') === false) return new WP_REST_Response(['error' => 'server', 'message' => 'Could not start save transaction.'], 500);
+        $n = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE user_id=%d AND kind=%s", $uid, $kind));
+        while ($n >= $limit) { $old = $wpdb->get_row($wpdb->prepare("SELECT id,slot FROM $t WHERE user_id=%d AND kind=%s ORDER BY (slot='Autosave') ASC, updated_at ASC, id ASC LIMIT 1", $uid, $kind), ARRAY_A); if (!$old || $wpdb->delete($t, ['id' => (int) $old['id']]) === false) { $wpdb->query('ROLLBACK'); return new WP_REST_Response(['error' => 'server', 'message' => 'Could not enforce save limit.'], 500); } $dropped = $old['slot']; $n--; }
+        $fields['created_at'] = current_time('mysql', true); $ok = $wpdb->insert($t, $fields); if (!$ok) { $wpdb->query('ROLLBACK'); return new WP_REST_Response(['error' => 'server', 'message' => 'Could not save.'], 500); }
+        $new_id = (int) $wpdb->insert_id; if ($wpdb->query('COMMIT') === false) { $wpdb->query('ROLLBACK'); return new WP_REST_Response(['error' => 'server', 'message' => 'Could not commit save.'], 500); } return ['ok' => true, 'id' => $new_id, 'dropped' => $dropped];
+    } finally { $wpdb->get_var($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name)); }
 }
 function statefall_saves_delete(WP_REST_Request $req) { global $wpdb; $t = statefall_saves_table(); $n = $wpdb->delete($t, ['id' => (int) $req['id'], 'user_id' => get_current_user_id()]); return ['ok' => (bool) $n]; }
-function statefall_saves_rename(WP_REST_Request $req) { global $wpdb; $t = statefall_saves_table(); $in = $req->get_json_params(); $slot = mb_substr(sanitize_text_field($in['slot'] ?? ''), 0, 80); if ($slot === '') return new WP_REST_Response(['error' => 'malformed'], 400); $n = $wpdb->update($t, ['slot' => $slot], ['id' => (int) $req['id'], 'user_id' => get_current_user_id()]); return ['ok' => $n !== false]; }
+function statefall_saves_rename(WP_REST_Request $req) { global $wpdb; $t = statefall_saves_table(); $in = $req->get_json_params(); $slot = mb_substr(sanitize_text_field($in['slot'] ?? ''), 0, 80); if ($slot === '') return new WP_REST_Response(['error' => 'malformed'], 400); $current = $wpdb->get_row($wpdb->prepare("SELECT kind,slot FROM $t WHERE id=%d AND user_id=%d", (int) $req['id'], get_current_user_id()), ARRAY_A); if (!$current) return new WP_REST_Response(['error' => 'not_found'], 404); if (strcasecmp($slot, 'Autosave') === 0 || ($current['kind'] === 'save' && strcasecmp($current['slot'], 'Autosave') === 0)) return new WP_REST_Response(['error' => 'reserved_slot', 'message' => 'Autosave is managed automatically.'], 422); $n = $wpdb->update($t, ['slot' => $slot], ['id' => (int) $req['id'], 'user_id' => get_current_user_id()]); return ['ok' => $n !== false]; }
 
 /** Admin: per-user counts, with delete-all for a user. */
 function statefall_admin_saves() {

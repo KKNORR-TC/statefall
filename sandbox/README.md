@@ -19,6 +19,7 @@ Commands from the repository root:
 .\sandbox\start.ps1
 .\sandbox\status.ps1
 .\sandbox\verify.ps1
+.\sandbox\security-regression.ps1
 .\sandbox\stop.ps1
 .\sandbox\stop.ps1 -DockerDesktop
 ```
