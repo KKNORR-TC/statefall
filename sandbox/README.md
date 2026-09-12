@@ -1,6 +1,6 @@
 # Local WordPress Sandbox
 
-This sandbox restores the explicitly authorized production snapshot into an isolated local environment matching WordPress 7.1 and PHP 8.4. The restored site and database live outside Git under `D:\One Drive\projects - local\statefall\sandbox-runtime`.
+This sandbox restores the explicitly authorized production snapshot into an isolated local environment matching WordPress 7.1 and PHP 8.4. The restored site and database live outside Git under `D:\One Drive\projects - local\statefall\sandbox\statefall-runtime`.
 
 Snapshot provenance and completed verification are recorded in `docs/production-baseline-2026-09-12.md`.
 

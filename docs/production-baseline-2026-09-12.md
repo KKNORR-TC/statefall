@@ -22,7 +22,7 @@ These hashes identify files within the snapshot, not the original deployment ZIP
 
 ## Local restoration
 
-- Runtime location: `D:\One Drive\projects - local\statefall\sandbox-runtime`, outside the repository.
+- Runtime location: `D:\One Drive\projects - local\statefall\sandbox\statefall-runtime`, outside the repository.
 - Runtime: Docker Desktop 4.90.0, WordPress 7.1/PHP 8.4 Apache image, MariaDB 11.4.
 - Access: `http://localhost:8088` bound only to `127.0.0.1` while running.
 - Production database credentials and WordPress salts were replaced.
