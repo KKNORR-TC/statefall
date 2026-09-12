@@ -1,0 +1,8 @@
+const fs=require('fs'); const boot=require('./harness.js');
+const f=JSON.parse(fs.readFileSync(process.argv[2],'utf8')); const st=f.settings;
+const G=boot({seed:f.seed,diff:st.diff,country:null,quick:st.quick,instant:st.instant,noCap:st.noCap,garrison:st.garrison,map:st.map,countryIdx:st.country,customFlag:st.customFlag||null,customBots:st.customBots||null,allowed:st.allowed||null,troops:st.troops,gold:st.gold,teams:st.teams,bots:st.bots,fog:st.fog,risky:st.risky,endgame:st.endgame,billionaire:st.billionaire,pauseBuild:st.pauseBuild});
+if(Array.isArray(st.allowed)){ /* unit restrictions */ }
+const S=G.S; S.REPLAY.on=true; S.REPLAY.hashv=f.hashv||1; S.REPLAY.cmds=f.cmds; S.REPLAY.i=0; S.REPLAY.hashes=f.hashes; S.REPLAY.speed=1;
+let firstMismatch=null; const ref=new Map(f.hashes.map(([t,h])=>[t,h]));
+for(let k=0;k<f.tick;k++){ G.tick(1); if(S.tickN%100===0){ const h=S.stateHash(); const r=ref.get(S.tickN); if(r&&r!==h&&!firstMismatch){ firstMismatch=S.tickN; const rec=(f.hashes.find(x=>x[0]===S.tickN)||[])[2]; console.log('MISMATCH at tick',S.tickN,'recorded',r,'replay',h); if(rec){ if(rec.rng!=null) console.log('    random draws recorded',rec.rng,'replay',S.srandN); for(const k in rec){ if(k==='n'||k==='rng') continue; const p=S.players[+k]; const now=p?[Math.round(p.troops),Math.round(p.gold),p.tiles]:null; if(!now||now.join()!==rec[k].join()) console.log('   ',p?p.name:k,'recorded',rec[k].join('/'),'replay',now?now.join('/'):'-'); } console.log('    counts recorded',rec.n.join('/'),'replay',[S.warships.length,S.attacks.length,S.structures.length,S.transports.length].join('/')); } } } }
+console.log('done: me',S.me.name,'tiles',S.me.tiles,'alive',S.me.alive,'applied',S.REPLAY.i,'/',f.cmds.length,'first mismatch',firstMismatch);
