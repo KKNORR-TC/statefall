@@ -3,3 +3,4 @@ pkg/
 *.zip
 *.state
 *.mp4
+sandbox/.env

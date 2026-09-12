@@ -1,8 +1,8 @@
 // Benchmark: a scripted player that mimics Ken's opening (city spam, constant border attacks, shore guns from 1:30, transports)
-const boot=require('./harness.js'); const fs=require('fs');
-const FILE=process.env.GAME||'/mnt/user-data/outputs/statefall/index.html';
+const boot=require('./harness.js');
+const FILE=process.env.GAME;
 function run(diff,seed,maxTicks){
-  const G=boot({seed,diff,countryIdx:52,troops:120,gold:100,file:FILE}); const S=G.S; const W=S.W; const me=S.me;
+  const G=boot({seed,diff,countryIdx:52,troops:120,gold:100,file:FILE,render:false}); const S=G.S; const W=S.W; const me=S.me;
   const own=()=>S.ownTilesOf(me.id); const interior=()=>{ const o=own(); const inn=o.filter(t=>{ const x=t%W,y=(t-x)/W; return !S.isCoast(t)&&!S.structures.some(st=>st.t===t); }); return inn.length?inn:o; };
   const border=()=>{ const out=[]; const o=own(); const seen=new Set(); for(const t of o){ const x=t%W,y=(t-x)/W; for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ if(S.inb(x+dx,y+dy)){ const n=S.idx(x+dx,y+dy); const q=S.owner[n]; if(S.land[n]&&q!==me.id&&q>=0&&!seen.has(q)&&S.players[q].alive){ seen.add(q); out.push({o:q,t:n}); } } } } return out; };
   const pickR=a=>a[Math.floor(Math.random()*a.length)];

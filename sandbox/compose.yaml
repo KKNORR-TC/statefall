@@ -1,0 +1,72 @@
+name: statefall-sandbox
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: "no"
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME}
+      MARIADB_USER: ${WORDPRESS_DB_USER}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${WORDPRESS_DB_ROOT_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - database:/var/lib/mysql
+      - ${STATEFALL_SITE_DIR}/wp-content/mysql.sql:/docker-entrypoint-initdb.d/01-statefall.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks:
+      sandbox:
+        aliases: [db]
+
+  wordpress:
+    image: wordpress:7.1-php8.4-apache
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      STATEFALL_LOCAL_URL: http://localhost:${STATEFALL_PORT}
+    ports:
+      - 127.0.0.1:${STATEFALL_PORT}:80
+    volumes:
+      - ${STATEFALL_SITE_DIR}:/var/www/html
+      - ../plugin/statefall-scores:/var/www/html/wp-content/plugins/statefall-scores:ro
+      - ../game/index.html:/var/www/html/wp-content/uploads/statefall/index.html:ro
+      - ./mu-plugin.php:/var/www/html/wp-content/mu-plugins/000-statefall-sandbox.php:ro
+    networks:
+      sandbox:
+        aliases: [wordpress]
+
+  cli:
+    image: wordpress:cli-php8.4
+    profiles: ["tools"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      STATEFALL_LOCAL_URL: http://localhost:${STATEFALL_PORT}
+    volumes:
+      - ${STATEFALL_SITE_DIR}:/var/www/html
+      - ../plugin/statefall-scores:/var/www/html/wp-content/plugins/statefall-scores:ro
+      - ../game/index.html:/var/www/html/wp-content/uploads/statefall/index.html:ro
+      - ./mu-plugin.php:/var/www/html/wp-content/mu-plugins/000-statefall-sandbox.php:ro
+    networks:
+      - sandbox
+
+volumes:
+  database:
+
+networks:
+  sandbox:

@@ -1,0 +1,21 @@
+{
+  "name": "statefall",
+  "version": "1.10.5",
+  "private": true,
+  "description": "Headless simulation tests and release tooling for Statefall",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "canvas": "^3.2.0"
+  },
+  "scripts": {
+    "syntax": "node tools/check-game-syntax.js && node --check tools/harness.js && node --check tools/determinism.js && node --check tests/smoke.js && node --check tests/restart-replay.js",
+    "test": "npm run test:smoke && npm run test:restart && npm run determinism",
+    "test:smoke": "node tests/smoke.js",
+    "test:restart": "node tests/restart-replay.js standard && node tests/restart-replay.js fog && node tests/restart-replay.js garrisons",
+    "determinism": "node tools/determinism.js",
+    "bench": "node tools/kenbot.js superhard A1,B2,C3",
+    "release:assets": "node tools/build-howto.js game/index.html pkg/howto && node tools/build-flags.js game/index.html pkg/flags.js"
+  }
+}

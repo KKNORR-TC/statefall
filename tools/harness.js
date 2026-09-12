@@ -1,7 +1,8 @@
 // Shared headless engine loader for trailers. boot(opts) → {S, main, ctx, W0, H0, els, tick(n)}
-const fs=require('fs'); const { createCanvas, Image } = require('canvas');
-module.exports=function boot(opts){
-  const html=fs.readFileSync(opts.file||'/mnt/user-data/outputs/statefall/index.html','utf8'); const src=html.slice(html.indexOf('<script>')+8, html.lastIndexOf('</script>'));
+const fs=require('fs'),path=require('path'); const { createCanvas, Image } = require('canvas');
+module.exports=function boot(opts={}){
+  const gameFile=opts.file||process.env.GAME||path.resolve(__dirname,'..','game','index.html');
+  const html=fs.readFileSync(gameFile,'utf8'); const src=html.slice(html.indexOf('<script>')+8, html.lastIndexOf('</script>'));
   global.Image=Image; const W0=opts.w||1280,H0=opts.h||720; const main=createCanvas(W0,H0);
   const stub=()=>new Proxy(function(){}, {get:(t,k)=>k==='length'?0:k==='checked'?false:k==='value'?'50':k==='style'?stub():k==='classList'?stub():(k===Symbol.toPrimitive?()=>800:stub()), set:()=>true, apply:()=>stub()});
   const vals={stTroops:String(opts.troops??120),stGold:String(opts.gold??100),focus:'50',ratio:'50',seedIn:opts.seed||'',diffSel:opts.diff||'hard',teamSel:String(opts.teams||0)};
@@ -13,8 +14,10 @@ module.exports=function boot(opts){
   main.getBoundingClientRect=()=>({left:0,top:0,width:W0,height:H0}); main.addEventListener=()=>{}; main.style={};
   global.__opt=opts;
   let code=src.replace("$('startBtn').onclick=()=>{","global.__start=()=>{").replace("let chosen='normal'","let chosen='"+(opts.diff||'hard')+"'").replace("START.seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed();","START.seed='"+(opts.seed||'TRAILER')+"';");
+  if(opts.gridW&&opts.gridH) code=code.replace('const W=720, H=414, TICK=100;',`const W=${opts.gridW}, H=${opts.gridH}, TICK=100;`);
   code=code.replace("START.quick=$('quickStart').checked;","START.quick=!!global.__opt.quick;").replace("START.garrison=$('garrisonOn').checked;","START.garrison=!!global.__opt.garrison;").replace("START.instant=$('instantOn').checked;","START.instant=!!global.__opt.instant;").replace("START.noCap=$('stNoCap').checked;","START.noCap=!!global.__opt.noCap;").replace("START.bots=$('stBots').checked;","START.bots=!!global.__opt.bots;").replace("START.fog=$('fogOn').checked;","START.fog=!!global.__opt.fog;").replace("START.risky=$('riskyOn').checked&&!$('endgameOn').checked;","START.risky=!!global.__opt.risky;").replace("START.endgame=$('endgameOn').checked;","START.endgame=!!global.__opt.endgame;").replace("START.billionaire=$('billionaireOn').checked;","START.billionaire=!!global.__opt.billionaire;").replace("START.pauseBuild=$('stPauseBuild').checked;","START.pauseBuild=!!global.__opt.pauseBuild;");
   code=code.replace("function end(title,text){","function end(title,text){ if(!global.__allowEnd) return;");
+  code=code.replace("function drawMap(){","function drawMap(){ if(global.__opt.render===false) return;");
   code=code.replace("if(!REPLAY.on){ START.customBots=null;","if(!REPLAY.on&&!global.__opt.customBots){ START.customBots=null;");
   if(opts.frenzy){ code=code.split("rnd(6000,12000)/(DIFF.build||1)").join("1200").split("rnd(4000,8000)/(DIFF.build||1)").join("900"); }
   code=code.replace("  { const total=(ROLL.tEnd||ROLL.dur)+6;","  if(!global.__trailer){ const total=(ROLL.tEnd||ROLL.dur)+6;").replace("  else { const bw=110,bh=34,bx=Wd-bw-16,by=Hd-bh-12; ROLL.skipBox=[bx,by,bw,bh];","  else if(!global.__trailer){ const bw=110,bh=34,bx=Wd-bw-16,by=Hd-bh-12; ROLL.skipBox=[bx,by,bw,bh];");
