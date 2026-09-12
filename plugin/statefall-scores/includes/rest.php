@@ -79,7 +79,7 @@ function statefall_rest_submit(WP_REST_Request $req) {
     $rank = 1 + (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE score > %d AND result<>%s", $r['score'], 'Abandoned'));
     $crank = 1 + (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $t WHERE cls=%s AND score > %d AND result<>%s", $r['cls'], $r['score'], 'Abandoned'));
     if (function_exists('statefall_pool_refresh')) statefall_pool_refresh($uid); if (function_exists('statefall_trophies_bust')) statefall_trophies_bust($uid);
-    return ['ok' => true, 'id' => $id, 'rank' => $rank, 'classRank' => $crank, 'score' => $r['score'], 'stats' => $stats !== null, 'statsNote' => $statsNote];
+    return ['ok' => true, 'id' => $id, 'rank' => $rank, 'classRank' => $crank, 'score' => $r['score'], 'verified' => false, 'stats' => $stats !== null, 'statsNote' => $statsNote];
 }
 
 /** Row → API shape. */
@@ -91,7 +91,7 @@ function statefall_row_out($row, $rank = null, $full = false) {
         'fog' => (bool) $row['fog'], 'risky' => (bool) $row['risky'], 'cls' => $row['cls'],
         'land' => (float) $row['land'], 'minutes' => (float) $row['minutes'], 'kills' => (int) $row['kills'],
         'peak' => (int) $row['peak'], 'gold' => (int) $row['gold'], 'seed' => $row['seed'], 'score' => (int) $row['score'],
-        'user' => ['id' => (int) $row['user_id'], 'name' => $u ? $u->display_name : 'Unknown'],
+        'user' => ['id' => (int) $row['user_id'], 'name' => $u ? $u->display_name : 'Unknown'], 'verified' => false,
     ];
     if ($rank !== null) $o['rank'] = $rank;
     $o['hasStats'] = !empty($row['stats']); $o['flag'] = !empty($row['flag']) ? json_decode($row['flag'], true) : null; $o['card'] = !empty($row['card']) ? statefall_game_url() . 'cards/' . rawurlencode($row['card']) : null;

@@ -1,6 +1,7 @@
 .sf-wrap{--sf-bg:#0f1a26;--sf-panel:#1a2634;--sf-ink:#e8ecef;--sf-muted:#8fa3b8;--sf-gold:#ffd27a;--sf-blue:#7fb3ff;color:var(--sf-ink);font-family:"Segoe UI",system-ui,sans-serif}
 .sf-wrap h2.sf-title{margin:0 0 12px;font-size:28px}
 .sf-filter{margin:0 0 14px}
+.sf-trust{background:#182534;border-left:3px solid var(--sf-gold);color:var(--sf-muted);font-size:13px;line-height:1.45;margin:0 0 14px;padding:8px 10px}.sf-trust b{color:var(--sf-ink)}
 .sf-filter select{background:var(--sf-panel);color:var(--sf-ink);border:1px solid #33475c;border-radius:6px;padding:6px 10px;font:inherit}
 .sf-class{background:var(--sf-panel);border:1px solid #33475c;border-radius:10px;padding:12px 14px;margin:0 0 14px}
 .sf-class-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}

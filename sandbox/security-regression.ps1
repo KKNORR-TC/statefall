@@ -18,7 +18,7 @@ $headers = @{'X-WP-Nonce'=$Matches[1]}
 $me = Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/me" -Headers $headers -WebSession $session -TimeoutSec 60
 
 function New-SaveBody($kind,$slot,$seed,$settingsBody=@{}) {
-    return @{kind=$kind;slot=$slot;data=@{v=1;game='1.10.6';seed=$seed;settings=$settingsBody;cmds=@();hashes=@();tick=10;result='in progress'}}
+    return @{kind=$kind;slot=$slot;data=@{v=1;game='1.10.7';seed=$seed;settings=$settingsBody;cmds=@();hashes=@();tick=10;result='in progress'}}
 }
 function Post-Json($path,$body) {
     return Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/$path" -Method Post -Headers $headers -WebSession $session -ContentType 'application/json' -Body ($body | ConvertTo-Json -Depth 12 -Compress) -TimeoutSec 60

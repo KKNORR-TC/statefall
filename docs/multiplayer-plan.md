@@ -1,6 +1,6 @@
 # Statefall — Multiplayer Project Plan
 
-_Status as of 12 September 2026. Game 1.10.6, plugin 1.10.5. Phase 0 complete; Phase 1 not started._
+_Status as of 12 September 2026. Game 1.10.7, plugin 1.10.6. Phase 0 complete; Phase 1 not started._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -93,8 +93,8 @@ Rules that came out of it: the sim reads only `tickN/simMs` and `srand`; UI/audi
 
 ## 8. Where the files are
 
-- Game source: `game/index.html` (current: 1.10.6).
-- Plugin source: `plugin/statefall-scores/` (current: 1.10.5).
+- Game source: `game/index.html` (current: 1.10.7).
+- Plugin source: `plugin/statefall-scores/` (current: 1.10.6).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.
 

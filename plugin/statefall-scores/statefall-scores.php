@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Statefall Scores
  * Description: Global leaderboard, player profiles and game hosting for Statefall RTS. Adds REST endpoints, a scores table, the [statefall_board] and [statefall_profile] shortcodes, and serves the game at /play/.
- * Version: 1.10.5
+ * Version: 1.10.6
  * Author: That Company
  * License: GPL-2.0-or-later
  * Text Domain: statefall-scores
@@ -10,7 +10,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('STATEFALL_VERSION', '1.10.5');
+define('STATEFALL_VERSION', '1.10.6');
 define('STATEFALL_PATH', plugin_dir_path(__FILE__));
 define('STATEFALL_URL', plugin_dir_url(__FILE__));
 define('STATEFALL_TABLE', 'statefall_scores');
