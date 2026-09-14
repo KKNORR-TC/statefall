@@ -1,6 +1,6 @@
 # Statefall — Multiplayer Project Plan
 
-_Status as of 14 September 2026. Game 1.10.7, plugin 1.10.6. Phase 0 complete; Phase 1 not started._
+_Status as of 14 September 2026. Game 1.10.7, plugin 1.10.6. Phase 0 complete; Phase 1 not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -55,6 +55,8 @@ Every divergence so far was found by replaying the player's `.state` file with `
 Rules that came out of it: the sim reads only `tickN/simMs` and `srand`; UI/audio/effects use `Math.random`/`urnd`/`upick`; every player action goes through `issue*` and carries ids, never live UI state; anything that runs only when a human is present must not touch sim state or `srand`.
 
 ## 3. Phase 1 — Relay and lobby (next)
+
+Sequencing note: first implement only the relay/lockstep/reconnect architecture proof defined as Phase D2 in `docs/graphics-modernization-plan.md`, using the extracted engine and legacy renderer. Complete lobby, chat, public rooms, and production hosting after that proof; they are not prerequisites for beginning the visual migration.
 
 **Relay** (Node, ~300 lines, separate host — WP Engine cannot run sockets)
 - Rooms: create/join/leave, up to N human seats + bots filling the rest, host controls.

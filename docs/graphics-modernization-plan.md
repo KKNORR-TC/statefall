@@ -4,7 +4,7 @@ _Created 14 September 2026. Planning document; implementation has not started._
 
 ## 1. Goal
 
-Replace the current monolithic Canvas presentation with a significantly richer, scalable graphics system while preserving Statefall's rules, deterministic command/replay model, saved games, and WordPress integration.
+Replace the current monolithic Canvas presentation with a significantly richer, scalable graphics system while preserving Statefall's rules, deterministic command/replay model, saved games, and deployment integrations.
 
 The target is an illustrated strategic command-map aesthetic: tactile terrain, clear national ownership, animated military pieces, readable combat, restrained lighting, and a polished operational interface. The game should remain recognizable as Statefall rather than becoming a different game or a generic 3D RTS.
 
@@ -21,6 +21,8 @@ Success means a player immediately sees a generational visual improvement, while
 - Rendering interpolates between simulation snapshots for smooth motion.
 - WordPress deploys complete immutable release directories and selects one active release.
 - Desktop and mobile are first-class targets, with quality settings for weaker devices.
+- Saves, scores, identity, audio policy, lifecycle, and navigation pass through a platform adapter rather than being embedded in simulation or rendering code.
+- YouTube Playables compatibility remains a portability guardrail, not a current deliverable or a blocker to normal progress.
 
 Full 3D is not part of this plan. It would multiply art, camera, interaction, performance, and browser compatibility work without improving the strategic game proportionally.
 
@@ -62,7 +64,8 @@ Full 3D is not part of this plan. It would multiply art, camera, interaction, pe
 - Do not replace the WordPress account, save, replay, leaderboard, or profile systems.
 - Do not port the whole UI to PixiJS. DOM remains preferable for forms, text, accessibility, and responsive panels.
 - Do not rewrite all systems at once or delete the legacy renderer before replacement layers pass parity checks.
-- Do not make multiplayer Phase 1 a prerequisite for graphics modernization.
+- Do not build complete multiplayer before graphics modernization. Prove only the highest-risk two-client lockstep path after engine extraction and before the full renderer investment.
+- Do not add the YouTube Playables SDK, certification work, ads, or a YouTube release phase without platform access and a separate approval decision.
 
 ## 5. Architecture
 
@@ -104,8 +107,9 @@ game/
       start-card.js
       overlays.js
     integration/
-      wordpress.js
-      saves.js
+      platform.js
+      local-platform.js
+      wordpress-platform.js
     audio/
       audio.js
       music.js
@@ -114,6 +118,8 @@ game/
 ```
 
 The exact number of modules may remain smaller where splitting provides no useful boundary.
+
+A future YouTube adapter can implement the platform contract if a port is approved. Do not add a placeholder module or load the YouTube SDK before then.
 
 ### Engine contract
 
@@ -205,7 +211,41 @@ Package validation must use the manifest instead of scraping minified HTML. It m
 - Plugin pages that use `flags.js` resolve it through the active release or a separately versioned stable plugin asset.
 - Deploy the compatible plugin before activating the first multi-file game package.
 
-## 8. Delivery Phases
+## 8. Platform Portability Guardrail
+
+YouTube Playables is not a requirement for this modernization and must not delay WorldRTS releases. The architecture should merely avoid choices that would make a later port unnecessarily expensive.
+
+### Shared platform contract
+
+Define a small platform interface for:
+
+- Initial readiness and fatal-error reporting.
+- Save/load and save-size reporting.
+- Score submission.
+- Player identity and capabilities.
+- Audio permission and changes.
+- Pause/resume lifecycle.
+- Locale.
+- Navigation and permitted external actions.
+
+WordPress, local development, and any future YouTube build implement that contract. The engine and renderer must not call WordPress REST APIs, inspect `window.STATEFALL_WP`, or depend on platform-specific identity directly.
+
+### Guardrails to retain now
+
+- Keep the application a single-page web app with relative internal asset paths.
+- Keep simulation, renderer, and UI usable when WordPress services are unavailable.
+- Keep touch, responsive layout, pause/resume, bounded memory, and bundle reporting in normal acceptance gates.
+- Keep save serialization platform-neutral, versioned, and compact.
+- Do not place external links, login assumptions, or sharing behavior inside core game flows; platforms decide which actions are available.
+- Do not assume multiplayer exists on every platform. Under current YouTube rules, external relay calls are not allowed, so a future YouTube adapter would expose single-player capabilities unless those rules change.
+
+### Deferred YouTube work
+
+Do not load the SDK or run certification work now. If access and product approval arrive later, the separate port would add SDK readiness, cloud save/load, score, audio, pause/resume, localization, bundle certification, and YouTube-specific UI policy checks behind the existing adapter.
+
+Current reference requirements are maintained by Google at [YouTube Playables](https://developers.google.com/youtube/gaming/playables), [SDK integration](https://developers.google.com/youtube/gaming/playables/reference/getting_started), and [certification](https://developers.google.com/youtube/gaming/playables/certification/requirements). Recheck them when a port is actually scheduled.
+
+## 9. Delivery Phases
 
 Each phase should be independently reviewable. Do not begin a later phase while its prerequisite gate is failing.
 
@@ -246,7 +286,7 @@ Gate: a synthetic multi-file package can install, activate, roll back, and reins
 ### Phase C: Modular build without visual change
 
 - Add Vite and a development server.
-- Split static data, styles, WordPress integration, audio, and utility code into ES modules.
+- Split static data, styles, platform integration, audio, and utility code into ES modules.
 - Preserve the existing renderer and gameplay behavior.
 - Replace release tools that scrape/evaluate inline HTML with direct module imports.
 - Produce `dist/` and the release manifest through one reproducible build command.
@@ -262,7 +302,19 @@ Gate: visual behavior is materially unchanged, all existing tests pass, and the 
 - Replace simulation calls to drawing code with dirty/version signals.
 - Add snapshot interpolation data without changing authoritative state.
 
-Gate: old and extracted engines produce identical checkpoint and final hashes for the same replay corpus. Tests run without DOM, Canvas, or PixiJS.
+Gate: old and extracted engines produce identical checkpoint and final canonical digests for the same replay corpus. Tests run without DOM, Canvas, or PixiJS.
+
+### Phase D2: Minimal multiplayer architecture proof
+
+- Use the extracted engine and legacy Canvas renderer to run one two-human match through a thin relay.
+- Replace the single-human `me` assumption with acting-seat identity only where the proof requires it.
+- Carry seat ids on commands and verify ordered execution at both clients.
+- Exchange canonical checkpoint digests and surface a deliberate desync.
+- Disconnect and reconnect one client by replaying the retained room command log.
+- Complete one match and produce one valid replay containing both human seats.
+- Keep lobby polish, public rooms, chat, spectators, ranked results, and final multiplayer UI out of this proof.
+
+Gate: two independent clients complete the same match with identical canonical digests, and reconnect returns a client to the canonical room state. Resolve structural engine/command issues before beginning the full Pixi renderer.
 
 ### Phase E: Pixi renderer foundation
 
@@ -310,7 +362,56 @@ Gate: complete keyboard flow for primary menus, usable 390x844 layout without ho
 
 Gate: release record is GO and production smoke verification passes before the release is declared complete.
 
-## 9. Performance Budgets
+### Deferred product track: Statefall Landings
+
+Statefall Landings is a future tactical mode for contested ocean invasions. It is recorded here so the engine, renderer, input, save, replay, and multiplayer boundaries do not make it unnecessarily difficult later. It is not part of the graphics release gate and implementation is not yet approved.
+
+#### Intended experience
+
+- When an ocean invasion establishes a contested beachhead, the campaign can transition into a short real-time ground battle inspired by the control feel of classic Red Alert.
+- The attacker brings a campaign-derived force aboard transports, assigns its available units among landing craft, deploys waves, and controls individual units or groups ashore.
+- The defender begins with campaign-derived troops, prepared positions, and static defenses.
+- Infantry, armor, anti-armor, artillery, engineers, and defenses form a compact counter system rather than a second full technology tree.
+- The result returns to the strategic campaign as a beachhead, repelled landing, survivor totals, losses, retreat state, and possible follow-up capacity.
+
+#### Strategic integrity
+
+- Campaign force strength and composition determine tactical deployment budgets, reserves, landing-craft capacity, and defender preparation.
+- Overwhelming strategic force should produce an overwhelming tactical advantage; comparable forces should reward execution; an understrength attack should require exceptional play and favorable circumstances.
+- The tactical layer must not erase investment, logistics, fleet composition, coastal defense, or losses already determined by the campaign.
+- Unit counts may be represented at tactical scale rather than one tactical object per strategic troop, but conversion rules must be explicit, stable, and testable.
+
+#### Architectural allowance
+
+- Treat Landings as a separate deterministic simulation mode with its own seeded RNG stream derived from campaign seed plus operation id.
+- Never consume or reorder the strategic simulation RNG while the tactical mode runs.
+- Use a separate tactical command log for deployment, selection, grouping, movement, and attacks, linked to the parent campaign replay.
+- Support a clean lifecycle: snapshot/suspend campaign, start tactical mode, save/replay tactical state, apply a validated outcome, then resume campaign.
+- Let renderers switch world scenes without placing Pixi objects or input events in simulation state.
+- Keep the platform save format able to contain a suspended campaign and active tactical operation without knowing their rendering implementation.
+- In multiplayer, the architecture may allow attacker and defender control plus spectators, but the strategic room must not advance inconsistently while a tactical battle is active.
+
+#### Tentative roadmap placement
+
+- Preserve the mode/lifecycle boundaries during Phase D engine extraction.
+- Use lessons from the Phase D2 multiplayer proof for tactical ownership, command routing, pause, spectators, and reconnect.
+- Revisit a narrow Landings vertical slice after Phase E establishes Pixi rendering, camera, selection, grouping, touch abstraction, and deterministic browser fixtures.
+- Limit any first slice to one beach, a small representative unit roster, landing craft, generated defenses, simple enemy AI, and outcome transfer back to a test campaign.
+- Full production development follows a separate approval decision and should not block completion of the main graphics modernization release.
+
+#### Decisions intentionally deferred
+
+- Whether Landings is a campaign option, separate mode, automatic event, or player-selected resolution.
+- Which invasions trigger a battle and how repeated transport waves join one operation.
+- Whether auto-resolve is always offered.
+- When loadouts become committed and whether landing-craft assignments can change near shore.
+- Tactical battle duration, map scale, unit roster, support abilities, retreat, reinforcement, and loss-conversion rules.
+- How multiplayer participants, nonparticipants, spectators, pause voting, disconnects, and time limits behave.
+- Whether the mode needs a touch-specific control scheme or remains primarily a desktop feature.
+
+These decisions belong to the vertical-slice design review, when engine, multiplayer, renderer, and input constraints are measurable rather than speculative.
+
+## 10. Performance Budgets
 
 Initial budgets, to be validated in Phase A:
 
@@ -325,7 +426,7 @@ Initial budgets, to be validated in Phase A:
 
 Quality tiers should control resolution scale, particles, trails, lighting, water detail, ambient effects, and post-processing without changing simulation state.
 
-## 10. Testing and Release Gates
+## 11. Testing and Release Gates
 
 ### Current assessment
 
@@ -430,7 +531,17 @@ All runs must produce identical authoritative digests. Presentation collections 
 
 #### Browser harness
 
-Add Playwright before modularization. Required projects on normal change verification:
+Playwright is the browser solution for the current Windows development environment. Most browser tests run against a local static server and do not require Docker. Add before modularization:
+
+- `@playwright/test` and repository-owned browser configuration.
+- A small local static server that serves the current game and fails cleanly on missing files.
+- `tests/browser/` suites for launch, maps/modes, camera, targeting, pointer/touch input, responsive layout, replay, WordPress behavior, accessibility, visual regression, context loss, and performance scenes.
+- Browser binaries managed by Playwright rather than relying on whichever system browser happens to be installed.
+- A localhost/test-build bridge exposed as `window.__STATEFALL_TEST__` for readiness, fixed settings, simulation stepping, visual-clock control, fixture loading, camera transforms, canonical digest, and renderer diagnostics.
+
+While the monolithic build remains, the bridge may be dormant unless a value installed by Playwright before page load explicitly enables test mode. It must expose no production mutation path. Once Vite exists, include it only in development/test builds.
+
+Required projects on normal change verification:
 
 - Chromium desktop at 1440x900, DPR 1.
 - Firefox desktop at 1280x720.
@@ -443,6 +554,8 @@ Release qualification additionally includes current Windows Chrome/Edge, Firefox
 
 Treat page errors, console errors, unhandled rejections, failed required requests, missing assets, and test timeouts as failures. Retain trace, screenshot, and video artifacts on failure.
 
+Fast browser tests intercept the platform boundary with deterministic local fixtures for anonymous, authenticated, offline, expired-session, and error responses. A smaller Playwright project runs against the Docker WordPress sandbox only for real cookie/nonce, persistence, package, MIME, and cache integration; it follows the mandatory startup and shutdown lifecycle in `AGENTS.md`.
+
 Browser scenarios include:
 
 - Anonymous and authenticated startup, asset completion, REST success/failure, offline behavior, malformed responses, stale nonce, and long-lived tabs.
@@ -451,11 +564,11 @@ Browser scenarios include:
 - WebGL startup, disabled/unsupported WebGL behavior, context loss, and renderer recovery without simulation loss.
 - Keyboard flow, focus management, responsive overflow, reduced motion, and automated accessibility checks.
 
-Expose a narrow `window.__STATEFALL_TEST__` only in test builds for readiness, fixture loading, deterministic clocks, camera transforms, state digest, and renderer diagnostics. Real pointer and keyboard tests must still exercise the public interface.
+The test bridge supports deterministic setup and diagnostics, but real pointer, touch, keyboard, resize, and public UI tests must still exercise the public interface.
 
 #### Visual regression harness
 
-Use Playwright screenshots with presentation time, visual randomness, fonts, fixture state, camera, and viewport fixed. Keep separate baselines where browser rasterization requires them. Do not hide missing entities behind a broad whole-image tolerance.
+Use Playwright screenshots with presentation time, visual randomness, fonts, fixture state, camera, and viewport fixed. Chromium is the primary pixel-baseline project. Firefox and WebKit emphasize functional rendering and semantic assertions; add engine-specific image baselines only where they provide stable value. Do not hide missing entities behind a broad whole-image tolerance.
 
 The baseline matrix includes:
 
@@ -508,11 +621,13 @@ The package that passes this harness is the package handed off. Rebuilding or ma
 | B | Exact-ZIP install/upgrade tests, malicious package fixtures, atomic activation failure tests, complete rollback, retention, MIME/cache, and warm-cache checks. |
 | C | Vite dev and production-build browser suites, no failed chunks, source-versus-built behavior, reproducible manifest/archive, and bundle report. |
 | D | Direct engine unit/contracts, old-versus-extracted corpus comparison, fresh-process isolation, import-boundary checks, renderer-cadence independence. |
+| D2 | Two real clients through the relay, seat-tagged commands, canonical digest exchange, deliberate desync detection, disconnect/reconnect catch-up, and a complete two-human replay. |
 | E | Dual Canvas/Pixi projects, camera/coordinate/input/touch/DPR tests, WebGL capability/context recovery, renderer purity, and Pixi diagnostics. |
 | F | Terrain/fog/border screenshot matrix, ownership-color readability, dirty-layer behavior, map-update and viewport performance. |
 | G | Every entity/action scene, animation/effect screenshots, pool/culling limits, stress performance, reduced-motion and quality-tier behavior. |
 | H | Responsive overflow, keyboard flow, focus/dialog behavior, touch targets, axe checks, reduced motion, forced colors, and manual screen-reader/device record. |
 | I | Full exact-artifact suite, complete browser/device matrix, old saves/replays, long-session/hidden-tab/nonce tests, production-like rollback, and signed release evidence. |
+| Landings prototype, if approved | Tactical command/replay determinism, strategic-to-tactical force conversion, outcome conservation, suspend/save/resume, AI scenarios, selection/group input, multiplayer ownership, and campaign return. |
 
 ### Verification commands and CI
 
@@ -524,7 +639,7 @@ Create stable top-level commands as the harnesses arrive:
 - `verify:artifacts`: build exact ZIPs, inspect manifests/hashes, install them, activate, roll back, and run artifact-backed smoke checks.
 - `verify:release`: all applicable suites plus performance/device evidence required by the release record.
 
-CI must run fast and browser checks for every change and artifact/sandbox checks for release candidates. Node 22 and the current supported Node line should be represented. No release is GO with skipped required jobs, changed fixtures without review, unexplained screenshot updates, or a dirty/rebuilt artifact after verification.
+CI must run fast and browser checks for every change and artifact/sandbox checks for release candidates. Node 22 and the current supported Node line should be represented. Local Docker-backed browser or artifact runs follow `AGENTS.md`: start only when needed and always finish with `.\sandbox\stop.ps1 -DockerDesktop`. No release is GO with skipped required jobs, changed fixtures without review, unexplained screenshot updates, or a dirty/rebuilt artifact after verification.
 
 ### Accessibility gates
 
@@ -535,13 +650,13 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 - Manual release checks cover keyboard-only use, Windows screen reader, VoiceOver/Safari, ownership/selection color distinction, and physical touch devices.
 - An accessible name on the Pixi canvas alone is not sufficient; provide keyboard camera/selection commands and a meaningful selection/status summary.
 
-## 11. Release Readiness Rule
+## 12. Release Readiness Rule
 
 Graphics modernization is currently NO-GO beyond test and baseline work. Phase C and later cannot begin until Phase 0 and Phase A test gates pass; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
-## 12. Main Risks and Controls
+## 13. Main Risks and Controls
 
 | Risk | Control |
 |---|---|
@@ -556,7 +671,7 @@ The release safety rule is: the candidate must pass simulation invariants and ca
 | Asset licensing becomes unclear | Track source, author, license, and generated outputs in an asset inventory. |
 | Scope expands into gameplay redesign | Treat gameplay changes as separate proposals and releases. |
 
-## 13. Decisions Before Implementation
+## 14. Decisions Before Implementation
 
 The following are adopted unless deliberately revised:
 
@@ -567,6 +682,8 @@ The following are adopted unless deliberately revised:
 - Migration: incremental renderer replacement, not a ground-up rewrite.
 - Deployment: immutable complete releases with a manifest and active pointer.
 - Compatibility: preserve current replay and save semantics.
+- Platform portability: keep Playables possible through a generic platform contract, but do not implement its SDK or certification now.
+- Multiplayer sequencing: prove two-client lockstep after engine extraction; do not finish multiplayer before visual modernization.
 
 Decisions still requiring a concrete prototype or measurement:
 
@@ -575,9 +692,8 @@ Decisions still requiring a concrete prototype or measurement:
 - Final asset download and texture-memory budgets.
 - Whether legacy Canvas remains available as a low-quality renderer after launch.
 - Whether shared flags remain in each game release or become a versioned plugin asset.
-- Whether graphics modernization completes before multiplayer Phase 1 or shares the extracted engine work with it.
 
-## 14. Immediate Work Order
+## 15. Immediate Work Order
 
 1. Approve this plan and its adopted direction.
 2. Complete Phase 0: strengthen the state oracle, strict replay verification, fixture corpus, legacy Canvas browser harness, top-level verification, and CI.
@@ -585,6 +701,9 @@ Decisions still requiring a concrete prototype or measurement:
 4. Build the Phase A benchmark, replay, interaction, screenshot, and named-hardware performance baseline.
 5. Produce the visual vertical slice before commissioning the complete asset set.
 6. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
-7. Begin Vite modularization only after baseline artifacts and deployment tests exist.
+7. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
+8. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
+9. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
+10. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 
 No production graphics package should be built until Phases B through D pass their gates.
