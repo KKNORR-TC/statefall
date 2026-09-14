@@ -8,6 +8,7 @@ Safety controls:
 
 - WordPress is published only on `127.0.0.1:8088`.
 - Docker Desktop does not start with Windows; `start.ps1` launches it only when needed.
+- Every Docker-backed task ends with `stop.ps1 -DockerDesktop`, including after a failed verification run.
 - Outbound WordPress HTTP and email are blocked.
 - Automatic updates and WP-Cron are disabled.
 - Local database credentials and `.env` are ignored by Git.
@@ -23,6 +24,8 @@ Commands from the repository root:
 .\sandbox\stop.ps1
 .\sandbox\stop.ps1 -DockerDesktop
 ```
+
+Use the repository lifecycle scripts rather than ad hoc Compose commands. Any one-shot container must use `--rm`; remove temporary containers, networks, and volumes created outside this sandbox before finishing. Confirm cleanup with `.\sandbox\status.ps1`, which should report that Docker Desktop and the sandbox are stopped. Do not use `docker compose down` unless an explicitly authorized reset requires destroying preserved local state.
 
 Stopping preserves the imported database. To discard and re-import only the local database:
 
