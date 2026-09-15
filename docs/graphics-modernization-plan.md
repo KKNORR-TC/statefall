@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 15 September 2026. Phase 0 complete in repository game 1.10.8; Phase A review evidence is in progress and Phase A is not complete._
+_Updated 15 September 2026. Phase 0 and Phase A are complete in repository game 1.10.8; Phase B is next._
 
 ## 1. Goal
 
@@ -267,7 +267,7 @@ Gate: the current Canvas build passes invariants, canonical digest replay checks
 
 Status: PASS for repository game 1.10.8. The approved simulation and visual references are recorded in `docs/testing-baselines.md`.
 
-### Phase A: Baseline and visual prototype
+### Phase A: Baseline and visual prototype (complete)
 
 - Capture reference screenshots and representative replays for all maps, modes, zoom levels, and major unit classes.
 - Record current performance on named desktop hardware. Mobile emulation may be recorded as advisory evidence.
@@ -276,6 +276,8 @@ Status: PASS for repository game 1.10.8. The approved simulation and visual refe
 - Confirm asset licensing and retain source files separately from generated atlases.
 
 Gate: approve the illustrated command-map direction and demonstrate the vertical slice at acceptable readability and performance.
+
+Status: PASS on 15 September 2026. Ken approved the overall direction after reviewing the prototype on the host display; automated desktop DPR, map, mode, dense-action, replay, visual, and performance evidence is indexed in `docs/phase-a-evidence.md`. Unit art remains unapproved and reserved for Phase G.
 
 ### Phase B: Deployment foundation
 
@@ -346,8 +348,12 @@ Gate: approved screenshot matrix across supported desktop sizes and DPI settings
 - Replace legacy particles with renderer-owned pooled effects.
 - Add restrained lighting, weather/ambient effects, and camera feedback.
 - Scale density and effects through quality and reduced-motion settings.
+- Use `docs/unit-art-review.md` as the authoritative Phase G review register. Reconcile it with the current game roster before review begins and add a row whenever an entity or render category is added.
+- Review art unit by unit, not as a single montage or general art-direction approval. For each row, capture deterministic comparison scenes for every applicable normal, selected/targeted, damaged/disabled, building/upgrading, action/motion, and destruction state; all representative faction colors; and strategic, mid, and close zoom levels.
+- Present each row to a named human reviewer with its evidence links. Record `Pending`, `Changes requested`, or `Approved`, the reviewer, and actionable notes; automation, implementation completion, silence, or approval of the overall illustrated command-map direction does not approve a row.
+- Revise every row with requested changes and repeat its applicable state/color/zoom review. Keep superseded evidence identifiable rather than silently replacing the review history.
 
-Gate: every gameplay entity and action has a clear visual representation; large battles remain within performance budgets and do not obscure commands.
+Gate: every current row in `docs/unit-art-review.md` is reconciled to the shipped roster and explicitly marked `Approved` by a named human reviewer; requested changes are resolved; every gameplay entity and action has a clear visual representation across its applicable states, faction colors, and zoom levels; and large battles remain within performance budgets without obscuring commands. Any pending, unassigned, missing, or newly added row keeps Phase G open.
 
 ### Phase H: Interface modernization
 
@@ -626,7 +632,7 @@ The package that passes this harness is the package handed off. Rebuilding or ma
 | D2 | Two real clients through the relay, seat-tagged commands, canonical digest exchange, deliberate desync detection, disconnect/reconnect catch-up, and a complete two-human replay. |
 | E | Dual Canvas/Pixi projects, camera/coordinate/input/DPR tests, WebGL capability/context recovery, renderer purity, and Pixi diagnostics. |
 | F | Terrain/fog/border screenshot matrix, ownership-color readability, dirty-layer behavior, map-update and viewport performance. |
-| G | Every entity/action scene, animation/effect screenshots, pool/culling limits, stress performance, reduced-motion and quality-tier behavior. |
+| G | Reconciled unit-art register; per-row state/faction-color/zoom evidence and named human approval; every entity/action scene; animation/effect screenshots; pool/culling limits; stress performance; reduced-motion and quality-tier behavior. |
 | H | Desktop overflow/DPI, keyboard flow, focus/dialog behavior, axe checks, reduced motion, forced colors, and manual accessibility record. |
 | I | Full exact-artifact suite, complete browser/device matrix, old saves/replays, long-session/hidden-tab/nonce tests, production-like rollback, and signed release evidence. |
 | Landings prototype, if approved | Tactical command/replay determinism, strategic-to-tactical force conversion, outcome conservation, suspend/save/resume, AI scenarios, selection/group input, multiplayer ownership, and campaign return. |
@@ -654,7 +660,7 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 
 ## 12. Release Readiness Rule
 
-Graphics modernization Phase A now has automated Canvas map/mode/input baselines, desktop performance evidence, advisory mobile emulation, and a standalone visual candidate ready for human review. Phase A remains open for art-direction approval, broader replay/action scenes, and supported desktop display review. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
+Graphics modernization Phase A is complete with automated Canvas map/mode/input baselines, desktop DPR and performance evidence, dense action and replay scenes, advisory mobile emulation, and an approved high-level visual direction. Unit graphics remain explicitly unapproved until Phase G. The first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
@@ -698,12 +704,10 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Review the Phase A desktop and portrait visual candidate in `docs/phase-a-evidence.md` and record approval or required changes.
-2. Add representative replay/action scenes and obtain supported desktop DPI, readability, input, and performance evidence.
-3. After Phase A approval, implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
-4. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
-5. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
-6. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
-7. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
+1. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
+2. Begin Vite modularization and introduce the Local/WordPress platform boundary only after Phase B deployment tests pass.
+3. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
+4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
+5. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 
 No production graphics package should be built until Phases B through D pass their gates.

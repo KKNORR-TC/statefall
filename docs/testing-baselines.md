@@ -20,10 +20,13 @@ npm run test:restart
 npm run determinism
 npm run test:replaycheck
 npm run test:browser -- --project=chromium-desktop --grep "fixed-seed simulation"
+npm run test:desktop-scale
 npm run test:prototype
 npm run test:visual:windows
 npm run perf:browser
 ```
+
+The required Phase A desktop display-scale suite uses Chromium emulation at DPR 1, 1.5, and 2 over 1280 x 720 and 1600 x 900 viewports. It checks the legacy CSS-pixel Canvas backing contract, rendered content, containment, coordinate targeting, resize camera stability, and browser/request errors. Emulated DPR does not qualify physical displays, operating-system scaling, text readability, compositor output, or input latency. Mobile projects remain advisory and are not part of `npm run verify`.
 
 The optional Phase A browser performance harness and its measurement limitations are documented in `docs/browser-performance-baseline.md`. Its generated JSON is ignored and is not part of `npm run verify` because local browser timings are machine-relative.
 

@@ -1,6 +1,6 @@
 # Phase A Evidence Index and Art-Direction Board
 
-_Local review record, 15 September 2026. This is evidence for review, not a declaration that Phase A is complete._
+_Approved Phase A record, 15 September 2026._
 
 ## Visual Principles
 
@@ -24,10 +24,17 @@ _Local review record, 15 September 2026. This is evidence for review, not a decl
 | `tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png` | Existing game map reference |
 | `tests/browser/canvas.spec.js-snapshots/maps-*-strategic-chromium-desktop-win32.png` | Twelve-map strategic-distance matrix |
 | `tests/browser/canvas.spec.js-snapshots/maps-*-close-chromium-desktop-win32.png` | Twelve-map close-distance matrix |
+| `tests/browser/canvas.spec.js-snapshots/dense-late-game-chromium-desktop-win32.png` | Guarded deterministic late-game scene: fronts, structures, fleet, aircraft, missiles, fog, routes, selection, and alerts |
 | `docs/browser-performance-baseline.md` | Harness, ceilings, environment caveats, and interpretation |
 | `.github/workflows/verify.yml` | Ubuntu semantic/cross-engine gate and separate Windows Chromium pixel gate |
 
-The two prototype candidates were regenerated and locally reviewed after the camera fix. Their SHA-256 values are `e087c3ca66e8d37eb6a986468b389b1bb49fdd2c770da0f3feec961397305838` (desktop) and `f34f240852e7791e1ac32e01cc36944e7a43f36110e0eeeda168d13186765804` (portrait). This records identity, not human approval.
+The two prototype candidates were regenerated and locally reviewed after the camera fix. Their SHA-256 values are `e087c3ca66e8d37eb6a986468b389b1bb49fdd2c770da0f3feec961397305838` (desktop) and `f34f240852e7791e1ac32e01cc36944e7a43f36110e0eeeda168d13186765804` (portrait). Ken approved the overall direction after reviewing the prototype on the host display.
+
+## Approval Record
+
+On 15 September 2026, Ken approved the overall illustrated command-map direction in this conversation. This approval completes the human direction gate for Phase A. It is not approval of either candidate image as final production art or of any individual structure, ship, aircraft, transport, projectile, state variation, animation, or effect.
+
+Every unit graphic remains reserved for explicit unit-by-unit Phase G review in `docs/unit-art-review.md`. No Phase G register row is approved by this Phase A direction decision.
 
 ## Approval Criteria
 
@@ -47,12 +54,12 @@ Observed medians were 83 ms cold load, 289-295 ms synchronous start, 1.29 s for 
 
 Node 22.x remains the supported repository and CI runtime. This Node 24 local observation does not broaden support. Pixel references are Windows Chromium authoritative; Linux is semantic and cross-engine authoritative, not pixel authoritative. Pixel 7 is browser emulation on desktop hardware and is not physical-device evidence.
 
-## Remaining Gates
+## Residual Follow-Up
 
-- Human art-direction approval of desktop, portrait, and the full map matrix remains open.
-- Physical Windows display review across relevant DPI/scaling settings remains open.
+- Reference-specific review continues as implementation replaces prototype elements; it does not approve unit art.
+- Automated DPR 1/1.5/2 coverage and host-display review passed. Additional physical display and lower-end hardware evidence remains a later release-quality check.
 - Physical Android and iOS qualification is not a gate for the full desktop game; it is deferred unless a separate mobile or Statefall Light project is approved.
-- Replay coverage remains at existing fixtures and deterministic gates; long-session and broader replay-corpus review remains open.
+- The historical public replay fixture now loads and begins playback through the real browser replay UI; long-session and broader replay-corpus review remains open.
 - Unit-level coverage for future extracted renderer/camera modules remains open; the current prototype is intentionally isolated and browser-tested.
 - GPU/compositor latency, display presentation, input latency, production-network behavior, and lower-end hardware performance are not measured by this harness.
-- No production, release, deployment, or Phase A completion approval is implied by this evidence.
+- Phase A is complete. No production, release, deployment, or unit-art approval is implied.

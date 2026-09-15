@@ -1,5 +1,6 @@
 const {test, expect} = require('@playwright/test');
 const {assertCanonicalBaseline}=require('../tools/simulation-baselines.js');
+const replayFixture=require('../fixtures/replays/public-v1.10.7-focus.json');
 
 const GAME_URL = '/game/index.html?browserTest=1';
 const MAPS = ['random', 'land', 'islands_l', 'islands_m', 'islands_s', 'atoll', 'world', 'europe', 'americas', 'africa', 'asia', 'mideast'];
@@ -212,6 +213,40 @@ test('real pointer targeting and context interaction use the expected tile', asy
   expect(command.a[1]).toBe(foreign.tile);
   command.a[0].act = 'mutated outside game';
   expect(await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.lastCommand.a[0].act)).toBe(expectedAction);
+});
+
+test('dense late-game fixture exposes strategic visual layers', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name.includes('mobile'), 'full-game evidence follows the desktop-first policy');
+  await startFixedMatch(page, {seed: 'PHASEALATEGAME', mode: MODES.find(mode => mode.key === 'fog'), controlled: true});
+  const scene=await page.evaluate(() => window.__STATEFALL_TEST__.installLateGameScene());
+  expect(scene).toMatchObject({fixture:'dense-late-game',nations:3,adjacentOwnership:true,selectedShips:1,fog:true,alerts:1,notices:1});
+  expect(scene.structures).toBeGreaterThanOrEqual(10);
+  expect(scene.ships).toBeGreaterThanOrEqual(4);
+  expect(scene.aircraft).toBeGreaterThanOrEqual(3);
+  expect(scene.missiles + scene.shells).toBeGreaterThanOrEqual(3);
+  expect(scene.attacks).toBeGreaterThan(0);
+  expect(scene.supplyRoutes).toBeGreaterThan(0);
+  expect(scene.hiddenTiles).toBeGreaterThan(0);
+  await expect(page.locator('#notices')).toContainText('Eastern front under bombardment');
+  if(testInfo.project.name === 'chromium-desktop' && process.platform === 'win32'){
+    await page.evaluate(() => window.__STATEFALL_TEST__.freezePresentation());
+    await expect(page.locator('#stage')).toHaveScreenshot('dense-late-game.png',{animations:'disabled'});
+  }
+});
+
+test('loads and plays the historical replay fixture in the browser', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name.includes('mobile'), 'full-game replay coverage follows the desktop-first policy');
+  await page.goto(GAME_URL,{waitUntil:'load'});
+  const loaded=await page.evaluate(file => window.__STATEFALL_TEST__.loadReplay(file),replayFixture);
+  expect(loaded.ready).toBe(true);
+  expect(loaded.replay).toMatchObject({on:true,commands:1,applied:0,targetTick:200,mismatch:false});
+  await expect(page.locator('#modal')).toContainText('Replay loaded');
+  await expect(page.locator('#replayBar')).toBeVisible();
+  await page.locator('#rpPlay').click();
+  await page.locator('#rpSpeed button[data-sp="8"]').click();
+  await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.status().tick)).toBeGreaterThanOrEqual(30);
+  const playing=await page.evaluate(() => window.__STATEFALL_TEST__.status());
+  expect(playing.replay).toMatchObject({on:true,commands:1,applied:1,mismatch:false,speed:8});
 });
 
 test('start and settings cards avoid horizontal overflow on desktop and mobile', async ({page}) => {

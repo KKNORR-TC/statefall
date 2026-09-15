@@ -2445,8 +2445,10 @@ const cam={x:0,y:0,s:4};
 function installBrowserTestBridge(){
   const enabled=window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('browserTest')==='1';
   if(!enabled) return;
+  let deterministicScene=false;
   const lastCommand=()=>{ const c=CMD.log[CMD.log.length-1]; return c?{t:c.t,k:c.k,a:structuredClone(c.a)}:null; };
-  const status=()=>({ready:!!me,tick:tickN,paused,lastCommand:lastCommand()});
+  const replayStatus=()=>({on:REPLAY.on,commands:REPLAY.cmds.length,applied:REPLAY.i,targetTick:REPLAY.toTick,mismatch:!!REPLAY.mismatch,speed:REPLAY.speed});
+  const status=()=>({ready:!!me,tick:tickN,paused,lastCommand:lastCommand(),replay:replayStatus()});
   const snapshot=()=>({
     ready:!!me, seed:START.seed, map:START.map, tick:tickN, paused,
     players:players.length, landCount,
@@ -2454,10 +2456,11 @@ function installBrowserTestBridge(){
     matchClass:me?matchClass():null,
     player:me?{id:me.id,tiles:me.tiles,troops:me.troops,gold:me.gold,areas:me.areas?me.areas.length:0}:null,
     mapState:me?{neutralLand:Array.from(owner).reduce((n,o,t)=>n+(land[t]&&o<0?1:0),0),hiddenTiles:vis?Array.from(vis).reduce((n,v)=>n+(v?0:1),0):0,draft:!!draft}:null,
-    input:{hover,commands:CMD.log.length,lastCommand:lastCommand()},
-    camera:{x:cam.x,y:cam.y,scale:cam.s},
-    canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
-  });
+     input:{hover,commands:CMD.log.length,lastCommand:lastCommand()},
+     replay:replayStatus(),
+     camera:{x:cam.x,y:cam.y,scale:cam.s},
+     canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
+   });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
     snapshot,
     status,
@@ -2481,13 +2484,54 @@ function installBrowserTestBridge(){
       cam.s=Math.min(12,Math.max(.35,+scale||4)); cam.x=cv.width/2-(x+.5)*cam.s; cam.y=cv.height/2-(y+.5)*cam.s; render();
       return {tile:target,owner:owner[target],land:!!land[target],x:cv.width/2,y:cv.height/2};
     },
-    setCamera(scale,target='player'){
-      if(!me) throw new Error('match not started');
-      const x=target==='world'?W/2:me.sx+.5,y=target==='world'?H/2:me.sy+.5;
-      cam.s=Math.min(12,Math.max(.35,+scale||1)); cam.x=cv.width/2-x*cam.s; cam.y=cv.height/2-y*cam.s; render(); return status();
-    },
-    screenToTile(x,y){ return tileAt(x,y); },
-    freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; render(); return status(); }
+     setCamera(scale,target='player'){
+       if(!me) throw new Error('match not started');
+       const x=target==='world'?W/2:me.sx+.5,y=target==='world'?H/2:me.sy+.5;
+       cam.s=Math.min(12,Math.max(.35,+scale||1)); cam.x=cv.width/2-x*cam.s; cam.y=cv.height/2-y*cam.s; render(); return status();
+     },
+     loadReplay(file,mode='watch'){ if(me) throw new Error('loadReplay requires the start screen'); loadReplayFile(structuredClone(file),mode); return status(); },
+     installLateGameScene(){
+       if(!me||!paused) throw new Error('late-game scene requires a paused match');
+       const rivals=players.filter(p=>p!==me&&p.kind!=='neutral').slice(0,2); if(rivals.length<2) throw new Error('late-game scene requires two rivals');
+       let cx=Math.round(me.sx),cy=Math.round(me.sy),best=-1;
+       for(let y=35;y<H-35;y+=8) for(let x=35;x<W-35;x+=8){ let la=0,wa=0; for(let yy=y-18;yy<=y+18;yy+=3) for(let xx=x-18;xx<=x+18;xx+=3) land[idx(xx,yy)]?la++:wa++; const score=Math.min(la,wa); if(score>best){ best=score; cx=x; cy=y; } }
+       const ids=[me.id,rivals[0].id,rivals[1].id];
+       for(let y=Math.max(0,cy-48);y<Math.min(H,cy+49);y++) for(let x=Math.max(0,cx-56);x<Math.min(W,cx+57);x++){ const t=idx(x,y); if(!land[t]) continue; owner[t]=ids[x<cx-5?0:x>cx+9?1:2]; }
+       const used=new Set(), near=(x,y,wantLand,own)=>{ let found=-1,dist=Infinity; for(let yy=Math.max(0,y-28);yy<Math.min(H,y+29);yy++) for(let xx=Math.max(0,x-28);xx<Math.min(W,x+29);xx++){ const t=idx(xx,yy); if(!!land[t]!==wantLand||used.has(t)||(own!=null&&owner[t]!==own)) continue; const d=(xx-x)**2+(yy-y)**2; if(d<dist){ dist=d; found=t; } } if(found<0&&wantLand&&own!=null){ for(let yy=Math.max(0,cy-48);yy<Math.min(H,cy+49);yy++) for(let xx=Math.max(0,cx-56);xx<Math.min(W,cx+57);xx++){ const t=idx(xx,yy); if(!land[t]||used.has(t)) continue; const d=(xx-x)**2+(yy-y)**2; if(d<dist){ dist=d; found=t; } } if(found>=0) owner[found]=own; } if(found<0) throw new Error('late-game fixture tile not found'); used.add(found); return found; };
+       structures=[]; struct.fill(0); structOwner.fill(-1);
+       const addStructure=(type,x,y,own,extra={})=>{ const t=near(x,y,true,own),st={type,owner:own,t,cost:0,building:false,...extra}; structures.push(st); struct[t]=1; structOwner[t]=own; return st; };
+       const city=addStructure('city',cx-30,cy-13,me.id,{level:2,links:1});
+       const factory=addStructure('factory',cx-22,cy-5,me.id,{links:1});
+       const port=addStructure('port',cx-12,cy+5,me.id,{level:2,gunHp:3,queue:[{cls:'cruiser',done:tickN+80,total:120}]});
+       addStructure('fort',cx-8,cy-15,me.id,{level:3});
+       addStructure('sam',cx-19,cy+15,me.id,{cool:tickN+12,hp:3});
+       const silo=addStructure('silo',cx-29,cy+13,me.id,{cool:tickN+70});
+       addStructure('command',cx-24,cy+4,me.id);
+       const airfield=addStructure('airfield',cx-35,cy+3,me.id,{level:2,lshield:3,aq:[]});
+       const enemyShield=addStructure('shield',cx+24,cy-10,rivals[0].id,{hp:4});
+       const enemySam=addStructure('sam',cx+31,cy+8,rivals[0].id,{cool:0,hp:3});
+       addStructure('bertha',cx+2,cy+17,rivals[1].id,{hp:4});
+       links=[{a:factory,b:city,owner:me.id},{a:factory,b:port,owner:me.id}];
+       const waters=[near(cx-8,cy+15,false),near(cx+2,cy+13,false),near(cx+13,cy+15,false),near(cx+22,cy+19,false)];
+       const point=t=>[t%W+.5,(t-t%W)/W+.5], makeShip=(cls,own,t,path=[t],extra={})=>{ const [x,y]=point(t),w={id:++uidSeq,owner:own,cls,path,pos:0,dest:path[path.length-1],x,y,hp:SHIPS[cls].hp,cool:0,ang:0,hdg:-.2,wake:[[x-4,y+1],[x-2,y+.5],[x,y]],barCool:0,...extra}; warships.push(w); return w; };
+       warships=[]; selected.clear(); const flagship=makeShip('battleship',me.id,waters[0],waters,{cruise:true,fireAt:tickN,fireAng:-.3}); selected.add(flagship); makeShip('cruiser',me.id,waters[1],waters.slice(1),{barCool:tickN+80}); makeShip('warship',rivals[0].id,waters[2]); makeShip('scout',rivals[1].id,waters[3]);
+       const [ax,ay]=point(airfield.t), [tx,ty]=point(enemyShield.t);
+       aircraft=[{id:++uidSeq,owner:me.id,type:'fighter',home:airfield,state:'patrol',x:ax+10,y:ay-9,tx:cx,ty:cy,hp:3,hdg:.2,until:tickN+300},{id:++uidSeq,owner:me.id,type:'bomber',home:airfield,state:'run',x:cx-3,y:cy-18,tx,ty,bombs:5,hdg:.1},{id:++uidSeq,owner:rivals[0].id,type:'fighter',home:enemySam,state:'out',x:cx+15,y:cy-17,tx:cx,ty:cy,hp:2,hdg:2.8,until:tickN+200}];
+       missiles=[{owner:me.id,t:enemyShield.t,from:silo.t,age:24,flight:55},{owner:rivals[0].id,t:city.t,from:enemySam.t,age:16,flight:55}];
+       shells=[{owner:rivals[1].id,x:cx+12,y:cy+11,kind:'land',tx:cx-7,ty:cy-8,radius:3,trail:[[cx+18,cy+15,0],[cx+15,cy+13,4]],delay:0,arc:true,missile:true,speed:3.2,rise:17,ox:cx+18,oy:cy+15}];
+       attacks=[{owner:me.id,target:rivals[1].id,front:[near(cx-4,cy-3,true,rivals[1].id)]}]; shelled[enemySam.t]=tickN+180;
+       me.cmdFocus=rivals[0].id; me.cmdFocusT=enemyShield.t; highlightId=rivals[0].id;
+       if(START.fog){ if(!vis) vis=new Uint8Array(W*H); vis.fill(1); for(let y=Math.max(0,cy-44);y<Math.min(H,cy+45);y++) for(let x=cx+38;x<Math.min(W,cx+64);x++) vis[idx(x,y)]=0; }
+       nukeAlerts=[{from:point(enemySam.t),at:point(city.t),owner:rivals[0].id,age:18,life:88}];
+       document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
+       for(const p of players) if(!ids.includes(p.id)) p.tiles=0;
+       for(const [p,x,y] of [[me,cx-28,cy-28],[rivals[0],cx+30,cy-27],[rivals[1],cx+2,cy+27]]){ p.labelPos=[x+.5,y+.5]; p.labelDraw=[x+.5,y+.5]; p.tiles=Math.max(1200,p.tiles); }
+       deterministicScene=true;
+       cam.s=5; cam.x=cv.width/2-cx*cam.s; cam.y=cv.height/2-cy*cam.s; drawMap(); updateUI(); updateHint(); render();
+       return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!vis,hiddenTiles:vis?Array.from(vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
+     },
+     screenToTile(x,y){ return tileAt(x,y); },
+     freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const p of players) if(p.labelPos) p.labelDraw=p.labelPos.slice(); } render(); return status(); }
   })});
 }
 installBrowserTestBridge();
