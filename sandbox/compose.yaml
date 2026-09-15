@@ -65,8 +65,54 @@ services:
     networks:
       - sandbox
 
+  artifact-wordpress:
+    image: wordpress:7.1-php8.4-apache
+    profiles: ["artifacts"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: artifact_
+    ports:
+      - 127.0.0.1:${STATEFALL_ARTIFACT_PORT:-8089}:80
+    volumes:
+      - artifact-site:/var/www/html
+      - ./.artifact-uploads.ini:/usr/local/etc/php/conf.d/statefall-artifacts.ini:ro
+      - ./.artifact-htaccess:/statefall-config/htaccess:ro
+    networks:
+      sandbox:
+        aliases: [artifact-wordpress]
+
+  artifact-cli:
+    image: wordpress:cli-php8.4
+    profiles: ["artifacts"]
+    user: "33:33"
+    depends_on:
+      db:
+        condition: service_healthy
+      artifact-wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: artifact_
+    volumes:
+      - artifact-site:/var/www/html
+      - ../.artifacts:/statefall-artifacts:ro
+      - ../tests/php:/statefall-tests:ro
+    networks:
+      - sandbox
+
 volumes:
   database:
+  artifact-site:
 
 networks:
   sandbox:

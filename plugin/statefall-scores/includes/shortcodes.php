@@ -28,7 +28,7 @@ document.querySelectorAll('table.sf-sortable').forEach(function(tbl){var ths=tbl
 
 /** [statefall_board cls="Standard" limit="50"] — cls="__all" shows the top 3 of every class. A ?cls= query overrides. */
 add_shortcode('statefall_board', function ($atts) {
-    wp_enqueue_style('statefall-board'); wp_enqueue_script('statefall-flags', statefall_game_url() . 'flags.js', [], STATEFALL_VERSION, true);
+    wp_enqueue_style('statefall-board'); wp_enqueue_script('statefall-flags', statefall_flags_url(), [], STATEFALL_VERSION, true);
     $a = shortcode_atts(['cls' => '__all', 'limit' => 50], $atts);
     $cls = isset($_GET['cls']) ? sanitize_text_field(wp_unslash($_GET['cls'])) : $a['cls'];
     $classes = statefall_rest_classes();
@@ -66,7 +66,7 @@ add_shortcode('statefall_profile', function ($atts = []) {
     $own = get_current_user_id() === (int) $uid;
     $tabs = '<div class="sf-tabs" role="tablist"><button class="on" data-tab="overview">Overview</button><button data-tab="achievements">Achievements</button>' . ($own ? '<button data-tab="nation">Nation</button><button data-tab="saves">Saved games</button><button data-tab="replays">Replays</button>' : '') . '<button data-tab="history">Match history</button></div>';
     $nationAttrs = ' data-sf-nation data-rest="' . esc_attr(rest_url('statefall/v1/')) . '" data-nonce="' . esc_attr(wp_create_nonce('wp_rest')) . '" data-edit="' . ($own ? '1' : '0') . '" data-uid="' . (int) $uid . '"';
-    wp_enqueue_script('statefall-flags', statefall_game_url() . 'flags.js', [], STATEFALL_VERSION, true); wp_enqueue_script('statefall-nation', plugins_url('assets/nation.js', dirname(__FILE__)), ['statefall-flags'], STATEFALL_VERSION, true);
+    wp_enqueue_script('statefall-flags', statefall_flags_url(), [], STATEFALL_VERSION, true); wp_enqueue_script('statefall-nation', plugins_url('assets/nation.js', dirname(__FILE__)), ['statefall-flags'], STATEFALL_VERSION, true);
     $h = '<div class="sf-wrap sf-profile"' . $nationAttrs . '><h2 class="sf-title">' . esc_html($u->display_name) . '</h2><p class="sf-trust">Match results, rankings, and achievements are based on player-submitted scores that are not independently verified.</p>' . $tabs . '<section class="sf-section" data-pane="overview"><h3>' . ($own ? 'Your nation' : 'Nation') . '</h3><div class="sf-top"><div data-panel><p class="sf-muted">Loading…</p></div><div class="sf-trophies" data-awards></div></div><h3 style="margin-top:16px">Overview</h3><div class="sf-stats">'
         . '<div><b>' . (int) $s['matches'] . '</b><span>matches</span></div><div><b>' . (int) $s['wins'] . '</b><span>wins</span></div><div><b>' . (int) $s['best'] . '</b><span>best score</span></div>'
         . '<div><b>' . esc_html($fav ? statefall_map_name($fav['map']) : '—') . '</b><span>favourite map</span></div><div><b>' . esc_html($favc ? $favc['cls'] : '—') . '</b><span>most played</span></div></div>'
@@ -80,7 +80,7 @@ add_shortcode('statefall_profile', function ($atts = []) {
 /** [statefall_howto tab="basics"] — serves a how-to page from the installed package; [statefall_howto] shows all tabs with a switcher (?tab=). */
 add_shortcode('statefall_howto', function ($atts) {
     $a = shortcode_atts(['tab' => ''], $atts);
-    $dir = statefall_game_dir() . 'howto/';
+    $dir = statefall_release_dir() . 'howto/';
     $tabs = is_file($dir . 'tabs.json') ? json_decode(file_get_contents($dir . 'tabs.json'), true) : [['basics', 'Basics'], ['build', 'Buildings'], ['ships', 'Ships'], ['air', 'Air'], ['systems', 'Systems'], ['garrisons', 'Garrisons'], ['modes', 'Modes'], ['about', 'About']];
     $tab = $a['tab'] ?: (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : $tabs[0][0]);
     $tab = sanitize_key($tab);

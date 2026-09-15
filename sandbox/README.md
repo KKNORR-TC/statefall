@@ -21,9 +21,12 @@ Commands from the repository root:
 .\sandbox\status.ps1
 .\sandbox\verify.ps1
 .\sandbox\security-regression.ps1
+.\sandbox\verify-artifacts.ps1
 .\sandbox\stop.ps1
 .\sandbox\stop.ps1 -DockerDesktop
 ```
+
+`verify-artifacts.ps1` uses the separate `artifact_` database table prefix and `artifact-site` volume. It resets only that disposable prefix, installs the exact repository plugin `1.10.6` baseline, upgrades it with the built `1.10.7` ZIP, and tests built game ZIPs. It does not modify the restored `wp_` snapshot tables or mounted production-derived uploads.
 
 Use the repository lifecycle scripts rather than ad hoc Compose commands. Any one-shot container must use `--rm`; remove temporary containers, networks, and volumes created outside this sandbox before finishing. Confirm cleanup with `.\sandbox\status.ps1`, which should report that Docker Desktop and the sandbox are stopped. Do not use `docker compose down` unless an explicitly authorized reset requires destroying preserved local state.
 

@@ -1,11 +1,49 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-/** The game package lives in uploads/statefall/: index.html plus any assets (howto/, js/, css/, img/…). */
+/** Shared data stays at the package root; games live in immutable release directories. */
 function statefall_game_dir()  { $u = wp_upload_dir(); return trailingslashit($u['basedir']) . 'statefall/'; }
-function statefall_game_path() { return statefall_game_dir() . 'index.html'; }
+function statefall_pointer_target() {
+    $dir = statefall_game_dir() . 'release-pointers/';
+    if (is_dir($dir)) {
+        $records = array_values(array_filter(scandir($dir), function ($name) use ($dir) { return preg_match('/^[0-9]{20}-[A-Za-z0-9]+\.pointer$/', $name) && is_file($dir . $name); }));
+        rsort($records, SORT_STRING);
+        foreach ($records as $record) { $target = trim((string) file_get_contents($dir . $record)); if ($target === 'legacy' || preg_match('/^[A-Za-z0-9][A-Za-z0-9._+-]{0,128}$/', $target)) return $target; }
+    }
+    // Read the pre-1.10.7 pointer during migration; new writes use the journal above.
+    $old = statefall_game_dir() . 'active-release';
+    if (is_file($old)) { $target = trim((string) file_get_contents($old)); if (preg_match('/^[A-Za-z0-9][A-Za-z0-9._+-]{0,128}$/', $target)) return $target; }
+    return is_file(statefall_game_dir() . 'index.html') ? 'legacy' : null;
+}
+function statefall_release_manifest($name) {
+    if (!is_string($name) || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._+-]{0,128}$/', $name)) return null;
+    $path = statefall_game_dir() . 'releases/' . $name . '/release.json';
+    $data = is_file($path) ? json_decode(file_get_contents($path), true) : null;
+    return is_array($data) ? $data : null;
+}
+function statefall_release_context($refresh = false, $namedRelease = null) {
+    static $active = null; static $named = [];
+    if ($refresh) { $active = null; $named = []; return null; }
+    if ($namedRelease !== null && isset($named[$namedRelease])) return $named[$namedRelease];
+    if ($namedRelease === null && $active !== null) return $active;
+    $target = $namedRelease !== null ? $namedRelease : statefall_pointer_target();
+    if ($target === 'legacy') $context = ['name' => null, 'manifest' => null, 'dir' => statefall_game_dir(), 'url' => statefall_game_url(), 'runtimeUrl' => statefall_game_url(), 'entry' => 'index.html', 'flags' => 'flags.js'];
+    else {
+        $manifest = $target ? statefall_release_manifest($target) : null;
+        $context = $manifest ? ['name' => $target, 'manifest' => $manifest, 'dir' => statefall_game_dir() . 'releases/' . $target . '/', 'url' => statefall_game_url() . 'releases/' . rawurlencode($target) . '/', 'runtimeUrl' => home_url('/play/releases/' . rawurlencode($target) . '/'), 'entry' => $manifest['entry'], 'flags' => $manifest['flags']] : null;
+    }
+    if ($namedRelease !== null) $named[$namedRelease] = $context; else $active = $context;
+    return $context;
+}
+function statefall_active_release() { $context = statefall_release_context(); return $context ? $context['name'] : null; }
+function statefall_release_dir() { $context = statefall_release_context(); return $context ? $context['dir'] : statefall_game_dir(); }
+function statefall_game_path() { $context = statefall_release_context(); return $context ? $context['dir'] . $context['entry'] : statefall_game_dir() . 'index.html'; }
 /** Public URL of the package folder (served directly by the web server; hosts like WP Engine never pass static files to PHP). */
 function statefall_game_url() { $u = wp_upload_dir(); return trailingslashit($u['baseurl']) . 'statefall/'; }
+function statefall_release_url() { $context = statefall_release_context(); return $context ? $context['url'] : statefall_game_url(); }
+function statefall_runtime_asset_url() { $context = statefall_release_context(); return $context ? $context['runtimeUrl'] : statefall_game_url(); }
+function statefall_flags_path() { $context = statefall_release_context(); return $context ? $context['dir'] . $context['flags'] : statefall_game_dir() . 'flags.js'; }
+function statefall_flags_url() { $context = statefall_release_context(); return $context ? $context['url'] . $context['flags'] : statefall_game_url() . 'flags.js'; }
 
 function statefall_register_rewrite() {
     add_rewrite_rule('^play/?$', 'index.php?statefall_play=1', 'top');
@@ -24,7 +62,8 @@ function statefall_mime($path) {
 }
 
 /** The config block the game reads. */
-function statefall_wp_config() {
+function statefall_wp_config($context = null) {
+    $context = $context ?: statefall_release_context();
     $user = is_user_logged_in() ? ['id' => get_current_user_id(), 'name' => wp_get_current_user()->display_name] : null;
     if ($user && function_exists('statefall_nation_of')) { $n = statefall_nation_of($user['id']); $user['nation'] = ['flag' => $n['flag'], 'name' => $n['name'], 'tier' => $n['tier'], 'wins' => $n['wins']]; }
     return [
@@ -39,9 +78,9 @@ function statefall_wp_config() {
         'communityUrl' => home_url('/community/'),
         'privacyUrl' => function_exists('get_privacy_policy_url') && get_privacy_policy_url() ? get_privacy_policy_url() : home_url('/privacy-policy/'),
         'logoutUrl' => wp_logout_url(home_url('/play/')),
-        'version' => get_option('statefall_game_version', ''),
+        'version' => $context && $context['manifest'] ? $context['manifest']['version'] : get_option('statefall_game_version', ''),
         'base' => home_url('/play/'),
-        'assets' => statefall_game_url(),
+        'assets' => statefall_runtime_asset_url(),
         'playlist' => esc_url_raw(rest_url('statefall/v1/playlist')),
         'creditsUrl' => home_url('/credits/'),
         'nationPool' => function_exists('statefall_nation_pool') ? statefall_nation_pool(20) : [],
@@ -53,13 +92,21 @@ add_action('template_redirect', function () {
     // static assets of the package: /play/<path>
     $asset = get_query_var('statefall_asset');
     if ($asset) {
-        $rel = str_replace('\\', '/', $asset);
-        if (strpos($rel, '..') !== false || $rel === '' || $rel === 'index.html') { status_header(404); exit; }
-        $file = statefall_game_dir() . $rel;
+        $rel = str_replace('\\', '/', $asset); $context = null;
+        if (preg_match('#^releases/([^/]+)/(.+)$#', $rel, $match)) { $context = statefall_release_context(false, rawurldecode($match[1])); $rel = $match[2]; }
+        else { $context = statefall_release_context(); if ($context && $context['name']) { status_header(404); exit; } }
+        if (!$context || strpos($rel, '..') !== false || $rel === '' || $rel === $context['entry']) { status_header(404); exit; }
+        $record = null;
+        if ($context['manifest']) {
+            if ($rel !== 'release.json') foreach ($context['manifest']['files'] as $item) if ($item['path'] === $rel) { $record = $item; break; }
+            if ($rel !== 'release.json' && !$record) { status_header(404); exit; }
+        }
+        $file = $context['dir'] . $rel;
         if (!is_file($file)) { status_header(404); exit; }
-        $ver = get_option('statefall_game_version', '');
         header('Content-Type: ' . statefall_mime($file));
-        header('Cache-Control: public, max-age=' . (isset($_GET['v']) ? 31536000 : 3600));
+        $immutable = false;
+        if ($record && preg_match('/\.([a-f0-9]{8,64})\.[A-Za-z0-9]+$/', basename($rel), $fingerprint)) $immutable = strpos($record['sha256'], $fingerprint[1]) === 0;
+        header('Cache-Control: public, max-age=' . ($immutable ? '31536000, immutable' : '300, must-revalidate'));
         header('Content-Length: ' . filesize($file));
         readfile($file);
         exit;
@@ -67,72 +114,32 @@ add_action('template_redirect', function () {
     $cid = (int) get_query_var('statefall_credits');
     if ($cid) { statefall_credits_page($cid); exit; }
     if (!get_query_var('statefall_play')) return;
-    $path = statefall_game_path();
+    $context = statefall_release_context(); $path = $context ? $context['dir'] . $context['entry'] : statefall_game_dir() . 'index.html';
     if (!file_exists($path)) { status_header(404); wp_die('The Statefall game has not been uploaded yet. Go to Statefall → Game file in the dashboard.'); }
     $html = file_get_contents($path);
-    $inject = '<script>window.STATEFALL_WP=' . wp_json_encode(statefall_wp_config()) . ';</script>';
+    $json = wp_json_encode(statefall_wp_config($context), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+    $inject = '<script type="application/json" id="statefall-wp-config">' . $json . '</script><script>window.STATEFALL_WP=JSON.parse(document.getElementById("statefall-wp-config").textContent);</script>';
     $pos = stripos($html, '<script');
     $html = $pos !== false ? substr($html, 0, $pos) . $inject . "\n" . substr($html, $pos) : $inject . $html;
-    // cache-bust relative asset references with the package version
-    $ver = get_option('statefall_game_version', '');
-    if ($ver) $html = preg_replace('/(src|href)="((?!https?:|\/\/|data:|#)[^"?]+\.(?:js|css|png|jpg|webp|svg|mp3|ogg|wav))"/i', '$1="' . statefall_game_url() . '$2?v=' . rawurlencode($ver) . '"', $html);
+    if ($context && $context['name']) {
+        // Multi-file manifests require this explicit, release-qualified asset base.
+        $html = str_replace('__STATEFALL_ASSET_BASE__', $context['runtimeUrl'], $html);
+    } else {
+        // The deployed 1.10.7 single-file package has only these optional relative legacy assets.
+        $ver = get_option('statefall_game_version', '');
+        if ($ver) $html = preg_replace('/(src|href)="((?:flags\.js|howto\/[^"?]+|(?:js|css|img)\/[^"?]+))"/i', '$1="' . statefall_game_url() . '$2?v=' . rawurlencode($ver) . '"', $html);
+    }
     nocache_headers();
     header('Content-Type: text/html; charset=utf-8');
     echo $html;
     exit;
 });
 
-/**
- * Install a game package: either a single index.html or a zip containing index.html at its root (or inside one top folder)
- * plus any assets. Returns true or an error string.
- */
-function statefall_install_package($tmp, $name, $version) {
-    $dir = statefall_game_dir();
-    if (preg_match('/\.html?$/i', $name)) {
-        $body = file_get_contents($tmp);
-        if (stripos($body, 'Statefall') === false) return 'That does not look like the Statefall game file.';
-        if (!is_dir($dir)) wp_mkdir_p($dir);
-        file_put_contents($dir . 'index.html', $body);
-    } elseif (preg_match('/\.zip$/i', $name)) {
-        if (!class_exists('ZipArchive')) return 'ZipArchive is not available on this server; upload index.html instead.';
-        $z = new ZipArchive();
-        if ($z->open($tmp) !== true) return 'Could not open the zip.';
-        // find index.html: root or one level down
-        $prefix = null;
-        for ($i = 0; $i < $z->numFiles; $i++) { $n = $z->getNameIndex($i); if ($n === 'index.html') { $prefix = ''; break; } if (preg_match('#^([^/]+)/index\.html$#', $n, $m)) { $prefix = $m[1] . '/'; } }
-        if ($prefix === null) { $z->close(); return 'The zip has no index.html at its root.'; }
-        $stage = $dir . '.staging-' . wp_generate_password(8, false, false) . '/';
-        wp_mkdir_p($stage);
-        for ($i = 0; $i < $z->numFiles; $i++) {
-            $n = $z->getNameIndex($i);
-            if ($prefix !== '' && strpos($n, $prefix) !== 0) continue;
-            $rel = substr($n, strlen($prefix));
-            if ($rel === '' || strpos($rel, '..') !== false || substr($rel, -1) === '/') { if (substr($rel, -1) === '/' && strpos($rel, '..') === false) wp_mkdir_p($stage . $rel); continue; }
-            if (preg_match('/\.(php|phtml|phar|sh|exe)$/i', $rel)) continue; // never install executables
-            wp_mkdir_p(dirname($stage . $rel));
-            file_put_contents($stage . $rel, $z->getFromIndex($i));
-        }
-        $z->close();
-        if (!is_file($stage . 'index.html')) return 'Package extracted but index.html is missing.';
-        // swap: remove old files (keep nothing), move staging into place
-        // keep the music library across package installs
-        foreach (['audio', 'cards', 'versions'] as $keep) { if (is_dir($dir . $keep) && !is_dir($stage . $keep)) rename($dir . $keep, $stage . $keep); }
-        statefall_rrmdir_contents($dir, $stage);
-        statefall_move_tree($stage, $dir);
-        @rmdir($stage);
-    } else return 'Upload index.html or a .zip package.';
-    update_option('statefall_game_version', $version ?: gmdate('Y-m-d H:i'));
-    return true;
-}
 function statefall_rrmdir_contents($dir, $except) {
+    if (!is_dir($dir)) return;
     foreach (scandir($dir) as $e) { if ($e === '.' || $e === '..') continue; $p = $dir . $e; if (rtrim($p, '/') === rtrim($except, '/')) continue;
         if (is_dir($p)) { statefall_rrmdir_contents($p . '/', $except); @rmdir($p); } else @unlink($p); }
 }
-function statefall_move_tree($from, $to) {
-    foreach (scandir($from) as $e) { if ($e === '.' || $e === '..') continue; $s = $from . $e; $d = $to . $e;
-        if (is_dir($s)) { wp_mkdir_p($d); statefall_move_tree($s . '/', $d . '/'); @rmdir($s); } else rename($s, $d); }
-}
-
 /** Public page for one match: Open Graph card for sharing, a Watch button, and the summary. */
 function statefall_credits_page($id) {
     global $wpdb; $t = statefall_table(); $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM $t WHERE id=%d", $id), ARRAY_A);

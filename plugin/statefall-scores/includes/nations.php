@@ -48,7 +48,7 @@ function statefall_nation_name_ok($name, $uid) {
     return true;
 }
 function statefall_real_country_names() {
-    $p = statefall_game_dir() . 'flags.js'; if (!is_file($p)) return [];
+    $p = statefall_flags_path(); if (!is_file($p)) return [];
     $js = file_get_contents($p); if (!preg_match_all("/\\['((?:[^'\\\\]|\\\\.)+)',\\['[hvrdstc]/", $js, $m)) return [];
     return array_map(function ($s) { return str_replace("\\'", "'", $s); }, $m[1]);
 }

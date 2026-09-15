@@ -3,7 +3,7 @@
 Real-time strategy in one HTML file, hosted at [WorldRTS.com](https://www.worldrts.com) on WordPress.
 
 - `game/index.html` — repository game version 1.10.8. Release packages are built from it with `tools/build-howto.js` and `tools/build-flags.js`.
-- `plugin/statefall-scores/` — repository plugin version 1.10.6: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools.
+- `plugin/statefall-scores/` — repository plugin version 1.10.7: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools, and immutable manifest-based game releases.
 - `tools/` — headless harness, determinism proof, replay checker, opening benchmark, release builders, trailer renderers (Node + `canvas`).
 - `sandbox/` — localhost-only WordPress 7.1 / PHP 8.4 integration environment restored from an authorized site backup.
 - `docs/` — current status and findings, release runbook and record template, graphics modernization plan, historical website handoff, and multiplayer plan.

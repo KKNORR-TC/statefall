@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 15 September 2026. Phase 0 and Phase A are complete in repository game 1.10.8; Phase B is next._
+_Updated 15 September 2026. Phases 0, A, and B are complete in repository game 1.10.8/plugin 1.10.7._
 
 ## 1. Goal
 
@@ -288,6 +288,8 @@ Status: PASS on 15 September 2026. Ken approved the overall direction after revi
 - Keep legacy single-file package support only if required for existing rollback artifacts; otherwise explicitly retire it.
 
 Gate: a synthetic multi-file package can install, activate, roll back, and reinstall without missing or mixed assets.
+
+Status: PASS on 15 September 2026 in repository plugin 1.10.7. Deterministic exact ZIPs, malicious fixtures, disposable WordPress installation, immutable staging/activation/rollback/retention, legacy root compatibility, health/admin paths, and runtime MIME/cache behavior pass `npm run verify:artifacts`. Production is unchanged; this status is the repository phase gate, not deployment approval.
 
 ### Phase C: Modular build without visual change
 
@@ -660,7 +662,7 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 
 ## 12. Release Readiness Rule
 
-Graphics modernization Phase A is complete with automated Canvas map/mode/input baselines, desktop DPR and performance evidence, dense action and replay scenes, advisory mobile emulation, and an approved high-level visual direction. Unit graphics remain explicitly unapproved until Phase G. The first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
+Graphics modernization Phase A is complete with automated Canvas map/mode/input baselines, desktop DPR and performance evidence, dense action and replay scenes, advisory mobile emulation, and an approved high-level visual direction. Unit graphics remain explicitly unapproved until Phase G. Phase B artifact installation and rollback gates have passed; no multi-file production candidate ships without continuing to pass them.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
@@ -704,8 +706,8 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
-2. Begin Vite modularization and introduce the Local/WordPress platform boundary only after Phase B deployment tests pass.
+1. Begin Phase C Vite modularization and introduce the Local/WordPress platform boundary on the completed Phase B deployment foundation.
+2. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
 3. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
 4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
 5. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.

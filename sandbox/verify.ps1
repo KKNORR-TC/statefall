@@ -15,7 +15,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Plugin PHP syntax check failed.' }
 $homePage = Invoke-WebRequest -Uri "$base/" -UseBasicParsing -TimeoutSec 60
 if ($homePage.StatusCode -ne 200) { throw "Home returned HTTP $($homePage.StatusCode)." }
 $play = Invoke-WebRequest -Uri "$base/play/" -UseBasicParsing -TimeoutSec 60
-if ($play.StatusCode -ne 200 -or $play.Content -notmatch "GAME_VERSION='1\.10\.7'") { throw 'Game route or embedded version check failed.' }
+if ($play.StatusCode -ne 200 -or $play.Content -notmatch "GAME_VERSION='1\.10\.8'") { throw 'Game route or embedded version check failed.' }
 $board = Invoke-WebRequest -Uri "$base/leaderboard/" -UseBasicParsing -TimeoutSec 60
 if ($board.StatusCode -ne 200 -or $board.Content -notmatch 'not independently verified') { throw 'Leaderboard trust label check failed.' }
 $classes = Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/classes" -TimeoutSec 60

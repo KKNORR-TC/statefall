@@ -11,7 +11,7 @@
     "canvas": "^3.2.0"
   },
   "scripts": {
-    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js && npm run syntax:prototype",
+    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js && node --check tools/package-zip.js && node --check tools/build-release.js && node --check tools/build-plugin.js && node --check tools/build-previous-plugin.js && node --check tests/build-package-fixtures.js && npm run syntax:prototype",
     "syntax:prototype": "node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js",
     "test": "npm run test:harness-hardening && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:smoke && npm run test:restart && npm run determinism",
     "test:harness-hardening": "node tests/harness-hardening.js",
@@ -32,6 +32,8 @@
     "perf:browser": "node tools/browser-performance.js",
     "verify:browser": "npm run test:browser && npm run test:desktop-scale && npm run test:prototype",
     "verify:fast": "npm run syntax && npm test",
+    "build:artifacts": "npm run release:assets && node tools/build-release.js && node tools/build-plugin.js && node tools/build-previous-plugin.js && node tests/build-package-fixtures.js",
+    "verify:artifacts": "npm run build:artifacts && powershell -NoProfile -ExecutionPolicy Bypass -File sandbox/verify-artifacts.ps1",
     "verify": "npm run verify:fast && npm run verify:browser",
     "determinism": "node tools/determinism.js",
     "bench": "node tools/kenbot.js superhard A1,B2,C3",

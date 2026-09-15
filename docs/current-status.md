@@ -1,10 +1,10 @@
 # Statefall Current Status
 
-_Updated 15 September 2026._
+_Updated 15 September 2026 after Phase B implementation._
 
 ## Repository and production
 
-- Source authority: `main` in this repository. Current repository versions are game 1.10.8 and plugin 1.10.6. Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
+- Source authority: `main` in this repository. Current repository versions are game 1.10.8 and plugin 1.10.7. Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
 - Production: [WorldRTS.com](https://www.worldrts.com/) is a live public WordPress site. Ken confirmed successful installation and production verification of game 1.10.7/plugin 1.10.6 on 14 September 2026. The earlier authorized snapshot is retained as the pre-release baseline in `docs/production-baseline-2026-09-12.md`.
 - Deployment owner: Ken uploads approved packages through the WordPress admin panel.
 - Handoff directory: `D:\One Drive\projects - local\statefall\working releases`. This directory contains installable artifacts; it is not source authority.
@@ -12,7 +12,7 @@ _Updated 15 September 2026._
 
 ## Local verification baseline
 
-The repository now owns its Node test setup and lockfile. On Node 22 or newer:
+The repository now owns its Node test setup and lockfile. On Node 22.x:
 
 ```powershell
 npm ci
@@ -23,6 +23,10 @@ npm test
 As of this update, Phase 0 modernization verification passes: comprehensive syntax checks, hardened harness assumptions, state invariants, pinned canonical SHA-256 simulation baselines, strict replay positive/negative checks, reduced-grid map and mode simulations, standard/fog/garrison same-page replay checks, production-size cold determinism, and Playwright Canvas checks in Chromium, Firefox, WebKit, mobile profiles, and reduced motion. The determinism result is `DETERMINISTIC ✓`. See `docs/testing-baselines.md`.
 
 Phase A is complete. Evidence in `docs/phase-a-evidence.md` includes strategic/close references for every production map, major modes and input paths, dense late-game and historical replay scenes, desktop DPR 1/1.5/2 checks, performance ceilings, and an illustrated command-map vertical slice approved by Ken as the high-level direction. The full game is desktop-first; mobile/Playables remains optional and may become a separate Statefall Light track. Individual unit graphics remain unapproved until Phase G review.
+
+Phase B is implemented in repository plugin 1.10.7. Schema-1 manifest packages are validated for exact file inventory, normalized safe paths, allowed extensions, count/depth/compressed/extracted/per-file limits, minimum plugin version, SHA-256/size integrity, and exact agreement between manifest metadata and the entry's game markers. A filesystem lock serializes staging, finalization, activation, deletion, and pruning. Activation and complete rollback append an atomic record under `uploads/statefall/release-pointers/`; no existing pointer is replaced, making publication safe on Windows and POSIX. Pruning retains the active release plus five inactive releases. Shared `audio/` and `cards/` data remain outside releases. The deployed root `index.html` remains readable and is imported into an immutable release before the first manifest update; new bare-HTML installs and mutable legacy-backup restores are retired.
+
+`npm run verify:artifacts` builds deterministic plugin and game ZIPs plus the actual repository `1.10.6` plugin baseline and uses a disposable WordPress/PHP 8.4 table prefix. It covers a fresh database, exact `1.10.6` install and `1.10.7` upgrade with data preservation; exact production game and synthetic multi-file ZIP install; activate/rollback/reinstall/delete/prune; cross-platform pointer publication and request context snapshots; lock contention; legacy import/constraints; manifest/game-marker mismatches; bad hashes; traversal, duplicate/case-colliding and forbidden entries; package limits; stale versus current staging; admin/runtime path compatibility; release-qualified assets; and private HTML, JSON, JS, and CSS MIME/cache behavior. Immutable caching requires the requested filename fingerprint to match the manifest SHA-256. The existing mounted sandbox and security suites remain required.
 
 Docker Desktop 4.90.0 and WSL2 are installed with Docker autostart disabled. The isolated sandbox runs WordPress 7.1, PHP 8.4, and MariaDB 11.4 from the explicitly authorized production snapshot, with local credentials, external HTTP/email blocking, and localhost-only publication. `sandbox/verify.ps1` passes all plugin PHP syntax, public routes, authenticated cookie/nonce REST access, and save create/read/delete persistence. `sandbox/security-regression.ps1` passes malicious replay rejection, legacy replay sanitization, safe display-name compatibility, immutable save kinds, all Autosave reservation paths, concurrent hard quotas, InnoDB migration, and bot-record isolation. Start, stop, preserved-data restart, full Docker shutdown, and on-demand Docker restart have been verified.
 
