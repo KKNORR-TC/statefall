@@ -20,7 +20,7 @@ Success means a player immediately sees a generational visual improvement, while
 - Fixed 100 ms simulation ticks remain independent from rendering.
 - Rendering interpolates between simulation snapshots for smooth motion.
 - WordPress deploys complete immutable release directories and selects one active release.
-- Desktop and mobile are first-class targets, with quality settings for weaker devices.
+- The full Statefall game is desktop-first. Mobile compatibility is an optional future track and must not reduce desktop depth, information density, controls, or performance.
 - Saves, scores, identity, audio policy, lifecycle, and navigation pass through a platform adapter rather than being embedded in simulation or rendering code.
 - YouTube Playables compatibility remains a portability guardrail, not a current deliverable or a blocker to normal progress.
 
@@ -55,7 +55,7 @@ Full 3D is not part of this plan. It would multiply art, camera, interaction, pe
 - Keep the information architecture familiar during the renderer migration.
 - Restyle the start card, sidebar, diplomacy notices, context menus, tooltips, pause flow, saves, and credits as one coherent command interface.
 - Use a deliberate type system, spacing scale, icon family, and state colors.
-- Replace the current narrow-screen clipping with responsive layouts and touch-sized controls.
+- Make desktop layouts robust across normal monitor sizes and DPI settings. Narrow-screen experiments may inform a future mobile-specific experience but are not a release gate for the full game.
 
 ## 4. Non-Goals
 
@@ -234,7 +234,7 @@ WordPress, local development, and any future YouTube build implement that contra
 
 - Keep the application a single-page web app with relative internal asset paths.
 - Keep simulation, renderer, and UI usable when WordPress services are unavailable.
-- Keep touch, responsive layout, pause/resume, bounded memory, and bundle reporting in normal acceptance gates.
+- Keep platform-neutral input commands, pause/resume, bounded memory, relative assets, and bundle reporting in normal acceptance gates without requiring touch parity.
 - Keep save serialization platform-neutral, versioned, and compact.
 - Do not place external links, login assumptions, or sharing behavior inside core game flows; platforms decide which actions are available.
 - Do not assume multiplayer exists on every platform. Under current YouTube rules, external relay calls are not allowed, so a future YouTube adapter would expose single-player capabilities unless those rules change.
@@ -242,6 +242,8 @@ WordPress, local development, and any future YouTube build implement that contra
 ### Deferred YouTube work
 
 Do not load the SDK or run certification work now. If access and product approval arrive later, the separate port would add SDK readiness, cloud save/load, score, audio, pause/resume, localization, bundle certification, and YouTube-specific UI policy checks behind the existing adapter.
+
+A future mobile/YouTube offering may be a separately designed **Statefall Light** experience that attracts players to the full desktop game. It may simplify presentation, session length, or available systems without redefining the desktop product. No such simplification belongs in the current modernization scope.
 
 Current reference requirements are maintained by Google at [YouTube Playables](https://developers.google.com/youtube/gaming/playables), [SDK integration](https://developers.google.com/youtube/gaming/playables/reference/getting_started), and [certification](https://developers.google.com/youtube/gaming/playables/certification/requirements). Recheck them when a port is actually scheduled.
 
@@ -268,7 +270,7 @@ Status: PASS for repository game 1.10.8. The approved simulation and visual refe
 ### Phase A: Baseline and visual prototype
 
 - Capture reference screenshots and representative replays for all maps, modes, zoom levels, and major unit classes.
-- Record current performance on desktop and a representative mobile device.
+- Record current performance on named desktop hardware. Mobile emulation may be recorded as advisory evidence.
 - Add browser coverage for launch, resize, pan, zoom, click targeting, context actions, and replay playback.
 - Produce a small art-direction board and one representative vertical slice: terrain, ownership, one structure, one ship, one aircraft, and one combat event.
 - Confirm asset licensing and retain source files separately from generated atlases.
@@ -321,7 +323,7 @@ Gate: two independent clients complete the same match with identical canonical d
 ### Phase E: Pixi renderer foundation
 
 - Add PixiJS behind a renderer interface and a development-only renderer switch.
-- Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, pointer input, touch pan, and pinch zoom.
+- Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise mouse/pointer input. Keep input commands abstract enough for a future touch adapter.
 - Port the existing terrain/ownership raster as textures first.
 - Establish texture loading, atlases, object pooling, quality levels, and diagnostics.
 - Keep the legacy renderer available for comparison until parity is reached.
@@ -335,7 +337,7 @@ Gate: every map and mode is playable through Pixi with correct targeting, fog, b
 - Ensure political readability under every national color combination.
 - Tune color-blind distinguishability and high-contrast overlays.
 
-Gate: approved screenshot matrix at desktop and mobile sizes, with no loss of gameplay information.
+Gate: approved screenshot matrix across supported desktop sizes and DPI settings, with no loss of gameplay information.
 
 ### Phase G: Units, structures, and combat
 
@@ -350,10 +352,10 @@ Gate: every gameplay entity and action has a clear visual representation; large 
 ### Phase H: Interface modernization
 
 - Apply the command-interface visual system to the HUD, start flow, menus, diplomacy, notices, pause, saves/replays, credits, and onboarding.
-- Add keyboard focus, semantic labels, touch sizing, and responsive panel modes.
+- Add keyboard focus, semantic labels, desktop DPI handling, and responsive desktop panel modes.
 - Preserve familiar task locations unless usability testing supports a change.
 
-Gate: complete keyboard flow for primary menus, usable 390x844 layout without horizontal clipping, and approved desktop/mobile interaction tests.
+Gate: complete keyboard flow for primary menus and approved desktop interaction tests across supported monitor sizes and DPI settings.
 
 ### Phase I: Stabilization and release
 
@@ -397,7 +399,7 @@ Statefall Landings is a future tactical mode for contested ocean invasions. It i
 
 - Preserve the mode/lifecycle boundaries during Phase D engine extraction.
 - Use lessons from the Phase D2 multiplayer proof for tactical ownership, command routing, pause, spectators, and reconnect.
-- Revisit a narrow Landings vertical slice after Phase E establishes Pixi rendering, camera, selection, grouping, touch abstraction, and deterministic browser fixtures.
+- Revisit a narrow Landings vertical slice after Phase E establishes Pixi rendering, camera, selection, grouping, input abstraction, and deterministic browser fixtures.
 - Limit any first slice to one beach, a small representative unit roster, landing craft, generated defenses, simple enemy AI, and outcome transfer back to a test campaign.
 - Full production development follows a separate approval decision and should not block completion of the main graphics modernization release.
 
@@ -418,7 +420,7 @@ These decisions belong to the vertical-slice design review, when engine, multipl
 Initial budgets, to be validated in Phase A:
 
 - 60 fps target at 1440x900 on a representative current desktop during normal play.
-- 30 fps minimum at 390x844 on a representative mid-range mobile device during normal play.
+- Mobile-emulated measurements are advisory only unless a separate mobile or Statefall Light project is approved.
 - No simulation slowdown when visual quality is reduced or rendering is paused.
 - DPR capped by quality tier to avoid excessive render-target size.
 - Viewport culling for dynamic entities and bounded pools for transient effects.
@@ -537,7 +539,7 @@ Playwright is the browser solution for the current Windows development environme
 
 - `@playwright/test` and repository-owned browser configuration.
 - A small local static server that serves the current game and fails cleanly on missing files.
-- `tests/browser/` suites for launch, maps/modes, camera, targeting, pointer/touch input, responsive layout, replay, WordPress behavior, accessibility, visual regression, context loss, and performance scenes.
+- `tests/browser/` suites for launch, maps/modes, camera, targeting, pointer input, desktop layout, replay, WordPress behavior, accessibility, visual regression, context loss, and performance scenes.
 - Browser binaries managed by Playwright rather than relying on whichever system browser happens to be installed.
 - A localhost/test-build bridge exposed as `window.__STATEFALL_TEST__` for readiness, fixed settings, simulation stepping, visual-clock control, fixture loading, camera transforms, canonical digest, and renderer diagnostics.
 
@@ -548,11 +550,9 @@ Required projects on normal change verification:
 - Chromium desktop at 1440x900, DPR 1.
 - Firefox desktop at 1280x720.
 - WebKit desktop at 1280x720.
-- Chromium mobile at 390x844 with touch/high DPR.
-- WebKit mobile at 390x844.
 - Chromium with reduced motion.
 
-Release qualification additionally includes current Windows Chrome/Edge, Firefox ESR where supported, real Safari/iOS, and a representative physical Android device. Playwright WebKit does not replace real Safari/iOS qualification.
+Advisory scripts retain Chromium and WebKit mobile emulation, but failures do not block the full desktop game. A future mobile project defines its own physical Android/iOS qualification matrix. Release qualification for the full game additionally includes current Windows Chrome/Edge and Firefox ESR where supported.
 
 Treat page errors, console errors, unhandled rejections, failed required requests, missing assets, and test timeouts as failures. Retain trace, screenshot, and video artifacts on failure.
 
@@ -561,12 +561,12 @@ Fast browser tests intercept the platform boundary with deterministic local fixt
 Browser scenarios include:
 
 - Anonymous and authenticated startup, asset completion, REST success/failure, offline behavior, malformed responses, stale nonce, and long-lived tabs.
-- Camera pan/zoom, resize, DPR, orientation, world/screen coordinate round trips, click targeting, context actions, pointer capture, touch pan, pinch, and cancellation.
+- Camera pan/zoom, resize, DPR, world/screen coordinate round trips, click targeting, context actions, pointer capture, and cancellation.
 - Start/settings, pause, saves/replays, replay speed/takeover, credits, victory/defeat, notices, and error states.
 - WebGL startup, disabled/unsupported WebGL behavior, context loss, and renderer recovery without simulation loss.
 - Keyboard flow, focus management, responsive overflow, reduced motion, and automated accessibility checks.
 
-The test bridge supports deterministic setup and diagnostics, but real pointer, touch, keyboard, resize, and public UI tests must still exercise the public interface.
+The test bridge supports deterministic setup and diagnostics, but real pointer, keyboard, resize, and public UI tests must still exercise the public interface.
 
 #### Visual regression harness
 
@@ -578,7 +578,7 @@ The baseline matrix includes:
 - Ownership adjacency, borders, fog, garrisons, selection, build overlays, ranges, and context menus at viewport edges.
 - Every structure/unit class and dense fleets, aircraft, missiles, shields, bombardment, and maximum effects.
 - Replay, pause, save, error, divergence, victory, and credits states.
-- Desktop, tablet, 390x844 mobile, DPR 1/2, quality tiers, and reduced motion.
+- Supported desktop dimensions, DPR 1/2, quality tiers, and reduced motion. Portrait/mobile references are advisory.
 
 Semantic assertions accompany screenshots: no horizontal document overflow, no required control outside the viewport, context menus remain visible, target coordinates map to the expected tile, and tactical states remain distinguishable.
 
@@ -624,10 +624,10 @@ The package that passes this harness is the package handed off. Rebuilding or ma
 | C | Vite dev and production-build browser suites, no failed chunks, source-versus-built behavior, reproducible manifest/archive, and bundle report. |
 | D | Direct engine unit/contracts, old-versus-extracted corpus comparison, fresh-process isolation, import-boundary checks, renderer-cadence independence. |
 | D2 | Two real clients through the relay, seat-tagged commands, canonical digest exchange, deliberate desync detection, disconnect/reconnect catch-up, and a complete two-human replay. |
-| E | Dual Canvas/Pixi projects, camera/coordinate/input/touch/DPR tests, WebGL capability/context recovery, renderer purity, and Pixi diagnostics. |
+| E | Dual Canvas/Pixi projects, camera/coordinate/input/DPR tests, WebGL capability/context recovery, renderer purity, and Pixi diagnostics. |
 | F | Terrain/fog/border screenshot matrix, ownership-color readability, dirty-layer behavior, map-update and viewport performance. |
 | G | Every entity/action scene, animation/effect screenshots, pool/culling limits, stress performance, reduced-motion and quality-tier behavior. |
-| H | Responsive overflow, keyboard flow, focus/dialog behavior, touch targets, axe checks, reduced motion, forced colors, and manual screen-reader/device record. |
+| H | Desktop overflow/DPI, keyboard flow, focus/dialog behavior, axe checks, reduced motion, forced colors, and manual accessibility record. |
 | I | Full exact-artifact suite, complete browser/device matrix, old saves/replays, long-session/hidden-tab/nonce tests, production-like rollback, and signed release evidence. |
 | Landings prototype, if approved | Tactical command/replay determinism, strategic-to-tactical force conversion, outcome conservation, suspend/save/resume, AI scenarios, selection/group input, multiplayer ownership, and campaign return. |
 
@@ -649,12 +649,12 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 - Primary menus and documented map commands require a keyboard-operable path with visible focus.
 - Dialogs trap and restore focus; important notices and replay divergence are announced.
 - Reduced motion disables camera shake, large flashes, and unnecessary ambient animation.
-- Manual release checks cover keyboard-only use, Windows screen reader, VoiceOver/Safari, ownership/selection color distinction, and physical touch devices.
+- Manual release checks cover keyboard-only use, Windows screen reader, ownership/selection color distinction, and supported desktop display configurations.
 - An accessible name on the Pixi canvas alone is not sufficient; provide keyboard camera/selection commands and a meaningful selection/status summary.
 
 ## 12. Release Readiness Rule
 
-Graphics modernization Phase A now has automated Canvas map/mode/input baselines, desktop/mobile-emulated performance evidence, and a standalone visual candidate ready for human review. Phase A remains open for art-direction approval, broader replay/action scenes, and physical-device evidence. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
+Graphics modernization Phase A now has automated Canvas map/mode/input baselines, desktop performance evidence, advisory mobile emulation, and a standalone visual candidate ready for human review. Phase A remains open for art-direction approval, broader replay/action scenes, and supported desktop display review. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
@@ -685,6 +685,7 @@ The following are adopted unless deliberately revised:
 - Deployment: immutable complete releases with a manifest and active pointer.
 - Compatibility: preserve current replay and save semantics.
 - Platform portability: keep Playables possible through a generic platform contract, but do not implement its SDK or certification now.
+- Product priority: protect the full desktop game's complexity. Mobile is optional and may become a separate Statefall Light product rather than a constrained version of the desktop game.
 - Multiplayer sequencing: prove two-client lockstep after engine extraction; do not finish multiplayer before visual modernization.
 
 Decisions still requiring a concrete prototype or measurement:
@@ -698,7 +699,7 @@ Decisions still requiring a concrete prototype or measurement:
 ## 15. Immediate Work Order
 
 1. Review the Phase A desktop and portrait visual candidate in `docs/phase-a-evidence.md` and record approval or required changes.
-2. Add representative replay/action scenes and obtain physical desktop/mobile input, readability, and performance evidence.
+2. Add representative replay/action scenes and obtain supported desktop DPI, readability, input, and performance evidence.
 3. After Phase A approval, implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
 4. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
 5. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.

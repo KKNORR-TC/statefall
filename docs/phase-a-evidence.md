@@ -8,7 +8,7 @@ _Local review record, 15 September 2026. This is evidence for review, not a decl
 - Use an illustrated command-map language with restrained terrain texture, water depth, atmosphere, and combat effects.
 - Keep overlays compact and operational, with gold for orders, cyan for friendly information, and red-orange for danger.
 - Keep geometry undistorted. Desktop and portrait use one uniform world scale with a responsive crop; portrait centers the coast, landing route, fort, and nearby force activity.
-- Treat desktop and mobile as first-class compositions. Reduced motion and semantic accessibility remain required even when pixels differ by platform.
+- Treat desktop as the full game's authoritative composition. Portrait/mobile remains an advisory exploration for a possible future Statefall Light experience.
 - Preserve simulation, command, save, replay, and deterministic behavior independently from visual presentation.
 
 ## Evidence Map
@@ -51,7 +51,7 @@ Node 22.x remains the supported repository and CI runtime. This Node 24 local ob
 
 - Human art-direction approval of desktop, portrait, and the full map matrix remains open.
 - Physical Windows display review across relevant DPI/scaling settings remains open.
-- Physical Android and iOS touch, readability, safe-area, thermal, memory, and sustained-frame review remains open.
+- Physical Android and iOS qualification is not a gate for the full desktop game; it is deferred unless a separate mobile or Statefall Light project is approved.
 - Replay coverage remains at existing fixtures and deterministic gates; long-session and broader replay-corpus review remains open.
 - Unit-level coverage for future extracted renderer/camera modules remains open; the current prototype is intentionally isolated and browser-tested.
 - GPU/compositor latency, display presentation, input latency, production-network behavior, and lower-end hardware performance are not measured by this harness.
