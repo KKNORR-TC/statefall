@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 15 September 2026. Phase 0 complete in repository game 1.10.8; Phase A has not started._
+_Updated 15 September 2026. Phase 0 complete in repository game 1.10.8; Phase A review evidence is in progress and Phase A is not complete._
 
 ## 1. Goal
 
@@ -654,7 +654,7 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 
 ## 12. Release Readiness Rule
 
-Graphics modernization is currently ready for Phase A baseline and visual-prototype work. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
+Graphics modernization Phase A now has automated Canvas map/mode/input baselines, desktop/mobile-emulated performance evidence, and a standalone visual candidate ready for human review. Phase A remains open for art-direction approval, broader replay/action scenes, and physical-device evidence. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
@@ -697,9 +697,9 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Build the Phase A benchmark, replay, interaction, screenshot, and named-hardware performance baseline.
-2. Produce the visual vertical slice before commissioning the complete asset set.
-3. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
+1. Review the Phase A desktop and portrait visual candidate in `docs/phase-a-evidence.md` and record approval or required changes.
+2. Add representative replay/action scenes and obtain physical desktop/mobile input, readability, and performance evidence.
+3. After Phase A approval, implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
 4. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
 5. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
 6. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.

@@ -11,7 +11,8 @@
     "canvas": "^3.2.0"
   },
   "scripts": {
-    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js",
+    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js && npm run syntax:prototype",
+    "syntax:prototype": "node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js",
     "test": "npm run test:harness-hardening && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:smoke && npm run test:restart && npm run determinism",
     "test:harness-hardening": "node tests/harness-hardening.js",
     "test:browser-server": "node tests/browser-server.js",
@@ -21,7 +22,12 @@
     "test:smoke": "node tests/smoke.js",
     "test:restart": "node tests/restart-replay.js standard && node tests/restart-replay.js fog && node tests/restart-replay.js garrisons",
     "test:browser": "playwright test",
-    "verify:browser": "playwright test",
+    "test:prototype": "playwright test --config prototypes/graphics-vertical-slice/playwright.config.js",
+    "test:visual:map:windows": "playwright test --project=chromium-desktop --grep \"camera zoom|visual matrix\"",
+    "test:visual:prototype:windows": "playwright test --config prototypes/graphics-vertical-slice/playwright.config.js",
+    "test:visual:windows": "npm run test:visual:map:windows && npm run test:visual:prototype:windows",
+    "perf:browser": "node tools/browser-performance.js",
+    "verify:browser": "npm run test:browser && npm run test:prototype",
     "verify:fast": "npm run syntax && npm test",
     "verify": "npm run verify:fast && npm run verify:browser",
     "determinism": "node tools/determinism.js",

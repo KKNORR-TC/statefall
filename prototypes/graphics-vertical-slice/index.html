@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Statefall Command Map - Phase A Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="command-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">SF</span><span>STATEFALL</span><small>THEATER COMMAND</small></div>
+      <div class="theater"><span class="eyebrow">OPERATION</span><strong>BREAKWATER</strong><span class="turn">DAY 18 · 06:40</span></div>
+      <div class="resources" aria-label="Strategic resources">
+        <span><i class="resource-icon supply"></i><b>2,840</b><small>SUPPLY</small></span>
+        <span><i class="resource-icon intel"></i><b>74</b><small>INTEL</small></span>
+        <button class="pause" aria-label="Pause">Ⅱ</button>
+      </div>
+    </header>
+
+    <section class="map-stage" aria-label="Illustrated strategic command map">
+      <canvas id="map" role="img" aria-label="Coastal battlefield with territories, units, and an active landing"></canvas>
+      <div class="map-vignette"></div>
+
+      <div class="sector-label sector-north"><span>THE IRON COAST</span><small>NORTHERN FRONT</small></div>
+      <div class="sector-label sector-south"><span>AZURE REACH</span><small>WESTERN ALLIANCE</small></div>
+      <div class="location port"><b>GREYHAVEN</b><span>FORTIFIED PORT</span></div>
+      <div class="location cape"><b>CAPE VIGIL</b><span>COASTAL BATTERY</span></div>
+      <div class="location landing"><b>RED BEACH</b><span>LANDING ZONE</span></div>
+
+      <div class="order-route" aria-hidden="true">
+        <svg viewBox="0 0 420 230" preserveAspectRatio="none">
+          <path d="M12 204 C110 190 166 136 212 104 S318 52 404 18"/>
+          <path class="route-dashes" d="M12 204 C110 190 166 136 212 104 S318 52 404 18"/>
+        </svg>
+        <span class="route-node start"></span><span class="route-node end"></span>
+        <span class="order-tag">ASSAULT ROUTE · 04:20</span>
+      </div>
+
+      <div class="combat-readout"><span class="pulse-dot"></span><small>CONTACT</small><b>BEACHHEAD CONTESTED</b><em>62%</em></div>
+      <div class="map-tools" aria-label="Map controls">
+        <button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button><button aria-label="Center map">⌖</button>
+      </div>
+      <div class="scale"><span></span> 20 KM</div>
+
+      <aside class="intel-card">
+        <div class="card-heading"><span><small>SELECTED</small><b>3RD EXPEDITIONARY</b></span><i>III</i></div>
+        <div class="unit-summary">
+          <div class="unit-emblem">▲</div>
+          <div><strong>MARINE GROUP</strong><span>Veteran · Landing</span></div>
+          <b>84<small>%</small></b>
+        </div>
+        <div class="status-line"><span style="--value:84%"></span></div>
+        <dl><div><dt>STRENGTH</dt><dd>8,420</dd></div><div><dt>SUPPLY</dt><dd>67%</dd></div><div><dt>MORALE</dt><dd>HIGH</dd></div></dl>
+        <div class="objective"><span>OBJECTIVE</span><b>Secure Greyhaven</b><small>Coastal guns suppressing approach</small></div>
+        <div class="orders">
+          <button class="active" data-order="Assault"><i>➤</i><span><b>ASSAULT</b><small>Committed</small></span></button>
+          <button data-order="Support"><i>⌁</i><span><b>SUPPORT</b><small>Naval fire</small></span></button>
+          <button data-order="Hold"><i>◆</i><span><b>HOLD</b><small>Fortify</small></span></button>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="command-dock">
+      <button><i>⌁</i><span>MAP</span></button><button><i>◫</i><span>FORCES</span></button>
+      <button class="dock-primary active"><i>➤</i><span>ORDERS</span></button>
+      <button><i>◇</i><span>INTEL</span><b>3</b></button><button><i>⚙</i><span>COMMAND</span></button>
+    </footer>
+  </main>
+  <script src="scene.js"></script>
+</body>
+</html>

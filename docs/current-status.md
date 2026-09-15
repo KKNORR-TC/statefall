@@ -1,6 +1,6 @@
 # Statefall Current Status
 
-_Updated 14 September 2026._
+_Updated 15 September 2026._
 
 ## Repository and production
 
@@ -21,6 +21,8 @@ npm test
 ```
 
 As of this update, Phase 0 modernization verification passes: comprehensive syntax checks, hardened harness assumptions, state invariants, pinned canonical SHA-256 simulation baselines, strict replay positive/negative checks, reduced-grid map and mode simulations, standard/fog/garrison same-page replay checks, production-size cold determinism, and Playwright Canvas checks in Chromium, Firefox, WebKit, mobile profiles, and reduced motion. The determinism result is `DETERMINISTIC ✓`. See `docs/testing-baselines.md`.
+
+Phase A review evidence is now available in `docs/phase-a-evidence.md`: all production maps have strategic/close Windows Chromium references, major modes and representative input paths have browser coverage, desktop/mobile-emulated performance ceilings pass, and a standalone illustrated command-map vertical slice has desktop/portrait references. Phase A remains open pending human art-direction approval, broader replay/action scenes, and physical-device review.
 
 Docker Desktop 4.90.0 and WSL2 are installed with Docker autostart disabled. The isolated sandbox runs WordPress 7.1, PHP 8.4, and MariaDB 11.4 from the explicitly authorized production snapshot, with local credentials, external HTTP/email blocking, and localhost-only publication. `sandbox/verify.ps1` passes all plugin PHP syntax, public routes, authenticated cookie/nonce REST access, and save create/read/delete persistence. `sandbox/security-regression.ps1` passes malicious replay rejection, legacy replay sanitization, safe display-name compatibility, immutable save kinds, all Autosave reservation paths, concurrent hard quotas, InnoDB migration, and bot-record isolation. Start, stop, preserved-data restart, full Docker shutdown, and on-demand Docker restart have been verified.
 

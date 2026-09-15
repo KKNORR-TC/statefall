@@ -2445,21 +2445,49 @@ const cam={x:0,y:0,s:4};
 function installBrowserTestBridge(){
   const enabled=window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('browserTest')==='1';
   if(!enabled) return;
+  const lastCommand=()=>{ const c=CMD.log[CMD.log.length-1]; return c?{t:c.t,k:c.k,a:structuredClone(c.a)}:null; };
+  const status=()=>({ready:!!me,tick:tickN,paused,lastCommand:lastCommand()});
   const snapshot=()=>({
     ready:!!me, seed:START.seed, map:START.map, tick:tickN, paused,
     players:players.length, landCount,
+    modes:{quick:START.quick,risky:START.risky,endgame:START.endgame,fog:START.fog,instant:START.instant,billionaire:START.billionaire,garrison:START.garrison,noCap:START.noCap,pauseBuild:START.pauseBuild},
+    matchClass:me?matchClass():null,
+    player:me?{id:me.id,tiles:me.tiles,troops:me.troops,gold:me.gold,areas:me.areas?me.areas.length:0}:null,
+    mapState:me?{neutralLand:Array.from(owner).reduce((n,o,t)=>n+(land[t]&&o<0?1:0),0),hiddenTiles:vis?Array.from(vis).reduce((n,v)=>n+(v?0:1),0):0,draft:!!draft}:null,
+    input:{hover,commands:CMD.log.length,lastCommand:lastCommand()},
     camera:{x:cam.x,y:cam.y,scale:cam.s},
     canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
   });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
     snapshot,
+    status,
     prepareControlledStart(){ if(me) throw new Error('match already started'); window.__STATEFALL_TEST_PAUSE_ON_START__=true; },
-    pause(){ if(me&&!paused) togglePause(); return snapshot(); },
-    advance(ticks){ const count=Math.max(0,Math.floor(ticks)); if(!me||!paused) throw new Error('advance requires a paused match'); paused=false; try{ for(let i=0;i<count;i++) tick(); } finally { paused=true; } return snapshot(); },
+    pause(){ if(me&&!paused) togglePause(); return status(); },
+    advance(ticks){ const count=Math.max(0,Math.floor(ticks)); if(!me||!paused) throw new Error('advance requires a paused match'); paused=false; try{ for(let i=0;i<count;i++) tick(); } finally { paused=true; } return status(); },
     canonicalState,
     exerciseCruiseTargetOrder(candidates){ let draws=0; const picks=cruiseTargets(candidates,()=>{ draws++; return .5; }); return {draws,order:picks.map(x=>x.name)}; },
     async canonicalDigest(){ const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalState())); return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join(''); },
-    freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; render(); return snapshot(); }
+    focusTarget(kind='owned',scale=4){
+      if(!me) throw new Error('match not started');
+      let target=-1,best=Infinity;
+      for(let t=0;t<W*H;t++){
+        const matches=kind==='owned'?land[t]&&owner[t]===me.id:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me.id:kind==='water'?!land[t]:false;
+        if(!matches) continue;
+        const x=t%W,y=(t-x)/W,d=(x-me.sx)**2+(y-me.sy)**2;
+        if(d<best){ best=d; target=t; }
+      }
+      if(target<0) throw new Error('target not found: '+kind);
+      const x=target%W,y=(target-x)/W;
+      cam.s=Math.min(12,Math.max(.35,+scale||4)); cam.x=cv.width/2-(x+.5)*cam.s; cam.y=cv.height/2-(y+.5)*cam.s; render();
+      return {tile:target,owner:owner[target],land:!!land[target],x:cv.width/2,y:cv.height/2};
+    },
+    setCamera(scale,target='player'){
+      if(!me) throw new Error('match not started');
+      const x=target==='world'?W/2:me.sx+.5,y=target==='world'?H/2:me.sy+.5;
+      cam.s=Math.min(12,Math.max(.35,+scale||1)); cam.x=cv.width/2-x*cam.s; cam.y=cv.height/2-y*cam.s; render(); return status();
+    },
+    screenToTile(x,y){ return tileAt(x,y); },
+    freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; render(); return status(); }
   })});
 }
 installBrowserTestBridge();
