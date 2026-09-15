@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Created 14 September 2026. Planning document; implementation has not started._
+_Updated 15 September 2026. Phase 0 complete in repository game 1.10.8; Phase A has not started._
 
 ## 1. Goal
 
@@ -249,7 +249,7 @@ Current reference requirements are maintained by Google at [YouTube Playables](h
 
 Each phase should be independently reviewable. Do not begin a later phase while its prerequisite gate is failing.
 
-### Phase 0: Strengthen the test oracle
+### Phase 0: Strengthen the test oracle (complete)
 
 - Make every source transformation in the legacy Node harness assert that its target exists exactly once. A missed transformation must fail, not silently run different settings.
 - Expand syntax checks to every executable test, tool, and release builder.
@@ -262,6 +262,8 @@ Each phase should be independently reviewable. Do not begin a later phase while 
 - Create one top-level verification command and CI-required checks so tested source and released source cannot drift unnoticed.
 
 Gate: the current Canvas build passes invariants, canonical digest replay checks, strict replay verification, and the initial cross-browser suite. No Vite modularization or engine extraction begins before this gate passes.
+
+Status: PASS for repository game 1.10.8. The approved simulation and visual references are recorded in `docs/testing-baselines.md`.
 
 ### Phase A: Baseline and visual prototype
 
@@ -652,7 +654,7 @@ CI must run fast and browser checks for every change and artifact/sandbox checks
 
 ## 12. Release Readiness Rule
 
-Graphics modernization is currently NO-GO beyond test and baseline work. Phase C and later cannot begin until Phase 0 and Phase A test gates pass; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
+Graphics modernization is currently ready for Phase A baseline and visual-prototype work. Phase C and later cannot begin until Phase A passes; the first multi-file production candidate cannot ship until Phase B artifact installation and rollback gates pass.
 
 The release safety rule is: the candidate must pass simulation invariants and canonical replay digests, required real-browser projects, exact-artifact WordPress installation/rollback, visual review, and performance budgets. A green legacy `npm test` alone is not release approval.
 
@@ -695,15 +697,12 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Approve this plan and its adopted direction.
-2. Complete Phase 0: strengthen the state oracle, strict replay verification, fixture corpus, legacy Canvas browser harness, top-level verification, and CI.
-3. Fix simulation RNG use inside sorting and prove the tie case across supported browser engines.
-4. Build the Phase A benchmark, replay, interaction, screenshot, and named-hardware performance baseline.
-5. Produce the visual vertical slice before commissioning the complete asset set.
-6. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
-7. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
-8. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
-9. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
-10. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
+1. Build the Phase A benchmark, replay, interaction, screenshot, and named-hardware performance baseline.
+2. Produce the visual vertical slice before commissioning the complete asset set.
+3. Implement and test the Phase B WordPress release foundation against exact ZIP artifacts.
+4. Begin Vite modularization and introduce the Local/WordPress platform boundary only after baseline artifacts and deployment tests exist.
+5. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
+6. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
+7. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 
 No production graphics package should be built until Phases B through D pass their gates.

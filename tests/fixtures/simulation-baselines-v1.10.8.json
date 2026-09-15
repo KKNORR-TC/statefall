@@ -1,0 +1,43 @@
+{
+  "schema": "statefall-simulation-baselines/v1",
+  "gameVersion": "1.10.8",
+  "stateOracleVersion": "statefall-authoritative-state/v1",
+  "approved": "2026-09-14",
+  "smoke": {
+    "settings": { "difficulty": "hard", "countryIdx": 35, "gridW": 240, "gridH": 138, "ticks": 300 },
+    "scenarios": {
+      "continents": { "legacyHash": "48e6ee21", "sha256": "b1febe45039c93b11948adebc830f9cffc2678f67f324b7be53970ac533d4969" },
+      "world": { "legacyHash": "ffd5ae71", "sha256": "5a8a3f3324b92ac93af54276fc090ab06f4ccb466314da276d533cb2dfbc6c29" },
+      "europe": { "legacyHash": "ae7faa06", "sha256": "a00885ed8cdc32662fa6e3dfaf30511019ebe1d8baa7e098f3a9fb5c91d4752d" },
+      "atoll": { "legacyHash": "69444c48", "sha256": "d388b083ee461ae07eb4667466e3c0b3f440e8e135465e9374109a594547200d" },
+      "medium islands": { "legacyHash": "5900f336", "sha256": "08aada7fb1c52330e5b6f22ac51331e4ed9ac679a8fd101530889c92461b3d60" },
+      "quick start": { "legacyHash": "d507184a", "sha256": "fc68e7122c3a8f3d1b6b68164e7a26b04ef369c5ac34f6f34faf4bf76fcb1719" },
+      "fog": { "legacyHash": "5b80f0de", "sha256": "3589b433bd137b02ba270c0b83d77857357c772ca7f4ab7eebde5ee6f487eb50" },
+      "end game": { "legacyHash": "7239c17e", "sha256": "8a11327e2f453b9502bc2f4951c0f752cce18a18ec7d44da2f959838375bc561" },
+      "garrisons": { "legacyHash": "c40420d6", "sha256": "e3061dde7e078888deff1963707e6042a141d44c000bb0235e867144bc5a2862" },
+      "risky start": { "legacyHash": "8b4175ed", "sha256": "9914b324e0433665de8735ceb125afa148763a7ed27e587e821433735c7972c7" }
+    }
+  },
+  "restartReplay": {
+    "settings": { "difficulty": "hard", "countryIdx": 35, "gridW": 240, "gridH": 138, "ticks": 600 },
+    "scenarios": {
+      "standard": { "legacyHash": "77683843", "sha256": "3cf3f0ded683c1c571f43cd94bb080423b12fc2dccca85702f23ef7815bea00d" },
+      "fog": { "legacyHash": "69bcdf18", "sha256": "b9811f9c8cbc1e0a4a196f9dc7da03e062e42e8b1624e04fbdc48b6101142e11" },
+      "garrisons": { "legacyHash": "81232aef", "sha256": "b1ea57c49266401cf823954ddb8f7a070caef3af928637ec0e59998e95b1d633" }
+    }
+  },
+  "determinism": {
+    "default-production-grid": {
+      "settings": { "seed": "DETERMINISM", "difficulty": "hard", "countryIdx": 35, "gridW": 720, "gridH": 414, "ticks": 3000 },
+      "legacyHash": "bc43ad4e",
+      "sha256": "509ad7e54aa2e73dd6c1bd1b8b7de1b29113b238210e5475caf0ad4c0de54fe9"
+    }
+  },
+  "browser": {
+    "fixed-seed-cross-engine": {
+      "settings": { "seed": "PHASE0DIGEST", "map": "random", "countryIdx": 0, "ticks": 300 },
+      "engines": ["chromium", "firefox", "webkit"],
+      "sha256": "8eef449f552988a120640f162f85231043fcbbbeff8f067acf96a3cef8cd2c79"
+    }
+  }
+}

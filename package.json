@@ -1,20 +1,29 @@
 {
   "name": "statefall",
-  "version": "1.10.7",
+  "version": "1.10.8",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "canvas": "^3.2.0"
   },
   "scripts": {
-    "syntax": "node tools/check-game-syntax.js && node --check tools/harness.js && node --check tools/determinism.js && node --check tests/smoke.js && node --check tests/restart-replay.js",
-    "test": "npm run test:security && npm run test:smoke && npm run test:restart && npm run determinism",
+    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js",
+    "test": "npm run test:harness-hardening && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:smoke && npm run test:restart && npm run determinism",
+    "test:harness-hardening": "node tests/harness-hardening.js",
+    "test:browser-server": "node tests/browser-server.js",
     "test:security": "node tests/security.js",
+    "test:seeded-order": "node tests/seeded-tier-order.js",
+    "test:replaycheck": "node tests/replaycheck.js",
     "test:smoke": "node tests/smoke.js",
     "test:restart": "node tests/restart-replay.js standard && node tests/restart-replay.js fog && node tests/restart-replay.js garrisons",
+    "test:browser": "playwright test",
+    "verify:browser": "playwright test",
+    "verify:fast": "npm run syntax && npm test",
+    "verify": "npm run verify:fast && npm run verify:browser",
     "determinism": "node tools/determinism.js",
     "bench": "node tools/kenbot.js superhard A1,B2,C3",
     "release:assets": "node tools/build-howto.js game/index.html pkg/howto && node tools/build-flags.js game/index.html pkg/flags.js"

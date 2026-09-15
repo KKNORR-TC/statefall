@@ -225,7 +225,7 @@ const DIFFS={
   superhard:{label:'Super hard', eco:1.4,  aggr:1.3,  build:1.4, brain:4, coalition:0.45, desc:'Everything in Hard plus a real economy: bots open with cities, never sit on gold, fortify their coasts, land where your guns are not, and turn on the leader together. Air power by minute six.'},
   impossible:{label:'Impossible',eco:1.7,  aggr:1.5,  build:4.0, brain:5, coalition:0.28, desc:'The Super hard brain with a city rush that ignores every cooldown, more guns, an earlier navy, and a coalition against anyone holding more than a quarter of the map.'},
 };
-let DIFF=DIFFS.normal; const GAME_VERSION='1.10.7', GAME_BUILD='2026-09-12', REQUIRES_PLUGIN='1.10.6';
+let DIFF=DIFFS.normal; const GAME_VERSION='1.10.8', GAME_BUILD='2026-09-15', REQUIRES_PLUGIN='1.10.6';
 // ===== Website integration (WordPress). Paste the key from Statefall → Settings → Reveal between the quotes. =====
 const STATEFALL_SIGN_KEY='0CTVarOFteQvdjQYahcS4dsLcq7MQ2gJSOUJfeJ5';
 const WP=(typeof window!=='undefined'&&window.STATEFALL_WP)?window.STATEFALL_WP:null;
@@ -308,15 +308,15 @@ const pick=a=>a[Math.floor(srand()*a.length)];
 const AUD={ctx:null,bus:{},vol:{master:0.7,sfx:0.8,alert:0.8,amb:0.25,music:0.4,mute:false,ambOn:true,musicOn:true},last:{}};
 try{ const sv=JSON.parse(localStorage.getItem('statefall-audio')||'null'); if(sv){ for(const k of ['master','sfx','alert','amb','music']) if(typeof sv[k]==='number') AUD.vol[k]=sv[k]; } }catch(e){} // levels persist; Music / Ambient / Mute all always start on, off, off
 function audioInit(){
-  if(AUD.ctx) return; const C=new (window.AudioContext||window.webkitAudioContext)(); AUD.ctx=C;
+  if(AUD.ctx) return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; const C=new AC(); AUD.ctx=C;
   AUD.bus.master=C.createGain(); AUD.bus.master.connect(C.destination);
   for(const b of ['sfx','alert','amb','music']){ AUD.bus[b]=C.createGain(); AUD.bus[b].connect(AUD.bus.master); }
   applyVolumes(); startAmbient(); if(!(AUD.menuMute&&!me)) MUS.start(me?'game':'menu');
 }
 function applyVolumes(){ if(!AUD.ctx) return; const v=AUD.vol; AUD.bus.master.gain.value=v.mute?0:v.master; AUD.bus.sfx.gain.value=v.sfx; AUD.bus.alert.gain.value=v.alert; AUD.bus.amb.gain.value=v.ambOn?v.amb:0; AUD.bus.music.gain.value=v.musicOn?v.music:0;
   try{ localStorage.setItem('statefall-audio',JSON.stringify({master:v.master,sfx:v.sfx,alert:v.alert,amb:v.amb,music:v.music})); }catch(e){} }
-window.addEventListener('pointerdown',()=>{ audioInit(); if(AUD.ctx.state==='suspended') AUD.ctx.resume().then(()=>{ const h=document.getElementById('musicHint'); if(h) h.style.display='none'; }); },{passive:true});
-window.addEventListener('keydown',()=>{ audioInit(); if(AUD.ctx.state==='suspended') AUD.ctx.resume().then(()=>{ const h=document.getElementById('musicHint'); if(h) h.style.display='none'; }); },{passive:true});
+window.addEventListener('pointerdown',()=>{ audioInit(); if(AUD.ctx&&AUD.ctx.state==='suspended') AUD.ctx.resume().then(()=>{ const h=document.getElementById('musicHint'); if(h) h.style.display='none'; }); },{passive:true});
+window.addEventListener('keydown',()=>{ audioInit(); if(AUD.ctx&&AUD.ctx.state==='suspended') AUD.ctx.resume().then(()=>{ const h=document.getElementById('musicHint'); if(h) h.style.display='none'; }); },{passive:true});
 // try to start immediately: browsers allow it when the visitor arrived from our own site, and the first click covers the rest
 window.addEventListener('load',()=>{ try{ audioInit(); const h=document.getElementById('musicHint'); const check=()=>{ if(!AUD.ctx) return; if(AUD.ctx.state==='running'){ if(h) h.style.display='none'; } else { if(h&&AUD.vol.musicOn) h.style.display=''; AUD.ctx.resume().catch(()=>{}); } }; check(); setTimeout(check,800); AUD.ctx.onstatechange=check; }catch(e){} });
 let SND_MULT=1; // set per call by snd(): importance tier × zoom × ducking
@@ -605,7 +605,7 @@ async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+enco
     setTimeout(()=>{ if(wantEdit){ openBuilder(d,j.custom||null); return; } const st=jukeStingPick(/ictory/.test(d.result||'')?'victory':'defeat')||jukeStingPick('credits'); beginCredits(d,(d.custom&&d.custom.song)||(st?st.id:'builtin'),true); },600); }catch(e){ console.warn('[statefall] credits unavailable',e); const cl=document.getElementById('credLoad'); if(cl) cl.textContent='Could not load those credits.'; } }
 function rollSeek(sec){ if(ROLL.paused){ ROLL.t0-=sec*1000; const now=ROLL.pausedAt; if(now-ROLL.t0<0) ROLL.t0=now; } else { ROLL.t0-=sec*1000; if(performance.now()-ROLL.t0<0) ROLL.t0=performance.now(); } ROLL.done=false; }
 function rollTogglePause(){ if(ROLL.paused){ ROLL.t0+=performance.now()-ROLL.pausedAt; ROLL.paused=false; if(AUD.ctx) AUD.ctx.resume(); } else { ROLL.paused=true; ROLL.pausedAt=performance.now(); if(AUD.ctx) AUD.ctx.suspend(); } }
-function resetWorld(){ players=[]; attacks=[]; missiles=[]; structures=[]; transports=[]; warships=[]; shots=[]; interceptors=[]; shells=[]; links=[]; traders=[]; aircraft=[]; trucks=[]; for(const k in hostile) delete hostile[k]; proposals=[]; badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; draftPicks=[]; draft=null; selected.clear(); tickN=0; simMs=0; uidSeq=0; over=false; freeplay=false; spectating=false; decided=false; paused=false; userPaused=false; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; CMD.log=[]; CMD.hashes=[]; me=null; }
+function resetWorld(){ players=[]; attacks=[]; missiles=[]; structures=[]; transports=[]; warships=[]; shots=[]; interceptors=[]; shells=[]; links=[]; traders=[]; aircraft=[]; trucks=[]; planes=[]; vis=null; radarLayer=null; satUntil=0; satCool=0; planeCool=0; myBorders=new Set(); for(const k in hostile) delete hostile[k]; proposals=[]; badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; draftPicks=[]; draft=null; selected.clear(); unclaimed.clear(); areaOf=null; nextAreaId=1; for(const k in supplyAt) delete supplyAt[k]; tickN=0; simMs=0; uidSeq=0; over=false; freeplay=false; spectating=false; decided=false; paused=false; userPaused=false; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; CMD.log=[]; CMD.hashes=[]; me=null; }
 function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||'')+'/'; const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); overlay.style.display='none';
   const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 6px;font-size:24px">Your credits are posted</h2><p class="muted" style="font-size:13px;margin:0 0 14px">Anyone with the link can watch them, with the whole match replayed behind the roll.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><a href="${fb}" target="_blank" rel="noopener" class="sf-fb">Share on Facebook</a><button id="pmCopy">Copy link</button></div><div style="display:grid;gap:8px;grid-template-columns:1fr 1fr"><button id="pmPlay" style="background:#2f5a8c;font-weight:600;padding:10px">Play another match</button><button id="pmBoard" style="padding:10px">Leaderboard</button><button id="pmHome" style="padding:10px">Home page</button><button id="pmWatch" style="padding:10px">Watch again</button></div></div>`);
   m.querySelector('#pmCopy').onclick=()=>{ const b=m.querySelector('#pmCopy'); (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy link'; },1800); }).catch(()=>prompt('Copy this link:',url)); };
@@ -727,6 +727,7 @@ function applySimple(kind,a){ switch(kind){
   case 'decWar': if(DECIDE.war) DECIDE.war(); break;
 } if(!CMD.replaying) updateUI(); }
 function replayApply(c){ CMD.replaying=true; try{ if(c.k==='menu') menuAction(c.a[0],c.a[1],c.a[2].map(shipById).filter(Boolean),c.a[3]>=0?structAtT(c.a[3]):null,c.a[4],c.a[5],c.a[6]); else if(c.k==='click') clickTile(c.a[0],c.a[1]); else applySimple(c.k,c.a); }catch(e){ console.warn('[statefall] replay command failed',c,e); } finally{ CMD.replaying=false; } }
+function resolveReplayCommands(){ if(REPLAY.on){ while(REPLAY.i<REPLAY.cmds.length&&REPLAY.cmds[REPLAY.i].t<=tickN){ replayApply(REPLAY.cmds[REPLAY.i]); REPLAY.i++; } } }
 function stateDetail(){ const d={rng:srandN}; for(const p of players){ if(p.kind==='neutral'||!p.alive) continue; d[p.id]=[Math.round(p.troops),Math.round(p.gold),p.tiles]; } d.n=[warships.length,attacks.length,structures.length,transports.length]; return d; }
 function stateDiff(a,b){ if(!a||!b) return ''; const out=[]; if(a.rng!=null&&b.rng!=null&&a.rng!==b.rng) out.push(`random draws recorded ${a.rng} vs ${b.rng}`); for(const k in a){ if(k==='n'||k==='rng') continue; const x=a[k],y=b[k]; if(!y){ out.push(`${players[+k]?players[+k].name:k} missing`); continue; } if(x[0]!==y[0]||x[1]!==y[1]||x[2]!==y[2]) out.push(`${players[+k]?players[+k].name:k}: recorded ${x.join('/')} vs ${y.join('/')}`); } if(a.n&&b.n&&a.n.join()!==b.n.join()) out.push(`counts ${a.n.join('/')} vs ${b.n.join('/')}`); return out.slice(0,6).join('; '); }
 function stateHash(full){ if(full==null) full=!(REPLAY.on&&REPLAY.hashv!==2); let h=2166136261; const mix=v=>{ h^=(v|0)&0xffffffff; h=Math.imul(h,16777619); };
@@ -736,6 +737,57 @@ function stateHash(full){ if(full==null) full=!(REPLAY.on&&REPLAY.hashv!==2); le
   mix(attacks.length); for(const a of attacks) mix(Math.round(a.troops)+a.front.size*1e5);
   mix(structures.length); mix(missiles.length); mix(transports.length); mix(aircraft.length);
   return (h>>>0).toString(16).padStart(8,'0'); }
+// Phase 0 state oracle. This is separate from stateHash and replay files so their shipped formats stay unchanged.
+const STATE_ORACLE_VERSION='statefall-authoritative-state/v1';
+function authoritativeState(){ return {
+  version:STATE_ORACLE_VERSION, clock:{tickN,simMs,uidSeq,srandN,over,freeplay,spectating,decided,paused,userPaused,draftTicks,satUntil,satCool,planeCool,nextAreaId},
+  rules:{W,H,settings:START,difficulty:chosen,allowed:ALLOWED},
+  map:{land,owner,struct,structOwner,region,river,shelled,rough,landCount,regions,regCount,NP,unclaimed},
+  actors:{me:me&&me.id,players,attacks,missiles,structures,transports,warships,shots,interceptors,shells,links,traders,aircraft,trucks,planes},
+  fog:{vis,radarLayer,myBorders}, diplomacy:{hostile,proposals}, garrison:{areaOf,supplyAt}, draft:{draft,draftPicks}
+}; }
+function canonicalState(){
+  let nextId=1; const seen=new Map();
+  const norm=value=>{
+    if(value===null||typeof value==='string'||typeof value==='boolean') return value;
+    if(typeof value==='number'){ if(Number.isNaN(value)) return {$number:'NaN'}; if(value===Infinity) return {$number:'Infinity'}; if(value===-Infinity) return {$number:'-Infinity'}; if(Object.is(value,-0)) return {$number:'-0'}; return value; }
+    if(typeof value==='undefined') return {$undefined:true};
+    if(typeof value==='bigint') return {$bigint:String(value)};
+    if(typeof value==='function'||typeof value==='symbol') return {$unsupported:typeof value};
+    if(seen.has(value)) return {$ref:seen.get(value)};
+    const id=nextId++; seen.set(value,id);
+    if(ArrayBuffer.isView(value)){ const values=new Array(value.length); for(let i=0;i<value.length;i++) values[i]=value[i]; return {$id:id,$typed:value.constructor.name,$values:values}; }
+    if(value instanceof Set){ const values=Array.from(value,norm).map((value,index)=>({value,index,key:JSON.stringify(value)})); values.sort((a,b)=>a.key<b.key?-1:a.key>b.key?1:a.index-b.index); return {$id:id,$set:values.map(x=>x.value)}; }
+    if(value instanceof Map){ const entries=Array.from(value,([k,v],index)=>({entry:[norm(k),norm(v)],index})); entries.sort((a,b)=>{ const x=JSON.stringify(a.entry[0]),y=JSON.stringify(b.entry[0]); return x<y?-1:x>y?1:a.index-b.index; }); return {$id:id,$map:entries.map(x=>x.entry)}; }
+    if(Array.isArray(value)) return {$id:id,$array:value.map(norm)};
+    const out={$id:id}; for(const key of Object.keys(value).sort()){ if(!key.startsWith('_u')&&key!=='labelDraw') out[key]=norm(value[key]); } return out;
+  };
+  return JSON.stringify(norm(authoritativeState()));
+}
+function checkStateInvariants(){
+  const errors=[], n=W*H, arrays={land,owner,struct,structOwner,region,river,shelled,rough};
+  for(const [name,a] of Object.entries(arrays)) if(!a||a.length!==n) errors.push(`${name} length ${a&&a.length} != ${n}`);
+  if(!players.length) errors.push('players is empty');
+  if(me&&players[me.id]!==me) errors.push('human player is not indexed by id');
+  const tileCounts=new Int32Array(players.length), regionCounts=new Int32Array(regCount?regCount.length:0); let countedLand=0, unclaimedCount=0;
+  if(land&&owner) for(let t=0;t<n;t++){
+    const o=owner[t]; if(land[t]) countedLand++; else if(o>=0) errors.push(`water tile ${t} has owner ${o}`);
+    if(o>=0){ if(o>=players.length) errors.push(`tile ${t} has invalid owner ${o}`); else { tileCounts[o]++; const r=region&&region[t]; if(r>=0&&r<regions.length&&r*NP+o<regionCounts.length) regionCounts[r*NP+o]++; } }
+    if(land[t]&&o<0){ unclaimedCount++; if(!unclaimed.has(t)) errors.push(`unclaimed land tile ${t} missing from index`); }
+    else if(unclaimed.has(t)) errors.push(`tile ${t} incorrectly present in unclaimed index`);
+    if(errors.length>=100) break;
+  }
+  if(countedLand!==landCount) errors.push(`landCount ${landCount} != ${countedLand}`);
+  if(unclaimed.size!==unclaimedCount) errors.push(`unclaimed size ${unclaimed.size} != ${unclaimedCount}`);
+  players.forEach((p,i)=>{ if(p.id!==i) errors.push(`player index ${i} has id ${p.id}`); if(p.tiles!==tileCounts[i]) errors.push(`player ${i} tiles ${p.tiles} != ${tileCounts[i]}`); for(const k in p.rel){ const q=players[+k]; if(!q||q.rel[i]!==p.rel[k]) errors.push(`relationship ${i}/${k} is not symmetric`); } });
+  if(regCount&&regionCounts.length===regCount.length) for(let i=0;i<regCount.length;i++) if(regCount[i]!==regionCounts[i]){ errors.push(`regCount ${i} is ${regCount[i]} != ${regionCounts[i]}`); if(errors.length>=100) break; }
+  const byTile=new Map(); for(const st of structures){ if(!Number.isInteger(st.t)||st.t<0||st.t>=n) errors.push(`structure has invalid tile ${st.t}`); else { if(byTile.has(st.t)) errors.push(`duplicate structure at tile ${st.t}`); byTile.set(st.t,st); if(!struct[st.t]) errors.push(`structure at ${st.t} missing from tile index`); if(structOwner[st.t]!==st.owner) errors.push(`structure owner index differs at ${st.t}`); if(owner[st.t]!==st.owner) errors.push(`structure owner differs from land owner at ${st.t}`); } if(!players[st.owner]) errors.push(`structure has invalid owner ${st.owner}`); }
+  if(struct) for(let t=0;t<n;t++) if(!!struct[t]!==byTile.has(t)){ errors.push(`structure tile index differs at ${t}`); if(errors.length>=100) break; }
+  const visited=new Set(); const findBad=(v,path)=>{ if(errors.length>=100||v==null) return; if(typeof v==='number'){ if(Number.isNaN(v)) errors.push(`${path} is NaN`); return; } if(typeof v!=='object'||visited.has(v)) return; visited.add(v); if(ArrayBuffer.isView(v)) return; if(v instanceof Set){ let i=0; for(const x of v) findBad(x,`${path}.set[${i++}]`); return; } for(const k of Object.keys(v)) findBad(v[k],`${path}.${k}`); };
+  findBad(authoritativeState(),'state'); return errors;
+}
+Object.defineProperties(stateHash,{oracleVersion:{value:STATE_ORACLE_VERSION},serializeCanonical:{value:canonicalState},checkInvariants:{value:checkStateInvariants}});
+function exposeStateOracle(){ const s=typeof globalThis!=='undefined'&&globalThis.S; if(!s||s.stateHash!==stateHash) return; Object.defineProperties(s,{stateOracleVersion:{value:STATE_ORACLE_VERSION},serializeCanonicalState:{value:canonicalState},checkStateInvariants:{value:checkStateInvariants}}); }
 function replayFile(result){ return {v:1,hashv:2,game:GAME_VERSION,seed:START.seed,settings:{...START,diff:chosen,country:me&&me.flag&&me.flag.idx!=null?me.flag.idx:null,customFlag:me&&me.flag&&me.flag.custom?{name:me.flag.name,layers:me.flag.layers,userId:me.flag.userId}:null,customBots:START.customBots||null,allowed:[...ALLOWED]},cmds:CMD.log,hashes:CMD.hashes,result:result||null,tick:tickN,when:Date.now()}; }
 function saveReplayDownload(kind){ const f=replayFile(over?ovTitle.textContent:'in progress'); const name=`statefall-${kind==='save'?'game':'replay'}-${START.seed}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.state`;
   try{ const blob=new Blob([JSON.stringify(f)],{type:'application/octet-stream'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }catch(e){}
@@ -1645,11 +1697,14 @@ function shipPiracy(w){
   let best=null,bd=P.range*P.range; for(const tr of traders){ if(tr.done||tr.x==null||tr.owner===w.owner||tr.prize||atPeace(w.owner,tr.owner)) continue; const d=(tr.x-w.x)**2+(tr.y-w.y)**2; if(d<bd){bd=d;best=tr;} }
   if(best){ w.boarding=best; w.boardT=P.board; if(w.owner===me.id) log('Privateer boarding a merchant…',true); }
 }
+function seededTierOrder(candidates,tier,rng=srand){
+  return candidates.map((value,index)=>({value,index,key:rng()})).sort((a,b)=>tier(a.value)-tier(b.value)||a.key-b.key||a.value.t-b.value.t||a.value.owner-b.value.owner||a.index-b.index).map(x=>x.value);
+}
+function cruiseTargets(candidates,rng=srand){ const tier=t=>t.type==='shield'?0:t.type==='sam'?1:2; return seededTierOrder(candidates,tier,rng).slice(0,CRUISE.count); }
 function shipCruise(w){ if(!w.cruise||w.cruiseCool>tickN) return; const R=CRUISE.range, cx=w.x,cy=w.y;
   const foes=structures.filter(st=>!st.building&&enemyOf(w,st.owner)&&((st.t%W+.5-cx)**2+((st.t-st.t%W)/W+.5-cy)**2)<=R*R&&!(START.fog&&w.owner===me.id&&vis&&!vis[st.t]));
   if(!foes.length) return;
-  const tier=t=>t.type==='shield'?0:t.type==='sam'?1:2; foes.sort((a,b)=>tier(a)-tier(b)||srand()-0.5);
-  w.cruiseCool=tickN+CRUISE.cd; const picks=foes.slice(0,CRUISE.count);
+  w.cruiseCool=tickN+CRUISE.cd; const picks=cruiseTargets(foes);
   for(const st of picks){ const dist=Math.hypot(st.t%W+.5-cx,(st.t-st.t%W)/W+.5-cy); missiles.push({owner:w.owner,t:st.t,from:idx(Math.floor(cx),Math.floor(cy)),age:0,flight:Math.max(40,Math.round(dist/CRUISE.speed)),cruise:true}); }
   markHostile(w.owner,picks[0].owner); if(w.owner===me.id||picks.some(q=>q.owner===me.id)){ snd('missile'); log(`${players[w.owner].name}'s battleship launched cruise missiles at ${players[picks[0].owner].name}'s ${STRUCT[picks[0].type].label.toLowerCase()}${picks.length>1?' and more':''}.`,true); } }
 function shipBarrage(w){
@@ -2243,7 +2298,7 @@ function coastTilesOf(id){return ownTilesOf(id).filter(isCoast);}
 
 // ---------------------------------------------------------------- simulation
 function tick(){
-  if(REPLAY.on){ while(REPLAY.i<REPLAY.cmds.length&&REPLAY.cmds[REPLAY.i].t<=tickN){ replayApply(REPLAY.cmds[REPLAY.i]); REPLAY.i++; } }
+  resolveReplayCommands();
   if(draft){ draftTicks++; if(draftTicks%6===0) draftStep(); }
   if(over||paused) return;
   tickN++; simMs=tickN*TICK;
@@ -2387,6 +2442,27 @@ const cv=document.getElementById('map'), ctx=cv.getContext('2d');
 const off=document.createElement('canvas'); off.width=W; off.height=H; const octx=off.getContext('2d');
 const img=octx.createImageData(W,H);
 const cam={x:0,y:0,s:4};
+function installBrowserTestBridge(){
+  const enabled=window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('browserTest')==='1';
+  if(!enabled) return;
+  const snapshot=()=>({
+    ready:!!me, seed:START.seed, map:START.map, tick:tickN, paused,
+    players:players.length, landCount,
+    camera:{x:cam.x,y:cam.y,scale:cam.s},
+    canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
+  });
+  Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
+    snapshot,
+    prepareControlledStart(){ if(me) throw new Error('match already started'); window.__STATEFALL_TEST_PAUSE_ON_START__=true; },
+    pause(){ if(me&&!paused) togglePause(); return snapshot(); },
+    advance(ticks){ const count=Math.max(0,Math.floor(ticks)); if(!me||!paused) throw new Error('advance requires a paused match'); paused=false; try{ for(let i=0;i<count;i++) tick(); } finally { paused=true; } return snapshot(); },
+    canonicalState,
+    exerciseCruiseTargetOrder(candidates){ let draws=0; const picks=cruiseTargets(candidates,()=>{ draws++; return .5; }); return {draws,order:picks.map(x=>x.name)}; },
+    async canonicalDigest(){ const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalState())); return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join(''); },
+    freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; render(); return snapshot(); }
+  })});
+}
+installBrowserTestBridge();
 const hex=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
 const pcol=[]; const seaC=hex('#1c3a52'), landC=hex('#b9ad84'), riverC=hex('#2f6389');
 function colorCache(){ pcol.length=0; for(const p of players){ let c=hex(p.color);
@@ -2623,7 +2699,7 @@ function render(){
       ctx.font='11px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3;
       const lbl=`${players[own].name} air defense · ${sites} ${mine||!vis?'':'known '}site${sites!==1?'s':''}, ${ships} ship${ships!==1?'s':''}${st&&shelled[st.t]>tickN?' · this one knocked out':st&&st.cool>tickN?' · reloading':''}`;
       ctx.strokeText(lbl,lx,ly-R*s-6); ctx.fillText(lbl,lx,ly-R*s-6); } }
-  if(ROLL.on){ drawCredits(); requestAnimationFrame(render); return; }
+  if(ROLL.on){ drawCredits(); if(!window.__STATEFALL_TEST_FREEZE__) requestAnimationFrame(render); return; }
   for(const na of nukeAlerts){ na.age++; const al=Math.min(1,(na.life-na.age)/20); const blink=0.5+0.5*Math.sin(na.age*0.5); const p=players[na.owner];
     const fx=cam.x+na.from[0]*s, fy=cam.y+na.from[1]*s; const onS=fx>=0&&fy>=0&&fx<=cv.width&&fy<=cv.height;
     ctx.save(); ctx.globalAlpha=al;
@@ -2656,7 +2732,7 @@ function render(){
   if(userPaused){ ctx.fillStyle='rgba(10,20,30,.35)'; ctx.fillRect(0,0,cw,ch); ctx.font='bold 28px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Paused',cw/2,ch/2); ctx.font='13px "Segoe UI",system-ui,sans-serif'; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillText('Space to resume',cw/2,ch/2+24); }
   // build cursor
   if(buildMode&&hover>=0){ const ht=buildMode!=='nuke'?(snapBuild(me,hover,buildMode)>=0?snapBuild(me,hover,buildMode):hover):hover; const x=ht%W,y=(ht-x)/W; ctx.strokeStyle=canBuildAt(hover)?'#7fffa0':'#ff6b6b'; ctx.lineWidth=2; ctx.strokeRect(cam.x+x*s-2,cam.y+y*s-2,s+4,s+4); }
-  requestAnimationFrame(render);
+  if(!window.__STATEFALL_TEST_FREEZE__) requestAnimationFrame(render);
 }
 const centCache={}; let highlightId=-1;
 function computeLabelPos(){ // largest connected chunk of each nation; label goes on its own land there
@@ -2925,7 +3001,7 @@ function clickTile(t,env){ env=env||{ratio:+ratio.value,pick:pickMode?{kind:pick
   if(shared){ launchAttack(me,o,troops); }
   else fail(`You don't border ${o>=0?players[o].name:'that land'}. Right-click it to send a transport by sea.`);
 }
-function showTip(e){ if(ROLL.on){ tip.style.display='none'; return; }
+function showTip(e){ if(!land||!owner||!me||ROLL.on){ tip.style.display='none'; return; }
   if(hoverShip){ const w=hoverShip, S=SHIPS[w.cls]; tip.innerHTML=`<b style="color:${players[w.owner].color}">${players[w.owner].name}</b> ${S.label}${w.cruise?' · cruise missiles':w.refit?' · refitting '+Math.ceil((w.refit-tickN)/10)+' s':''}<br>${Math.ceil(w.hp*10)/10}/${S.hp} hit points · gun ${S.gun}${S.sam?' · SAM '+S.sam:''}${S.barrage?' · barrage '+S.barrage.range:''}`; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; return; }
   if(hover<0||!land[hover]){tip.style.display='none';return;}
   const o=owner[hover]; let s;
@@ -3065,6 +3141,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+ <tr><td>1.10.8</td><td>Seeded target selection is deterministic across JavaScript engines, with one random key generated per candidate before sorting.</td></tr>
  <tr><td>1.10.7</td><td>Site rankings are now explicitly labeled as community-submitted and not independently verified.</td></tr>
  <tr><td>1.10.6</td><td>Security update: saved and public replay nation data is validated and normalized before display, and notices render untrusted text safely.</td></tr>
  <tr><td>1.10.0</td><td>Bastions stack: every bastion covering a tile doubles the cost of taking it again, up to 64×; bastions upgrade to level II (24-tile range) and III (32 tiles); each one you own makes the next dearer. Shelling still cancels the bonus. Hover any tile to see its fortification.</td></tr>
@@ -3165,7 +3242,7 @@ $('startBtn').onclick=()=>{ DIFF=DIFFS[chosen]; $('start').style.display='none';
   if(!REPLAY.on){ START.customBots=null; const pool=(WP&&Array.isArray(WP.nationPool))?WP.nationPool.filter(n=>n&&n.flag&&Array.isArray(n.flag.layers)&&n.name&&!(WP.user&&n.userId===WP.user.id)):[]; if(pool.length&&Math.random()<0.6){ const n=pool[Math.floor(Math.random()*pool.length)]; START.customBots=[{userId:n.userId,name:n.name,layers:n.flag.layers,slot:Math.floor(Math.random()*BOTS)}]; } }
   START.seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed(); $('seedIn').value=START.seed; { const gen=mulberry32(seedFrom(START.seed)); srandN=0; srand=()=>{ srandN++; return gen(); }; } /* everything from here on is reproducible from the seed */ AUD.menuMute=false; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on) MUS.start('game');
   START.troops=Math.max(0,+$('stTroops').value||0); START.gold=Math.max(0,+$('stGold').value||0); START.bots=$('stBots').checked; START.noCap=$('stNoCap').checked; START.quick=$('quickStart').checked; START.fog=$('fogOn').checked; START.instant=$('instantOn').checked; START.risky=$('riskyOn').checked&&!$('endgameOn').checked; START.endgame=$('endgameOn').checked; START.billionaire=$('billionaireOn').checked; START.garrison=$('garrisonOn').checked; START.pauseBuild=$('stPauseBuild').checked;
-  setup(); colorCache(); resize();
+  setup(); exposeStateOracle(); if(window.__STATEFALL_TEST_PAUSE_ON_START__===true) paused=true; colorCache(); resize();
   cam.s=2.2; cam.x=cv.width/2-(me.sx+.5)*cam.s; cam.y=cv.height/2-(me.sy+.5)*cam.s; $('mySw').style.background=me.color; $('myFlag').src=flagURL(me.flag,36,24); $('myName').textContent=me.name;
   drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); window.__tickTimer=setInterval(()=>{ tick(); if(tickN%300===0&&!paused) autoSave(); if(REPLAY.on){ for(let i=1;i<REPLAY.speed;i++){ if(REPLAY.creditsMode&&tickN>=REPLAY.toTick) break; tick(); } if(REPLAY.creditsMode&&tickN>=REPLAY.toTick) paused=true; if(tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },TICK); if(!window.__renderLoop){ window.__renderLoop=true; requestAnimationFrame(render); } log(`Seed ${START.seed}. Difficulty: ${DIFF.label}${START.quick?', quick start':''}. Starting with ${Math.round(me.troops)} troops and ${Math.round(me.gold)} gold.`,true); };
 // restore start-card choices after a restart (runs last, once everything is built)

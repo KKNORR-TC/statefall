@@ -1,9 +1,11 @@
 const assert=require('node:assert/strict');
 const boot=require('../tools/harness.js');
+const {inspect,assertInvariants,firstDifference}=require('./tools/state-oracle.js');
+const {assertSimulationBaseline}=require('./tools/simulation-baselines.js');
 
 function run(name,options={}){
   const ticks=600;
-  const game=boot({seed:'RESTART'+name.toUpperCase(),diff:'hard',country:'Norway',render:false,gridW:240,gridH:138,...options});
+  const game=boot({seed:'RESTART'+name.toUpperCase(),diff:'hard',countryIdx:35,render:false,gridW:240,gridH:138,...options});
   const {S}=game;
   let rng=7;
   const rnd=()=>{ rng=(rng*1103515245+12345)&0x7fffffff; return rng/0x7fffffff; };
@@ -17,16 +19,26 @@ function run(name,options={}){
     else { const tiles=ownTiles(); if(tiles.length) S.issueMenu({act:'build',type:'city'},tiles[Math.floor(rnd()*tiles.length)],[],-1,50,0,0); }
   }
 
-  const commands=S.CMD.log.slice(),hashes=S.CMD.hashes.slice(),hash=S.stateHash(),tiles=S.me.tiles;
+  assertInvariants(S,name+' first run');
+  const commands=S.CMD.log.slice(),hashes=S.CMD.hashes.slice(),hash=S.stateHash(),oracle=inspect(S),tiles=S.me.tiles;
+  assert.match(oracle.serialization,/"fog":/,name+': canonical oracle omitted fog state');
   assert.ok(commands.length>0,name+': first run recorded no commands');
+  assertSimulationBaseline('restartReplay',name,{legacyHash:hash,sha256:oracle.digest});
   S.REPLAY.on=true; S.REPLAY.creditsMode=true; S.REPLAY.cmds=commands; S.REPLAY.i=0; S.REPLAY.hashes=hashes; S.REPLAY.hashv=2; S.REPLAY.mismatch=false; S.REPLAY.speed=1;
-  S.resetWorld(); S.restart();
+  S.dirtyTransientState();
+  S.resetWorld();
+  assert.deepEqual(S.transientState,{planes:0,satUntil:0,satCool:0,planeCool:0,vis:null,radarLayer:null,myBorders:[]},name+': reset retained transient fog/air state');
+  S.restart();
   for(let tick=0;tick<ticks;tick++) game.tick();
   assert.equal(S.REPLAY.i,commands.length,name+': replay did not apply every command');
   assert.equal(S.REPLAY.mismatch,false,name+': restart replay diverged: '+(S.REPLAY.why||'checkpoint mismatch'));
   assert.equal(S.me.tiles,tiles,name+': restart replay produced a different tile count');
   assert.equal(S.stateHash(),hash,name+': restart replay produced a different final state');
-  console.log('RESTART REPLAY MATCH',name,hash,tiles+' tiles',commands.length+' commands');
+  assertInvariants(S,name+' replay');
+  const replayOracle=inspect(S);
+  assert.equal(replayOracle.digest,oracle.digest,name+': authoritative state digest differs after replay: '+firstDifference(oracle.serialization,replayOracle.serialization));
+  assertSimulationBaseline('restartReplay',name,{legacyHash:S.stateHash(),sha256:replayOracle.digest});
+  console.log('RESTART REPLAY MATCH',name,hash,oracle.digest.slice(0,12),tiles+' tiles',commands.length+' commands');
 }
 
 const scenarios={standard:{},fog:{fog:true},garrisons:{garrison:true}};

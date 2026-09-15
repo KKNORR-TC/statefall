@@ -1,6 +1,6 @@
 # Statefall — Multiplayer Project Plan
 
-_Status as of 14 September 2026. Game 1.10.7, plugin 1.10.6. Phase 0 complete; Phase 1 not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
+_Status as of 14 September 2026. Repository game 1.10.8/plugin 1.10.6; production game 1.10.7/plugin 1.10.6. Phase 0 complete; Phase 1 not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -95,7 +95,7 @@ Sequencing note: first implement only the relay/lockstep/reconnect architecture 
 
 ## 8. Where the files are
 
-- Game source: `game/index.html` (current: 1.10.7).
+- Game source: `game/index.html` (repository: 1.10.8; production: 1.10.7).
 - Plugin source: `plugin/statefall-scores/` (current: 1.10.6).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.

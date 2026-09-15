@@ -4,7 +4,7 @@ _Updated 14 September 2026._
 
 ## Repository and production
 
-- Source authority: `main` in this repository. Current repository and production versions are game 1.10.7 and plugin 1.10.6; these versions contain the security hotfix and adopted unverified-community-score policy.
+- Source authority: `main` in this repository. Current repository versions are game 1.10.8 and plugin 1.10.6. Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
 - Production: [WorldRTS.com](https://www.worldrts.com/) is a live public WordPress site. Ken confirmed successful installation and production verification of game 1.10.7/plugin 1.10.6 on 14 September 2026. The earlier authorized snapshot is retained as the pre-release baseline in `docs/production-baseline-2026-09-12.md`.
 - Deployment owner: Ken uploads approved packages through the WordPress admin panel.
 - Handoff directory: `D:\One Drive\projects - local\statefall\working releases`. This directory contains installable artifacts; it is not source authority.
@@ -20,7 +20,7 @@ npm run syntax
 npm test
 ```
 
-As of this update, syntax checks, reduced-grid map and mode simulations, standard/fog/garrison same-page replay checks, and the production-size cold determinism test pass. The determinism result is `DETERMINISTIC ✓`. Release-asset generation and a reduced one-minute, three-seed Super hard benchmark also run locally.
+As of this update, Phase 0 modernization verification passes: comprehensive syntax checks, hardened harness assumptions, state invariants, pinned canonical SHA-256 simulation baselines, strict replay positive/negative checks, reduced-grid map and mode simulations, standard/fog/garrison same-page replay checks, production-size cold determinism, and Playwright Canvas checks in Chromium, Firefox, WebKit, mobile profiles, and reduced motion. The determinism result is `DETERMINISTIC ✓`. See `docs/testing-baselines.md`.
 
 Docker Desktop 4.90.0 and WSL2 are installed with Docker autostart disabled. The isolated sandbox runs WordPress 7.1, PHP 8.4, and MariaDB 11.4 from the explicitly authorized production snapshot, with local credentials, external HTTP/email blocking, and localhost-only publication. `sandbox/verify.ps1` passes all plugin PHP syntax, public routes, authenticated cookie/nonce REST access, and save create/read/delete persistence. `sandbox/security-regression.ps1` passes malicious replay rejection, legacy replay sanitization, safe display-name compatibility, immutable save kinds, all Autosave reservation paths, concurrent hard quotas, InnoDB migration, and bot-record isolation. Start, stop, preserved-data restart, full Docker shutdown, and on-demand Docker restart have been verified.
 
@@ -37,7 +37,7 @@ The disposition column records whether each finding is deployed, accepted, or st
 | High | Unsigned `botNations` data can update arbitrary users' bot records. | Fixed and deployed in plugin 1.10.6 by ignoring non-authoritative client bot records. |
 | High | Keep playing/Spectate is not serialized, so saves made after the first end state cannot reconstruct later progress. | Blocks claims that post-victory saves are resumable. |
 | High | Save/replay quotas can be bypassed by changing record kind or creating protected Autosave rows. | Fixed and deployed in plugin 1.10.6 with per-user locking, transactional hard limits, immutable kinds, and one reserved Autosave. |
-| High | Seeded randomness is consumed inside a `sort` comparator, risking replay divergence between JavaScript engines. | Must be fixed and checked across supported browsers before claiming cross-browser determinism. |
+| High | Seeded randomness was consumed inside a `sort` comparator, risking replay divergence between JavaScript engines. | Fixed in repository game 1.10.8 by precomputing one seeded key per candidate with deterministic tie-breakers; Chromium, Firefox, and WebKit canonical-state regression coverage was added. Not deployed. |
 | Medium | Expired-login HTTP 403 score submissions are discarded although the UI promises a retry. | Non-security defect; fix before claiming reliable score retry. |
 
 ## Current production release
