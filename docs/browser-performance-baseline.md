@@ -15,7 +15,7 @@ Each sample uses the guarded `?browserTest=1` bridge and fixed `PHASEAPERF` seed
 
 The machine-readable report is overwritten at `.artifacts/browser-performance/baseline.json`, which is intentionally ignored. Set `STATEFALL_PERF_SAMPLES` to change the repetition count or `STATEFALL_PERF_OUTPUT` to choose another repository-relative report path.
 
-Conservative regression ceilings live in `tests/fixtures/browser-performance-ceilings.json`. Timing and post-GC heap checks use the median across cold contexts to reduce one-off noise. Resource checks use the maximum because the local no-store single-file payload is stable. The 15 September Windows observation after removing diagnostic snapshot scans from timed bridge methods was about 371-378 ms for load plus start, 1.29 seconds for 300 ticks, 0.8-0.9 ms rendered-frame p95, 690 kB transferred, and 4.0 MB post-GC CDP heap. Ceilings intentionally allow several times the observed timing and heap values and about 30% payload growth.
+Conservative regression ceilings live in `tests/fixtures/browser-performance-ceilings.json`. Timing and post-GC heap checks use the median across cold contexts to reduce one-off noise. Resource checks use the maximum across cold Vite module loads. The 15 September Windows observation before Phase C was about 371-378 ms for load plus start, 1.29 seconds for 300 ticks, 0.8-0.9 ms rendered-frame p95, 690 kB transferred, and 4.0 MB post-GC CDP heap. Ceilings intentionally allow several times the observed timing and heap values and about 30% payload growth.
 
 ## Limitations
 

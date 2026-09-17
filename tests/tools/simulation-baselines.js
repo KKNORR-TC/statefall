@@ -1,11 +1,11 @@
 const assert=require('node:assert/strict');
-const packageJson=require('../../package.json');
+const metadata=require('../../tools/release-metadata.js');
 const baselines=require('../fixtures/simulation-baselines-v1.10.8.json');
 
 const fixture='tests/fixtures/simulation-baselines-v1.10.8.json';
 
 assert.equal(baselines.schema,'statefall-simulation-baselines/v1',`${fixture}: unsupported schema`);
-assert.equal(baselines.gameVersion,packageJson.version,`${fixture}: game version does not match package.json; review and pin a new versioned baseline fixture`);
+assert.equal(baselines.gameVersion,metadata.simulationBaselineVersion,`${fixture}: game version does not match the explicit simulation baseline contract`);
 
 function fail(label,expected,actual,detail=''){
   assert.fail(`${label}: approved v${baselines.gameVersion} simulation baseline changed\nexpected ${JSON.stringify(expected)}\nactual   ${JSON.stringify(actual)}${detail?'\n'+detail:''}\nIf this change is intentional, review it and explicitly edit ${fixture}; never regenerate it silently.`);

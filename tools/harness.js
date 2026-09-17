@@ -1,15 +1,20 @@
 // Shared headless engine loader for trailers. boot(opts) → {S, main, ctx, W0, H0, els, tick(n)}
 const fs=require('fs'),path=require('path');
+function moduleBody(source){return source.replace(/^import .*;\r?\n/gm,'').replace(/\bexport\s+/g,'');}
+function legacySource(file){
+  const root=path.resolve(__dirname,'..'),read=relative=>fs.readFileSync(path.join(root,relative),'utf8');
+  let legacy=fs.readFileSync(file,'utf8').replace(/^import .*;\r?\n/gm,'');
+  const boundary="const PLATFORM=createPlatform();\nconst WP=PLATFORM.config;";
+  if(legacy.split(boundary).length!==2)throw new Error(`Legacy platform boundary changed in ${file}`);
+  legacy=legacy.replace(boundary,"const PLATFORM={config:null,identity:()=>null,capabilities:()=>({accountSaves:false,scores:false,localScores:true}),onLifecycle:()=>()=>{},request:async()=>{},save:async()=>null,score:async()=>({skipped:true}),navigate:()=>{},reload:()=>{}};\nconst WP=null;");
+  return ['game/src/config/build.js','game/src/config/maps.js','game/src/config/flags.mjs','game/src/config/signing.js','game/src/utils/storage.js','game/src/audio/audio-state.js'].map(relative=>moduleBody(read(relative))).concat('const __STATEFALL_TEST_BRIDGE__=false;',legacy).join('\n');
+}
 module.exports=function boot(opts={}){
-  const gameFile=opts.file||process.env.GAME||path.resolve(__dirname,'..','game','index.html');
-  const html=fs.readFileSync(gameFile,'utf8');
+  const gameFile=opts.file||process.env.GAME||path.resolve(__dirname,'..','game','src','legacy-game.js');
   const count=(text,needle)=>text.split(needle).length-1;
   const exactIndex=(text,needle,label,expected=1)=>{ const found=count(text,needle); if(found!==expected) throw new Error(`Harness ${label}: expected ${expected} occurrence${expected===1?'':'s'}, found ${found} in ${gameFile}`); return text.indexOf(needle); };
   const replaceExact=(text,needle,replacement,label,expected=1)=>{ exactIndex(text,needle,label,expected); return text.split(needle).join(replacement); };
-  const scriptOpen='<script>',scriptClose='</script>';
-  const scriptStart=exactIndex(html,scriptOpen,'game script opening tag'),scriptEnd=exactIndex(html,scriptClose,'game script closing tag');
-  if(scriptEnd<=scriptStart) throw new Error(`Harness game script tags are out of order in ${gameFile}`);
-  const src=html.slice(scriptStart+scriptOpen.length,scriptEnd);
+  const src=legacySource(gameFile);
   const stub=()=>new Proxy(function(){}, {get:(t,k)=>k==='length'?0:k==='checked'?false:k==='value'?'50':k==='style'?stub():k==='classList'?stub():(k===Symbol.toPrimitive?()=>800:stub()), set:()=>true, apply:()=>stub()});
   let createCanvas,Image;
   if(opts.render===false){
@@ -25,7 +30,7 @@ module.exports=function boot(opts={}){
   global.tip=stub(); global.ovTitle=stub(); global.ovText=stub(); global.overlay=stub(); global.ratio={value:50};
   main.getBoundingClientRect=()=>({left:0,top:0,width:W0,height:H0}); main.addEventListener=()=>{}; main.style={};
   global.__opt=opts;
-  let code=replaceExact(src,"$('startBtn').onclick=()=>{","global.__start=()=>{",'start handler replacement');
+  let code="const Math=global.Math;\n"+replaceExact(src,"$('startBtn').onclick=()=>{","global.__start=()=>{",'start handler replacement');
   code=replaceExact(code,"let chosen='normal'","let chosen='"+(opts.diff||'hard')+"'",'difficulty replacement');
   code=replaceExact(code,"START.seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed();","START.seed='"+(opts.seed||'TRAILER')+"';",'seed replacement');
   if(opts.gridW&&opts.gridH) code=replaceExact(code,'const W=720, H=414, TICK=100;',`const W=${opts.gridW}, H=${opts.gridH}, TICK=100;`,'grid dimensions replacement');

@@ -17,7 +17,7 @@ if (-not $response) { throw 'Artifact WordPress did not become ready.' }
 
 $prior = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
-docker @cli core is-installed *> $null
+$null = docker @cli core is-installed
 $installed = $LASTEXITCODE -eq 0
 $ErrorActionPreference = $prior
 if ($installed) {
@@ -25,6 +25,8 @@ if ($installed) {
     docker @cli db clean --yes
     if ($LASTEXITCODE -ne 0) { throw 'Could not reset the disposable artifact table prefix.' }
 }
+docker @compose exec -T artifact-wordpress rm -rf /var/www/html/wp-content/plugins/statefall-scores
+if ($LASTEXITCODE -ne 0) { throw 'Could not clear the disposable artifact plugin directory.' }
 docker @cli core install "--url=$base" '--title=Statefall Artifact Tests' '--admin_user=artifact-admin' '--admin_password=artifact-password' '--admin_email=artifact@example.invalid' '--skip-email'
 if ($LASTEXITCODE -ne 0) { throw 'Fresh artifact WordPress installation failed.' }
 $plugin = Join-Path $PSScriptRoot '..\.artifacts\statefall-scores-1.10.7.zip'
@@ -40,9 +42,16 @@ $upgradeMarker = docker @cli option get statefall_upgrade_data_marker
 $upgradeUser = docker @cli user get upgrade-user --field=ID
 if ($LASTEXITCODE -ne 0 -or $upgradeMarker.Trim() -ne 'from-1.10.6' -or [int]$upgradeUser -le 0) { throw 'The 1.10.6 to 1.10.7 upgrade did not preserve data.' }
 docker @cli option update permalink_structure '/%postname%/'
-if ($LASTEXITCODE -ne 0) { throw 'Could not configure artifact WordPress permalinks.' }
+$permalinkStructure = docker @cli option get permalink_structure
+if ($LASTEXITCODE -ne 0 -or $permalinkStructure.Trim() -ne '/%postname%/') { throw 'Could not configure artifact WordPress permalinks.' }
+$signingSource = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\game\src\config\signing.js'))
+if ($signingSource -notmatch "STATEFALL_SIGN_KEY='([^']+)'") { throw 'Game signing key was not found.' }
+docker @cli option update statefall_sign_key $Matches[1] | Out-Null
+if ($LASTEXITCODE -ne 0) { throw 'Could not configure the artifact signing key.' }
 docker @cli eval-file /statefall-tests/package-integration.php
 if ($LASTEXITCODE -ne 0) { throw 'Package integration tests failed.' }
+docker @cli eval-file /statefall-tests/exact-score-key.php
+if ($LASTEXITCODE -ne 0) { throw 'Exact artifact score signing-key tests failed.' }
 docker @cli plugin install '/statefall-artifacts/statefall-scores-1.10.7.zip' --force --activate
 if ($LASTEXITCODE -ne 0) { throw 'Exact plugin ZIP upgrade failed.' }
 $marker = docker @cli option get statefall_phase_b_data_marker
@@ -50,8 +59,15 @@ if ($LASTEXITCODE -ne 0 -or $marker.Trim() -ne 'preserve-me') { throw 'Plugin ZI
 
 $paths = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\.artifacts\package-fixtures\paths.json')) | ConvertFrom-Json
 $play = Invoke-WebRequest -Uri "$base/play/" -UseBasicParsing -TimeoutSec 30
-if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch "GAME_VERSION='1\.10\.8'") { throw 'Private exact-game HTML failed.' }
+if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch "GAME_VERSION='1\.10\.9'") { throw 'Private exact-game HTML failed.' }
 if (($play.Headers['Cache-Control'] -join ',') -notmatch 'no-cache|no-store') { throw 'Play HTML is not private/uncached.' }
+$exactBase = "$base/play/releases/1.10.9-2026-09-15-phase-c/"
+$exactManifest = Invoke-RestMethod -Uri ($exactBase + 'release.json') -TimeoutSec 30
+$exactChunks = @($exactManifest.files | Where-Object { $_.path -match '^assets/.+\.js$' })
+$exactChunk = if ($exactChunks.Count) { $exactChunks[0] } else { $null }
+if (-not $exactChunk) { throw 'Exact game manifest has no JavaScript chunk.' }
+$exactJs = Invoke-WebRequest -Uri ($exactBase + $exactChunk.path) -UseBasicParsing -TimeoutSec 30
+if (($exactJs.Headers['Content-Type'] -join ',') -notmatch 'javascript' -or ($exactJs.Headers['Cache-Control'] -join ',') -notmatch 'max-age=31536000.*immutable') { throw 'Exact game chunk MIME/cache headers failed.' }
 $fixtureBase = "$base/play/releases/9.0.4-fixture-4/"
 $js = Invoke-WebRequest -Uri ($fixtureBase + $paths.appPath) -UseBasicParsing -TimeoutSec 30
 if (($js.Headers['Content-Type'] -join ',') -notmatch 'javascript' -or ($js.Headers['Cache-Control'] -join ',') -notmatch 'max-age=31536000.*immutable') { throw 'Hashed JavaScript MIME/cache headers failed.' }
@@ -62,4 +78,7 @@ if (($badFingerprint.Headers['Cache-Control'] -join ',') -match 'immutable') { t
 $manifest = Invoke-WebRequest -Uri ($fixtureBase + 'release.json') -UseBasicParsing -TimeoutSec 30
 if (($manifest.Headers['Content-Type'] -join ',') -notmatch 'application/json' -or ($manifest.Headers['Cache-Control'] -join ',') -notmatch 'max-age=300') { throw 'Release metadata MIME/cache headers failed.' }
 try { Invoke-WebRequest -Uri "$base/play/$($paths.appPath)" -UseBasicParsing -TimeoutSec 30 | Out-Null; throw 'Unqualified modern asset URL was served.' } catch [System.Net.WebException] { if ([int]$_.Exception.Response.StatusCode -ne 404) { throw } }
+$env:STATEFALL_WORDPRESS_URL = $base
+npm run test:wordpress:artifact
+if ($LASTEXITCODE -ne 0) { throw 'Artifact-backed WordPress browser smoke failed.' }
 Write-Host 'PASS exact plugin/game ZIP installation and runtime MIME/cache paths'

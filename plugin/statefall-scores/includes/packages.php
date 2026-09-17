@@ -49,9 +49,10 @@ function statefall_package_path_error($path, $limits) {
 }
 function statefall_validate_manifest($manifest, $archiveFiles, $limits) {
     if (!is_array($manifest) || ($manifest['schema'] ?? null) !== 1) return 'release.json uses an unsupported schema.';
-    foreach (['version', 'build', 'minimumPluginVersion', 'entry', 'flags', 'files'] as $key) if (!array_key_exists($key, $manifest)) return 'release.json is missing ' . $key . '.';
+    foreach (['version', 'build', 'minimumPluginVersion', 'signingKeySha256', 'entry', 'flags', 'files'] as $key) if (!array_key_exists($key, $manifest)) return 'release.json is missing ' . $key . '.';
     foreach (['version', 'build', 'minimumPluginVersion'] as $key) if (!is_string($manifest[$key]) || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._+-]{0,63}$/', $manifest[$key])) return 'release.json has an invalid ' . $key . '.';
     if (version_compare(STATEFALL_VERSION, $manifest['minimumPluginVersion'], '<')) return 'This release requires Statefall plugin ' . $manifest['minimumPluginVersion'] . ' or newer.';
+    if (!is_string($manifest['signingKeySha256']) || !preg_match('/^[a-f0-9]{64}$/', $manifest['signingKeySha256'])) return 'release.json has an invalid signingKeySha256.';
     if (!is_array($manifest['files']) || !$manifest['files'] || count($manifest['files']) > $limits['files']) return 'release.json has an invalid file list.';
     $listed = [];
     foreach ($manifest['files'] as $file) {
@@ -98,6 +99,11 @@ function statefall_inspect_package($tmp) {
     return ['zip' => $zip, 'manifest' => $manifest, 'files' => $files, 'total' => $total, 'manifestBody' => $manifestBody];
 }
 function statefall_release_name($manifest) { return $manifest['version'] . '-' . $manifest['build']; }
+function statefall_manifest_key_match($manifest) {
+    if (!is_array($manifest) || empty($manifest['signingKeySha256'])) return null;
+    foreach (statefall_sign_keys() as $key) if (hash_equals($manifest['signingKeySha256'], hash('sha256', $key))) return true;
+    return false;
+}
 function statefall_release_complete($name, $manifest = null) {
     if (statefall_canonical_release_name($name) === null) return false;
     $dir = statefall_releases_dir() . $name . '/';
@@ -150,7 +156,8 @@ function statefall_import_legacy_root_locked() {
     if (is_dir($root . 'howto')) foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . 'howto', FilesystemIterator::SKIP_DOTS)) as $file) if ($file->isFile()) $paths[] = str_replace('\\', '/', substr($file->getPathname(), strlen($root)));
     sort($paths); $files = []; $limits = statefall_package_limits(); $total = 0;
     foreach ($paths as $path) { $error = statefall_package_path_error($path, $limits); $size = filesize($root . $path); if ($error || $size > $limits['file'] || $total + $size > $limits['total']) return 'The active legacy package cannot be imported safely.'; $total += $size; $files[] = ['path' => $path, 'size' => $size, 'sha256' => hash_file('sha256', $root . $path)]; }
-    $manifest = ['schema' => 1, 'version' => $version['version'], 'build' => $version['build'], 'minimumPluginVersion' => $required, 'entry' => 'index.html', 'flags' => 'flags.js', 'files' => $files];
+    $legacyKey = preg_match("/STATEFALL_SIGN_KEY='([^']*)'/", $html, $match) ? hash('sha256', $match[1]) : str_repeat('0', 64);
+    $manifest = ['schema' => 1, 'version' => $version['version'], 'build' => $version['build'], 'minimumPluginVersion' => $required, 'signingKeySha256' => $legacyKey, 'entry' => 'index.html', 'flags' => 'flags.js', 'files' => $files];
     $name = statefall_release_name($manifest); $final = statefall_releases_dir() . $name . '/'; if (is_dir($final)) return statefall_release_complete($name, $manifest) ? true : 'The legacy release conflicts with an existing immutable release.';
     $stage = statefall_releases_dir() . '.staging-legacy-' . wp_generate_password(12, false, false) . '/'; if (!wp_mkdir_p($stage)) return 'Could not stage the legacy release.';
     foreach ($paths as $path) { wp_mkdir_p(dirname($stage . $path)); if (!copy($root . $path, $stage . $path) || hash_file('sha256', $stage . $path) !== hash_file('sha256', $root . $path)) { statefall_rrmdir_contents($stage, ''); @rmdir($stage); return 'Could not verify the staged legacy release.'; } }
@@ -172,6 +179,7 @@ function statefall_install_package($tmp, $name, $version = '') {
 function statefall_install_package_locked($package, $name) {
     statefall_cleanup_staging(); $legacy = statefall_import_legacy_root_locked(); if ($legacy !== true) { $package['zip']->close(); return $legacy; }
     $zip = $package['zip']; $manifest = $package['manifest']; $release = statefall_release_name($manifest);
+    if (statefall_manifest_key_match($manifest) === false) { $zip->close(); return 'The release signing key does not match the site key; scores would be rejected.'; }
     $final = statefall_releases_dir() . $release . '/'; wp_mkdir_p(statefall_releases_dir());
     if (is_dir($final)) { $zip->close(); if (!statefall_release_complete($release, $manifest)) return 'An immutable release with this version and build already exists but differs or is incomplete.'; return statefall_activate_release_locked($release); }
     $stage = statefall_releases_dir() . '.staging-' . wp_generate_password(12, false, false) . '/'; if (!wp_mkdir_p($stage)) { $zip->close(); return 'Could not create the staging directory.'; }
@@ -221,7 +229,7 @@ function statefall_delete_release($name) {
 }
 function statefall_installed_info() {
     $context = statefall_release_context(); $path = statefall_game_path(); if (!is_file($path)) return ['installed' => false]; $html = file_get_contents($path); $m = $context ? $context['manifest'] : null; $v = $m ? ['version' => $m['version'], 'build' => $m['build']] : statefall_version_from_html($html);
-    $keys = statefall_sign_keys(); $keyMatch = null; if ($keys && preg_match("/STATEFALL_SIGN_KEY='([^']*)'/", $html, $match)) $keyMatch = in_array($match[1], $keys, true);
+    $keys = statefall_sign_keys(); $keyMatch = $m ? statefall_manifest_key_match($m) : null; if (!$m && $keys && preg_match("/STATEFALL_SIGN_KEY='([^']*)'/", $html, $match)) $keyMatch = in_array($match[1], $keys, true);
     $howto = statefall_release_dir() . 'howto/'; $n = 0; if (is_dir($howto)) foreach (scandir($howto) as $e) if (preg_match('/\.html$/', $e)) $n++;
     $meta = get_option('statefall_game_installed', []); return ['installed' => true, 'version' => $v['version'] ?? (get_option('statefall_game_version', '') ?: '?'), 'build' => $v['build'] ?? '', 'release' => statefall_active_release(), 'size' => filesize($path), 'sha' => substr(hash_file('sha256', $path), 0, 12), 'howto' => $n, 'keyMatch' => $keyMatch, 'requires' => $m['minimumPluginVersion'] ?? statefall_requires_plugin_from_html($html), 'installedAt' => $meta['t'] ?? '', 'by' => $meta['who'] ?? '', 'how' => $meta['how'] ?? ''];
 }

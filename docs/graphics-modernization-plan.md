@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 15 September 2026. Phases 0, A, and B are complete in repository game 1.10.8/plugin 1.10.7._
+_Updated 15 September 2026. Phases 0 through C are complete in repository game 1.10.9/plugin 1.10.7._
 
 ## 1. Goal
 
@@ -300,6 +300,8 @@ Status: PASS on 15 September 2026 in repository plugin 1.10.7. Deterministic exa
 - Produce `dist/` and the release manifest through one reproducible build command.
 
 Gate: visual behavior is materially unchanged, all existing tests pass, and the built app works directly and through the WordPress sandbox.
+
+Status: PASS on 15 September 2026 in repository game 1.10.9. Vite source and production projects retain the legacy Canvas renderer and the explicit 1.10.8 simulation/visual oracles. The reproducible build emits hashed relative release assets, a bundle report, signing-key digest metadata, schema-1 `release.json`, and the Phase B-compatible exact ZIP without evaluating the application. Local and WordPress adapters own account requests, saves, scores, identity/capabilities, navigation, audio permission, and lifecycle notification without beginning Phase D engine extraction; specialized media and response-sensitive legacy fetches remain documented for later extraction. Production bundles omit browser test internals.
 
 ### Phase D: Simulation/presentation boundary
 
@@ -706,7 +708,7 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Begin Phase C Vite modularization and introduce the Local/WordPress platform boundary on the completed Phase B deployment foundation.
+1. Begin Phase D deterministic engine extraction from the completed Phase C Vite/module foundation.
 2. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
 3. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
 4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.

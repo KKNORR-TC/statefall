@@ -2,7 +2,7 @@ const {test, expect} = require('@playwright/test');
 const {assertCanonicalBaseline}=require('../tools/simulation-baselines.js');
 const replayFixture=require('../fixtures/replays/public-v1.10.7-focus.json');
 
-const GAME_URL = '/game/index.html?browserTest=1';
+const GAME_URL = '/index.html?browserTest=1';
 const MAPS = ['random', 'land', 'islands_l', 'islands_m', 'islands_s', 'atoll', 'world', 'europe', 'americas', 'africa', 'asia', 'mideast'];
 const MODES = [
   {id: 'quickStart', key: 'quick', label: 'quick-start'},

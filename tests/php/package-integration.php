@@ -45,6 +45,7 @@ sf_rejected('corrupt.zip', 'Could not open');
 sf_rejected('version-mismatch.zip', 'GAME_VERSION');
 sf_rejected('build-mismatch.zip', 'GAME_BUILD');
 sf_rejected('plugin-mismatch.zip', 'REQUIRES_PLUGIN');
+sf_rejected('signing-key-mismatch.zip', 'signing key');
 sf_rejected('missing-asset-base.zip', '__STATEFALL_ASSET_BASE__');
 
 function sf_small_limits($limits) { $limits['files'] = 3; return $limits; }
@@ -89,12 +90,13 @@ sf_assert(count($releases) === 6, 'retention must keep active plus five inactive
 sf_assert(!is_dir(statefall_releases_dir() . '9.0.1-fixture-1'), 'oldest inactive release was not pruned');
 sf_assert(is_dir(statefall_releases_dir() . statefall_active_release()), 'active release was pruned');
 sf_assert(statefall_restore_version('9.0.4-fixture-4') === true, 'final rollback failed');
-sf_assert(statefall_install_package('/statefall-artifacts/statefall-release-1.10.8.zip', 'statefall-release-1.10.8.zip') === true, 'exact production game ZIP did not install');
-sf_assert(statefall_active_release() === '1.10.8-2026-09-15' && statefall_release_complete(statefall_active_release()), 'exact production game ZIP is incomplete');
+sf_assert(statefall_install_package('/statefall-artifacts/statefall-release-1.10.9.zip', 'statefall-release-1.10.9.zip') === true, 'exact production game ZIP did not install');
+sf_assert(statefall_active_release() === '1.10.9-2026-09-15-phase-c' && statefall_release_complete(statefall_active_release()), 'exact production game ZIP is incomplete');
 sf_assert(get_option('statefall_phase_b_data_marker') === 'preserve-me', 'unrelated WordPress data changed');
-sf_assert(statefall_game_path() === statefall_releases_dir() . '1.10.8-2026-09-15/index.html', 'runtime entry path is wrong');
-sf_assert(statefall_flags_path() === statefall_releases_dir() . '1.10.8-2026-09-15/flags.js', 'runtime flags path is wrong');
+sf_assert(statefall_game_path() === statefall_releases_dir() . '1.10.9-2026-09-15-phase-c/index.html', 'runtime entry path is wrong');
+sf_assert(statefall_flags_path() === statefall_releases_dir() . '1.10.9-2026-09-15-phase-c/flags.js', 'runtime flags path is wrong');
+$info = statefall_installed_info(); sf_assert($info['keyMatch'] === true, 'exact release signing-key metadata does not match the site key');
 ob_start(); statefall_admin_game(); $admin = ob_get_clean();
-sf_assert(stripos($admin, 'game package') !== false && strpos($admin, '1.10.8-2026-09-15') !== false, 'admin release UI is incompatible');
+sf_assert(stripos($admin, 'game package') !== false && strpos($admin, '1.10.9-2026-09-15-phase-c') !== false, 'admin release UI is incompatible');
 
 echo "PASS manifest install, validation, activation, rollback, reinstall, staging, retention and data preservation\n";

@@ -1,6 +1,6 @@
 {
   "name": "statefall",
-  "version": "1.10.8",
+  "version": "1.10.9",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
@@ -8,20 +8,25 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "canvas": "^3.2.0"
+    "canvas": "^3.2.0",
+    "vite": "^7.1.5"
   },
   "scripts": {
-    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js && node --check tools/package-zip.js && node --check tools/build-release.js && node --check tools/build-plugin.js && node --check tools/build-previous-plugin.js && node --check tests/build-package-fixtures.js && npm run syntax:prototype",
+    "dev": "vite --host 127.0.0.1 --port 4173",
+    "syntax": "node tools/check-game-syntax.js && node --check playwright.config.js && node --check playwright.wordpress.config.js && node --check tools/package-zip.js && node --check tools/build-release.js && node --check tools/build-plugin.js && node --check tools/build-previous-plugin.js && node --check tests/build-package-fixtures.js && npm run syntax:prototype",
     "syntax:prototype": "node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js",
-    "test": "npm run test:harness-hardening && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:smoke && npm run test:restart && npm run determinism",
+    "test": "npm run test:harness-hardening && npm run test:help-contract && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:smoke && npm run test:restart && npm run determinism",
     "test:harness-hardening": "node tests/harness-hardening.js",
+    "test:help-contract": "node tests/help-contract.js",
     "test:browser-server": "node tests/browser-server.js",
     "test:security": "node tests/security.js",
     "test:seeded-order": "node tests/seeded-tier-order.js",
     "test:replaycheck": "node tests/replaycheck.js",
     "test:smoke": "node tests/smoke.js",
     "test:restart": "node tests/restart-replay.js standard && node tests/restart-replay.js fog && node tests/restart-replay.js garrisons",
-    "test:browser": "playwright test --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop --project=chromium-reduced-motion",
+    "test:build-reproducibility": "node tests/build-reproducibility.js",
+    "test:browser": "npm run build:game && playwright test --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop --project=chromium-reduced-motion --project=chromium-source-contract --project=chromium-built-contract",
+    "test:wordpress:artifact": "playwright test --config playwright.wordpress.config.js",
     "test:desktop-scale": "playwright test tests/browser/desktop-scale.spec.js --project=chromium-desktop-scale-1 --project=chromium-desktop-scale-1.5 --project=chromium-desktop-scale-2",
     "test:mobile:advisory": "playwright test --project=chromium-mobile --project=webkit-mobile",
     "test:prototype": "playwright test --config prototypes/graphics-vertical-slice/playwright.config.js --project=chromium-desktop",
@@ -32,11 +37,13 @@
     "perf:browser": "node tools/browser-performance.js",
     "verify:browser": "npm run test:browser && npm run test:desktop-scale && npm run test:prototype",
     "verify:fast": "npm run syntax && npm test",
-    "build:artifacts": "npm run release:assets && node tools/build-release.js && node tools/build-plugin.js && node tools/build-previous-plugin.js && node tests/build-package-fixtures.js",
+    "build:game": "vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js",
+    "build:release": "npm run build:game && node tools/build-release.js",
+    "build:artifacts": "npm run build:release && node tools/build-plugin.js && node tools/build-previous-plugin.js && node tests/build-package-fixtures.js",
     "verify:artifacts": "npm run build:artifacts && powershell -NoProfile -ExecutionPolicy Bypass -File sandbox/verify-artifacts.ps1",
     "verify": "npm run verify:fast && npm run verify:browser",
     "determinism": "node tools/determinism.js",
     "bench": "node tools/kenbot.js superhard A1,B2,C3",
-    "release:assets": "node tools/build-howto.js game/index.html pkg/howto && node tools/build-flags.js game/index.html pkg/flags.js"
+    "release:assets": "node tools/build-howto.js pkg/howto && node tools/build-flags.js pkg/flags.js"
   }
 }

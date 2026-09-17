@@ -1,0 +1,1 @@
+export const STATEFALL_SIGN_KEY='0CTVarOFteQvdjQYahcS4dsLcq7MQ2gJSOUJfeJ5';

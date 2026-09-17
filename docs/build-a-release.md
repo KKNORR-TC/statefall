@@ -1,6 +1,6 @@
 # Building a Statefall release from these files
 
-This is the authoritative local build and manual WordPress deployment runbook. The source game is `game/index.html`; the source plugin is `plugin/statefall-scores/`. Approved artifacts are copied to `D:\One Drive\projects - local\statefall\working releases`, which is a handoff location rather than source authority.
+This is the authoritative local build and manual WordPress deployment runbook. The source game is the Vite application under `game/`; the source plugin is `plugin/statefall-scores/`. Approved artifacts are copied to `D:\One Drive\projects - local\statefall\working releases`, which is a handoff location rather than source authority.
 
 ## Release gate
 
@@ -17,9 +17,9 @@ This is the authoritative local build and manual WordPress deployment runbook. T
 Build `statefall-release-x.y.z.zip`:
 
 1. Complete the release gate above, using `npm ci` to install the locked tooling.
-2. Run `npm run build:artifacts`. Do not manually rezip its output.
-3. Use `.artifacts/statefall-release-x.y.z.zip`. It contains root `release.json`, `index.html`, `howto/`, `flags.js`, and `VERSION.txt` with a deterministic entry order and timestamp.
-4. Inspect `release.json`: schema `1`, game/build/minimum-plugin versions, entry and flags paths, and every payload file's byte size and SHA-256 must match the ZIP.
+2. Run `npm run build:release` for the game alone, or `npm run build:artifacts` for all exact test artifacts. Do not manually rezip its output.
+3. Use `.artifacts/statefall-release-x.y.z.zip`. The same command produces inspectable `dist/`; the ZIP contains root `release.json`, `index.html`, hashed `assets/`, `bundle-report.json`, `howto/`, `flags.js`, and `VERSION.txt` with deterministic entry order and timestamp.
+4. Inspect `release.json`: schema `1`, game/build/minimum-plugin versions, signing-key SHA-256, entry and flags paths, and every payload file's byte size and SHA-256 must match the ZIP.
 5. Rerun `npm run verify:artifacts` after any source or generated-file change. The ZIP that passes is the ZIP handed off.
 
 ## Plugin package

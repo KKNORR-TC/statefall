@@ -2,7 +2,7 @@
 
 _Recorded 14 September 2026._
 
-The approved game 1.10.8 simulation results are pinned in `tests/fixtures/simulation-baselines-v1.10.8.json`. It covers every reduced-grid smoke scenario, standard/fog/garrison same-page restart replay, the default production-grid cold determinism run, and the fixed-seed Chromium/Firefox/WebKit canonical digest. Mismatches print expected and actual values; intentional changes require review and a manual, versioned fixture edit.
+The approved game 1.10.8 simulation results are pinned in `tests/fixtures/simulation-baselines-v1.10.8.json`. Game 1.10.9 build metadata explicitly names 1.10.8 as its behavior baseline because Phase C changes packaging, not simulation. No approved hash or screenshot was rewritten. The fixture covers every reduced-grid smoke scenario, standard/fog/garrison same-page restart replay, the default production-grid cold determinism run, and the fixed-seed Chromium/Firefox/WebKit canonical digest. Mismatches print expected and actual values; intentional changes require review and a manual, versioned fixture edit.
 
 The 15 September Phase 0 review expanded the canonical oracle to include visibility, radar visibility, and known-border fog state. Canonical SHA-256 baselines were manually updated for that authoritative-state-only change after confirming legacy simulation hashes remained unchanged; no pixel baseline was changed.
 

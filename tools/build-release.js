@@ -1,29 +1,29 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const {releaseZip, sha256} = require('./package-zip');
+const fs=require('node:fs');
+const path=require('node:path');
+const {releaseZip,sha256}=require('./package-zip.js');
+const metadata=require('./release-metadata.js');
 
-const root = path.resolve(__dirname, '..');
-const pkg = path.join(root, 'pkg');
-const output = path.join(root, '.artifacts');
-const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-const source = fs.readFileSync(path.join(root, 'game', 'index.html'));
-const match = source.toString('utf8').match(/GAME_VERSION='([^']+)',\s*GAME_BUILD='([^']+)'/);
-if (!match || match[1] !== packageJson.version) throw new Error('Game and package.json versions do not match.');
+const root=path.resolve(__dirname,'..');
+const dist=path.join(root,'dist');
+const output=path.join(root,'.artifacts');
 
-function walk(dir, prefix = '') {
-  return fs.readdirSync(dir, {withFileTypes: true}).flatMap(entry => {
-    const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
-    return entry.isDirectory() ? walk(path.join(dir, entry.name), relative) : [{path: relative, data: fs.readFileSync(path.join(dir, entry.name))}];
+function walk(directory,prefix=''){
+  return fs.readdirSync(directory,{withFileTypes:true}).flatMap(entry=>{
+    const relative=prefix?`${prefix}/${entry.name}`:entry.name;
+    return entry.isDirectory()?walk(path.join(directory,entry.name),relative):[{path:relative,data:fs.readFileSync(path.join(directory,entry.name))}];
   });
 }
 
-const files = [{path: 'index.html', data: source}, ...walk(pkg).filter(file => file.path !== 'VERSION.txt')];
-files.push({path: 'VERSION.txt', data: Buffer.from(`${match[1]} build ${match[2]}\n`)});
-if (!files.some(file => file.path === 'flags.js')) throw new Error('Run release:assets before building the release.');
-const archive = releaseZip(files, {version: match[1], build: match[2], minimumPluginVersion: '1.10.7', entry: 'index.html', flags: 'flags.js'});
-fs.mkdirSync(output, {recursive: true});
-const target = path.join(output, `statefall-release-${match[1]}.zip`);
-fs.writeFileSync(target, archive);
-console.log(`${path.relative(root, target)} sha256 ${sha256(archive)}`);
+const packageJson=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+if(packageJson.version!==metadata.version)throw new Error('Game module and package.json versions do not match.');
+const release=JSON.parse(fs.readFileSync(path.join(dist,'release.json'),'utf8'));
+const files=walk(dist).filter(file=>file.path!=='release.json');
+const archive=releaseZip(files,{version:metadata.version,build:metadata.build,minimumPluginVersion:metadata.minimumPluginVersion,signingKeySha256:metadata.signingKeySha256,entry:'index.html',flags:'flags.js'},generated=>{
+  if(JSON.stringify(generated)!==JSON.stringify(release))throw new Error('dist/release.json does not describe the exact build output.');
+});
+fs.mkdirSync(output,{recursive:true});
+const target=path.join(output,`statefall-release-${metadata.version}.zip`);
+fs.writeFileSync(target,archive);
+console.log(`${path.relative(root,target)} sha256 ${sha256(archive)}`);

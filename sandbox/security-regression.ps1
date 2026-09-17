@@ -105,7 +105,8 @@ try {
     foreach($item in @($list.saves | Where-Object {$_.slot -like 'Quota race *'})){ Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/saves/$($item.id)" -Method Delete -Headers $headers -WebSession $session -TimeoutSec 60 | Out-Null }
 }
 
-if ($page.Content -notmatch "STATEFALL_SIGN_KEY='([^']+)'") { throw 'Game signing key was not found.' }
+$gameSource = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\game\src\config\signing.js'))
+if ($gameSource -notmatch "STATEFALL_SIGN_KEY='([^']+)'") { throw 'Game signing key was not found.' }
 $key=$Matches[1]
 $seed='LOCALBOT'+([DateTimeOffset]::UtcNow.ToUnixTimeSeconds().ToString().Substring(4))
 $record=[ordered]@{when=[DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds();result='Defeat';country='Local test';map='random';diff='normal';fog=$false;risky=$false;cls='Standard';land=1;minutes=2;kills=0;peak=120;gold=0;seed=$seed}

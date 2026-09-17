@@ -3,12 +3,8 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),chil
 const root=path.resolve(__dirname,'..');
 const file=path.join(root,'game','index.html');
 const html=fs.readFileSync(file,'utf8');
-const open='<script>',close='</script>';
-const openCount=html.split(open).length-1,closeCount=html.split(close).length-1;
-if(openCount!==1||closeCount!==1) throw new Error(`Expected exactly one game script in ${file}; found ${openCount} opening and ${closeCount} closing tags`);
-const start=html.indexOf(open),end=html.indexOf(close);
-if(end<=start) throw new Error('Game script tags are out of order in '+file);
-new vm.Script(html.slice(start+8,end),{filename:file});
+if(!/<script type="module" src="\.\/src\/main\.js"><\/script>/.test(html))throw new Error('Game module entry is missing.');
+for(const marker of ['GAME_VERSION','GAME_BUILD','REQUIRES_PLUGIN','__STATEFALL_ASSET_BASE__'])if(!html.includes(marker))throw new Error(`Game HTML is missing ${marker}.`);
 
 function jsFiles(dir){
   const files=[];
@@ -20,7 +16,7 @@ function jsFiles(dir){
   return files;
 }
 
-const files=[...jsFiles(path.join(root,'tools')),...jsFiles(path.join(root,'tests'))].sort();
+const files=[...jsFiles(path.join(root,'game','src')),...jsFiles(path.join(root,'tools')),...jsFiles(path.join(root,'tests'))].sort();
 for(const script of files){
   const result=childProcess.spawnSync(process.execPath,['--check',script],{encoding:'utf8'});
   if(result.error) throw result.error;
@@ -30,4 +26,4 @@ for(const script of files){
     throw new Error(`Syntax check failed for ${path.relative(root,script)}`);
   }
 }
-console.log(`Syntax OK: game script and ${files.length} tool/test files`);
+console.log(`Syntax OK: module entry and ${files.length} source/tool/test files`);

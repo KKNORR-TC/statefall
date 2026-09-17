@@ -1,6 +1,6 @@
 # Statefall — Multiplayer Project Plan
 
-_Status as of 15 September 2026. Repository game 1.10.8/plugin 1.10.7; production game 1.10.7/plugin 1.10.6. Phase 0 complete; Phase 1 not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
+_Status as of 15 September 2026. Repository game 1.10.9/plugin 1.10.7; production game 1.10.7/plugin 1.10.6. Graphics modernization Phase C is complete; engine extraction has not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -10,14 +10,14 @@ Deterministic lockstep with a thin relay. Every client runs the identical simula
 
 ## 2. What is already done (Phase 0 — shipped in game 1.5.0–1.6.2)
 
-Everything below is in `game/index.html` and covered to the extent described by the repository's headless tests.
+Everything below remains in `game/src/legacy-game.js`, loaded by the Vite entry at `game/index.html`, and is covered to the extent described by the repository's headless tests.
 
 **Determinism**
 - The simulation runs on the tick clock only (`tickN`, `simMs = tickN × TICK`, TICK = 100 ms). No `performance.now()` / `Date.now()` inside anything that affects state. Bot build cooldowns, bot think cadence and the Risky-start draft timer all moved to ticks.
 - Two random generators: `srand` (mulberry32, seeded from the match seed) for everything in the sim; the browser's `Math.random` for audio, effects, notices, the jukebox, credit quotes. Helpers: `rnd/pick` = sim, `urnd/upick` = UI. Map noise is seeded (`Float32Array.from(…, () => srand())`).
 - Ships and aircraft carry stable ids (`id: ++uidSeq`); structures are addressed by tile; areas by id; players by id.
 
-**Command layer** (search `// command layer` in index.html)
+**Command layer** (search `// command layer` in `game/src/legacy-game.js`)
 - `CMD.log` — every player action as `{t: tick, k: kind, a: args}`.
 - Entry points: `issueClick(t, env)` (map clicks, with `env = {ratio, pick, build}` captured at issue time), `issueMenu(d, t, selIds, siteT, ratioV, aidGold, aidTroops)` (all right-click menu actions via `menuAction()`), `issue(kind, …args)` (focus slider, airAuto/logAuto/autoFire toggles, recall/recallAll, sat, accept/decline proposals, decShare/decWar).
 - `applySimple`, `replayApply`, `menuAction(d,t,sel,site,ratioV,aidGold,aidTroops)` and `clickTile(t, env)` are the deterministic executors. Bots never log.
@@ -32,7 +32,7 @@ Everything below is in `game/index.html` and covered to the extent described by 
 - Game: autosave every 30 s (logged in), Save & quit on the pause modal, automatic replay of every finished match, Games & replays modal, `/play/?load=<id>&mode=resume|watch`. Logged-out users get a register/login card. No browser storage.
 
 **Proof harness** (repository `tools/` and `tests/`)
-- `tools/harness.js` boots the engine headlessly with node-canvas and exposes `S` (simulation internals); it is also used for trailers.
+- `tools/harness.js` temporarily rewrites/evaluates the legacy module for node-canvas and exposes `S` (simulation internals); it is also used for trailers. This test-only bridge remains until Phase D extracts an importable engine and is not used by release builds.
 - `tools/determinism.js` plays a scripted match through the command layer, replays it cold, and compares hashes. Run `npm run determinism`; set `SEED`, `DIFF`, `GAR`, `QUICK`, and `TICKS` as environment variables when needed.
 - `tools/replaycheck.js <file.state>` replays a real player's file and reports the first diverging tick. This is how the `click env` bug fixed in 1.6.1 was found.
 
@@ -95,7 +95,7 @@ Sequencing note: first implement only the relay/lockstep/reconnect architecture 
 
 ## 8. Where the files are
 
-- Game source: `game/index.html` (repository: 1.10.8; production: 1.10.7).
+- Game source: Vite application under `game/` (repository: 1.10.9; production: 1.10.7).
 - Plugin source: `plugin/statefall-scores/` (current: 1.10.7).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.

@@ -16,12 +16,13 @@ function crc32(data) {
 
 function sha256(data) { return crypto.createHash('sha256').update(data).digest('hex'); }
 
-function manifest(version, build, minimumPluginVersion, files, entry = 'index.html', flags = 'flags.js') {
+function manifest(version, build, minimumPluginVersion, signingKeySha256, files, entry = 'index.html', flags = 'flags.js') {
   return {
     schema: 1,
     version,
     build,
     minimumPluginVersion,
+    signingKeySha256,
     entry,
     flags,
     files: files.map(file => ({path: file.path, size: file.data.length, sha256: sha256(file.data)})),
@@ -56,7 +57,7 @@ function zip(entries) {
 
 function releaseZip(files, metadata, manifestOverride) {
   const sorted = files.map(file => ({path: file.path.replace(/\\/g, '/'), data: Buffer.isBuffer(file.data) ? file.data : Buffer.from(file.data)})).sort((a, b) => a.path.localeCompare(b.path));
-  const release = manifest(metadata.version, metadata.build, metadata.minimumPluginVersion, sorted, metadata.entry, metadata.flags);
+  const release = manifest(metadata.version, metadata.build, metadata.minimumPluginVersion, metadata.signingKeySha256, sorted, metadata.entry, metadata.flags);
   if (manifestOverride) manifestOverride(release);
   const body = Buffer.from(JSON.stringify(release, null, 2) + '\n');
   return zip([...sorted, {path: 'release.json', data: body}].sort((a, b) => a.path.localeCompare(b.path)));
