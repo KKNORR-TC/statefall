@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const {chromium, devices} = require('playwright');
-const {createServer: createViteServer} = require('vite');
+const {build: buildVite, preview: previewVite} = require('vite');
 const ceilings = require('../tests/fixtures/browser-performance-ceilings.json');
 
 const root = path.resolve(__dirname, '..');
@@ -47,6 +47,16 @@ async function collectSample(browser, baseURL, scenario) {
 
   try {
     await page.goto(`${baseURL}/index.html?browserTest=1`, {waitUntil: 'load'});
+    const loaded = await page.evaluate(() => ({
+      hasBridge: typeof window.__STATEFALL_TEST__ === 'object',
+      paths: performance.getEntriesByType('resource').map(entry => new URL(entry.name).pathname)
+    }));
+    if (!loaded.hasBridge) throw new Error('qualification build did not expose the guarded test bridge');
+    if (!loaded.paths.some(resourcePath => resourcePath.startsWith('/assets/') && resourcePath.endsWith('.js'))) {
+      throw new Error('qualification build did not load a bundled JavaScript asset');
+    }
+    const sourceResource = loaded.paths.find(resourcePath => resourcePath.startsWith('/src/') || resourcePath.startsWith('/@vite/') || resourcePath.startsWith('/@id/'));
+    if (sourceResource) throw new Error(`qualification build loaded a source resource: ${sourceResource}`);
     await page.locator('#maps button[data-m="random"]').click();
     await page.locator('#seedIn').fill('PHASEAPERF');
     await page.locator('#countrySel').selectOption('0');
@@ -147,8 +157,21 @@ function evaluateCeilings(summary) {
 }
 
 async function main() {
-  const server = await createViteServer({configFile:path.join(root,'vite.config.js'),server:{host:'127.0.0.1',port:0}});
-  await server.listen();
+  const buildParent = path.join(root, '.artifacts', 'browser-performance');
+  await fs.mkdir(buildParent, {recursive: true});
+  const buildDir = await fs.mkdtemp(path.join(buildParent, 'qualification-'));
+  await buildVite({
+    configFile: path.join(root, 'vite.config.js'),
+    base: '/',
+    define: {__STATEFALL_TEST_BRIDGE__: true},
+    build: {outDir: buildDir, emptyOutDir: true}
+  });
+  const server = await previewVite({
+    configFile: path.join(root, 'vite.config.js'),
+    base: '/',
+    build: {outDir: buildDir},
+    preview: {host: '127.0.0.1', port: 0}
+  });
   const baseURL = server.resolvedUrls.local[0].replace(/\/$/,'');
   const browser = await chromium.launch();
   const report = {
@@ -161,7 +184,8 @@ async function main() {
       node: process.version,
       browser: `chromium ${browser.version()}`,
       headless: true,
-      samplesPerScenario: sampleCount
+      samplesPerScenario: sampleCount,
+      target: 'fresh production-optimized Vite build with guarded test instrumentation'
     },
     scenarios: {},
     summary: {},
@@ -182,7 +206,8 @@ async function main() {
     report.passed = report.deterministic && report.ceilingChecks.every(check => check.passed);
   } finally {
     await browser.close();
-    await server.close();
+    await new Promise((resolve, reject) => server.httpServer.close(error => error ? reject(error) : resolve()));
+    await fs.rm(buildDir, {recursive: true, force: true});
     await fs.mkdir(path.dirname(output), {recursive: true});
     await fs.writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
   }

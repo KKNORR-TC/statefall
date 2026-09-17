@@ -1,6 +1,6 @@
 const {test, expect} = require('@playwright/test');
 
-const GAME_URL = '/game/index.html?browserTest=1&case=PHASEADISPLAYSCALE';
+const GAME_URL = '/index.html?browserTest=1&case=PHASEADISPLAYSCALE';
 const VIEWPORTS = [
   {width: 1280, height: 720},
   {width: 1600, height: 900}

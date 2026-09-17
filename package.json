@@ -4,7 +4,7 @@
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
-    "node": "22.x"
+    "node": ">=22.12 <23"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
