@@ -14,10 +14,10 @@ Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN`
 
 ## Local testing
 
-Requirements: Node.js 22.x. Node 24 on Windows is currently excluded because local simulation runs have been unstable; CI and the supported development runtime use Node 22. From the repository root:
+Requirements: Node.js 22.12 or newer within the 22.x line. Node 24 on Windows is currently excluded because local simulation runs have been unstable; CI and the supported development runtime use Node 22. From the repository root:
 
 ```powershell
-npm install
+npm ci
 npm run dev
 npm run syntax
 npm test
@@ -27,4 +27,4 @@ npm test
 
 Run `npm run build:release` to reproducibly produce `dist/`, schema-1 `dist/release.json`, and the exact game ZIP under `.artifacts/`. Run `npm run bench` for the longer Super hard opening benchmark.
 
-Run `.\sandbox\start.ps1`, `.\sandbox\verify.ps1`, and `.\sandbox\stop.ps1` for local WordPress/plugin integration testing. See `sandbox/README.md` for isolation and reset details.
+Run `.\sandbox\start.ps1`, `.\sandbox\verify.ps1`, and `.\sandbox\stop.ps1 -DockerDesktop` for local WordPress/plugin integration testing. Docker must also be running before `npm run verify:artifacts`. See `sandbox/README.md` for isolation and reset details.

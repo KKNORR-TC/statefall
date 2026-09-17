@@ -1,6 +1,6 @@
-# Statefall — Multiplayer Project Plan
+# Statefall - Multiplayer Project Plan
 
-_Status as of 15 September 2026. Repository game 1.10.9/plugin 1.10.7; production game 1.10.7/plugin 1.10.6. Graphics modernization Phase C is complete; engine extraction has not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
+_Status reconciled 17 September 2026. Local recovered repository game 1.10.9/plugin 1.10.7 is preserved at `97dcc76`; production remains game 1.10.7/plugin 1.10.6. Graphics modernization Phase C is complete; engine extraction has not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 

@@ -52,7 +52,7 @@ Local automated evidence was collected on Windows `10.0.26100`, x64, headless Ch
 
 Observed medians were 83 ms cold load, 289-295 ms synchronous start, 1.29 s for 300 ticks, 0.8-0.9 ms rendered-frame p95, about 690 kB transferred, and about 4.0 MB post-GC CDP heap. All configured ceilings and deterministic digest checks passed. The generated detail report remains local at `.artifacts/browser-performance/baseline.json`.
 
-Node 22.x remains the supported repository and CI runtime. This Node 24 local observation does not broaden support. Pixel references are Windows Chromium authoritative; Linux is semantic and cross-engine authoritative, not pixel authoritative. Pixel 7 is browser emulation on desktop hardware and is not physical-device evidence.
+Node 22.12 or newer within the 22.x line remains the supported repository and CI runtime. This Node 24 local observation does not broaden support. Pixel references are Windows Chromium authoritative; Linux is semantic and cross-engine authoritative, not pixel authoritative. Pixel 7 is browser emulation on desktop hardware and is not physical-device evidence.
 
 ## Residual Follow-Up
 
@@ -62,4 +62,5 @@ Node 22.x remains the supported repository and CI runtime. This Node 24 local ob
 - The historical public replay fixture now loads and begins playback through the real browser replay UI; long-session and broader replay-corpus review remains open.
 - Unit-level coverage for future extracted renderer/camera modules remains open; the current prototype is intentionally isolated and browser-tested.
 - GPU/compositor latency, display presentation, input latency, production-network behavior, and lower-end hardware performance are not measured by this harness.
+- The historical Phase A record did not capture exact CPU, GPU, RAM, display, or power-mode identity. Recovery hardware is recorded separately in `docs/phase-c-recovery-evidence.md` and does not retroactively qualify the Phase A run as a named-hardware performance certification.
 - Phase A is complete. No production, release, deployment, or unit-art approval is implied.

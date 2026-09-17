@@ -17,6 +17,8 @@ The machine-readable report is overwritten at `.artifacts/browser-performance/ba
 
 Conservative regression ceilings live in `tests/fixtures/browser-performance-ceilings.json`. Timing and post-GC heap checks use the median across cold contexts to reduce one-off noise. Resource checks use the maximum across cold Vite module loads. The 15 September Windows observation before Phase C was about 371-378 ms for load plus start, 1.29 seconds for 300 ticks, 0.8-0.9 ms rendered-frame p95, 690 kB transferred, and 4.0 MB post-GC CDP heap. Ceilings intentionally allow several times the observed timing and heap values and about 30% payload growth.
 
+The 17 September post-Phase-C recovery run used Windows 11 build 26200, an Intel Core Ultra 9 290HX Plus, 127.4 GB RAM, an NVIDIA GeForce RTX 5090 Laptop GPU, Node 22.23.2, Playwright 1.63.0, and headless Chromium 153.0.8010.12. Desktop medians were 387.2 ms load plus start, 891.3 ms for 300 ticks, 0.5 ms rendered-frame p95, and 7.67 MB post-GC CDP heap. Those ceilings passed. The run failed the 900,000-byte source-load resource ceilings at 4,296,330 transfer bytes and 4,291,830 decoded bytes for both scenarios. Built output was much smaller, so this remains an open decision about whether payload qualification should measure Vite source modules, production output, or both. Do not update the ceiling until that methodology is approved.
+
 ## Limitations
 
 - Results are relative regression signals for the same class of machine, not production service-level objectives. CPU load, power mode, virtualization, browser version, operating system, and headless rendering can move timings.

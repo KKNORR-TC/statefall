@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 15 September 2026. Phases 0 through C are complete in repository game 1.10.9/plugin 1.10.7._
+_Updated 17 September 2026. Phases 0 through C are complete in local repository game 1.10.9/plugin 1.10.7. Phase C recovery evidence is in `docs/phase-c-recovery-evidence.md`; production remains unchanged._
 
 ## 1. Goal
 
@@ -279,7 +279,7 @@ Gate: approve the illustrated command-map direction and demonstrate the vertical
 
 Status: PASS on 15 September 2026. Ken approved the overall direction after reviewing the prototype on the host display; automated desktop DPR, map, mode, dense-action, replay, visual, and performance evidence is indexed in `docs/phase-a-evidence.md`. Unit art remains unapproved and reserved for Phase G.
 
-### Phase B: Deployment foundation
+### Phase B: Deployment foundation (complete)
 
 - Add manifest-based packages and strict ZIP validation to the plugin.
 - Add immutable release directories, atomic activation, complete rollback, retention, and health reporting.
@@ -291,7 +291,7 @@ Gate: a synthetic multi-file package can install, activate, roll back, and reins
 
 Status: PASS on 15 September 2026 in repository plugin 1.10.7. Deterministic exact ZIPs, malicious fixtures, disposable WordPress installation, immutable staging/activation/rollback/retention, legacy root compatibility, health/admin paths, and runtime MIME/cache behavior pass `npm run verify:artifacts`. Production is unchanged; this status is the repository phase gate, not deployment approval.
 
-### Phase C: Modular build without visual change
+### Phase C: Modular build without visual change (complete)
 
 - Add Vite and a development server.
 - Split static data, styles, platform integration, audio, and utility code into ES modules.
@@ -301,7 +301,7 @@ Status: PASS on 15 September 2026 in repository plugin 1.10.7. Deterministic exa
 
 Gate: visual behavior is materially unchanged, all existing tests pass, and the built app works directly and through the WordPress sandbox.
 
-Status: PASS on 15 September 2026 in repository game 1.10.9. Vite source and production projects retain the legacy Canvas renderer and the explicit 1.10.8 simulation/visual oracles. The reproducible build emits hashed relative release assets, a bundle report, signing-key digest metadata, schema-1 `release.json`, and the Phase B-compatible exact ZIP without evaluating the application. Local and WordPress adapters own account requests, saves, scores, identity/capabilities, navigation, audio permission, and lifecycle notification without beginning Phase D engine extraction; specialized media and response-sensitive legacy fetches remain documented for later extraction. Production bundles omit browser test internals.
+Status: PASS on 15 September 2026 in repository game 1.10.9 and recovered at commit `97dcc76` on 17 September. Vite source and production projects retain the legacy Canvas renderer and the explicit 1.10.8 simulation/visual oracles. The reproducible build emits hashed relative release assets, a bundle report, signing-key digest metadata, schema-1 `release.json`, and the Phase B-compatible exact ZIP without evaluating the application. Local and WordPress adapters own account requests, saves, scores, identity/capabilities, navigation, audio permission, and lifecycle notification without beginning Phase D engine extraction; specialized media and response-sensitive legacy fetches remain documented for later extraction. Production bundles omit browser test internals. Required correctness and artifact gates passed during recovery; the optional source-load resource ceiling did not, as recorded in `docs/phase-c-recovery-evidence.md`.
 
 ### Phase D: Simulation/presentation boundary
 
@@ -442,21 +442,21 @@ Quality tiers should control resolution scale, particles, trails, lighting, wate
 
 ## 11. Testing and Release Gates
 
-### Current assessment
+### Pre-modernization assessment and current disposition
 
-The existing suite is valuable but is not sufficient to protect the modernization work by itself.
+The roadmap originally identified the limitations below. Phases 0 through C strengthened the suite, but the remaining limitations continue to define Phase D and later work.
 
 | Existing check | What it currently proves | Important limitation |
 |---|---|---|
-| `tests/smoke.js` | Ten reduced-grid scenarios survive 300 ticks with basic finite state. | Partial maps/modes, weak invariants, rendering disabled. |
-| `tests/restart-replay.js` | Standard, fog, and garrison commands replay in the same process. | Few command families, reduced grid, incomplete state hash. |
-| `tools/determinism.js` | One production-grid replay repeats under one Node/V8 build. | Same engine/process, one main scenario, no browser comparison or rendering cadence. |
+| `tests/smoke.js` | Ten reduced-grid map/mode scenarios pass periodic invariants and pinned canonical hashes. | Reduced grid, selected combinations, rendering disabled. |
+| `tests/restart-replay.js` | Standard, fog, and garrison commands reproduce pinned canonical state after same-page restart. | Few command families and reduced grid. |
+| `tools/determinism.js` | A production-grid replay matches across fresh processes with pinned checkpoints and final digest. | One main scenario and no renderer-cadence matrix yet. |
 | `tests/security.js` | Focused replay-name normalization remains present. | Does not execute the vulnerable flow in a real DOM/browser. |
-| `tools/replaycheck.js` | Helps a developer inspect a replay. | Does not currently fail the process reliably on divergence or malformed input. |
-| `tools/harness.js` | Runs the monolithic game quickly under Node stubs. | Rewrites exact source strings, stubs timers/DOM, bypasses rendering, and cannot survive modules unchanged. |
+| `tools/replaycheck.js` | Strictly rejects malformed input, command failures, missing checkpoints, incomplete playback, and divergence. | The replay corpus is still narrower than the planned Phase D/I matrix. |
+| `tools/harness.js` | Runs the modularized legacy game quickly under Node stubs with guarded transformations. | Still rewrites/evaluates source, stubs timers/DOM, and bypasses rendering; Phase D must replace it with direct engine imports. |
 | `sandbox/verify.ps1` | PHP syntax, public routes, one admin nonce session, and basic save CRUD. | Tests mounted source, not installable ZIPs; mostly positive paths. |
 | `sandbox/security-regression.ps1` | Focused save/replay quota, migration, sanitization, and bot-record regressions. | Separately invoked and incomplete for auth, lifecycle, package, and failure paths. |
-| Manual screenshots/release checks | A human inspected selected views and production behavior. | No committed baseline, repeatability, browser matrix, or automatic failure signal. |
+| Playwright and exact-artifact checks | Committed Windows pixels, cross-engine behavior, built/source contracts, reproducibility, package lifecycle, MIME, and cache checks. | Windows pixels do not certify other platforms; performance, accessibility, long sessions, and the complete renderer matrix remain open. |
 
 The current suite can continue as a fast smoke layer, but passing it must not be described as full renderer, browser, package, rollback, or cross-engine proof.
 
@@ -476,7 +476,7 @@ The current suite can continue as a fast smoke layer, but passing it must not be
 
 #### Fast simulation layer
 
-Keep the existing Node scripts while the game remains monolithic. Add:
+Retain the Phase 0/C Node scripts while Phase D extracts an importable engine. Continue expanding:
 
 - `assertStateInvariants(engine)` at setup and regular tick intervals.
 - Strict expected-match helpers for every temporary legacy-harness source transformation.
@@ -545,7 +545,7 @@ All runs must produce identical authoritative digests. Presentation collections 
 
 #### Browser harness
 
-Playwright is the browser solution for the current Windows development environment. Most browser tests run against a local static server and do not require Docker. Add before modularization:
+Playwright is the browser solution for the current Windows development environment. Phase 0/C established the repository-owned configuration, local servers, Canvas suites, and guarded test bridge. Most browser tests run against a local server and do not require Docker. Retain and expand:
 
 - `@playwright/test` and repository-owned browser configuration.
 - A small local static server that serves the current game and fails cleanly on missing files.
@@ -601,7 +601,7 @@ Required scenes include cold start, normal mid-game, full-map zoom, dense fleet 
 Initial gates:
 
 - Desktop normal scene: target 60 fps, p95 frame time at or below 16.7 ms and p99 at or below 33 ms on named reference hardware.
-- Mobile normal scene: minimum 30 fps with p95 at or below 33.3 ms and no sustained repeated stalls on named reference hardware.
+- Mobile normal scene, if a separate mobile or Statefall Light track is approved: advisory minimum 30 fps with p95 at or below 33.3 ms and no sustained repeated stalls on named reference hardware.
 - No unbounded heap, texture, display-object, or transient-pool growth across repeated fixtures.
 - Build output reports compressed JS, CSS, texture, font, audio, and initial-download sizes.
 
@@ -643,15 +643,15 @@ The package that passes this harness is the package handed off. Rebuilding or ma
 
 ### Verification commands and CI
 
-Create stable top-level commands as the harnesses arrive:
+Current stable top-level commands and planned release wrappers:
 
 - `verify:fast`: syntax, unit, invariants, smoke, command scenarios, restart/replay, and canonical determinism.
 - `verify:browser`: required Playwright browser projects and visual checks.
-- `verify:sandbox`: PHP, REST, database, security, auth, and mounted-source checks.
+- Planned `verify:sandbox`: PHP, REST, database, security, auth, and mounted-source checks. Until added, run the lifecycle scripts listed in `docs/build-a-release.md`.
 - `verify:artifacts`: build exact ZIPs, inspect manifests/hashes, install them, activate, roll back, and run artifact-backed smoke checks.
-- `verify:release`: all applicable suites plus performance/device evidence required by the release record.
+- Planned `verify:release`: all applicable suites plus performance/device evidence required by the release record. Until added, follow `docs/build-a-release.md`.
 
-CI must run fast and browser checks for every change and artifact/sandbox checks for release candidates. Node 22 and the current supported Node line should be represented. Local Docker-backed browser or artifact runs follow `AGENTS.md`: start only when needed and always finish with `.\sandbox\stop.ps1 -DockerDesktop`. No release is GO with skipped required jobs, changed fixtures without review, unexplained screenshot updates, or a dirty/rebuilt artifact after verification.
+The locally configured GitHub workflow runs Node 22 fast verification, build reproducibility, browser verification, a schema-1 release build, and authoritative Windows visual comparisons after the branch is published. It is not active on GitHub while `origin/main` remains at the initial import. Docker-backed artifact, mounted-sandbox, and security suites are mandatory local release-candidate checks; they are not currently CI jobs. Local Docker-backed runs follow `AGENTS.md`: start only when needed and always finish with `.\sandbox\stop.ps1 -DockerDesktop`. No release is GO with skipped required jobs, changed fixtures without review, unexplained screenshot updates, an unresolved applicable performance-budget failure, or a dirty/rebuilt artifact after verification.
 
 ### Accessibility gates
 

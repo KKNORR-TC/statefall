@@ -11,23 +11,40 @@ Copy this file for each release and keep the completed record with the approved 
 - Game version/build:
 - Plugin version:
 - `REQUIRES_PLUGIN`:
+- Simulation fixture revision:
+- Canonical digest/schema revision:
+- Visual baseline revision:
+- Performance report/environment (N/A only for an unaffected component, with approver and reason):
 - Release owner:
 
 ## Artifacts
 
-| Component | Filename | SHA-256 | Internal version inspected |
-|---|---|---|---|
-| Game | | | |
-| Plugin | | | |
+| Component | Filename | SHA-256 | Internal version inspected | Exact artifact tested |
+|---|---|---|---|---|
+| Game | | | | |
+| Plugin | | | | |
+
+- Game manifest/build id:
+- Game signing-key SHA-256:
+- Artifact build command and time:
+- Rebuilt or repackaged after verification: No / Yes (rerun all artifact checks and explain)
 
 ## Verification
 
 - `npm ci`:
-- `npm run syntax`:
-- `npm test` and deterministic hash result:
-- Plugin PHP syntax check:
-- ZIP structure inspection:
-- Browser checks:
+- `npm run verify`:
+- Deterministic hash result:
+- `npm run test:build-reproducibility`:
+- Browser projects and result:
+- Windows visual baseline result or N/A with reason:
+- Performance/device evidence or approved N/A for an unaffected component:
+- `.\sandbox\verify.ps1`:
+- `.\sandbox\security-regression.ps1`:
+- `npm run verify:artifacts`:
+- Exact-ZIP install/upgrade and data preservation:
+- Manifest, activation, rollback, retention, MIME, and cache checks:
+- ZIP structure and embedded-version inspection:
+- Docker shutdown/status confirmation:
 - Open findings reviewed:
 - GO/NO-GO and approver:
 
@@ -44,4 +61,5 @@ Copy this file for each release and keep the completed record with the approved 
 - Save/resume/replay check:
 - How-to pages check:
 - Rollback required:
+- Post-deployment release pointer/version verified:
 - Notes:

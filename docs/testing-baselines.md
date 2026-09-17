@@ -1,6 +1,6 @@
 # Testing Baselines
 
-_Recorded 14 September 2026._
+_Originally recorded 14 September 2026; reconciled after Phase C recovery on 17 September 2026._
 
 The approved game 1.10.8 simulation results are pinned in `tests/fixtures/simulation-baselines-v1.10.8.json`. Game 1.10.9 build metadata explicitly names 1.10.8 as its behavior baseline because Phase C changes packaging, not simulation. No approved hash or screenshot was rewritten. The fixture covers every reduced-grid smoke scenario, standard/fog/garrison same-page restart replay, the default production-grid cold determinism run, and the fixed-seed Chromium/Firefox/WebKit canonical digest. Mismatches print expected and actual values; intentional changes require review and a manual, versioned fixture edit.
 
@@ -10,7 +10,7 @@ The 15 September Phase 0 review expanded the canonical oracle to include visibil
 
 The game visual references are `tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png` and the `maps-*-chromium-desktop-win32.png` strategic/close matrix beside it. The prototype references are under `prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/`. They are authoritative only for Windows Chromium and all pixel assertions are gated to `win32`. Linux CI retains launch, Canvas-content, prototype camera/layout, interaction, error-collection, and cross-engine canonical-state checks without looking for Windows snapshots.
 
-Node.js 22.x is the supported test runtime and the CI runtime. Node 24 on Windows is excluded because it has been observed to be unstable during local simulation runs; changes should not broaden the declared engine range until that environment is reliable.
+Node.js 22.12 or newer within the 22.x line is the supported test and CI runtime; this matches the locked Vite requirement. The broader `22.x` value in `package.json` is a recovery follow-up to correct before Phase D. Node 24 on Windows is excluded because it has been observed to be unstable during local simulation runs; changes should not broaden the declared engine range until that environment is reliable.
 
 Focused commands:
 
@@ -30,4 +30,4 @@ The required Phase A desktop display-scale suite uses Chromium emulation at DPR 
 
 The optional Phase A browser performance harness and its measurement limitations are documented in `docs/browser-performance-baseline.md`. Its generated JSON is ignored and is not part of `npm run verify` because local browser timings are machine-relative.
 
-Full verification is `npm run verify`. The pinned scope does not claim every seed, long-match outcome, browser rendering pixel identity, mobile visual identity, or production deployment approval. Smoke and restart tests deliberately use a 240×138 grid; the default determinism test retains the 720×414 production grid. Optional determinism environment overrides still test run-to-run equality but intentionally do not compare against the default baseline.
+Normal non-Docker change verification is `npm run verify`; build reproducibility is `npm run test:build-reproducibility`. Release qualification additionally requires the mounted sandbox, security regression, and exact-artifact commands in `docs/build-a-release.md`, plus applicable performance/device and production checks. The pinned scope does not claim every seed, long-match outcome, browser rendering pixel identity, mobile visual identity, or production deployment approval. Smoke and restart tests deliberately use a 240x138 grid; the default determinism test retains the 720x414 production grid. Optional determinism environment overrides still test run-to-run equality but intentionally do not compare against the default baseline.

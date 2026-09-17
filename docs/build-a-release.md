@@ -6,21 +6,22 @@ This is the authoritative local build and manual WordPress deployment runbook. T
 
 1. Confirm the intended source commit and inspect `git status` so the artifact's exact inputs are known.
 2. Update every changed component's version and changelog. Verify the game's `REQUIRES_PLUGIN` value against the plugin being deployed.
-3. Run `npm ci`, `npm run syntax`, and `npm test`. Require `DETERMINISTIC ✓` for simulation changes.
-4. Run `.\sandbox\start.ps1`, `.\sandbox\verify.ps1`, `.\sandbox\security-regression.ps1`, and `npm run verify:artifacts`. The artifact command builds deterministic game/plugin ZIPs, installs those exact files into disposable WordPress, and tests package lifecycle and headers.
-5. Review `docs/current-status.md`. Any unresolved release-blocking finding, failed check, or unexplained warning makes the release NO-GO.
-6. Build the artifacts, inspect their internal paths and embedded versions, and calculate SHA-256 checksums.
-7. Complete `docs/release-record-template.md` with the commit, component versions, filenames, checksums, test results, and GO/NO-GO decision. Keep a copy with the release artifacts.
+3. Run `npm ci`, `npm run verify`, and `npm run test:build-reproducibility`. Require `DETERMINISTIC ✓` for simulation changes.
+4. Run `.\sandbox\start.ps1` before any Docker-backed command. Then run `.\sandbox\verify.ps1`, `.\sandbox\security-regression.ps1`, and `npm run verify:artifacts`. The artifact command builds deterministic game/plugin ZIPs, installs those exact files into disposable WordPress, and tests package lifecycle and headers.
+5. Treat the ZIPs produced and installed by the successful `npm run verify:artifacts` invocation as the final candidates. Inspect their internal paths and embedded versions and calculate SHA-256 checksums without rebuilding or rezipping them.
+6. Review `docs/current-status.md`. Any unresolved release-blocking finding, failed check, skipped required check, applicable performance-budget failure, or unexplained warning makes the release NO-GO. Game 1.10.9 remains NO-GO while its source-load resource ceiling is unresolved; changing the measurement method or budget requires explicit approval and a passing rerun.
+7. Complete `docs/release-record-template.md` with the commit, component versions, filenames, checksums, fixture/baseline revisions, test results, and GO/NO-GO decision. Keep a copy with the release artifacts.
+8. Whether verification passes or fails, finish with `.\sandbox\stop.ps1 -DockerDesktop` and confirm `.\sandbox\status.ps1` reports Docker Desktop and the sandbox stopped.
 
 ## Game package
 
 Build `statefall-release-x.y.z.zip`:
 
 1. Complete the release gate above, using `npm ci` to install the locked tooling.
-2. Run `npm run build:release` for the game alone, or `npm run build:artifacts` for all exact test artifacts. Do not manually rezip its output.
-3. Use `.artifacts/statefall-release-x.y.z.zip`. The same command produces inspectable `dist/`; the ZIP contains root `release.json`, `index.html`, hashed `assets/`, `bundle-report.json`, `howto/`, `flags.js`, and `VERSION.txt` with deterministic entry order and timestamp.
+2. For development inspection, run `npm run build:release` for the game alone or `npm run build:artifacts` for all artifacts. For handoff, use only the exact ZIP produced by the successful `npm run verify:artifacts` gate. Do not manually rezip its output.
+3. Use `.artifacts/statefall-release-x.y.z.zip`. The same build produces inspectable `dist/`; the ZIP contains root `release.json`, `index.html`, hashed `assets/`, `bundle-report.json`, `howto/`, `flags.js`, and `VERSION.txt` with deterministic entry order and timestamp.
 4. Inspect `release.json`: schema `1`, game/build/minimum-plugin versions, signing-key SHA-256, entry and flags paths, and every payload file's byte size and SHA-256 must match the ZIP.
-5. Rerun `npm run verify:artifacts` after any source or generated-file change. The ZIP that passes is the ZIP handed off.
+5. Rerun the complete Docker-backed artifact gate after any source or generated-file change. The exact ZIP installed by the passing invocation is the ZIP handed off.
 
 ## Plugin package
 
