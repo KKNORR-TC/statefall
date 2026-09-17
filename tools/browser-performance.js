@@ -65,8 +65,6 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
     if (!loaded.paths.some(resourcePath => resourcePath.startsWith('/assets/') && resourcePath.endsWith('.js'))) {
       throw new Error('qualification build did not load a bundled JavaScript asset');
     }
-    const unexpectedResource = loaded.paths.find(resourcePath => !buildPaths.has(resourcePath));
-    if (unexpectedResource) throw new Error(`qualification build loaded a resource outside its build inventory: ${unexpectedResource}`);
     await page.locator('#maps button[data-m="random"]').click();
     await page.locator('#seedIn').fill('PHASEAPERF');
     await page.locator('#countrySel').selectOption('0');
@@ -79,22 +77,6 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
       return {startToReadyMs: after - before, ready: window.__STATEFALL_TEST__.status().ready};
     });
     if (!started.ready) throw new Error('test bridge did not report a ready match');
-
-    const navigation = await page.evaluate(() => {
-      const nav = performance.getEntriesByType('navigation')[0];
-      const entries = [nav, ...performance.getEntriesByType('resource')].filter(Boolean);
-      return {
-        coldLoadMs: nav.duration,
-        resources: {
-          count: entries.length,
-          transferBytes: entries.reduce((sum, entry) => sum + (entry.transferSize || 0), 0),
-          encodedBytes: entries.reduce((sum, entry) => sum + (entry.encodedBodySize || 0), 0),
-          decodedBytes: entries.reduce((sum, entry) => sum + (entry.decodedBodySize || 0), 0)
-        },
-        jsHeapSizeLimitBytes: performance.memory?.jsHeapSizeLimit || null,
-        usedJSHeapSizeBytes: performance.memory?.usedJSHeapSize || null
-      };
-    });
 
     const simulation = await page.evaluate(async () => {
       const before = performance.now();
@@ -114,6 +96,26 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
       }
       return samples;
     });
+
+    const navigation = await page.evaluate(() => {
+      const nav = performance.getEntriesByType('navigation')[0];
+      const resourceEntries = performance.getEntriesByType('resource');
+      const entries = [nav, ...resourceEntries].filter(Boolean);
+      return {
+        coldLoadMs: nav.duration,
+        paths: resourceEntries.map(entry => new URL(entry.name).pathname),
+        resources: {
+          count: entries.length,
+          transferBytes: entries.reduce((sum, entry) => sum + (entry.transferSize || 0), 0),
+          encodedBytes: entries.reduce((sum, entry) => sum + (entry.encodedBodySize || 0), 0),
+          decodedBytes: entries.reduce((sum, entry) => sum + (entry.decodedBodySize || 0), 0)
+        },
+        jsHeapSizeLimitBytes: performance.memory?.jsHeapSizeLimit || null,
+        usedJSHeapSizeBytes: performance.memory?.usedJSHeapSize || null
+      };
+    });
+    const unexpectedResource = navigation.paths.find(resourcePath => !buildPaths.has(resourcePath));
+    if (unexpectedResource) throw new Error(`qualification build loaded a resource outside its build inventory: ${unexpectedResource}`);
 
     await session.send('HeapProfiler.collectGarbage');
     const heap = await session.send('Runtime.getHeapUsage');
