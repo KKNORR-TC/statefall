@@ -24,7 +24,17 @@ function summarize(values) {
   return {median: percentile(values, 0.5), p95: percentile(values, 0.95), max: Math.max(...values)};
 }
 
-async function collectSample(browser, baseURL, scenario) {
+async function listBuildPaths(directory, relative = '') {
+  const paths = [];
+  for (const entry of await fs.readdir(path.join(directory, relative), {withFileTypes: true})) {
+    const child = path.join(relative, entry.name);
+    if (entry.isDirectory()) paths.push(...await listBuildPaths(directory, child));
+    else if (entry.isFile()) paths.push(`/${child.split(path.sep).join('/')}`);
+  }
+  return paths;
+}
+
+async function collectSample(browser, baseURL, scenario, buildPaths) {
   const context = await browser.newContext(scenario.context);
   const page = await context.newPage();
   const session = await context.newCDPSession(page);
@@ -55,8 +65,8 @@ async function collectSample(browser, baseURL, scenario) {
     if (!loaded.paths.some(resourcePath => resourcePath.startsWith('/assets/') && resourcePath.endsWith('.js'))) {
       throw new Error('qualification build did not load a bundled JavaScript asset');
     }
-    const sourceResource = loaded.paths.find(resourcePath => resourcePath.startsWith('/src/') || resourcePath.startsWith('/@vite/') || resourcePath.startsWith('/@id/'));
-    if (sourceResource) throw new Error(`qualification build loaded a source resource: ${sourceResource}`);
+    const unexpectedResource = loaded.paths.find(resourcePath => !buildPaths.has(resourcePath));
+    if (unexpectedResource) throw new Error(`qualification build loaded a resource outside its build inventory: ${unexpectedResource}`);
     await page.locator('#maps button[data-m="random"]').click();
     await page.locator('#seedIn').fill('PHASEAPERF');
     await page.locator('#countrySel').selectOption('0');
@@ -157,60 +167,78 @@ function evaluateCeilings(summary) {
 }
 
 async function main() {
-  const buildParent = path.join(root, '.artifacts', 'browser-performance');
-  await fs.mkdir(buildParent, {recursive: true});
-  const buildDir = await fs.mkdtemp(path.join(buildParent, 'qualification-'));
-  await buildVite({
-    configFile: path.join(root, 'vite.config.js'),
-    base: '/',
-    define: {__STATEFALL_TEST_BRIDGE__: true},
-    build: {outDir: buildDir, emptyOutDir: true}
-  });
-  const server = await previewVite({
-    configFile: path.join(root, 'vite.config.js'),
-    base: '/',
-    build: {outDir: buildDir},
-    preview: {host: '127.0.0.1', port: 0}
-  });
-  const baseURL = server.resolvedUrls.local[0].replace(/\/$/,'');
-  const browser = await chromium.launch();
-  const report = {
-    schemaVersion: 1,
-    generatedAt: new Date().toISOString(),
-    environment: {
-      platform: process.platform,
-      release: os.release(),
-      arch: process.arch,
-      node: process.version,
-      browser: `chromium ${browser.version()}`,
-      headless: true,
-      samplesPerScenario: sampleCount,
-      target: 'fresh production-optimized Vite build with guarded test instrumentation'
-    },
-    scenarios: {},
-    summary: {},
-    ceilingChecks: [],
-    passed: false
-  };
-
+  let buildDir = null;
+  let server = null;
+  let browser = null;
+  let report = null;
+  let runError = null;
   try {
+    const buildParent = path.join(root, '.artifacts', 'browser-performance');
+    await fs.mkdir(buildParent, {recursive: true});
+    buildDir = await fs.mkdtemp(path.join(buildParent, 'qualification-'));
+    await buildVite({
+      configFile: path.join(root, 'vite.config.js'),
+      base: '/',
+      define: {__STATEFALL_TEST_BRIDGE__: true},
+      build: {outDir: buildDir, emptyOutDir: true}
+    });
+    const buildPaths = new Set(await listBuildPaths(buildDir));
+    server = await previewVite({
+      configFile: path.join(root, 'vite.config.js'),
+      base: '/',
+      build: {outDir: buildDir},
+      preview: {host: '127.0.0.1', port: 0}
+    });
+    const baseURL = server.resolvedUrls.local[0].replace(/\/$/,'');
+    browser = await chromium.launch();
+    report = {
+      schemaVersion: 1,
+      generatedAt: new Date().toISOString(),
+      environment: {
+        platform: process.platform,
+        release: os.release(),
+        arch: process.arch,
+        node: process.version,
+        browser: `chromium ${browser.version()}`,
+        headless: true,
+        samplesPerScenario: sampleCount,
+        target: 'fresh production-optimized Vite build with guarded test instrumentation'
+      },
+      scenarios: {},
+      summary: {},
+      ceilingChecks: [],
+      passed: false
+    };
     for (const scenario of scenarios) {
       process.stdout.write(`Measuring ${scenario.name} (${sampleCount} cold samples)...\n`);
       report.scenarios[scenario.name] = [];
-      for (let index = 0; index < sampleCount; index++) report.scenarios[scenario.name].push(await collectSample(browser, baseURL, scenario));
+      for (let index = 0; index < sampleCount; index++) report.scenarios[scenario.name].push(await collectSample(browser, baseURL, scenario, buildPaths));
       report.summary[scenario.name] = summarizeScenario(report.scenarios[scenario.name]);
     }
     const digests = new Set(Object.values(report.scenarios).flat().map(sample => sample.simulationDigest));
     report.deterministic = digests.size === 1;
     report.ceilingChecks = evaluateCeilings(report.summary);
     report.passed = report.deterministic && report.ceilingChecks.every(check => check.passed);
-  } finally {
-    await browser.close();
+  } catch (error) {
+    runError = error;
+  }
+
+  const cleanupErrors = [];
+  if (browser) try { await browser.close(); } catch (error) { cleanupErrors.push(error); }
+  if (server) try {
     await new Promise((resolve, reject) => server.httpServer.close(error => error ? reject(error) : resolve()));
-    await fs.rm(buildDir, {recursive: true, force: true});
+  } catch (error) { cleanupErrors.push(error); }
+  if (buildDir) try { await fs.rm(buildDir, {recursive: true, force: true}); } catch (error) { cleanupErrors.push(error); }
+  if (report) try {
     await fs.mkdir(path.dirname(output), {recursive: true});
     await fs.writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
+  } catch (error) { cleanupErrors.push(error); }
+
+  if (runError) {
+    if (cleanupErrors.length) runError.message += `\nCleanup failures:\n${cleanupErrors.map(error => error.stack || error).join('\n')}`;
+    throw runError;
   }
+  if (cleanupErrors.length) throw new AggregateError(cleanupErrors, 'Performance harness cleanup failed');
 
   for (const [name, summary] of Object.entries(report.summary)) {
     process.stdout.write(`${name}: load ${summary.coldLoadMs.median.toFixed(1)} ms, start ${summary.startToReadyMs.median.toFixed(1)} ms, 300 ticks ${summary.simulation300TicksMs.median.toFixed(1)} ms, frame p95 ${summary.renderedFrameP95Ms.median.toFixed(1)} ms, transfer ${summary.resourceTransferBytes.median} B, heap ${summary.cdpUsedHeapBytes.median} B\n`);
