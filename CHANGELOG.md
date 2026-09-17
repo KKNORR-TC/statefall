@@ -2,7 +2,7 @@
 
 ## 1.10.9 - 2026-09-15
 
-- Repository-only game version; recovered on 17 September 2026 with all required Phase C gates passing. The optional source-load resource ceiling failed, and the version has not been deployed.
+- Repository-only game version; recovered and normalized on 17 September 2026 with all Phase C correctness, artifact, and production-build performance gates passing. It has not been deployed.
 - Added Vite development and reproducible production builds.
 - Moved the unchanged Canvas game into ES modules with extracted styles, map/flag data, audio preferences, utilities, and Local/WordPress platform adapters.
 - Added source-versus-built browser contracts, missing-chunk checks, bundle reporting, and schema-1 `dist/release.json` generation.

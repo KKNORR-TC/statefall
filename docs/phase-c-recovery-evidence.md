@@ -7,6 +7,9 @@ _Recorded 17 September 2026. This is repository recovery evidence, not a product
 - Recovered branch: `recovery/phase-c-2026-09-17`
 - Pre-recovery committed head: `682c356` (`feat: add immutable game release foundation`)
 - Exact recovered source checkpoint: `97dcc76` (`feat: recover phase C modular build`)
+- Verified normalization commit: `951db36` (`fix: normalize phase C verification`)
+- Performance lifecycle hardening commit: `5583fc9` (`fix: harden performance qualification cleanup`)
+- Complete resource-inventory validation commit: `0d1cae9` (`fix: validate performance resource inventory`)
 - Published `origin/main` observed during recovery: `de724b5`
 - Repository components: game 1.10.9, plugin 1.10.7
 - Production components remained unchanged at game 1.10.7/plugin 1.10.6.
@@ -60,14 +63,19 @@ These are recovery-verification outputs, not approved handoff or production arti
 
 ## Open Items
 
-- `tests/browser/desktop-scale.spec.js` retains the pre-Vite `/game/index.html` URL. It passed under the current fallback server but should be normalized before relying on stricter server behavior.
-- `package.json` still declares the broader `22.x` engine range although locked Vite requires Node 22.12 or newer; align package metadata before Phase D.
 - The production JavaScript chunk is 550.73 kB (180,294 bytes gzip), reflecting the still-monolithic legacy game.
 - Some media, credits, and leaderboard requests remain outside the platform adapter by documented deferral.
 - Runtime and generated help have multiple representations whose equivalence is only partially checked.
 - The asset finalizer must be revisited before introducing interdependent code-split chunks.
-- The 17 September optional performance run failed only the retained source-load resource ceilings: 4,296,330 transfer bytes and 4,291,830 decoded bytes versus 900,000. Timing, simulation, frame-work, digest, request, and heap checks passed. No baseline was changed. This blocks game 1.10.9 release-candidate approval until the existing measurement passes or an explicitly approved source-versus-production methodology and budget are documented and pass.
 - Post-victory save serialization and expired-session score retry remain unresolved product defects.
+
+## Normalization Follow-Up
+
+Commit `951db36` corrected the desktop-scale URL to the canonical Vite root, aligned package and lockfile engines to Node `>=22.12 <23`, and changed `perf:browser` to measure a fresh production-optimized qualification build instead of Vite development modules. Commit `5583fc9` made browser, preview-server, temporary-build, and report cleanup independent across failure paths. Commit `0d1cae9` requires every resource loaded through the complete measured workflow to belong to the exact temporary build inventory. The harness retains guarded test instrumentation only in its temporary bundle. Normal release output continues to omit the test bridge.
+
+The final hardened run passed all unchanged ceilings. Desktop medians were 303.8 ms load plus start, 885.6 ms for 300 ticks, 0.5 ms rendered-frame p95, 193,089 transfer bytes, 589,024 decoded bytes, and 4,026,096 bytes post-GC heap. Mobile-emulation medians were 306.1 ms load plus start, 891.1 ms for 300 ticks, 0.4 ms rendered-frame p95, the same payload, and 4,034,560 bytes post-GC heap. The earlier 4.29 MB source-module result remains recorded as the reason for correcting the methodology; no ceiling was raised.
+
+After commit `951db36`, `npm run verify`, `npm run test:build-reproducibility`, `npm run perf:browser`, the mounted sandbox, security regressions, and `npm run verify:artifacts` all passed. After lifecycle and inventory hardening in `5583fc9` and `0d1cae9`, syntax and the full three-sample performance qualification were rerun and passed, with no temporary qualification directory left behind. Exact release artifact and manifest hashes remained unchanged by the normalization.
 
 ## Recovery Decision
 

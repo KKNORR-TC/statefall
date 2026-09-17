@@ -10,7 +10,7 @@ The 15 September Phase 0 review expanded the canonical oracle to include visibil
 
 The game visual references are `tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png` and the `maps-*-chromium-desktop-win32.png` strategic/close matrix beside it. The prototype references are under `prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/`. They are authoritative only for Windows Chromium and all pixel assertions are gated to `win32`. Linux CI retains launch, Canvas-content, prototype camera/layout, interaction, error-collection, and cross-engine canonical-state checks without looking for Windows snapshots.
 
-Node.js 22.12 or newer within the 22.x line is the supported test and CI runtime; this matches the locked Vite requirement. The broader `22.x` value in `package.json` is a recovery follow-up to correct before Phase D. Node 24 on Windows is excluded because it has been observed to be unstable during local simulation runs; changes should not broaden the declared engine range until that environment is reliable.
+Node.js 22.12 or newer within the 22.x line is the supported test and CI runtime; `package.json`, the lockfile, and locked Vite now agree on that range. Node 24 on Windows is excluded because it has been observed to be unstable during local simulation runs; changes should not broaden the declared engine range until that environment is reliable.
 
 Focused commands:
 
