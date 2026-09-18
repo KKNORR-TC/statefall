@@ -29,8 +29,9 @@ test.afterEach(async ({page}) => {
   expect(failures, failures.join('\n')).toEqual([]);
 });
 
-async function startMatch(page) {
-  await page.goto(GAME_URL, {waitUntil: 'load'});
+async function startMatch(page,renderer='canvas') {
+  await page.goto(`${GAME_URL}&renderer=${renderer}`, {waitUntil: 'load'});
+  await expect.poll(()=>page.evaluate(()=>typeof window.__STATEFALL_TEST__)).toBe('object');
   await page.evaluate(() => window.__STATEFALL_TEST__.prepareControlledStart());
   await page.locator('#maps button[data-m="random"]').click();
   await page.locator('#seedIn').fill('PHASEADISPLAYSCALE');
@@ -83,34 +84,65 @@ test('keeps Canvas, layout, targeting, and camera stable across desktop display 
   await startMatch(page);
   const expectedDpr = testInfo.project.use.deviceScaleFactor;
   const target = await page.evaluate(() => window.__STATEFALL_TEST__.focusTarget('owned', 4));
-  const camera = await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().camera);
+  let center={x:target.x,y:target.y};
 
   for (const viewport of VIEWPORTS) {
+    const beforeBounds=await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().camera.visibleBounds);
+    const beforeFocus={x:(beforeBounds.left+beforeBounds.right)/2,y:(beforeBounds.top+beforeBounds.bottom)/2};
     await page.setViewportSize(viewport);
     await expect.poll(() => page.evaluate(() => {
       const state = window.__STATEFALL_TEST__.snapshot();
-      return state.canvas.width === state.canvas.clientWidth && state.canvas.height === state.canvas.clientHeight;
+      return state.canvas.width===state.rendering.pixelWidth&&state.canvas.height===state.rendering.pixelHeight;
     })).toBe(true);
     await expect.poll(() => readDisplayState(page).then(state => state.colors)).toBeGreaterThan(8);
 
     const state = await readDisplayState(page);
     expect(state.dpr).toBe(expectedDpr);
-    expect(state.canvas.width).toBe(state.canvas.clientWidth);
-    expect(state.canvas.height).toBe(state.canvas.clientHeight);
+    expect(state.canvas.width).toBe(Math.round(state.canvas.clientWidth*Math.min(expectedDpr,2)));
+    expect(state.canvas.height).toBe(Math.round(state.canvas.clientHeight*Math.min(expectedDpr,2)));
     expect(state.canvas.width).toBeGreaterThan(100);
     expect(state.canvas.height).toBeGreaterThan(100);
     expect(state.opaqueSamples).toBe(state.samples);
     expectContained(state);
 
-    expect(await page.evaluate(({x, y}) => window.__STATEFALL_TEST__.screenToTile(x, y), target)).toBe(target.tile);
-    expect(await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().camera)).toEqual(camera);
+    center={x:state.canvas.clientWidth/2,y:state.canvas.clientHeight/2};
+    expect(await page.evaluate(point => window.__STATEFALL_TEST__.screenToTile(point.x,point.y),center)).toBe(target.tile);
+    const afterBounds=await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().camera.visibleBounds);
+    expect((afterBounds.left+afterBounds.right)/2).toBeCloseTo(beforeFocus.x,8);
+    expect((afterBounds.top+afterBounds.bottom)/2).toBeCloseTo(beforeFocus.y,8);
   }
 
   const canvas = page.locator('#map');
-  await canvas.hover({position: {x: target.x, y: target.y}});
+  await canvas.hover({position: center});
   await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.hover)).toBe(target.tile);
   const commands = await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.commands);
-  await canvas.click({position: {x: target.x, y: target.y}});
+  await canvas.click({position: center});
   await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.commands)).toBe(commands + 1);
   expect(await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.lastCommand.a[0])).toBe(target.tile);
 });
+
+test('keeps Pixi raster and Canvas overlay aligned across desktop display scales',async({page},testInfo)=>{
+  await startMatch(page,'pixi');
+  const expectedDpr=Math.min(testInfo.project.use.deviceScaleFactor,2);
+  const target=await page.evaluate(()=>window.__STATEFALL_TEST__.focusTarget('owned',4));
+  for(const size of VIEWPORTS){
+    const before=await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().camera.visibleBounds);
+    await page.setViewportSize(size);
+    await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().pixelWidth)).toBe(Math.round(documentWidth(size)*expectedDpr));
+    const state=await page.evaluate(()=>{
+      const snapshot=window.__STATEFALL_TEST__.snapshot(),map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
+      return {snapshot,map:map.toJSON(),world:world.toJSON()};
+    });
+    expect(state.snapshot.rendering).toMatchObject({active:'pixi-hybrid',effectiveDpr:expectedDpr,textureCount:1,spriteCount:1});
+    expect(state.snapshot.canvas.width).toBe(state.snapshot.rendering.pixelWidth);
+    expect(state.snapshot.canvas.height).toBe(state.snapshot.rendering.pixelHeight);
+    expect(state.world).toMatchObject({x:state.map.x,y:state.map.y,width:state.map.width,height:state.map.height});
+    const center={x:state.map.width/2,y:state.map.height/2};
+    expect(await page.evaluate(point=>window.__STATEFALL_TEST__.screenToTile(point.x,point.y),center)).toBe(target.tile);
+    const after=state.snapshot.camera.visibleBounds;
+    expect((after.left+after.right)/2).toBeCloseTo((before.left+before.right)/2,8);
+    expect((after.top+after.bottom)/2).toBeCloseTo((before.top+before.bottom)/2,8);
+  }
+});
+
+function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }

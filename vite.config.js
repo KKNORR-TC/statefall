@@ -4,7 +4,11 @@ const path=require('node:path');
 module.exports=defineConfig(({command,mode})=>({
   root:path.resolve(__dirname,'game'),
   base:command==='build'?'/__STATEFALL_ASSET_BASE__/':'/',
-  define:{__STATEFALL_TEST_BRIDGE__:command==='serve'||mode==='capture'},
+  define:{
+    __STATEFALL_TEST_BRIDGE__:command==='serve'||mode==='capture',
+    __STATEFALL_DEV_RENDERERS__:command==='serve'||mode==='capture'
+  },
+  resolve:{alias:command==='build'&&mode!=='capture'?[{find:/\.\/renderer-factory\.mjs$/,replacement:path.resolve(__dirname,'game/src/rendering/renderer-factory-production.mjs')}]:[]},
   build:{
     outDir:path.resolve(__dirname,mode==='capture'?'.artifacts/trailer-dist':'dist'),
     emptyOutDir:true,

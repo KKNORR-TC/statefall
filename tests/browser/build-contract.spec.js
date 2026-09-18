@@ -8,13 +8,14 @@ test('source and built module applications load every chunk and preserve the can
   page.on('requestfailed',request=>failures.push(`failed ${request.url()}`));
   page.on('response',response=>{if(response.status()>=400)failures.push(`${response.status()} ${response.url()}`);});
   await page.addInitScript(()=>{window.__STATEFALL_TEST_MODE__=true;Object.defineProperty(Performance.prototype,'now',{value:()=>1_000});localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));});
-  await page.goto('/index.html?browserTest=1',{waitUntil:'networkidle'});
+  await page.goto('/index.html?browserTest=1&renderer=pixi',{waitUntil:'networkidle'});
   if(testInfo.project.name==='chromium-source-contract'){
     const browserAdapter=await page.evaluate(()=>fetch('/src/legacy-game.js').then(response=>response.text()));
     expect(browserAdapter).not.toMatch(/engine\.compatibility\b/);
   }
   if(testInfo.project.name==='chromium-built-contract'){
     expect(await page.evaluate(()=>('__STATEFALL_TEST__' in window))).toBe(false);
+    expect(await page.locator('.pixi-world').count()).toBe(0);
     await page.locator('#seedIn').fill('PHASECBUILT');
     await page.locator('#countrySel').selectOption('0');
     await page.locator('#startBtn').click();
@@ -24,8 +25,12 @@ test('source and built module applications load every chunk and preserve the can
     expect(canvas.width).toBeGreaterThan(0); expect(canvas.height).toBeGreaterThan(0);
     const modules=await page.evaluate(()=>performance.getEntriesByType('resource').map(entry=>new URL(entry.name).pathname).filter(path=>/\.(?:js|css)$/.test(path)));
     expect(modules.length).toBeGreaterThan(0);
-    const scripts=await page.evaluate(async()=>Promise.all(performance.getEntriesByType('resource').map(entry=>entry.name).filter(url=>/\.js$/.test(new URL(url).pathname)).map(url=>fetch(url).then(response=>response.text()))));
+    const inventory=await page.evaluate(()=>fetch('/bundle-report.json').then(response=>response.json()));
+    expect(inventory.productionJsInventory.length).toBeGreaterThan(0);
+    expect(inventory.productionJsInventory.every(file=>file.scanned&&/^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
+    const scripts=await page.evaluate(async paths=>Promise.all(paths.map(path=>fetch(`/${path}`).then(response=>response.text()))),inventory.productionJsInventory.map(file=>file.path));
     expect(scripts.join('\n')).not.toContain('__STATEFALL_TEST__');
+    expect(scripts.join('\n')).not.toMatch(/@pixi|pixi\.js|pixi-world|pixiInit|createPixiHybridRenderer|world-raster|planned-entities|unsupported-renderer|development-renderer-disabled|__STATEFALL_DEV_RENDERERS__/i);
     expect(scripts.join('\n')).not.toMatch(/createRelayWebSocketClient|relay\.connect|relay\.ready|relay\.batch-outcome-report/);
     expect(failures,failures.join('\n')).toEqual([]);
     return;

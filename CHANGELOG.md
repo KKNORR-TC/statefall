@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.13 - 2026-09-18
+
+- Added the first bounded Phase E renderer foundation: renderer-neutral CSS-pixel camera and DPR-capped viewport services, a lifecycle/diagnostics interface, the unchanged default Canvas path, and a development/capture-only `pixi-hybrid` path.
+- Pinned PixiJS 8.21.0 as an application dependency. Pixi renders the existing 720x414 terrain/ownership/fog raster as one nearest-neighbor texture beneath the transparent legacy Canvas overlay; entities, effects, selection, UI, and input remain Canvas-owned.
+- Added DPR 1/1.5/2 backing stores, resize-center focus preservation, centralized coordinate conversion, bounded renderer fallback diagnostics, raster build/upload counters, camera/viewport unit contracts, dual-renderer simulation/input purity coverage, and a production query/tree-shaking contract.
+- This is not Phase E completion, final art, a release, or a handoff. Production builds ignore `renderer=pixi`, retain Canvas, and omit the Pixi renderer chunk and guarded test bridge. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged.
+
 ## 1.10.12 - 2026-09-18
 
 - Added the first bounded Phase D2 proof slice: explicit deterministic multi-human setup, a browser-free transport-agnostic relay room core, fixed delayed lockstep turns, seat/generation authorization, idempotency IDs, deterministic turn sealing, per-batch outcome consensus, exact-byte checkpoint consensus, and checkpoint-v2 recovery through sealed batch suffixes.

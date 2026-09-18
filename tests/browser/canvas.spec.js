@@ -437,19 +437,21 @@ test('resizes without document overflow and keeps the Canvas usable', async ({pa
 
   await expect.poll(() => page.evaluate(() => {
     const canvas = window.__STATEFALL_TEST__.snapshot().canvas;
-    return canvas.width === canvas.clientWidth && canvas.height === canvas.clientHeight;
+    const rendering=window.__STATEFALL_TEST__.snapshot().rendering;
+    return canvas.width===rendering.pixelWidth&&canvas.height===rendering.pixelHeight;
   })).toBe(true);
   const layout = await page.evaluate(() => ({
     documentWidth: document.documentElement.scrollWidth,
     viewportWidth: document.documentElement.clientWidth,
     bodyWidth: document.body.scrollWidth,
     canvas: window.__STATEFALL_TEST__.snapshot().canvas,
+    rendering: window.__STATEFALL_TEST__.snapshot().rendering,
     side: document.querySelector('#side').getBoundingClientRect().toJSON()
   }));
   expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth);
   expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewportWidth);
-  expect(layout.canvas.width).toBe(layout.canvas.clientWidth);
-  expect(layout.canvas.height).toBe(layout.canvas.clientHeight);
+  expect(layout.canvas.width).toBe(layout.rendering.pixelWidth);
+  expect(layout.canvas.height).toBe(layout.rendering.pixelHeight);
   expect(layout.canvas.width).toBeGreaterThan(100);
   expect(layout.canvas.height).toBeGreaterThan(100);
   expect(layout.side.right).toBeLessThanOrEqual(viewport.width + 1);
@@ -508,10 +510,16 @@ test('real Canvas rendering is pure and irregular render cadence cannot change s
   test.skip(testInfo.project.name !== 'chromium-desktop', 'renderer-purity contract runs in primary Chromium');
   await startFixedMatch(page, {seed: 'PHASEDRENDER', controlled: true});
   const before=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
+  const loopBefore=await page.evaluate(() => window.__STATEFALL_TEST__.renderingLifecycle());
   const rendered=await page.evaluate(() => window.__STATEFALL_TEST__.renderRepeatedly(17));
   const after=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
   expect(rendered).toEqual({hash:before.hash,rng:before.rng,tick:before.tick});
   expect(after).toEqual(before);
+  const loopAfter=await page.evaluate(() => window.__STATEFALL_TEST__.renderingLifecycle());
+  expect(loopBefore).toMatchObject({frozen:false,rafPending:1});
+  expect(loopAfter).toMatchObject({frozen:false,rafPending:1});
+  await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.renderingLifecycle().rafCallbacks)).toBeGreaterThan(loopAfter.rafCallbacks);
+  expect(await page.evaluate(() => window.__STATEFALL_TEST__.renderingLifecycle().rafPending)).toBe(1);
 
   await page.evaluate(() => window.__STATEFALL_TEST__.advance(120));
   const controlled=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());

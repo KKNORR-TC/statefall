@@ -5,6 +5,7 @@ import {createPlatform} from './integration/platform.js';
 import {createAudioState,saveAudioLevels} from './audio/audio-state.js';
 import {STATEFALL_SIGN_KEY} from './config/signing.js';
 import {createEngine} from './sim/engine.mjs';
+import {renderingRuntime} from './rendering/runtime.mjs';
 import {
   WIN_SHARE,BOTS,TILES_PER_NEUTRAL,QUICK_TILES,DIFFS,FOG,STRUCT,CMD_RANGE,CMD_DISCOUNT,CMD_DISCOUNT_MAX,
   BUILD_TICKS,SHIELD,UPGRADE,LSHIELD,HEAVY,CRUISE,AIR,GUNS,ARMOR,CMD_RESERVE,SHIP_BUILD,CANCEL_REFUND,TRUCK,
@@ -18,6 +19,28 @@ import {
 
 // ---------------------------------------------------------------- config
 const W=720, H=414, TICK=100;               // map size in tiles, ms per tick
+const rendering=renderingRuntime(),{camera:cam,viewport,renderer}=rendering;
+const viewWidth=()=>viewport.metrics.cssWidth,viewHeight=()=>viewport.metrics.cssHeight;
+const renderLoop={frame:0,suspended:false,callbacks:0,renders:0};
+function presentationFrozen(){ return __STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__===true; }
+function scheduleRender(){
+  if(renderLoop.frame||renderLoop.suspended||presentationFrozen()) return;
+  renderLoop.frame=requestAnimationFrame(()=>{ renderLoop.frame=0; if(renderLoop.suspended) return; renderLoop.callbacks++; render(); });
+}
+function setPresentationFrozen(frozen){
+  if(!__STATEFALL_TEST_BRIDGE__) return;
+  window.__STATEFALL_TEST_FREEZE__=!!frozen;
+  if(frozen&&renderLoop.frame){ cancelAnimationFrame(renderLoop.frame); renderLoop.frame=0; }
+  else if(!frozen) scheduleRender();
+}
+rendering.onLifecycle(state=>{
+  if(state==='suspend'||state==='destroy'){
+    renderLoop.suspended=true;
+    if(renderLoop.frame){ cancelAnimationFrame(renderLoop.frame); renderLoop.frame=0; }
+  }else if(state==='resume'){
+    renderLoop.suspended=false; scheduleRender();
+  }
+});
 const PLATFORM=createPlatform();
 const WP=PLATFORM.config;
 const IDENTITY=PLATFORM.identity(), CAPABILITIES=PLATFORM.capabilities();
@@ -92,7 +115,7 @@ function noise(o){ // {dur, g, bus, lp, lp2, hp, a, when, q}
   const g=C.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002,SND_MULT*(o.g||0.2)),t+(o.a||0.01)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.dur);
   node.connect(g); g.connect(AUD.bus[o.bus||'sfx']); src.start(t); src.stop(t+o.dur+0.05);
 }
-function onScreen(x,y){ if(x==null) return true; const px=cam.x+x*cam.s, py=cam.y+y*cam.s; return px>-60&&py>-60&&px<cv.width+60&&py<cv.height+60; }
+function onScreen(x,y){ if(x==null) return true; const px=cam.x+x*cam.s, py=cam.y+y*cam.s; return px>-60&&py>-60&&px<viewWidth()+60&&py<viewHeight()+60; }
 function snd(name,x,y){
   if(!AUD.ctx||AUD.vol.mute||SAVES.catchup||REPLAY.creditsMode) return;
   const TIER={siren:'A',taps:'A',fanfare:'A',invaded:'A',impact:'A',betray:'A',request:'A',win:'A',lose:'A',pushback:'A',
@@ -190,7 +213,7 @@ function jukeRender(){ const box=$('jukeBox'); if(!box) return; { const mp=$('mi
 function showNotice(o){ const box=$('notices'); if(!box||SAVES.catchup||REPLAY.creditsMode||REPLAY.on&&o.buttons) return null; const n=document.createElement('div'); n.className='notice '+(o.kind||''); if(o.flag){ const img=document.createElement('img'); img.src=flagURL(o.flag); img.alt=''; n.appendChild(img); } const text=document.createElement('div'),title=document.createElement('b'),detail=document.createElement('span'); text.className='t'; title.textContent=o.title||''; detail.textContent=o.text||''; text.appendChild(title); text.appendChild(detail); n.appendChild(text); for(const b of (o.buttons||[])){ const bt=document.createElement('button'); bt.textContent=b.label; if(b.primary) bt.style.background='#2f5a8c'; bt.onclick=()=>{ n.remove(); if(b.onClick) b.onClick(); }; n.appendChild(bt); } if(!o.buttons||!o.buttons.length||o.closeable!==false){ const x=document.createElement('button'); x.textContent='✕'; x.title='Dismiss'; x.style.padding='4px 8px'; x.onclick=()=>n.remove(); n.appendChild(x); } box.appendChild(n); while(box.children.length>4) box.firstChild.remove(); if(o.ttl!==0) setTimeout(()=>{ if(n.parentNode) n.remove(); },o.ttl||9000); return n; }
 function invasionNotice(p,t,naval){ if(!me()||lifecycleState.over) return; const k='inv'+p.id; const now=performance.now(); if((notedAt[k]||0)+60000>now) return; notedAt[k]=now; showNotice({kind:'warn',flag:p.flag,title:`You are being invaded by ${p.name}`,text:naval?'A landing force is coming ashore.':'Ground forces are crossing your border.',buttons:[{label:'Take me there',primary:true,onClick:()=>goTo(t)}],ttl:12000}); }
 const notedAt={};
-function goTo(t){ const x=t%W,y=(t-x)/W; cam.s=Math.max(cam.s,2.2); cam.x=cv.width/2-(x+.5)*cam.s; cam.y=cv.height/2-(y+.5)*cam.s; }
+function goTo(t){ const x=t%W,y=(t-x)/W; cam.s=Math.max(cam.s,2.2); cam.centerOn(x+.5,y+.5,viewWidth(),viewHeight()); }
 const STATS={c:{},tl:[],nukedBy:{},campaigns:{},bigLoss:{n:0,by:''}};
 function sInc(k,n=1){ STATS.c[k]=(STATS.c[k]||0)+n; }
 function sMin(){ return Math.max(0,((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/60000); }
@@ -361,7 +384,7 @@ async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+enco
 function rollSeek(sec){ if(ROLL.paused){ ROLL.t0-=sec*1000; const now=ROLL.pausedAt; if(now-ROLL.t0<0) ROLL.t0=now; } else { ROLL.t0-=sec*1000; if(performance.now()-ROLL.t0<0) ROLL.t0=performance.now(); } ROLL.done=false; }
 function rollTogglePause(){ if(ROLL.paused){ ROLL.t0+=performance.now()-ROLL.pausedAt; ROLL.paused=false; if(AUD.ctx) AUD.ctx.resume(); } else { ROLL.paused=true; ROLL.pausedAt=performance.now(); if(AUD.ctx) AUD.ctx.suspend(); } }
 function resetPresentationState(){ badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; visualShots=[]; flagUrlCache=new WeakMap(); shellRenderState=new WeakMap(); shipRenderState.clear(); labelRenderState.clear(); selected.clear(); presentationState.matchRecorded=false; presentationState.controllerTasks.length=0; for(const key of Object.keys(centCache)) delete centCache[key]; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; }
-function resetWorld(){ replayCatchUpCancel(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
+function resetWorld(){ replayCatchUpCancel(); renderer.reset(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
 function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||'')+'/'; const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); overlay.style.display='none';
   const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 6px;font-size:24px">Your credits are posted</h2><p class="muted" style="font-size:13px;margin:0 0 14px">Anyone with the link can watch them, with the whole match replayed behind the roll.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><a href="${fb}" target="_blank" rel="noopener" class="sf-fb">Share on Facebook</a><button id="pmCopy">Copy link</button></div><div style="display:grid;gap:8px;grid-template-columns:1fr 1fr"><button id="pmPlay" style="background:#2f5a8c;font-weight:600;padding:10px">Play another match</button><button id="pmBoard" style="padding:10px">Leaderboard</button><button id="pmHome" style="padding:10px">Home page</button><button id="pmWatch" style="padding:10px">Watch again</button></div></div>`);
   m.querySelector('#pmCopy').onclick=()=>{ const b=m.querySelector('#pmCopy'); (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy link'; },1800); }).catch(()=>prompt('Copy this link:',url)); };
@@ -369,7 +392,7 @@ function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||''
 function endCredits(){ ROLL.on=false; ROLL.speedSet=false; $('side').classList.remove('rolling'); if(ROLL.watchReplay){ ROLL.watchReplay=false; ROLL.replay=false; engine.finishReplayWatch(); engine.configureReplay({creditsMode:false,on:false}); $('start').style.display='flex'; return; } if(AUD.ctx) applyVolumes();
   if(ROLL.replay&&REPLAY.creditsMode){ const sv=ROLL.saved; const finish=()=>{ engine.enterCreditsEndState(); engine.configureReplay({on:false,creditsMode:false,speed:1}); engine.setCommandHistory(sv.log,sv.hashes); overlay.classList.remove('replay'); ovTitle.textContent=sv.title; ovText.textContent=sv.text; const el=document.getElementById('ovPost'); if(el) el.textContent=sv.post; $('replayBar').style.display='none'; overlay.style.display='flex'; ROLL.replay=false; };
     if(clockState.tickN<sv.tick){ ROLL.replay=false; replayCatchUp(sv.tick,'Finishing the replay',{label:'Continue',fn:finish}); return; } finish(); return; } ROLL.playBox=null; ROLL.editBox=null; ROLL.approveBox=null; CUSTOM.previewing=false; JUKE.hold=false; { const cb=document.getElementById('ovCredits'); if(cb) cb.textContent='Watch credits again'; } cv.style.cursor=buildMode?'cell':'crosshair'; if(ROLL.top1Pending){ ROLL.top1Pending=false; setTimeout(()=>jukeSting('top1'),600); } if(ROLL.watch){ $('start').style.display='flex'; } else { overlay.style.display='flex'; } MUS.stop(); jukeStopSrc(); if(AUD.vol.musicOn) MUS.start(me()?'game':'menu'); }
-function drawCredits(){ if(!ROLL.on) return; const d=ROLL.data; const Wd=cv.width, Hd=cv.height;
+function drawCredits(){ if(!ROLL.on) return; const d=ROLL.data; const Wd=viewWidth(), Hd=viewHeight();
   // the map drifts slowly but never leaves the screen: fit-to-screen zoom, sinusoidal wander within the margins
   const el=(ROLL.paused?ROLL.pausedAt:performance.now())-ROLL.t0; const fitS=Math.min(Wd/W,Hd/H); cam.s=fitS*1.15; const mw=W*cam.s, mh=H*cam.s; const wx=Math.max(0,mw-Wd), wy=Math.max(0,mh-Hd); cam.x=-wx*(0.5+0.5*Math.sin(el/38000)); cam.y=-wy*(0.5+0.5*Math.cos(el/29000));
   ctx.fillStyle=ROLL.replay?'rgba(8,14,22,.5)':'rgba(8,14,22,.74)'; ctx.fillRect(0,0,Wd,Hd);
@@ -722,8 +745,8 @@ function fxScorch(x,y,r){ if(scorches.length>400) scorches.shift(); scorches.pus
 
 // ---------------------------------------------------------------- naval: transports and warships
 
-function structAt(px,py){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; const rad=Math.max(14,cam.s*4.5); for(const st of structures){ if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue; const sx=cam.x+(st.t%W+.5)*cam.s, sy=cam.y+((st.t-st.t%W)/W+.5)*cam.s; const d=(sx-mx)**2+(sy-my)**2; if(d<rad*rad&&d<bd){bd=d;best=st;} } return best; }
-function shipAt(px,py,any){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; for(const w of warships){ if((!any&&w.owner!==me().id)||w.x==null||!visAt(w.x,w.y)||(SHIPS[w.cls].sub&&!subSeenBy(w.id,me().id))) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; const d=(sx-mx)**2+(sy-my)**2; const rad=Math.max(10,cam.s*4); if(d<rad*rad&&d<bd){bd=d;best=w;} } return best; }
+function structAt(px,py){ const {x:mx,y:my}=viewport.local(px,py); let best=null,bd=1e9; const rad=Math.max(14,cam.s*4.5); for(const st of structures){ if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue; const sx=cam.x+(st.t%W+.5)*cam.s, sy=cam.y+((st.t-st.t%W)/W+.5)*cam.s; const d=(sx-mx)**2+(sy-my)**2; if(d<rad*rad&&d<bd){bd=d;best=st;} } return best; }
+function shipAt(px,py,any){ const {x:mx,y:my}=viewport.local(px,py); let best=null,bd=1e9; for(const w of warships){ if((!any&&w.owner!==me().id)||w.x==null||!visAt(w.x,w.y)||(SHIPS[w.cls].sub&&!subSeenBy(w.id,me().id))) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; const d=(sx-mx)**2+(sy-my)**2; const rad=Math.max(10,cam.s*4); if(d<rad*rad&&d<bd){bd=d;best=w;} } return best; }
 
 function cashFloat(x,y,g){ floaters.push({x,y,txt:'+$'+Math.round(g),age:0,col:'#ffd27a',big:true}); }
 
@@ -801,7 +824,6 @@ function presentEnd(title,text){ try{ recordMatch(title); }catch(e){ console.err
 const cv=document.getElementById('map'), ctx=cv.getContext('2d');
 const off=document.createElement('canvas'); off.width=W; off.height=H; const octx=off.getContext('2d');
 const img=octx.createImageData(W,H);
-const cam={x:0,y:0,s:4};
 let interpolationCache=null,interpolationPrevious={},interpolationAlpha=1,renderedInterpolatedActors=0;
 function prepareInterpolation(now){
   const frame=engine.interpolationFrame();
@@ -833,8 +855,9 @@ function installBrowserTestBridge(){
     mapState:me()?{neutralLand:Array.from(owner).reduce((n,o,t)=>n+(land[t]&&o<0?1:0),0),hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).reduce((n,v)=>n+(v?0:1),0):0,draft:!!draftState.draft}:null,
      input:{hover,commands:CMD.log.length,lastCommand:lastCommand()},
      replay:replayStatus(),
-     camera:{x:cam.x,y:cam.y,scale:cam.s},
-     canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
+     camera:{...cam.snapshot(),visibleBounds:cam.visibleBounds(viewWidth(),viewHeight())},
+     canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight},
+     rendering:renderer.diagnostics()
    });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
     get me(){ return me(); },
@@ -861,10 +884,10 @@ function installBrowserTestBridge(){
         $('startBtn').click();
         return {scratchCleared,status:status(),setupInstalled:mapState.landCount>0};
       },
-     renderRepeatedly(count=1){ const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; window.__STATEFALL_TEST_FREEZE__=true; for(let i=0;i<Math.max(0,Math.floor(count));i++) render(); const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`render purity violation: ${key} changed`); return {hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}; },
+      renderRepeatedly(count=1){ const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},wasFrozen=presentationFrozen(); setPresentationFrozen(true); try{ for(let i=0;i<Math.max(0,Math.floor(count));i++) render(); } finally { setPresentationFrozen(wasFrozen); } const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`render purity violation: ${key} changed`); return {hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}; },
       interpolationFrame:()=>engine.interpolationFrame(),
       interpolationCanvasStatus:()=>({alpha:interpolationAlpha,renderedActors:renderedInterpolatedActors}),
-     advanceWithRenderCadence(ticks,cadence=[1,2,5,9]){ const count=Math.max(0,Math.floor(ticks)),steps=new Set(cadence.map(value=>Math.max(0,Math.floor(value)))); if(!me()||!lifecycleState.paused) throw new Error('advanceWithRenderCadence requires a paused match'); window.__STATEFALL_TEST_FREEZE__=true; engine.setLifecycleForDiagnostics('paused',false); try{ for(let i=0;i<count;i++){ tick(); if(steps.has(i%10)) render(); } } finally { engine.setLifecycleForDiagnostics('paused',true); } return status(); },
+      advanceWithRenderCadence(ticks,cadence=[1,2,5,9]){ const count=Math.max(0,Math.floor(ticks)),steps=new Set(cadence.map(value=>Math.max(0,Math.floor(value)))),wasFrozen=presentationFrozen(); if(!me()||!lifecycleState.paused) throw new Error('advanceWithRenderCadence requires a paused match'); setPresentationFrozen(true); engine.setLifecycleForDiagnostics('paused',false); try{ for(let i=0;i<count;i++){ tick(); if(steps.has(i%10)) render(); } } finally { engine.setLifecycleForDiagnostics('paused',true); setPresentationFrozen(wasFrozen); } return status(); },
     focusTarget(kind='owned',scale=4){
       if(!me()) throw new Error('match not started');
       let target=-1,best=Infinity;
@@ -876,13 +899,13 @@ function installBrowserTestBridge(){
       }
       if(target<0) throw new Error('target not found: '+kind);
       const x=target%W,y=(target-x)/W;
-      cam.s=Math.min(12,Math.max(.35,+scale||4)); cam.x=cv.width/2-(x+.5)*cam.s; cam.y=cv.height/2-(y+.5)*cam.s; render();
-      return {tile:target,owner:owner[target],land:!!land[target],x:cv.width/2,y:cv.height/2};
+      cam.focus(x+.5,y+.5,viewWidth(),viewHeight(),+scale||4); render();
+      return {tile:target,owner:owner[target],land:!!land[target],x:viewWidth()/2,y:viewHeight()/2};
     },
      setCamera(scale,target='player'){
        if(!me()) throw new Error('match not started');
        const x=target==='world'?W/2:me().sx+.5,y=target==='world'?H/2:me().sy+.5;
-       cam.s=Math.min(12,Math.max(.35,+scale||1)); cam.x=cv.width/2-x*cam.s; cam.y=cv.height/2-y*cam.s; render(); return status();
+       cam.focus(x,y,viewWidth(),viewHeight(),+scale||1); render(); return status();
      },
       loadReplay(file,mode='watch'){ if(me()) throw new Error('loadReplay requires the start screen'); loadReplayFile(structuredClone(file),mode); return status(); },
       installLateGameScene(){
@@ -893,11 +916,19 @@ function installBrowserTestBridge(){
         document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
          presentationLabelPositions=[]; for(const [id,position] of scene.labelPositions){ presentationLabelPositions[id]=position; labelRenderState.set(id,position.slice()); }
        deterministicScene=true;
-       cam.s=5; cam.x=cv.width/2-cx*cam.s; cam.y=cv.height/2-cy*cam.s; drawMap(); updateUI(); updateHint(); render();
+        cam.focus(cx,cy,viewWidth(),viewHeight(),5); drawMap(); updateUI(); updateHint(); render();
        return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!renderState.fog.vis,hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
      },
-     screenToTile(x,y){ return tileAt(x,y); },
-      freezePresentation(){ if(me()&&!lifecycleState.paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const [id,position] of presentationLabelPositions.entries()) if(position) labelRenderState.set(id,position.slice()); } render(); return status(); }
+      screenToTile(x,y){ return tileAt(x,y); },
+      invalidateOwnershipRaster(){
+        if(!me()) throw new Error('match not started');
+        const previous=highlightId,target=players.find(player=>player.alive&&player.id!==me().id)?.id??me().id;
+        highlightId=target; try{ drawMap(); renderer.renderFrame(cam); } finally { highlightId=previous; }
+        return renderer.diagnostics();
+      },
+      rendererDiagnostics:()=>renderer.diagnostics(),
+       renderingLifecycle:()=>({rafPending:renderLoop.frame?1:0,rafCallbacks:renderLoop.callbacks,renderCount:renderLoop.renders,frozen:presentationFrozen(),...rendering.diagnostics()}),
+       freezePresentation(){ if(me()&&!lifecycleState.paused) togglePause(); setPresentationFrozen(true); if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const [id,position] of presentationLabelPositions.entries()) if(position) labelRenderState.set(id,position.slice()); } render(); return status(); }
   })});
 }
 installBrowserTestBridge();
@@ -920,22 +951,26 @@ function drawMap(){
         if(border===2) c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; else if(border===1) c=[c[0]*0.85,c[1]*0.85,c[2]*0.85]; else if(o===myId) c=[Math.min(255,c[0]*1.1),Math.min(255,c[1]*1.1),Math.min(255,c[2]*1.1)];
         if(shelled[t]>tickN){ const k=0.55+0.25*(1-(shelled[t]-tickN)/SUPPRESS_TICKS); c=[c[0]*k,c[1]*k,c[2]*k]; }
         if(pickMode&&areaOf&&hoverPickArea>=0&&areaOf[t]===hoverPickArea){ c=[Math.min(255,c[0]*1.25+30),Math.min(255,c[1]*1.25+30),Math.min(255,c[2]*1.25+30)]; }
-        if(highlightId>=0){ if(o===highlightId){ const pulse=0.75+0.35*Math.sin(performance.now()/150); c=[Math.min(255,c[0]*pulse+40),Math.min(255,c[1]*pulse+40),Math.min(255,c[2]*pulse+40)]; } else c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; }
+        if(highlightId>=0){ if(o===highlightId){ const pulse=renderer.hybrid?1:0.75+0.35*Math.sin(performance.now()/150); c=[Math.min(255,c[0]*pulse+40),Math.min(255,c[1]*pulse+40),Math.min(255,c[2]*pulse+40)]; } else c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; }
       }
     }
     if(fogVis&&!fogVis[t]){ const g=(c[0]*0.3+c[1]*0.59+c[2]*0.11); c=[(c[0]*0.35+g*0.65)*0.62,(c[1]*0.35+g*0.65)*0.62,(c[2]*0.35+g*0.65)*0.66]; }
     const i=t*4; d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2]; d[i+3]=255;
   }
   octx.putImageData(img,0,0);
+  renderer.invalidateRaster(off);
 }
 function render(){
-  const cw=cv.width, ch=cv.height;
+  renderLoop.renders++;
+  const cw=viewWidth(), ch=viewHeight(),dpr=viewport.metrics.effectiveDpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,cw,ch);
   renderedInterpolatedActors=0; prepareInterpolation(performance.now());
-  ctx.fillStyle='#132a3d'; ctx.fillRect(0,0,cw,ch);
-  if(!me()){ if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render); return; }
-  if(highlightId>=0||pickMode) { hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf)?engineState.garrison.areaOf[hover]:-1; drawMap(); }
+  if(!renderer.hybrid){ ctx.fillStyle='#132a3d'; ctx.fillRect(0,0,cw,ch); }
+  if(!me()){ renderer.renderFrame(cam); scheduleRender(); return; }
+  // Pixi keeps a static highlight raster; an animated overlay remains future work.
+  if((highlightId>=0&&!renderer.hybrid)||pickMode) { hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf)?engineState.garrison.areaOf[hover]:-1; drawMap(); }
   ctx.imageSmoothingEnabled=false;
-  ctx.drawImage(off,cam.x,cam.y,W*cam.s,H*cam.s);
+  if(!renderer.hybrid) ctx.drawImage(off,cam.x,cam.y,W*cam.s,H*cam.s);
   const s=cam.s;
   // attacks: pulse frontier tiles
   ctx.globalAlpha=0.5+0.3*Math.sin(performance.now()/120);
@@ -1141,23 +1176,23 @@ function render(){
       ctx.font='11px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3;
       const lbl=`${players[own].name} air defense · ${sites} ${mine||!renderState.fog.vis?'':'known '}site${sites!==1?'s':''}, ${ships} ship${ships!==1?'s':''}${st&&shelled[st.t]>clockState.tickN?' · this one knocked out':st&&st.cool>clockState.tickN?' · reloading':''}`;
       ctx.strokeText(lbl,lx,ly-R*s-6); ctx.fillText(lbl,lx,ly-R*s-6); } }
-  if(ROLL.on){ drawCredits(); if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render); return; }
+  if(ROLL.on){ drawCredits(); renderer.renderFrame(cam); scheduleRender(); return; }
   for(const na of nukeAlerts){ na.age++; const al=Math.min(1,(na.life-na.age)/20); const blink=0.5+0.5*Math.sin(na.age*0.5); const p=players[na.owner];
-    const fx=cam.x+na.from[0]*s, fy=cam.y+na.from[1]*s; const onS=fx>=0&&fy>=0&&fx<=cv.width&&fy<=cv.height;
+    const fx=cam.x+na.from[0]*s, fy=cam.y+na.from[1]*s; const onS=fx>=0&&fy>=0&&fx<=cw&&fy<=ch;
     ctx.save(); ctx.globalAlpha=al;
     if(onS){ ctx.strokeStyle=`rgba(255,80,80,${0.4+0.6*blink})`; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(fx,fy,Math.max(10,s*8)*(1+0.3*blink),0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(fx,fy,Math.max(18,s*16),0,Math.PI*2); ctx.stroke(); }
-    else { const cx=cv.width/2, cy=cv.height/2; const ang=Math.atan2(fy-cy,fx-cx); const m=40; const ex=Math.max(m,Math.min(cv.width-m,cx+Math.cos(ang)*cv.width)), ey=Math.max(m,Math.min(cv.height-m,cy+Math.sin(ang)*cv.height));
+    else { const cx=cw/2, cy=ch/2; const ang=Math.atan2(fy-cy,fx-cx); const m=40; const ex=Math.max(m,Math.min(cw-m,cx+Math.cos(ang)*cw)), ey=Math.max(m,Math.min(ch-m,cy+Math.sin(ang)*ch));
       ctx.translate(ex,ey); ctx.rotate(ang); ctx.fillStyle=`rgba(255,80,80,${0.5+0.5*blink})`; ctx.beginPath(); ctx.moveTo(22,0); ctx.lineTo(-10,-14); ctx.lineTo(-4,0); ctx.lineTo(-10,14); ctx.closePath(); ctx.fill(); ctx.strokeStyle='#0f1a26'; ctx.lineWidth=2; ctx.stroke(); ctx.rotate(-ang); ctx.font='bold 12px \"Segoe UI\",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=3; ctx.strokeText(p.name,0,30); ctx.fillText(p.name,0,30); }
     ctx.restore();
     if(na.age<=1||na.age%60===0){ /* nothing */ }
     // card at the top of the screen
-    { const W2=Math.min(cv.width-40,520), H2=54; const cx=cv.width/2, cy=40; ctx.save(); ctx.globalAlpha=al; ctx.fillStyle='rgba(60,10,10,.92)'; ctx.strokeStyle=`rgba(255,80,80,${0.5+0.5*blink})`; ctx.lineWidth=3; ctx.beginPath(); ctx.roundRect?ctx.roundRect(cx-W2/2,cy-H2/2,W2,H2,10):ctx.rect(cx-W2/2,cy-H2/2,W2,H2); ctx.fill(); ctx.stroke();
+    { const W2=Math.min(cw-40,520), H2=54; const cx=cw/2, cy=40; ctx.save(); ctx.globalAlpha=al; ctx.fillStyle='rgba(60,10,10,.92)'; ctx.strokeStyle=`rgba(255,80,80,${0.5+0.5*blink})`; ctx.lineWidth=3; ctx.beginPath(); ctx.roundRect?ctx.roundRect(cx-W2/2,cy-H2/2,W2,H2,10):ctx.rect(cx-W2/2,cy-H2/2,W2,H2); ctx.fill(); ctx.stroke();
       drawFlag(ctx,p.flag,cx-W2/2+14,cy-14,42,28); ctx.font='bold 20px \"Segoe UI\",system-ui,sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.fillText(`NUKED BY ${p.name.toUpperCase()}`,cx-W2/2+70,cy+7); ctx.restore(); } }
   nukeAlerts=nukeAlerts.filter(na=>na.age<na.life);
-  if(songBanner){ const b=songBanner; b.age++; const al=Math.min(1,b.age/8,Math.max(0,(b.life-b.age)/15)); ctx.save(); ctx.globalAlpha=al; ctx.font='500 15px "Segoe UI",system-ui,sans-serif'; const txt='♪  Now playing: '+b.title; const tw=ctx.measureText(txt).width; const bw=tw+40,bh=40,bx=cv.width/2-bw/2,by=cv.height*0.14; ctx.fillStyle='rgba(15,26,38,.9)'; ctx.strokeStyle='rgba(127,179,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.roundRect?ctx.roundRect(bx,by,bw,bh,10):ctx.rect(bx,by,bw,bh); ctx.fill(); ctx.stroke(); ctx.fillStyle='#e8ecef'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(txt,cv.width/2,by+bh/2); ctx.textBaseline='alphabetic'; ctx.restore(); if(b.age>=b.life) songBanner=null; }
+  if(songBanner){ const b=songBanner; b.age++; const al=Math.min(1,b.age/8,Math.max(0,(b.life-b.age)/15)); ctx.save(); ctx.globalAlpha=al; ctx.font='500 15px "Segoe UI",system-ui,sans-serif'; const txt='♪  Now playing: '+b.title; const tw=ctx.measureText(txt).width; const bw=tw+40,bh=40,bx=cw/2-bw/2,by=ch*0.14; ctx.fillStyle='rgba(15,26,38,.9)'; ctx.strokeStyle='rgba(127,179,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.roundRect?ctx.roundRect(bx,by,bw,bh,10):ctx.rect(bx,by,bw,bh); ctx.fill(); ctx.stroke(); ctx.fillStyle='#e8ecef'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(txt,cw/2,by+bh/2); ctx.textBaseline='alphabetic'; ctx.restore(); if(b.age>=b.life) songBanner=null; }
   { const live=badges.filter(b=>b.age>0); const cur=live[0]; if(!cur||cur.age>=cur.life-25){ const nxt=badges.find(b=>b.age===0); if(nxt){ nxt.age=1; if(nxt.snd) snd(nxt.snd); } } }
   for(const b of badges){ if(b.age===0) continue; b.age++; const inA=Math.min(1,b.age/12), outA=Math.min(1,(b.life-b.age)/25); const al=Math.min(inA,outA); const ease=1-Math.pow(1-inA,3);
-    const cx=cv.width/2, cy=cv.height*0.36; const W2=Math.min(cv.width-40,680); const fw=84,fh=56; const textX=-W2/2+22+fw+18, textW=W2/2-22-(b.kflag?54:0)-textX-8;
+    const cx=cw/2, cy=ch*0.36; const W2=Math.min(cw-40,680); const fw=84,fh=56; const textX=-W2/2+22+fw+18, textW=W2/2-22-(b.kflag?54:0)-textX-8;
     ctx.save(); ctx.font='500 17px \"Segoe UI\",system-ui,sans-serif'; const words=((b.kind==='unify'?'UNIFIED — ':'FALLEN — ')+b.sub).split(' '); const lines=[]; let cur=''; for(const w of words){ const t=cur?cur+' '+w:w; if(ctx.measureText(t).width>textW&&cur){ lines.push(cur); cur=w; } else cur=t; } if(cur) lines.push(cur); ctx.restore();
     const H2=Math.max(112,70+lines.length*22); ctx.save(); ctx.globalAlpha=al; ctx.translate(cx,cy); ctx.scale(0.9+0.1*ease,0.9+0.1*ease);
     ctx.fillStyle='rgba(15,26,38,.94)'; ctx.strokeStyle=b.col; ctx.lineWidth=3; ctx.beginPath(); ctx.roundRect?ctx.roundRect(-W2/2,-H2/2,W2,H2,14):ctx.rect(-W2/2,-H2/2,W2,H2); ctx.fill(); ctx.stroke();
@@ -1174,9 +1209,15 @@ function render(){
   if(lifecycleState.userPaused){ ctx.fillStyle='rgba(10,20,30,.35)'; ctx.fillRect(0,0,cw,ch); ctx.font='bold 28px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Paused',cw/2,ch/2); ctx.font='13px "Segoe UI",system-ui,sans-serif'; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillText('Space to resume',cw/2,ch/2+24); }
   // build cursor
   if(buildMode&&hover>=0){ const ht=buildMode!=='nuke'?(snapBuild(me().id,hover,buildMode)>=0?snapBuild(me().id,hover,buildMode):hover):hover; const x=ht%W,y=(ht-x)/W; ctx.strokeStyle=canBuildAt(hover)?'#7fffa0':'#ff6b6b'; ctx.lineWidth=2; ctx.strokeRect(cam.x+x*s-2,cam.y+y*s-2,s+4,s+4); }
-  if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render);
+  renderer.renderFrame(cam);
+  scheduleRender();
 }
 const centCache={}; let highlightId=-1;
+function setHighlight(id){
+  if(id===highlightId) return;
+  highlightId=id;
+  if(renderer.hybrid&&me()) drawMap();
+}
 function centroid(p){
   if(clockState.tickN%20!==0&&centCache[p.id]) return centCache[p.id];
   const c=calculateCentroid(p.id); centCache[p.id]=c; return c;
@@ -1288,12 +1329,11 @@ function drawShip(kind,x,y,hdg,r,col,hp,maxhp,c=ctx){
 }
 // ---------------------------------------------------------------- input
 let buildMode=null, hover=-1, drag=null, selected=new Set(), box=null, hoverShip=null, hoverStruct=null, pickMode=null;
-function resize(){ const st=document.getElementById('stage'); cv.width=st.clientWidth; cv.height=st.clientHeight; }
-window.addEventListener('resize',resize);
-function tileAt(px,py){ const x=Math.floor((px-cam.x)/cam.s), y=Math.floor((py-cam.y)/cam.s); return inb(x,y)?idx(x,y):-1; }
+function resize(){ viewport.measure(); }
+function tileAt(px,py){ return cam.screenToTile(px,py,W,H); }
 function hideCtx(){ ctx_.style.display='none'; }
 const ctx_=document.getElementById('ctx');
-cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on) return; const r=cv.getBoundingClientRect(); const t=tileAt(e.clientX-r.left,e.clientY-r.top);
+cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on) return; const local=viewport.local(e.clientX,e.clientY),t=tileAt(local.x,local.y);
   hideCtx(); if(buildMode){ setBuild(null); return; } if(lifecycleState.over||t<0) return;
   const items=[];
   if(START.fog){ const ready=fogState.planeCool<=clockState.tickN; items.push(`<div class="h">Intel</div><button class="act" ${!ready||me().gold<FOG.plane.cost?'disabled':''} data-act="plane"><span>Call spy plane here<b>${!airfieldsOf(me().id).length?'Needs an airfield':ready?FOG.plane.cost+' gold — reveals '+FOG.plane.r+' tiles for '+Math.round(FOG.plane.dur/10)+' s':'Ready in '+Math.ceil((fogState.planeCool-clockState.tickN)/10)+' s'}</b></span></button>`);
@@ -1351,20 +1391,20 @@ cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on
   };
 });
 window.addEventListener('mousedown',e=>{ if(!e.target.closest('#ctx')) hideCtx(); });
-cv.addEventListener('mousedown',e=>{ if(ROLL.on) return; if(e.button!==0) return; if(e.shiftKey){ const r=cv.getBoundingClientRect(); box={x0:e.clientX-r.left,y0:e.clientY-r.top,x1:e.clientX-r.left,y1:e.clientY-r.top}; return; } drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false}; });
-window.addEventListener('mousemove',e=>{ if(ROLL.on){ const r=cv.getBoundingClientRect(); ROLL.mx=e.clientX-r.left; ROLL.my=e.clientY-r.top; return; }
-  if(box){ const r=cv.getBoundingClientRect(); box.x1=e.clientX-r.left; box.y1=e.clientY-r.top; }
-  if(drag){ const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>4) drag.moved=true; if(drag.moved){cam.x=drag.cx+dx;cam.y=drag.cy+dy;} }
-  const r=cv.getBoundingClientRect(); hover=tileAt(e.clientX-r.left,e.clientY-r.top); hoverShip=shipAt(e.clientX,e.clientY,true); hoverStruct=structAt(e.clientX,e.clientY); showTip(e);
+cv.addEventListener('mousedown',e=>{ if(ROLL.on) return; if(e.button!==0) return; if(e.shiftKey){ const local=viewport.local(e.clientX,e.clientY); box={x0:local.x,y0:local.y,x1:local.x,y1:local.y}; return; } drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false}; });
+window.addEventListener('mousemove',e=>{ if(ROLL.on){ const local=viewport.local(e.clientX,e.clientY); ROLL.mx=local.x; ROLL.my=local.y; return; }
+  if(box){ const local=viewport.local(e.clientX,e.clientY); box.x1=local.x; box.y1=local.y; }
+  if(drag){ const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>4) drag.moved=true; if(drag.moved){ cam.x=drag.cx; cam.y=drag.cy; cam.pan(dx,dy); } }
+  { const local=viewport.local(e.clientX,e.clientY); hover=tileAt(local.x,local.y); } hoverShip=shipAt(e.clientX,e.clientY,true); hoverStruct=structAt(e.clientX,e.clientY); showTip(e);
 });
-window.addEventListener('mouseup',e=>{ if(ROLL.on){ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; const b=ROLL.skipBox; if(e.button===0&&b&&mx>=b[0]&&mx<=b[0]+b[2]&&my>=b[1]&&my<=b[1]+b[3]){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); }
+window.addEventListener('mouseup',e=>{ if(ROLL.on){ const local=viewport.local(e.clientX,e.clientY),mx=local.x,my=local.y; const b=ROLL.skipBox; if(e.button===0&&b&&mx>=b[0]&&mx<=b[0]+b[2]&&my>=b[1]&&my<=b[1]+b[3]){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); }
     if(e.button===0&&ROLL.tBoxes){ const tb=ROLL.tBoxes.find(b=>mx>=b[0]&&mx<=b[0]+b[2]&&my>=b[1]&&my<=b[1]+b[3]); if(tb){ tb[4](); drag=null; return; } }
     if(CUSTOM.previewing&&e.button===0){ const eb=ROLL.editBox, ab=ROLL.approveBox; const hit=(bb)=>bb&&mx>=bb[0]&&mx<=bb[0]+bb[2]&&my>=bb[1]&&my<=bb[1]+bb[3]; if(hit(eb)){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); ROLL.on=false; JUKE.hold=false; jukeStopSrc(0.3); MUS.stop(); CUSTOM.previewing=false; openBuilder(ROLL.data,CUSTOM.data); drag=null; return; } if(hit(ab)){ if(CUSTOM.approved){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); postedModal(); } else approveCustom().then(ok=>{ if(ok){ ROLL.rolled=true; if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); postedModal(); } }); drag=null; return; } } const pb=ROLL.playBox; if(pb&&e.button===0&&mx>=pb[0]&&mx<=pb[0]+pb[2]&&my>=pb[1]&&my<=pb[1]+pb[3]){ location.href=(WP?WP.base:'?')+'?seed='+encodeURIComponent(ROLL.data.seed)+'&cls='+encodeURIComponent(ROLL.data.cls||'Standard'); } drag=null; return; }
   if(box){ const x0=Math.min(box.x0,box.x1),x1=Math.max(box.x0,box.x1),y0=Math.min(box.y0,box.y1),y1=Math.max(box.y0,box.y1); if(!e.shiftKey||true){ if(x1-x0<4&&y1-y0<4){ const w=shipAt(e.clientX,e.clientY); if(w){ if(selected.has(w)) selected.delete(w); else selected.add(w); } } else { for(const w of warships){ if(w.owner!==me().id||w.x==null) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; if(sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) selected.add(w); } } } box=null; updateHint(); return; }
   if(drag&&!drag.moved){ const w=shipAt(e.clientX,e.clientY); if(w){ selected.clear(); selected.add(w); updateHint(); } else { if(selected.size){ selected.clear(); updateHint(); } issueClick(hover); } }
   drag=null; });
-cv.addEventListener('wheel',e=>{ e.preventDefault(); if(ROLL.on){ rollSeek(e.deltaY>0?2:-2); return; } const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
-  const ns=Math.min(12,Math.max(0.35,cam.s*(e.deltaY<0?1.15:1/1.15))); cam.x=mx-(mx-cam.x)*ns/cam.s; cam.y=my-(my-cam.y)*ns/cam.s; cam.s=ns; },{passive:false});
+cv.addEventListener('wheel',e=>{ e.preventDefault(); if(ROLL.on){ rollSeek(e.deltaY>0?2:-2); return; } const {x,y}=viewport.local(e.clientX,e.clientY);
+  cam.zoomAt(x,y,cam.s*(e.deltaY<0?1.15:1/1.15)); },{passive:false});
 window.addEventListener('keydown',e=>{ const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='SELECT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return; if(ROLL.on&&!(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'))){ if(e.key===' '){ e.preventDefault(); rollTogglePause(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); rollSeek(-5); } else if(e.key==='ArrowRight'){ e.preventDefault(); rollSeek(5); } else if(e.key==='Escape'){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); } return; }
   if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'){ if(closePauseModal()) return; return; } if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); return; }
   if(e.key==='Escape'&&$('modal').style.display!=='none'){ if(!closePauseModal()) closeModal(); return; }
@@ -1427,8 +1467,8 @@ function updateUI(){
   $('diplo').innerHTML=dh;
   $('diplo').querySelectorAll('button[data-acc]').forEach(b=>b.onclick=()=>{ issue('accept',+b.dataset.acc,b.dataset.type,+b.dataset.amt||0); });
   $('diplo').querySelectorAll('button[data-dec]').forEach(b=>b.onclick=()=>issue('decline',+b.dataset.dec));
-  $('board').onclick=e=>{ const r=e.target.closest('[data-pid]'); if(!r) return; const p=players[+r.dataset.pid]; const c=syncLabelPositions()[p.id]||centroid(p); cam.x=cv.width/2-c[0]*cam.s; cam.y=cv.height/2-c[1]*cam.s; };
-  $('board').onmouseover=e=>{ const r=e.target.closest('[data-pid]'); highlightId=r?+r.dataset.pid:-1; }; $('board').onmouseleave=()=>{ highlightId=-1; drawMap(); };
+  $('board').onclick=e=>{ const r=e.target.closest('[data-pid]'); if(!r) return; const p=players[+r.dataset.pid]; const c=syncLabelPositions()[p.id]||centroid(p); cam.centerOn(c[0],c[1],viewWidth(),viewHeight()); };
+  $('board').onmouseover=e=>{ const r=e.target.closest('[data-pid]'); setHighlight(r?+r.dataset.pid:-1); }; $('board').onmouseleave=()=>{ setHighlight(-1); if(!renderer.hybrid) drawMap(); };
   const dead=players.filter(p=>!p.alive&&p.kind!=='neutral'&&p.killedBy!=null).sort((a,b)=>(b.diedAt||0)-(a.diedAt||0));
   const sorted=players.filter(p=>p.alive&&p.kind!=='neutral').sort((a,b)=>b.tiles-a.tiles).slice(0,8);
   $('board').innerHTML=sorted.map(p=>`<div data-pid="${p.id}" style="cursor:pointer"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px" alt="">${p.team!=null?`<span style="font-size:10px;color:${TEAM_COLS[p.team]};margin-right:4px">${TEAM_NAMES[p.team][0]}</span>`:''}${p===me()?'<b>You</b> <span class="muted">('+me().name+')</span>':p.name}${relBadge(p)}</span><span>${(p.tiles/mapState.landCount*100).toFixed(1)}% · ${knownTroops(p)}</span></div>`).join('')+dead.map(p=>`<div style="opacity:.55"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px;filter:grayscale(1)" alt=""> <s>${p.name}</s></span><span class="muted">✕ by ${players[p.killedBy].name}</span></div>`).join('');
@@ -1513,6 +1553,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.13</td><td>First development-only Phase E pixi-hybrid foundation; production and default rendering remain Canvas.</td></tr>
   <tr><td>1.10.12</td><td>Development-only completed Phase D2 two-human lockstep and shared replay technical proof.</td></tr>
  <tr><td>1.10.11</td><td>Fresh candidate identity with trailer capture output isolated from production builds.</td></tr>
  <tr><td>1.10.10</td><td>Phase D1 deterministic runtime seam: counted RNG, command/replay bookkeeping, canonical v1 serialization, and tick ordering are importable without browser APIs while simulation behavior remains unchanged.</td></tr>
@@ -1622,8 +1663,8 @@ $('startBtn').onclick=()=>{
   Object.assign(START,engineState.rules.settings);
   $('seedIn').value=START.seed; $('start').style.display='none'; AUD.menuMute=false; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on) MUS.start('game');
   exposeStateOracle(); if(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_PAUSE_ON_START__===true) engine.setLifecycleForDiagnostics('paused',true); colorCache(); resize();
-  cam.s=2.2; cam.x=cv.width/2-(me().sx+.5)*cam.s; cam.y=cv.height/2-(me().sy+.5)*cam.s; $('mySw').style.background=me().color; $('myFlag').src=flagURL(me().flag,36,24); $('myName').textContent=me().name;
-  drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); window.__tickTimer=setInterval(()=>{ if(!REPLAY.on||clockState.tickN<REPLAY.toTick) tick(); if(clockState.tickN%300===0&&!lifecycleState.paused) autoSave(); if(REPLAY.on){ for(let i=1;i<REPLAY.speed&&clockState.tickN<REPLAY.toTick;i++) tick(); if(clockState.tickN===REPLAY.toTick&&!lifecycleState.paused){ if(REPLAY.creditsMode) runEngineOperation(()=>engine.pauseCreditsAtTarget()); else runEngineOperation(()=>engine.finishReplayWatch()); } if(clockState.tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },TICK); if(!window.__renderLoop){ window.__renderLoop=true; requestAnimationFrame(render); } log(`Seed ${START.seed}. Difficulty: ${DIFF().label}${START.quick?', quick start':''}. Starting with ${Math.round(me().troops)} troops and ${Math.round(me().gold)} gold.`,true); };
+  cam.focus(me().sx+.5,me().sy+.5,viewWidth(),viewHeight(),2.2); $('mySw').style.background=me().color; $('myFlag').src=flagURL(me().flag,36,24); $('myName').textContent=me().name;
+  drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); window.__tickTimer=setInterval(()=>{ if(!REPLAY.on||clockState.tickN<REPLAY.toTick) tick(); if(clockState.tickN%300===0&&!lifecycleState.paused) autoSave(); if(REPLAY.on){ for(let i=1;i<REPLAY.speed&&clockState.tickN<REPLAY.toTick;i++) tick(); if(clockState.tickN===REPLAY.toTick&&!lifecycleState.paused){ if(REPLAY.creditsMode) runEngineOperation(()=>engine.pauseCreditsAtTarget()); else runEngineOperation(()=>engine.finishReplayWatch()); } if(clockState.tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },TICK); scheduleRender(); log(`Seed ${START.seed}. Difficulty: ${DIFF().label}${START.quick?', quick start':''}. Starting with ${Math.round(me().troops)} troops and ${Math.round(me().gold)} gold.`,true); };
 // restore start-card choices after a restart (runs last, once everything is built)
 { let saved=null; try{ saved=JSON.parse(sessionStorage.getItem('statefall-restart')||'null'); sessionStorage.removeItem('statefall-restart'); }catch(e){}
   if(saved){ if(saved.seed) $('seedIn').value=saved.seed; engine.configure({difficulty:saved.diff||'normal'}); $('diffSel').value=matchState.difficulty; START.map=saved.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); START.teams=saved.teams||0; $('teamSel').value=String(START.teams);
