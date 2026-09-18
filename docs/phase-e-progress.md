@@ -1,6 +1,6 @@
 # Phase E Progress
 
-_Development record for game/package 1.10.14, build `2026-09-18-phase-e2-pixi-structures`, on 18 September 2026. E1 implementation `4361ad7` and documentation `e5c4228` are the prior milestone. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record for game/package 1.10.14, build `2026-09-18-phase-e2-pixi-structures`, committed at `78564c2` on 18 September 2026. E1 implementation `4361ad7` and documentation `e5c4228` are the prior milestone. This is not a release, handoff, production change, Phase E completion, or final-art approval._
 
 ## E2 Implemented Slice
 

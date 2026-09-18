@@ -4,7 +4,7 @@ _Updated 18 September 2026 for the bounded Phase E2 Pixi structure-base slice._
 
 ## Repository and production
 
-- Source authority: the local Git repository. Development game/package 1.10.14 build `2026-09-18-phase-e2-pixi-structures` contains the bounded Phase E2 structure-base slice. E1 implementation commit `4361ad7` and documentation commit `e5c4228` are the prior milestone. Plugin remains 1.10.7 and the simulation baseline remains 1.10.8. This work is not handed off or released.
+- Source authority: the local Git repository. Development game/package 1.10.14 build `2026-09-18-phase-e2-pixi-structures` contains the bounded Phase E2 structure-base slice committed at `78564c2`. E1 implementation commit `4361ad7` and documentation commit `e5c4228` are the prior milestone. Plugin remains 1.10.7 and the simulation baseline remains 1.10.8. This work is not handed off or released.
 - Published GitHub state: `origin/main` remains at `de724b5`, the initial game 1.10.5/plugin 1.10.4 import. None of the later local history, including recovery, reconciliation, and normalization commits, has been pushed. GitHub must not be treated as a complete backup until publication is explicitly authorized and completed.
 - Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
 - Production: [WorldRTS.com](https://www.worldrts.com/) is a live public WordPress site. Ken confirmed successful installation and production verification of game 1.10.7/plugin 1.10.6 on 14 September 2026. The earlier authorized snapshot is retained as the pre-release baseline in `docs/production-baseline-2026-09-12.md`.
