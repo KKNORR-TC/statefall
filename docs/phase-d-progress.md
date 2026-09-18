@@ -1,6 +1,6 @@
 # Phase D Completion Evidence
 
-_Certified technically complete on 18 September 2026 in local candidate game 1.10.11, build `2026-09-18-phase-d2`, with no critical or high defects after final static review. This is implementation and verification evidence, not release or production approval. The worktree is dirty and uncommitted at HEAD `ad301888827571e57514766c9892f12943197d05`; review, commit, and handoff authorization remain pending._
+_Certified technically complete on 18 September 2026 in local candidate game 1.10.11, build `2026-09-18-phase-d2`, with no critical or high defects after final static review. This is implementation and verification evidence, not release or production approval. Phase D was subsequently committed locally at `16aec35`; it was not handed off or released._
 
 ## Implemented Boundary
 
@@ -76,6 +76,6 @@ The game ZIP contains 24 entries representing the 23 manifest files plus the rel
 
 ## Disposition
 
-Phase D architecture, implementation, and technical gates are certified complete with no critical or high defects after final static review. The sole current blocker is administrative: the Phase D source and evidence remain dirty/uncommitted at HEAD `ad301888827571e57514766c9892f12943197d05`, and review, commit, and handoff authorization are pending. Candidate 1.10.11 is therefore **NO-GO for handoff or release**. Nothing was committed, pushed, deployed, published, accessed in production, or copied to `working releases`.
+Phase D architecture, implementation, and technical gates are certified complete with no critical or high defects after final static review. Phase D source and evidence were subsequently committed locally at `16aec35`, but candidate 1.10.11 was not handed off or released. Nothing was pushed, deployed, published, accessed in production, or copied to `working releases` as part of this evidence run.
 
 Phase D2 relay/two-client proof and Phase E renderer work may now use the available engine prerequisites, but neither is part of this candidate's completed evidence.

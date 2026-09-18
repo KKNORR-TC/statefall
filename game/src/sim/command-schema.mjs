@@ -1,4 +1,4 @@
-export const SIMPLE_COMMAND_KINDS=Object.freeze(['focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd']);
+export const SIMPLE_COMMAND_KINDS=Object.freeze(['focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd','surrender']);
 export const MENU_ACTIONS=Object.freeze(['plane','fpatrol','bstrike','recallnear','upgrade','buyf','buyb','buyc','paradrop','sat','refit','move','blockade','warship','build','focus','unfocus','repair','repairstop','cancelship','cancel','nuke','nap','ally','war','giveTroops','giveGold','askTroops','askGold','pickreinf','pickattack','attackfrom','transportfrom','transport']);
 export const COMMAND_KINDS=Object.freeze(['menu','click',...SIMPLE_COMMAND_KINDS]);
 const commandKinds=new Set(COMMAND_KINDS),menuActions=new Set(MENU_ACTIONS);
@@ -35,7 +35,7 @@ export function assertCommandArguments(kind,args){
     case 'airAuto': case 'logAuto': case 'autoFire': valid=args.length===1&&typeof args[0]==='boolean'; break;
     case 'recall': case 'decline': valid=args.length===1&&integer(args[0]); break;
     case 'recallAll': valid=args.length===1&&(args[0]==='all'||args[0]==='dmg'); break;
-    case 'sat': case 'decShare': case 'decWar': valid=args.length===0; break;
+    case 'sat': case 'decShare': case 'decWar': case 'surrender': valid=args.length===0; break;
     case 'continueAfterEnd': valid=args.length===1&&typeof args[0]==='boolean'; break;
     case 'accept': valid=args.length===3&&integer(args[0])&&['ally','nap','reqTroops','reqGold'].includes(args[1])&&finite(args[2],0,1_000_000_000); break;
   }

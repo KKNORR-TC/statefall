@@ -88,8 +88,10 @@ export function createWorldSetup({
   function setup(){
     mapGeneration.genMap();
     resetCountryPool(); if(setupState.chosenFlag) engineState.replaceCountryPool(setupState.countryPool.filter(i=>i!==setupState.chosenFlag.idx));
-    { const player=makePlayer('You',colors[0],'human'); engineState.setPlayerId(player.id); } if(setupState.chosenFlag){ players[engineState.match.playerId].flag=ownFlag(setupState.chosenFlag); } const human=players[engineState.match.playerId]; human.name=human.flag.name; human.sx=null;
-    for(let i=0;i<bots;i++) makePlayer(botNames[i],colors[i+1],'bot');
+    const humanSeats=settings.humanSeats??1,humans=[];
+    { const player=makePlayer('You',colors[0],'human'); humans.push(player); engineState.setPlayerId(player.id); } if(setupState.chosenFlag){ players[engineState.match.playerId].flag=ownFlag(setupState.chosenFlag); } const human=players[engineState.match.playerId]; human.name=human.flag.name; human.sx=null;
+    for(let i=1;i<humanSeats;i++) humans.push(makePlayer(`Player ${i+1}`,colors[i],'human'));
+    for(let i=0;i<bots+1-humanSeats;i++) makePlayer(botNames[i],colors[humanSeats+i],'bot');
     if(settings.customBots) for(const cb of settings.customBots){ const botPlayers=players.filter(q=>q.kind==='bot'); const b=botPlayers[Math.min(botPlayers.length-1,cb.slot|0)]; if(b){ b.flag=ownFlag({name:cb.name,layers:cb.layers,idx:-1,custom:true,userId:cb.userId}); b.name=cb.name; b.customNation={userId:cb.userId,name:cb.name}; onCustomBot(b); } }
     mapState.NP=256; mapState.regCount=new Int32Array(regions.length*mapState.NP);
     makeNeutrals();
@@ -99,7 +101,7 @@ export function createWorldSetup({
       const takeover=(p,c)=>{ for(let t=0;t<W*H;t++) if(owner[t]===c.id) setOwner(t,p.id); c.alive=false; c.tiles=0; const siblings=players.filter(q=>q.country===c.country).length; if(!(p.flag&&p.flag.custom)){ p.name=(c.country!=null&&siblings===1)?setupState.PRESET.names[c.country]:c.name; p.flag=ownFlag(c.flag); } p.country=c.country; const ce=calculateCentroid(W,H,owner,p); p.sx=ce[0]; p.sy=ce[1]; };
       const want=setupState.chosenFlag?players.filter(q=>q.kind==='neutral'&&q.alive&&q.country!=null&&(setupState.PRESET.names[q.country]===setupState.chosenFlag.name||countryAliases[setupState.PRESET.names[q.country]]===setupState.chosenFlag.name)).sort((a,b)=>b.tiles-a.tiles)[0]:null;
       takeover(human, want&&want.tiles>=120?want:pick(free(4000).sort((a,b)=>b.tiles-a.tiles).slice(0,25)));
-      for(const p of players){ if(p.kind!=='bot') continue; const cands=free().filter(q=>{ const c=calculateCentroid(W,H,owner,q); return players.every(o=>o.sx==null||(o.sx-c[0])**2+(o.sy-c[1])**2>60*60); }).sort((a,b)=>b.tiles-a.tiles).slice(0,12); const c=cands.length?pick(cands):pick(free()); if(c) takeover(p,c); else { const s2=findSpawn(18)||[W>>1,H>>1]; p.sx=s2[0]; p.sy=s2[1]; claimBlob(p,s2[0],s2[1],9); } }
+      for(const p of players){ if(p.kind==='neutral'||p===human) continue; const cands=free().filter(q=>{ const c=calculateCentroid(W,H,owner,q); return players.every(o=>o.sx==null||(o.sx-c[0])**2+(o.sy-c[1])**2>60*60); }).sort((a,b)=>b.tiles-a.tiles).slice(0,12); const c=cands.length?pick(cands):pick(free()); if(c) takeover(p,c); else { const s2=findSpawn(18)||[W>>1,H>>1]; p.sx=s2[0]; p.sy=s2[1]; claimBlob(p,s2[0],s2[1],9); } }
     } else for(const p of players){ if(p.kind==='neutral') continue;
       const s=findSpawn(settings.map.startsWith('islands')?36:60)||findSpawn(18)||[W>>1,H>>1];
       p.sx=s[0];p.sy=s[1]; claimBlob(p,s[0],s[1],9);
@@ -119,10 +121,10 @@ export function createWorldSetup({
         const ce=calculateCentroid(W,H,owner,p); p.sx=ce[0]; p.sy=ce[1]; } }
     for(let t=0;t<W*H;t++) if(land[t]&&owner[t]<0) unclaimed.add(t);
     for(const p of players) if(p.kind==='neutral'&&p.tiles<=0) p.alive=false;
-    human.troops=settings.troops; human.gold=settings.gold; if(settings.bots) for(const p of players) if(p.kind==='bot'){ p.troops=settings.troops; p.gold=settings.gold; }
+    for(const player of humans){ player.troops=settings.troops; player.gold=settings.gold; } if(settings.bots) for(const p of players) if(p.kind==='bot'){ p.troops=settings.troops; p.gold=settings.gold; }
     if(settings.quick&&!settings.endgame) for(const p of players) if(p.kind!=='neutral'){ p.troops*=4; p.gold*=5; }
     if(settings.endgame) for(const p of players) if(p.kind!=='neutral'){ p.troops=45000; p.gold=15000; }
-    if(settings.billionaire){ human.troops=1e9; human.gold=1e9; }
+    if(settings.billionaire) for(const player of humans){ player.troops=1e9; player.gold=1e9; }
     logistics.rebuildAreas();
     if(settings.risky) startDraft();
     if(settings.teams>0){ const ps=players.filter(q=>q.kind!=='neutral'); ps.forEach((q,i)=>{ q.team=i%settings.teams; }); }

@@ -1,10 +1,13 @@
+import replayConstraints from './replay-constraints.json' with {type:'json'};
+
 export const DIFFICULTY_IDS=Object.freeze(['supereasy','easy','normal','hard','superhard','impossible']);
 export const MAP_IDS=Object.freeze(['random','land','islands_l','islands_m','islands_s','atoll','world','europe','americas','africa','asia','mideast']);
 export const RULE_IDS=Object.freeze(['city','factory','port','sam','silo','fort','command','shield','battery','shore','bertha','airfield','flightops','subbase','troopcmd','engcmd','radar','lradar','satellite','jammer','scout','sub','hunter','rship','privateer','warship','cruiser','battleship','missile']);
 export const BOOLEAN_SETTING_NAMES=Object.freeze(['bots','noCap','quick','fog','instant','risky','endgame','billionaire','garrison','pauseBuild']);
-export const SETTING_NAMES=Object.freeze(['troops','gold','bots','teams','noCap','map','quick','fog','instant','risky','endgame','billionaire','garrison','pauseBuild','seed','customBots']);
+export const SETTING_NAMES=Object.freeze(['troops','gold','bots','teams','noCap','map','quick','fog','instant','risky','endgame','billionaire','garrison','pauseBuild','seed','customBots','humanSeats']);
 
 const difficulties=new Set(DIFFICULTY_IDS),maps=new Set(MAP_IDS),rules=new Set(RULE_IDS),settingNames=new Set(SETTING_NAMES);
+const multiplayerSeedPattern=new RegExp(replayConstraints.multiplayerSeedPattern);
 const mapAliases=new Map([
   ['continents','random'],['large_islands','islands_l'],['large-islands','islands_l'],['medium_islands','islands_m'],['medium-islands','islands_m'],['small_islands','islands_s'],['small-islands','islands_s'],['middle_east','mideast'],['middle-east','mideast']
 ]);
@@ -13,6 +16,7 @@ const finite=(value,min,max)=>Number.isFinite(value)&&value>=min&&value<=max;
 
 export function normalizeMapId(value){ return mapAliases.get(value)||value; }
 export function assertDifficulty(value){ if(!difficulties.has(value)) throw new TypeError(`Unsupported difficulty: ${String(value)}.`); return value; }
+export function assertMultiplayerSeed(value){ if(typeof value!=='string'||!multiplayerSeedPattern.test(value)) throw new TypeError('Multiplayer seed must be 1-200 ASCII letters, digits, or hyphens.'); return value; }
 export function assertMapId(value){ const normalized=normalizeMapId(value); if(!maps.has(normalized)) throw new TypeError(`Unsupported map: ${String(value)}.`); return normalized; }
 export function assertAllowedRules(value){
   if(!Array.isArray(value)&&!(value instanceof Set)) throw new TypeError('allowed must be an array or Set.');
@@ -47,7 +51,9 @@ export function validateSettingsCandidate(candidate,current={}){
   if(!finite(next.troops,1,1_000_000_000)) throw new TypeError('settings.troops must be finite and between 1 and 1000000000.');
   if(!finite(next.gold,0,1_000_000_000)) throw new TypeError('settings.gold must be finite and between 0 and 1000000000.');
   if(!Number.isSafeInteger(next.teams)||next.teams<0||next.teams>4) throw new TypeError('settings.teams must be an integer from 0 to 4.');
+  if(next.humanSeats!=null&&(!Number.isSafeInteger(next.humanSeats)||next.humanSeats<1||next.humanSeats>10)) throw new TypeError('settings.humanSeats must be an integer from 1 to 10.');
   for(const key of BOOLEAN_SETTING_NAMES) if(typeof next[key]!=='boolean') throw new TypeError(`settings.${key} must be boolean.`);
+  if(next.risky&&next.humanSeats>1) throw new TypeError('Risky mode with multiple human seats is deferred until the multiplayer draft protocol is defined.');
   if(!['string','number'].includes(typeof next.seed)||typeof next.seed==='number'&&!Number.isFinite(next.seed)||typeof next.seed==='string'&&(next.seed.length>200||/[\u0000-\u001f\u007f]/.test(next.seed))) throw new TypeError('settings.seed must be a finite number or a short string.');
   if(next.customBots!=null){
     if(!Array.isArray(next.customBots)||next.customBots.length>9) throw new TypeError('settings.customBots must contain at most 9 entries.');

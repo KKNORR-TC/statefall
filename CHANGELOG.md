@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10.12 - 2026-09-18
+
+- Added the first bounded Phase D2 proof slice: explicit deterministic multi-human setup, a browser-free transport-agnostic relay room core, fixed delayed lockstep turns, seat/generation authorization, idempotency IDs, deterministic turn sealing, per-batch outcome consensus, exact-byte checkpoint consensus, and checkpoint-v2 recovery through sealed batch suffixes.
+- Added a lockstep/recovery driver and Node proof covering a two-human no-bot duel for more than 400 ticks, state-invalid command continuation, arrival/property-order independence, frozen disconnect requirements, adversarial checkpoint/suffix rejection, terminal desync, strict resource bounds, and exact canonical/RNG/command recovery.
+- Deferred and centrally rejected multi-human Risky mode until its draft protocol is defined; single-human Risky behavior and approved hashes remain unchanged.
+- Added a localhost-only Node `ws` relay transport and an unwired pure-browser client. The Chromium source proof runs two isolated browser contexts through ready/start, deterministic command ordering, checkpoint consensus, ack timeout/resume, checkpoint-plus-suffix replacement recovery, terminal desync, and bounded hostile wire cases.
+- Completed the minimal Phase D2 technical gate in build `2026-09-18-phase-d2-lockstep-proof`: capability-gated multi-human engines, canonical room fingerprints, terminal/pause lifecycle consensus, unresolved checkpoint reconnect, deterministic surrender in both directions, final evidence consensus, byte-identical shared replay export, fresh imports, and official replaycheck verification. This adds no lobby, auth/token integration, room secrets, chat, production hosting, general N-human/bot outcome policy, disconnect-to-bot, multiplayer UI, abuse operations, observability, deployment, or release package.
+- Retained plugin 1.10.7 and the approved 1.10.8 simulation baseline. Existing single-player behavior and fixtures remain unchanged when `settings.humanSeats` is absent.
+
 ## 1.10.11 - 2026-09-18
 
 - Repository-only Phase D candidate; verified locally but uncommitted, not handed off, and not deployed.

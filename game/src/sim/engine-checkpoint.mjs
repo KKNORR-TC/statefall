@@ -20,6 +20,13 @@ const integer=value=>Number.isSafeInteger(value)&&value>=0;
 const finite=value=>typeof value==='number'&&Number.isFinite(value);
 const property=(value,name,test)=>Object.hasOwn(value,name)&&test(value[name]);
 
+export function inspectEngineCheckpointMetadata(checkpoint){
+  if(!exact(checkpoint,['version','payload'])||checkpoint.version!==ENGINE_CHECKPOINT_VERSION) throw new TypeError('Invalid engine checkpoint envelope.');
+  const decoded=decodeGraph(checkpoint.payload,{maxNodes:100_000,maxValues:5_000_000,maxDepth:128,maxStringLength:1_000_000});
+  if(!exact(decoded,['state','runtime','canonicalCompatibility'])||!exact(decoded.state?.clock,['tickN','simMs'])||!integer(decoded.state.clock.tickN)||!exact(decoded.runtime,['version','rng','commands','replay'])||!exact(decoded.runtime.rng,['state','draws'])||!integer(decoded.runtime.rng.draws)||!isObject(decoded.runtime.commands)||!Array.isArray(decoded.runtime.commands.log)||decoded.runtime.commands.log.length>100_000) throw new TypeError('Invalid engine checkpoint metadata.');
+  return Object.freeze({tick:decoded.state.clock.tickN,rngDraws:decoded.runtime.rng.draws,commandCount:decoded.runtime.commands.log.length});
+}
+
 function replaceObject(target,source){
   for(const key of Object.keys(target)) delete target[key];
   for(const key of Object.keys(source)) Object.defineProperty(target,key,{value:source[key],writable:true,enumerable:true,configurable:true});

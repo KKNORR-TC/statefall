@@ -3,13 +3,15 @@
 const fs=require('fs');
 const {createHash}=require('node:crypto');
 const boot=require('./harness.js');
+const REPLAY_CONSTRAINTS=require('../game/src/sim/replay-constraints.json');
 
 const FIXTURE_SCHEMA='statefall-replay-fixture/v1';
 const DIFFICULTIES=new Set(['supereasy','easy','normal','hard','superhard','impossible']);
 const MAPS=new Set(['random','land','islands_l','islands_m','islands_s','atoll','world','europe','americas','africa','asia','mideast']);
-const COMMANDS=new Set(['menu','click','focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd']);
+const COMMANDS=new Set(['menu','click','focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd','surrender']);
 const BOOLEAN_SETTINGS=['bots','noCap','quick','fog','instant','risky','endgame','billionaire','garrison','pauseBuild'];
-const LIMITS={fileBytes:1024*1024,tick:10_000_000,commands:100_000,hashes:100_000,commandArgs:7,string:200};
+const MULTIPLAYER_SEED_PATTERN=new RegExp(REPLAY_CONSTRAINTS.multiplayerSeedPattern);
+const LIMITS={fileBytes:REPLAY_CONSTRAINTS.maxFileBytes,tick:10_000_000,commands:100_000,hashes:100_000,commandArgs:7,string:200};
 
 function usage(){
   return 'Usage: node tools/replaycheck.js [--diagnostic] <replay.state>\n'+
@@ -32,7 +34,7 @@ function validCommandArgs(command){
     case 'airAuto': case 'logAuto': case 'autoFire': return a.length===1&&typeof a[0]==='boolean';
     case 'recall': case 'decline': return a.length===1&&id(a[0]);
     case 'recallAll': return a.length===1&&(a[0]==='all'||a[0]==='dmg');
-    case 'sat': case 'decShare': case 'decWar': return a.length===0;
+    case 'sat': case 'decShare': case 'decWar': case 'surrender': return a.length===0;
     case 'continueAfterEnd': return a.length===1&&typeof a[0]==='boolean';
     case 'accept': return a.length===3&&id(a[0])&&['ally','nap','reqTroops','reqGold'].includes(a[1])&&finite(a[2],0,1_000_000_000);
     default: return false;
@@ -47,7 +49,7 @@ function validateReplay(value,{requireCanonicalCheckpoints=false}={}){
   requireValue(value.requiresCanonicalCheckpoints==null||typeof value.requiresCanonicalCheckpoints==='boolean','requiresCanonicalCheckpoints','must be boolean when provided',errors);
   requireValue(value.schema==null||value.schema===FIXTURE_SCHEMA,'schema',`must be ${FIXTURE_SCHEMA}`,errors);
   requireValue(value.v===1,'v','must be 1',errors);
-  requireValue(typeof value.seed==='string'&&/^[A-Za-z0-9]{1,16}$/.test(value.seed),'seed','must be 1-16 ASCII letters or digits',errors);
+  requireValue(typeof value.seed==='string'&&(value.multiplayer?MULTIPLAYER_SEED_PATTERN:/^[A-Za-z0-9]{1,16}$/).test(value.seed),'seed',value.multiplayer?'must be a bounded multiplayer seed':'must be 1-16 ASCII letters or digits',errors);
   requireValue(value.hashv===1||value.hashv===2,'hashv','must be 1 or 2',errors);
   requireValue(Number.isSafeInteger(value.tick)&&value.tick>=0&&value.tick<=LIMITS.tick,'tick',`must be a non-negative safe integer no greater than ${LIMITS.tick}`,errors);
 
@@ -82,6 +84,7 @@ function validateReplay(value,{requireCanonicalCheckpoints=false}={}){
         previous=command.t; previousPhase=phase;
       }
       requireValue(COMMANDS.has(command.k),path+'.k','is not a supported command',errors);
+      requireValue(command.k!=='surrender'||isObject(value.multiplayer),path+'.k','surrender requires multiplayer metadata',errors);
       requireValue(command.p==null||(Number.isSafeInteger(command.p)&&command.p>=0&&command.p<=1_000_000),path+'.p','must be a non-negative actor ID when provided',errors);
       requireValue(Array.isArray(command.a),path+'.a','must be an array',errors);
       requireValue((command.k==='continueAfterEnd')===(command.phase==='post-systems'),path+'.phase','must be post-systems only for continueAfterEnd',errors);
@@ -138,6 +141,27 @@ function validateReplay(value,{requireCanonicalCheckpoints=false}={}){
     }
   }
   return errors;
+}
+
+async function verifyMultiplayerReplay(replay,{logger=console}={}){
+  const errors=[];
+  try{
+    const [{createMultiplayerReplayEngine},{deriveDuelResult}]=await Promise.all([import('../game/src/multiplayer/proof-engine.mjs'),import('../game/src/multiplayer/relay/lockstep-client.mjs')]);
+    const engine=createMultiplayerReplayEngine(replay); engine.start();
+    let stalled=0;
+    while(engine.presentation().state.clock.tickN<replay.tick){ const before=engine.presentation().state.clock.tickN; engine.tick(); const after=engine.presentation().state.clock.tickN; stalled=after===before?stalled+1:0; if(stalled>=2){ errors.push(`failed to reach target tick ${replay.tick}; simulation stalled at tick ${after}`); break; } }
+    engine.tick();
+    const metadata=engine.replayMetadata(),runtime=engine.presentation().runtime.replay;
+    if(metadata.legacyHash!==replay.final.legacyHash) errors.push(`final state mismatch: recorded ${replay.final.legacyHash}, replay ${metadata.legacyHash}`);
+    if(metadata.canonical.sha256!==replay.final.canonical.sha256) errors.push(`final canonical digest mismatch: recorded ${replay.final.canonical.sha256}, replay ${metadata.canonical.sha256}`);
+    if(metadata.rngDraws!==replay.final.rngDraws) errors.push(`final RNG count mismatch: recorded ${replay.final.rngDraws}, replay ${metadata.rngDraws}`);
+    if(metadata.commandCount!==replay.final.commandCount||metadata.replayCursor!==replay.final.replayCursor) errors.push('final command count/cursor mismatch');
+    if(runtime.mismatch) errors.push(runtime.why||'engine reported multiplayer replay divergence');
+    const result=deriveDuelResult(engine);
+    if(JSON.stringify(result.standings)!==JSON.stringify(replay.result.standings)||JSON.stringify(result.winnerSeatIds)!==JSON.stringify(replay.result.winnerSeatIds)) errors.push('final standings mismatch');
+    if(!errors.length) logger.log(`REPLAY MATCH ${replay.seed} ${replay.tick} ticks ${replay.cmds.length} commands ${replay.hashes.length} checkpoints final ${metadata.legacyHash}`);
+    return {ok:errors.length===0,errors,finalHash:metadata.legacyHash,finalDigest:metadata.canonical,rngDraws:metadata.rngDraws,tick:engine.presentation().state.clock.tickN,commandsApplied:metadata.replayCursor};
+  }catch(error){ return {ok:false,errors:[error.stack||String(error)]}; }
 }
 
 function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}){
@@ -243,7 +267,7 @@ function parseArgs(argv){
   return file?{file,diagnostic}:{error:'missing replay file'};
 }
 
-function main(argv=process.argv.slice(2)){
+async function main(argv=process.argv.slice(2)){
   const args=parseArgs(argv);
   if(args.help){ console.log(usage()); return 0; }
   if(args.error){ console.error(args.error+'\n'+usage()); return 2; }
@@ -257,11 +281,11 @@ function main(argv=process.argv.slice(2)){
   const schemaErrors=validateReplay(replay);
   if(schemaErrors.length){ console.error('invalid replay:\n- '+schemaErrors.join('\n- ')); return 2; }
   let result;
-  try{ result=verifyReplay(replay,{diagnostic:args.diagnostic}); }
+  try{ result=replay.multiplayer?await verifyMultiplayerReplay(replay):verifyReplay(replay,{diagnostic:args.diagnostic}); }
   catch(error){ console.error('replay verification failed: '+(error.stack||error)); return 1; }
   if(!result.ok){ console.error('REPLAY FAILED\n- '+result.errors.join('\n- ')); return 1; }
   return 0;
 }
 
-if(require.main===module) process.exitCode=main();
-module.exports={FIXTURE_SCHEMA,LIMITS,parseArgs,usage,validateReplay,verifyReplay,main};
+if(require.main===module) main().then(code=>{ process.exitCode=code; }).catch(error=>{ console.error(error); process.exitCode=1; });
+module.exports={FIXTURE_SCHEMA,LIMITS,parseArgs,usage,validateReplay,verifyReplay,verifyMultiplayerReplay,main};

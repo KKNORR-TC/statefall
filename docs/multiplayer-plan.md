@@ -1,6 +1,6 @@
 # Statefall - Multiplayer Project Plan
 
-_Status updated 18 September 2026. Local candidate game 1.10.11/plugin 1.10.7 has completed the Phase D engine implementation and technical gate; its source remains uncommitted and not handed off. Production remains game 1.10.7/plugin 1.10.6. The minimal two-client proof is the next multiplayer architecture step._
+_Status updated 18 September 2026. Phase D game 1.10.11 is committed locally. Development game 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` completes the minimal Phase D2 technical gate; plugin remains 1.10.7 and production remains game 1.10.7/plugin 1.10.6. Product multiplayer work remains out of scope._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -65,7 +65,7 @@ Rules that came out of it: simulation reads only deterministic tick time and eng
 
 Sequencing note: first implement only the relay/lockstep/reconnect architecture proof defined as Phase D2 in `docs/graphics-modernization-plan.md`, using the extracted engine and legacy renderer. Complete lobby, chat, public rooms, and production hosting after that proof; they are not prerequisites for beginning the visual migration.
 
-Remaining proof work is network/product work rather than engine extraction: implement the relay and room log, assign/authenticate seats, define turn buffering and stall policy, exchange canonical checkpoint digests, surface a deliberate desync, reconnect by replaying the retained log or a validated checkpoint plus suffix, complete a two-human match, and emit one valid multi-seat replay. Pause voting, disconnect-to-bot policy, lobby/chat/public rooms, hosting, abuse controls, and ranked results remain subsequent work.
+The browser-free relay authority plus a localhost WebSocket wrapper and two isolated Chromium clients complete the bounded 1.10.12 technical proof. It covers seat/generation authorization, ready-gated start, server-only turns, deterministic total ordering, lifecycle/outcome/checkpoint/final consensus, unresolved replacement recovery, both surrender directions, normalized winners, immutable completion, shared strict replay export, two fresh imports, official replaycheck, desync, and transport bounds. Production authentication, room secrets/ownership, WordPress tokens, general N-human/bot outcomes, disconnect-to-bot, pause voting, lobby/chat/public rooms, multiplayer UI, hosting, abuse controls, observability, persistence, and ranked results remain subsequent product work. See `docs/phase-d2-relay-core.md`.
 
 **Relay** (Node, ~300 lines, separate host — WP Engine cannot run sockets)
 - Rooms: create/join/leave, up to N human seats + bots filling the rest, host controls.
@@ -83,7 +83,7 @@ Remaining proof work is network/product work rather than engine extraction: impl
 
 - `me` becomes "my seat"; humans are seats in `players` with `kind: 'human'`. UI code that assumes one human needs a pass: sidebar owner, notices, invasion cards, credits STARRING, score posting (both post; the server records one match with two players).
 - Commands carry a seat id; `applySimple`/`menuAction` take the acting player instead of `me`. (Most executors already take `p`; the wrappers hard-code `me` today.)
-- Desync: hashes exchanged every 100 ticks; on mismatch the relay declares the majority canonical and the odd client reloads from the room's command log (this is `replayCatchUp` pointed at the relay's log).
+- Desync: every required seat reports normalized batch outcomes and exact checkpoint evidence. This slice has no majority-authority shortcut; any mismatch is terminal and retained as structured evidence.
 - Pause: vote, 30 s max; disconnect: 60 s grace with the room stalled, then the seat becomes a bot.
 
 ## 5. Phase 3 — Being human to each other
@@ -104,7 +104,7 @@ Remaining proof work is network/product work rather than engine extraction: impl
 
 ## 8. Where the files are
 
-- Game source: Vite application under `game/` (local candidate: 1.10.11; production: 1.10.7).
+- Game source: Vite application under `game/` (local development: 1.10.12; production: 1.10.7).
 - Plugin source: `plugin/statefall-scores/` (current: 1.10.7).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.

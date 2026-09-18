@@ -32,6 +32,7 @@ export function createCommandRouter({
     if(['accept','decline'].includes(kind)&&(!players[args[0]]||args[0]===actor.id)) throw new RangeError('Unknown command target.');
     if(['decShare','decWar'].includes(kind)&&(!engineState.pendingDecision||engineState.pendingDecision.type!=='allied-endgame'||actor.id!==currentActorId())) throw new RangeError('No allied decision is pending for this actor.');
     if(kind==='continueAfterEnd'&&!lifecycle.over) throw new RangeError('The match has not ended.');
+    if(kind==='surrender'&&lifecycle.over) throw new RangeError('The match has already ended.');
   }
   function validateMenu(data,tile,selectedIds,siteTile,ratioValue,aidGold,aidTroops,actor){
     if(!validTile(tile)) throw new RangeError(`Command tile is out of bounds: ${tile}.`);
@@ -80,6 +81,7 @@ export function createCommandRouter({
       case 'decShare': adapters.closeAlliedDecision?.(); actions.resolveSharedVictory(actor); break;
       case 'decWar': adapters.closeAlliedDecision?.(); actions.continueWar(actor); break;
       case 'continueAfterEnd': actions.continueAfterEnd(args[0]); break;
+      case 'surrender': actions.surrender(actor); break;
     }
     if(!commands.replaying) invalidateUi();
   }

@@ -26,6 +26,7 @@ test('source and built module applications load every chunk and preserve the can
     expect(modules.length).toBeGreaterThan(0);
     const scripts=await page.evaluate(async()=>Promise.all(performance.getEntriesByType('resource').map(entry=>entry.name).filter(url=>/\.js$/.test(new URL(url).pathname)).map(url=>fetch(url).then(response=>response.text()))));
     expect(scripts.join('\n')).not.toContain('__STATEFALL_TEST__');
+    expect(scripts.join('\n')).not.toMatch(/createRelayWebSocketClient|relay\.connect|relay\.ready|relay\.batch-outcome-report/);
     expect(failures,failures.join('\n')).toEqual([]);
     return;
   }

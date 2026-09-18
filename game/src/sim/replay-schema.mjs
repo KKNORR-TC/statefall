@@ -1,6 +1,7 @@
 export const REPLAY_SCHEMA='statefall-replay-fixture/v1';
 import {COMMAND_KINDS,assertCommand,assertCommandArguments} from './command-schema.mjs';
-import {BOOLEAN_SETTING_NAMES,DIFFICULTY_IDS,MAP_IDS,RULE_IDS} from './configuration-schema.mjs';
+import {assertMultiplayerSeed,BOOLEAN_SETTING_NAMES,DIFFICULTY_IDS,MAP_IDS,RULE_IDS} from './configuration-schema.mjs';
+import {RELAY_PROTOCOL_VERSION,engineOptionsFromRoomConfiguration,roomConfigurationFingerprint,stableJson,validateRoomConfiguration} from '../multiplayer/room-configuration.mjs';
 
 const DIFFICULTIES=new Set(DIFFICULTY_IDS),MAPS=new Set(MAP_IDS),RULE_ID_SET=new Set(RULE_IDS);
 const COMMANDS=new Set(COMMAND_KINDS),BOOLEAN_SETTINGS=BOOLEAN_SETTING_NAMES;
@@ -13,14 +14,17 @@ function validCommandArgs(command){
   try{ assertCommandArguments(command.k,command.a); return true; }catch{ return false; }
 }
 
-export function validateReplaySchema(value){
+export function validateReplaySchema(value,{multiplayerProof=false}={}){
   const errors=[],requireValue=(ok,path,message)=>{ if(!ok) errors.push(`${path} ${message}`); };
   requireValue(isObject(value),'replay','must be a plain object');
   if(!isObject(value)) return errors;
   requireValue(value.schema==null||value.schema===REPLAY_SCHEMA,'schema',`must be ${REPLAY_SCHEMA}`);
   requireValue(value.requiresCanonicalCheckpoints==null||typeof value.requiresCanonicalCheckpoints==='boolean','requiresCanonicalCheckpoints','must be boolean when provided');
   requireValue(value.v===1,'v','must be 1');
-  requireValue(typeof value.seed==='string'&&/^[A-Za-z0-9]{1,16}$/.test(value.seed),'seed','must be 1-16 ASCII letters or digits');
+  const multiplayer=isObject(value.multiplayer);
+  let validSeed=typeof value.seed==='string'&&!multiplayer&&/^[A-Za-z0-9]{1,16}$/.test(value.seed);
+  if(multiplayer) try{ assertMultiplayerSeed(value.seed); validSeed=true; }catch{}
+  requireValue(validSeed,'seed',multiplayer?'must be 1-200 ASCII letters, digits, or hyphens':'must be 1-16 ASCII letters or digits');
   requireValue(value.hashv===1||value.hashv===2,'hashv','must be 1 or 2');
   requireValue(Number.isSafeInteger(value.tick)&&value.tick>=0&&value.tick<=LIMITS.tick,'tick',`must be a non-negative safe integer no greater than ${LIMITS.tick}`);
   const settings=value.settings;
@@ -36,6 +40,7 @@ export function validateReplaySchema(value){
     requireValue(settings.allowed==null||Array.isArray(settings.allowed)&&settings.allowed.length<=RULE_IDS.length&&settings.allowed.every(item=>RULE_ID_SET.has(item))&&new Set(settings.allowed).size===settings.allowed.length,'settings.allowed','must contain unique supported rule IDs or be null');
     requireValue(settings.customBots==null||Array.isArray(settings.customBots)&&settings.customBots.length<=9,'settings.customBots','must contain at most 9 entries or be null');
     requireValue(settings.customFlag==null||isObject(settings.customFlag),'settings.customFlag','must be a plain object or null');
+    requireValue(settings.humanSeats==null||multiplayer&&settings.humanSeats===2,'settings.humanSeats','requires validated two-seat multiplayer metadata');
   }
   requireValue(Array.isArray(value.cmds),'cmds','must be an array');
   if(Array.isArray(value.cmds)){
@@ -50,6 +55,7 @@ export function validateReplaySchema(value){
       requireValue(!Number.isSafeInteger(value.tick)||!Number.isSafeInteger(command.t)||command.t<=value.tick,`${path}.t`,'must not exceed the replay target');
       if(Number.isSafeInteger(command.t)){ const phase=command.phase==='post-systems'?1:0; requireValue(command.t>previous||command.t===previous&&phase>=previousPhase,`${path}.t`,'must be in nondecreasing tick/phase order'); previous=command.t; previousPhase=phase; }
       requireValue(COMMANDS.has(command.k),`${path}.k`,'is not a supported command');
+      requireValue(command.k!=='surrender'||multiplayer,`${path}.k`,'surrender requires multiplayer metadata');
       requireValue(command.p==null||id(command.p),`${path}.p`,'must be a non-negative actor ID when provided');
       requireValue(Array.isArray(command.a),`${path}.a`,'must be an array');
       if(COMMANDS.has(command.k)&&Array.isArray(command.a)) requireValue(validCommandArgs(command),`${path}.a`,`has invalid arguments for ${command.k}`);
@@ -80,6 +86,22 @@ export function validateReplaySchema(value){
     if(Number.isSafeInteger(value.tick)&&value.tick<=LIMITS.tick&&value.hashes.length<=LIMITS.hashes) for(let tick=100;tick<=value.tick;tick+=100) requireValue(seen.has(tick),'hashes',`is missing checkpoint ${tick}`);
   }
   requireValue(value.finalHash==null||typeof value.finalHash==='string'&&/^[0-9a-f]{8}$/.test(value.finalHash),'finalHash','must be an 8-character lowercase hex hash');
+  requireValue(value.multiplayer==null||isObject(value.multiplayer),'multiplayer','must be a plain object when provided');
+  if(multiplayer){
+    requireValue(multiplayerProof,'multiplayer','requires the multiplayer proof capability');
+    const metadata=value.multiplayer,keys=['relayProtocol','roomConfig','roomFingerprint','seats','engineOptions'];
+    requireValue(Object.keys(metadata).length===keys.length&&keys.every(key=>Object.hasOwn(metadata,key)),'multiplayer','has unsupported or missing fields');
+    requireValue(metadata.relayProtocol===RELAY_PROTOCOL_VERSION,'multiplayer.relayProtocol','is not supported');
+    let room=null;
+    try{ room=validateRoomConfiguration(metadata.roomConfig); }catch(error){ requireValue(false,'multiplayer.roomConfig',error.message); }
+    requireValue(typeof metadata.roomFingerprint==='string'&&/^[0-9a-f]{64}$/.test(metadata.roomFingerprint),'multiplayer.roomFingerprint','must be a lowercase SHA-256 digest');
+    if(room){
+      requireValue(metadata.roomFingerprint===roomConfigurationFingerprint(room),'multiplayer.roomFingerprint','does not match roomConfig');
+      requireValue(Array.isArray(metadata.seats)&&JSON.stringify(metadata.seats)===JSON.stringify(room.seats),'multiplayer.seats','must match roomConfig seats');
+      requireValue(isObject(metadata.engineOptions)&&stableJson(metadata.engineOptions)===stableJson(engineOptionsFromRoomConfiguration(room)),'multiplayer.engineOptions','must exactly match roomConfig');
+      requireValue(value.seed===String(room.settings.seed),'seed','must match multiplayer room seed');
+    }
+  }
   requireValue(value.finalDigest==null||isObject(value.finalDigest),'finalDigest','must be a plain object when provided');
   if(isObject(value.finalDigest)){
     requireValue(value.finalDigest.version==='statefall-authoritative-state/v1','finalDigest.version','must be statefall-authoritative-state/v1');
@@ -99,11 +121,17 @@ export function validateReplaySchema(value){
       requireValue(value.final.replayCursor===null||!Array.isArray(value.cmds)||value.final.replayCursor<=value.cmds.length,'final.replayCursor','must not exceed the command count');
     }
   }
+  if(value.result!=null){
+    const result=value.result,standings=multiplayer&&isObject(result)&&result.standings;
+    const normalized=Array.isArray(standings)&&standings.length===2&&standings.every(item=>isObject(item)&&Object.keys(item).length===4&&['seatId','rank','alive','tiles'].every(key=>Object.hasOwn(item,key))&&id(item.seatId)&&[1,2].includes(item.rank)&&typeof item.alive==='boolean'&&Number.isSafeInteger(item.tiles)&&item.tiles>=0)&&new Set(standings.map(item=>item.seatId)).size===2&&new Set(standings.map(item=>item.rank)).size===2;
+    const living=normalized?standings.filter(item=>item.alive).map(item=>item.seatId):[];
+    requireValue(typeof result==='string'||multiplayer&&isObject(result)&&Object.keys(result).length===2&&normalized&&living.length===1&&Array.isArray(result.winnerSeatIds)&&result.winnerSeatIds.length===1&&result.winnerSeatIds[0]===living[0]&&standings.find(item=>item.rank===1)?.seatId===living[0],'result','must be a string or normalized multiplayer result');
+  }
   return errors;
 }
 
-export function assertReplaySchema(value){
-  const errors=validateReplaySchema(value);
+export function assertReplaySchema(value,options){
+  const errors=validateReplaySchema(value,options);
   if(errors.length) throw new TypeError(`Invalid replay: ${errors.join('; ')}`);
   return value;
 }

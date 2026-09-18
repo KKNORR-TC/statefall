@@ -1,0 +1,4 @@
+{
+  "multiplayerSeedPattern": "^[A-Za-z0-9-]{1,200}$",
+  "maxFileBytes": 1048576
+}

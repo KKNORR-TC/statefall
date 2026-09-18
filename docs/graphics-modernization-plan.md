@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 18 September 2026. Phases 0 through D are technically complete in local candidate game 1.10.11/plugin 1.10.7. Candidate source is uncommitted and not handed off; production remains unchanged._
+_Updated 18 September 2026. Phases 0 through D and the minimal Phase D2 lockstep proof are technically complete; Phase D game 1.10.11 is committed locally, the D2 worktree is uncommitted, and production remains unchanged._
 
 ## 1. Goal
 
@@ -314,7 +314,7 @@ Status: PASS on 15 September 2026 in repository game 1.10.9, recovered at commit
 
 Gate: old and extracted engines produce identical checkpoint and final canonical digests for the same replay corpus. Tests run without DOM, Canvas, or PixiJS.
 
-Status: CERTIFIED COMPLETE technically on 18 September 2026 in local candidate game 1.10.11, build `2026-09-18-phase-d2`, with no critical or high defects after final static review. The browser-free engine now owns isolated runtime/state, setup/map generation, command/replay routing, match flow, all world systems, full validated graph checkpoints, canonical oracles, immutable presentation events, detached render buffers, read-only presentation/query views, frozen interpolation frames, and detached/frozen replay API results. The final read-only API audit found no production authority return leaks. Browser and Node compatibility callers import it directly without rewriting or evaluating application source. Interleaved complete engines pass isolation and continuation; the frozen `ad30188` old-engine corpus matches 7 scenarios; headless/event/render cadence leaves canonical bytes, legacy hash, RNG count, and tick unchanged; and production determinism remains `bc43ad4e` / `509ad7e54aa2` with 85/85 command application. The sole blocker is administrative: the worktree is dirty/uncommitted at HEAD `ad301888827571e57514766c9892f12943197d05`, with review, commit, and handoff authorization pending. See `docs/phase-d-progress.md` and `docs/release-record-1.10.11-phase-d2.md`.
+Status: CERTIFIED COMPLETE technically on 18 September 2026 in local candidate game 1.10.11, build `2026-09-18-phase-d2`, with no critical or high defects after final static review. The browser-free engine now owns isolated runtime/state, setup/map generation, command/replay routing, match flow, all world systems, full validated graph checkpoints, canonical oracles, immutable presentation events, detached render buffers, read-only presentation/query views, frozen interpolation frames, and detached/frozen replay API results. The final read-only API audit found no production authority return leaks. Browser and Node compatibility callers import it directly without rewriting or evaluating application source. Interleaved complete engines pass isolation and continuation; the frozen `ad30188` old-engine corpus matches 7 scenarios; headless/event/render cadence leaves canonical bytes, legacy hash, RNG count, and tick unchanged; and production determinism remains `bc43ad4e` / `509ad7e54aa2` with 85/85 command application. Phase D was subsequently committed locally at `16aec35`; it was not handed off or released. See `docs/phase-d-progress.md` and `docs/release-record-1.10.11-phase-d2.md`.
 
 Compatibility detail: canonical v1 historically serialized `player.labelPos`. Authoritative players no longer contain that presentation field; the state oracle supplies a canonical virtual `labelPos` at the legacy cadence solely for byte compatibility. Full checkpoint schema `statefall-engine-checkpoint/v2` stores `statefall-canonical-compatibility/v1` label metadata separately; v1 checkpoints are rejected because exact canonical bytes between 30-tick refresh points cannot be reconstructed. Presentation label layout and smoothing are read-only. Interpolation frames are non-authoritative, excluded from checkpoints/canonical state, reset on restore, and contain only prior/current stable actor positions and tick time. Replay saves carry periodic/final canonical, RNG, command-count, and replay-cursor evidence; watch and resume verify the exact recorded target, including serialized post-end continuation.
 
@@ -329,6 +329,8 @@ Compatibility detail: canonical v1 historically serialized `player.labelPos`. Au
 - Keep lobby polish, public rooms, chat, spectators, ranked results, and final multiplayer UI out of this proof.
 
 Gate: two independent clients complete the same match with identical canonical digests, and reconnect returns a client to the canonical room state. Resolve structural engine/command issues before beginning the full Pixi renderer.
+
+Status: TECHNICALLY COMPLETE in development game 1.10.12, build `2026-09-18-phase-d2-lockstep-proof`. The capability-gated two-human/no-bot proof covers more than 400 ticks, two isolated Chromium engines, server-only metronome/ack flow, unresolved checkpoint recovery, deterministic terminal/pause handling, both surrender directions, normalized completion consensus, byte-identical shared replay export, two fresh imports, official replaycheck, desync, and wire bounds. Production auth, room secrets/ownership, WordPress tokens, general multiplayer outcomes, disconnect-to-bot, lobby/UI/chat, hosting, abuse controls, observability, persistence, deployment, and release packaging remain post-proof work. Phase E may begin after review. See `docs/phase-d2-relay-core.md`.
 
 ### Phase E: Pixi renderer foundation
 
@@ -712,9 +714,9 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Review and commit the verified Phase D source/evidence; do not hand off candidate 1.10.11 unless explicitly requested.
+1. Review the uncommitted Phase D2 relay-core development slice; do not hand it off or release it unless explicitly requested.
 2. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
-3. Complete the Phase D2 two-client multiplayer proof using the extracted engine and legacy renderer.
+3. Complete the remaining Phase D2 real-transport, two-browser match, and multi-seat replay proof using the extracted engine and legacy renderer.
 4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
 5. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 

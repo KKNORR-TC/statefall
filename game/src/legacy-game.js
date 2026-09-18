@@ -1513,6 +1513,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.12</td><td>Development-only completed Phase D2 two-human lockstep and shared replay technical proof.</td></tr>
  <tr><td>1.10.11</td><td>Fresh candidate identity with trailer capture output isolated from production builds.</td></tr>
  <tr><td>1.10.10</td><td>Phase D1 deterministic runtime seam: counted RNG, command/replay bookkeeping, canonical v1 serialization, and tick ordering are importable without browser APIs while simulation behavior remains unchanged.</td></tr>
  <tr><td>1.10.9</td><td>Vite and ES modules, with the legacy Canvas renderer and simulation behavior preserved.</td></tr>
