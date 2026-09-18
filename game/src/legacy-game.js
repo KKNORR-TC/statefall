@@ -902,11 +902,28 @@ function installBrowserTestBridge(){
       cam.focus(x+.5,y+.5,viewWidth(),viewHeight(),+scale||4); render();
       return {tile:target,owner:owner[target],land:!!land[target],x:viewWidth()/2,y:viewHeight()/2};
     },
-     setCamera(scale,target='player'){
-       if(!me()) throw new Error('match not started');
-       const x=target==='world'?W/2:me().sx+.5,y=target==='world'?H/2:me().sy+.5;
-       cam.focus(x,y,viewWidth(),viewHeight(),+scale||1); render(); return status();
-     },
+      setCamera(scale,target='player'){
+        if(!me()) throw new Error('match not started');
+        const x=target==='world'?W/2:me().sx+.5,y=target==='world'?H/2:me().sy+.5;
+        cam.focus(x,y,viewWidth(),viewHeight(),+scale||1); render(); return status();
+      },
+      setCameraOrigin(x,y,scale=cam.s){ cam.x=+x; cam.y=+y; cam.s=+scale; render(); return snapshot().camera; },
+      structurePresentation(){ return structures.map(st=>{ const x=cam.x+(st.t%W+.5)*cam.s,y=cam.y+((st.t-st.t%W)/W+.5)*cam.s; return {tile:st.t,type:st.type,color:players[st.owner].color,building:!!st.building,x,y}; }); },
+      exerciseStructureLayer(items,{invalidSource=false}={}){
+        const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
+        const owned=renderer.updateWorldLayer('structures',{items:structuredClone(items),fog:null,camera:{x:cam.x,y:cam.y,scale:cam.s},viewport:{width:viewWidth(),height:viewHeight()},mapWidth:W,textureRadius:24,createTextureCanvas:invalidSource?()=>null:structureTextureCanvas});
+        renderer.renderFrame(cam);
+        const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
+        for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`structure layer purity violation: ${key} changed`);
+        return {owned,rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
+      },
+      resetRendererResources(){ renderer.reset(); return renderer.diagnostics(); },
+      restoreRendererResources(){ drawMap(); render(); return renderer.diagnostics(); },
+      structureLineOrdering(){
+        const supply=links.map(link=>({from:link.a.t,to:link.b.t}));
+        const attack=attacks.flatMap(value=>Array.from(value.front,tile=>({tile,owner:value.owner})));
+        return {supply,attack,structureTiles:structures.map(value=>value.t)};
+      },
       loadReplay(file,mode='watch'){ if(me()) throw new Error('loadReplay requires the start screen'); loadReplayFile(structuredClone(file),mode); return status(); },
       installLateGameScene(){
         const scene=engine.installTestFixture('dense-late-game'),[cx,cy]=scene.center;
@@ -994,6 +1011,10 @@ function render(){
         ctx.strokeStyle=`rgba(${col},.55)`; ctx.lineWidth=Math.max(1,s*0.5); ctx.setLineDash([3,7]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]);
         const k=((performance.now()/1100)+(q.t%5)/5)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle=`rgba(${col},.9)`; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.2,s*0.7),0,Math.PI*2); ctx.fill(); } } }
   // structures
+  const structuresOwned=renderer.updateWorldLayer('structures',()=>({
+    items:structures.map(st=>({tile:st.t,type:st.type,color:players[st.owner].color,building:!!st.building,pop:st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1})),
+    fog:renderState.fog.vis,camera:{x:cam.x,y:cam.y,scale:s},viewport:{width:cw,height:ch},mapWidth:W,textureRadius:24,createTextureCanvas:structureTextureCanvas
+  }));
   if(s>=0.9){
     for(const st of structures){
       if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue;
@@ -1009,8 +1030,8 @@ function render(){
       if(st.type==='command'&&st.owner===me().id&&!st.building){ ctx.strokeStyle='rgba(255,180,80,.18)'; ctx.lineWidth=1; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.arc(x,y,CMD_RANGE*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
       if(st.type==='sam'&&st.owner===me().id){ ctx.strokeStyle='rgba(150,220,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,SAM_RANGE*s,0,Math.PI*2); ctx.stroke(); }
       if(st.type==='fort'&&st.owner===me().id){ ctx.strokeStyle=(st.level||1)>=3?'rgba(255,210,122,.35)':(st.level||1)>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)'; ctx.lineWidth=(st.level||1); ctx.beginPath(); ctx.arc(x,y,fortRange(st.t)*s,0,Math.PI*2); ctx.stroke(); }
-      if(st.building){ ctx.globalAlpha=0.45; drawIcon(st.type,x,y,r,players[st.owner].color); ctx.globalAlpha=1; const f=1-(st.done-clockState.tickN)/st.total; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=Math.ceil((st.done-clockState.tickN)/10)+'s'; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } continue; }
-      { const pop=st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1; drawIcon(st.type,x,y,r*pop,players[st.owner].color); if(pop>1){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r*pop*1.3,0,Math.PI*2); ctx.stroke(); } }
+      if(st.building){ if(!structuresOwned){ ctx.globalAlpha=0.45; drawIcon(st.type,x,y,r,players[st.owner].color); ctx.globalAlpha=1; } const f=1-(st.done-clockState.tickN)/st.total; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=Math.ceil((st.done-clockState.tickN)/10)+'s'; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } continue; }
+      { const pop=st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1; if(!structuresOwned) drawIcon(st.type,x,y,r*pop,players[st.owner].color); if(pop>1){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r*pop*1.3,0,Math.PI*2); ctx.stroke(); } }
       if((st.level||1)>=2){ ctx.font='bold 9px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffd27a'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=2.5; ctx.strokeText('II',x+r*0.9,y-r*0.8); ctx.fillText((st.level||1)>=3?'III':'II',x+r*0.9,y-r*0.8); }
       if(st.upgrading){ const f=1-(st.upDone-clockState.tickN)/Math.max(1,st.upTotal); ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
       if(st.type==='airfield'&&s>=1.2){ const n=aircraft.filter(a=>a.home===st).length; const q=st.aq&&st.aq.length?st.aq[0]:null; ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx2=`${n}/${AIR.hangar}${q?' · '+(q.type==='fighter'?'F':q.type==='carrier'?'T':'B')+' '+Math.ceil(Math.max(0,q.done-clockState.tickN)/10)+'s':''}`; ctx.strokeText(tx2,x,y+r+11); ctx.fillText(tx2,x,y+r+11); if(q){ const f=1-(q.done-clockState.tickN)/Math.max(1,q.total); ctx.strokeStyle='#bfe6ff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
@@ -1284,6 +1305,11 @@ function drawIcon(type,x,y,r,col,c=ctx){
   }
   c.restore();
 }
+function structureTextureCanvas(type,col){
+  const canvas=document.createElement('canvas'); canvas.width=canvas.height=64;
+  drawIcon(type,32,32,24,col,canvas.getContext('2d'));
+  return canvas;
+}
 function drawHandshake(c,x,y,r){ // sleeves and two clasped hands
   c.save(); c.translate(x,y); const u=r/10; c.scale(u,u); c.lineJoin='round'; c.lineCap='round';
   c.fillStyle='#0f1a26'; c.beginPath(); c.arc(0,0,11,0,Math.PI*2); c.fill(); c.strokeStyle='#7fd0ff'; c.lineWidth=1.6; c.stroke();
@@ -1553,6 +1579,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.14</td><td>Development-only Phase E2 Pixi structure-base layer; Canvas retains all structure overlays and input.</td></tr>
   <tr><td>1.10.13</td><td>First development-only Phase E pixi-hybrid foundation; production and default rendering remain Canvas.</td></tr>
   <tr><td>1.10.12</td><td>Development-only completed Phase D2 two-human lockstep and shared replay technical proof.</td></tr>
  <tr><td>1.10.11</td><td>Fresh candidate identity with trailer capture output isolated from production builds.</td></tr>

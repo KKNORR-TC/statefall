@@ -133,7 +133,7 @@ test('keeps Pixi raster and Canvas overlay aligned across desktop display scales
       const snapshot=window.__STATEFALL_TEST__.snapshot(),map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
       return {snapshot,map:map.toJSON(),world:world.toJSON()};
     });
-    expect(state.snapshot.rendering).toMatchObject({active:'pixi-hybrid',effectiveDpr:expectedDpr,textureCount:1,spriteCount:1});
+    expect(state.snapshot.rendering).toMatchObject({active:'pixi-hybrid',effectiveDpr:expectedDpr,capabilities:{structures:true},layers:{terrain:{textureCount:1}}});
     expect(state.snapshot.canvas.width).toBe(state.snapshot.rendering.pixelWidth);
     expect(state.snapshot.canvas.height).toBe(state.snapshot.rendering.pixelHeight);
     expect(state.world).toMatchObject({x:state.map.x,y:state.map.y,width:state.map.width,height:state.map.height});
@@ -142,6 +142,20 @@ test('keeps Pixi raster and Canvas overlay aligned across desktop display scales
     const after=state.snapshot.camera.visibleBounds;
     expect((after.left+after.right)/2).toBeCloseTo((before.left+before.right)/2,8);
     expect((after.top+after.bottom)/2).toBeCloseTo((before.top+before.bottom)/2,8);
+  }
+});
+
+test('keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales',async({page},testInfo)=>{
+  await startMatch(page,'pixi');
+  await page.evaluate(()=>{ window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
+  const state=await page.evaluate(()=>({rendering:window.__STATEFALL_TEST__.rendererDiagnostics(),expected:window.__STATEFALL_TEST__.structurePresentation()}));
+  test.skip(state.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
+  expect(state.rendering.effectiveDpr).toBe(Math.min(testInfo.project.use.deviceScaleFactor,2));
+  expect(state.rendering.layers.structures.visible).toBe(state.expected.length);
+  const expected=new Map(state.expected.map(item=>[item.tile,item]));
+  for(const sprite of state.rendering.layers.structures.instances){
+    const position=expected.get(sprite.tile); expect(sprite.x).toBeCloseTo(position.x,8); expect(sprite.y).toBeCloseTo(position.y,8);
+    expect(await page.evaluate(point=>window.__STATEFALL_TEST__.screenToTile(point.x,point.y),sprite)).toBe(sprite.tile);
   }
 });
 

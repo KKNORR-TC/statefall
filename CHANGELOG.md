@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.14 - 2026-09-18
+
+- Added the bounded Phase E2 structure-base migration to the development-only `pixi-hybrid` renderer. Pixi now owns visible structure base icons while the transparent Canvas retains every shield, range, health, repair, build, upgrade, queue, level, linked, suppression, text, and input overlay in legacy order.
+- Reused the existing `drawIcon` Canvas routine through an injected texture-canvas callback; no icon art was copied, rewritten, or approved as final art. Type and owner color identify the bounded generated-texture registry, with source validation, linear sampling, byte estimates, and reset/destroy/context-loss cleanup.
+- Added a dedicated structure container, stable tile-keyed sprites, viewport/fog/zoom culling, a bounded 4,096-sprite live allocation with a 512-sprite idle pool, a 512-texture registry, atomic frame ownership fallback, building alpha/pop scale parity, and ownership/resource diagnostics.
+- Added pure culling/key/pool contracts plus dense-scene semantic pixels, direct sprite alignment/hit targeting, sprite/texture-cap fallback, churn/eviction/reset, zoom/pan recycling, DPR, lifecycle, renderer-purity, and production-exclusion coverage. Canvas remains the default and production renderer; production has no Pixi module/chunk. The temporary hybrid line/base compositing difference is retained explicitly until route/front layers move. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged.
+- This is E2, not Phase E completion, a release, a handoff, or final-art approval. E1 was implemented in `4361ad7` and documented in `e5c4228`.
+
 ## 1.10.13 - 2026-09-18
 
 - Added the first bounded Phase E renderer foundation: renderer-neutral CSS-pixel camera and DPR-capped viewport services, a lifecycle/diagnostics interface, the unchanged default Canvas path, and a development/capture-only `pixi-hybrid` path.

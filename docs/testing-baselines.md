@@ -1,8 +1,8 @@
 # Testing Baselines
 
-_Originally recorded 14 September 2026; reconciled through the first Phase E foundation on 18 September 2026._
+_Originally recorded 14 September 2026; reconciled through the bounded Phase E2 structure slice on 18 September 2026._
 
-The approved game 1.10.8 simulation results are pinned in `tests/fixtures/simulation-baselines-v1.10.8.json`. Development game 1.10.13 build metadata explicitly names 1.10.8 as its behavior baseline. Renderer selection, DPR, resize, and render cadence are presentation-only and must preserve canonical bytes, legacy hash, RNG, command log, replay behavior, and tick. No approved hash was rewritten for the Phase E1 foundation. The fixture covers every reduced-grid smoke scenario, standard/fog/garrison same-page restart replay, the default production-grid cold determinism run, and the fixed-seed Chromium/Firefox/WebKit canonical digest.
+The approved game 1.10.8 simulation results are pinned in `tests/fixtures/simulation-baselines-v1.10.8.json`. Development game 1.10.14 build metadata explicitly names 1.10.8 as its behavior baseline. Renderer selection, world-layer ownership, DPR, resize, culling, pooling, and render cadence are presentation-only and must preserve canonical bytes, legacy hash, RNG, command log, replay behavior, and tick. No approved hash was rewritten for Phase E1 or E2. The fixture covers every reduced-grid smoke scenario, standard/fog/garrison same-page restart replay, the default production-grid cold determinism run, and the fixed-seed Chromium/Firefox/WebKit canonical digest.
 
 The 15 September Phase 0 review expanded the canonical oracle to include visibility, radar visibility, and known-border fog state. Canonical SHA-256 baselines were manually updated for that authoritative-state-only change after confirming legacy simulation hashes remained unchanged; no pixel baseline was changed.
 
@@ -12,7 +12,7 @@ Full engine checkpoints use `statefall-engine-checkpoint/v2` and include separat
 
 `tests/fixtures/replays/public-v1.10.7-focus.json` remains the historical public replay fixture recorded by game 1.10.7. Game 1.10.8 changes seeded tier ordering so RNG is no longer consumed inside an implementation-dependent `sort` comparator. The historical fixture checks replay compatibility, while the 1.10.8 fixture pins current simulation behavior after that RNG correction.
 
-The game visual references are `tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png`, `dense-late-game-chromium-desktop-win32.png`, and the `maps-*-chromium-desktop-win32.png` strategic/close matrix beside them. They remain authoritative for the default Canvas renderer. The Phase E1 review regenerated only the dense late-game reference after `freezePresentation()` began cancelling its pending RAF, removing the prior extra-frame race; two focused repeats and the full matrix matched it. `pixi-hybrid` uses semantic screenshot pixel assertions for opaque sea/land/ownership content and visible invalidation changes rather than a final-art golden.
+The game visual references are `tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png`, `dense-late-game-chromium-desktop-win32.png`, and the `maps-*-chromium-desktop-win32.png` strategic/close matrix beside them. They remain authoritative for the default Canvas renderer, and E2 expects no Canvas golden changes. The Phase E1 review regenerated only the dense late-game reference after `freezePresentation()` began cancelling its pending RAF, removing the prior extra-frame race. `pixi-hybrid` uses semantic screenshot pixels plus direct structure sprite/type/color/position/identity diagnostics rather than a final-art golden.
 
 Production Pixi exclusion is a runtime and JavaScript-module-graph contract: production has no selectable/reachable Pixi renderer and emits no Pixi JavaScript chunk. Inert `.pixi-*` rules may remain in the shared stylesheet, so tests and documentation must not broaden that claim to zero Pixi text in every built asset.
 
@@ -27,6 +27,7 @@ npm run determinism
 npm run test:replaycheck
 npm run test:browser -- --project=chromium-desktop --grep "fixed-seed simulation"
 npm run test:desktop-scale
+npx playwright test tests/browser/pixi-structures.spec.js --project=chromium-desktop
 npm run test:prototype
 npm run test:visual:windows
 npm run perf:browser
@@ -39,3 +40,5 @@ The optional Phase A browser performance harness and its measurement limitations
 Normal non-Docker change verification is `npm run verify`; build reproducibility is `npm run test:build-reproducibility`. Release qualification additionally requires the mounted sandbox, security regression, and exact-artifact commands in `docs/build-a-release.md`, plus applicable performance/device and production checks. The pinned scope does not claim every seed, long-match outcome, browser rendering pixel identity, mobile visual identity, or production deployment approval. Smoke and restart tests deliberately use a 240x138 grid; the default determinism test retains the 720x414 production grid. Optional determinism environment overrides still test run-to-run equality but intentionally do not compare against the default baseline.
 
 The Phase E1 review browser evidence is 64 main passes and 54 intentional project-selection skips (118 total), 6 desktop-scale passes, and 1 graphics prototype pass. It includes Pixi source smoke/canonical/input coverage in Chromium, Firefox, and WebKit, plus Chromium-only pixel, lifecycle, initialization-failure, and real context-loss evidence. Canvas performance medians are desktop 78.1 ms load, 554.4 ms start, 1,678.0 ms/300 ticks, 0.6 ms frame p95, 246,321 B transfer, and 5,376,792 B heap; Pixel 7 emulation 74.7 ms, 569.9 ms, 1,593.8 ms/300 ticks, 0.6 ms p95, 246,321 B, and 5,417,796 B heap.
+
+The Phase E2 local gate retained every Canvas golden and approved 1.10.8 simulation baseline. The desktop browser matrix passed 65 tests with 61 intentional project-selection skips before final focused-only E2 additions; the expanded focused E2 file passed 8/8 and also covers all 12 maps and 9 major modes. DPR structure alignment passed 9/9 across DPR 1, 1.5, and 2. A local 60-frame paused dense-fixture microbenchmark with 11 structures measured Canvas at 4.935 ms/frame visible / 4.508 ms/frame offscreen and Pixi at 2.080 ms/frame visible / 1.942 ms/frame culled. It is a short synchronous microbenchmark, not sustained dense-load qualification. Production reproducibility matched all 24 files and emitted no Pixi JavaScript chunk.

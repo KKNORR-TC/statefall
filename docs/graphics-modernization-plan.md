@@ -334,7 +334,7 @@ Status: TECHNICALLY COMPLETE in development game 1.10.12, build `2026-09-18-phas
 
 ### Phase E: Pixi renderer foundation
 
-Status: IN PROGRESS in development game 1.10.13, build `2026-09-18-phase-e1-pixi-foundation`, committed at `4361ad7`. The first bounded slice adds shared CSS-pixel camera/viewport services, capped DPR backing stores, resize focus preservation, renderer lifecycle/diagnostics, and a development-only `pixi-hybrid` path containing one nearest-neighbor terrain raster texture. Canvas remains production/default and retains all entities, effects, selection, UI, and input. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
+Status: IN PROGRESS in development game 1.10.14, build `2026-09-18-phase-e2-pixi-structures`. E1 commits `4361ad7`/`e5c4228` added shared CSS-pixel camera/viewport services, capped DPR backing stores, renderer lifecycle/diagnostics, and a development-only Pixi terrain raster. E2 adds bounded Pixi ownership of structure base icons generated from existing Canvas art, while Canvas retains all structure overlays, other entities/effects, selection, UI, and input. Canvas remains production/default. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
 
 - Add PixiJS behind a renderer interface and a development-only renderer switch.
 - Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise mouse/pointer input. Keep input commands abstract enough for a future touch adapter.
