@@ -8,7 +8,7 @@ Real-time browser strategy hosted at [WorldRTS.com](https://www.worldrts.com) on
 - `sandbox/` — localhost-only WordPress 7.1 / PHP 8.4 integration environment restored from an authorized site backup.
 - `docs/` — current status and findings, release runbook and record template, graphics modernization plan, historical website handoff, and multiplayer plan.
 
-Production is live and public at game 1.10.7/plugin 1.10.6, installed and verified on 14 September 2026. Local game 1.10.13 build `2026-09-18-phase-e1-pixi-foundation` starts Phase E without a production release or handoff; plugin remains 1.10.7 and the simulation baseline remains 1.10.8. Repository versions do not prove deployment without a release record. See `docs/current-status.md`, `docs/phase-e-progress.md`, and `docs/build-a-release.md`.
+Production is live and public at game 1.10.7/plugin 1.10.6, installed and verified on 14 September 2026. Local game 1.10.13 build `2026-09-18-phase-e1-pixi-foundation` is committed at `4361ad7` and starts Phase E without a production release or handoff; plugin remains 1.10.7 and the simulation baseline remains 1.10.8. Repository versions do not prove deployment without a release record. See `docs/current-status.md`, `docs/phase-e-progress.md`, and `docs/build-a-release.md`.
 
 Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN` requirement, and run the applicable release gates. Game and plugin version numbers do not need to match when only one component changes.
 

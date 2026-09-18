@@ -1,6 +1,6 @@
 # Phase E Progress
 
-_Development record for game/package 1.10.13, build `2026-09-18-phase-e1-pixi-foundation`, on 18 September 2026. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record for game/package 1.10.13, build `2026-09-18-phase-e1-pixi-foundation`, committed at `4361ad7` on 18 September 2026. This is not a release, handoff, production change, Phase E completion, or final-art approval._
 
 ## Implemented Slice
 
