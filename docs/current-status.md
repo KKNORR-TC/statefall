@@ -4,7 +4,7 @@ _Updated 18 September 2026 for the completed minimal Phase D2 lockstep technical
 
 ## Repository and production
 
-- Source authority: the local Git repository. Phase D game 1.10.11 is committed locally at `16aec35`. The current dirty development worktree advances the game/package to 1.10.12 build `2026-09-18-phase-d2-lockstep-proof`; plugin remains 1.10.7 and the simulation baseline remains 1.10.8. The D2 proof is uncommitted, has not been handed off, and is not a release.
+- Source authority: the local Git repository. Phase D game 1.10.11 is committed locally at `16aec35`. The minimal Phase D2 proof for game/package 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` is committed locally at `91b156a`; plugin remains 1.10.7 and the simulation baseline remains 1.10.8. The D2 proof has not been handed off and is not a release.
 - Published GitHub state: `origin/main` remains at `de724b5`, the initial game 1.10.5/plugin 1.10.4 import. None of the later local history, including recovery, reconciliation, and normalization commits, has been pushed. GitHub must not be treated as a complete backup until publication is explicitly authorized and completed.
 - Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
 - Production: [WorldRTS.com](https://www.worldrts.com/) is a live public WordPress site. Ken confirmed successful installation and production verification of game 1.10.7/plugin 1.10.6 on 14 September 2026. The earlier authorized snapshot is retained as the pre-release baseline in `docs/production-baseline-2026-09-12.md`.

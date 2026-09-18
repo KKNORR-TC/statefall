@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 18 September 2026. Phases 0 through D and the minimal Phase D2 lockstep proof are technically complete; Phase D game 1.10.11 is committed locally, the D2 worktree is uncommitted, and production remains unchanged._
+_Updated 18 September 2026. Phases 0 through D and the minimal Phase D2 lockstep proof are technically complete and committed locally; production remains unchanged._
 
 ## 1. Goal
 
@@ -714,10 +714,10 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Review the uncommitted Phase D2 relay-core development slice; do not hand it off or release it unless explicitly requested.
-2. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
-3. Complete the remaining Phase D2 real-transport, two-browser match, and multi-seat replay proof using the extracted engine and legacy renderer.
-4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
+1. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
+2. Begin Phase E with Pixi behind a renderer interface and a development-only renderer switch; retain Canvas for parity comparison.
+3. Establish DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise pointer input before migrating gameplay entities.
+4. Port the terrain and ownership raster first, then prove simulation hashes remain renderer-independent.
 5. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 
 Phases B through D pass their technical gates. No production graphics package should be handed off or deployed without the separate release-readiness and approval process.

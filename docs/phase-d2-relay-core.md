@@ -1,6 +1,6 @@
 # Phase D2 Relay-Core Slice
 
-_Development status on 18 September 2026: the minimal Phase D2 technical gate is locally complete in game 1.10.12, build `2026-09-18-phase-d2-lockstep-proof`. This is not a release or a production multiplayer service._
+_Development status on 18 September 2026: the minimal Phase D2 technical gate is locally complete and committed at `91b156a` in game 1.10.12, build `2026-09-18-phase-d2-lockstep-proof`. This is not a release or a production multiplayer service._
 
 ## Scope
 

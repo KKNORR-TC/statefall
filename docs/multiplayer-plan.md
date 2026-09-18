@@ -1,6 +1,6 @@
 # Statefall - Multiplayer Project Plan
 
-_Status updated 18 September 2026. Phase D game 1.10.11 is committed locally. Development game 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` completes the minimal Phase D2 technical gate; plugin remains 1.10.7 and production remains game 1.10.7/plugin 1.10.6. Product multiplayer work remains out of scope._
+_Status updated 18 September 2026. Phase D game 1.10.11 is committed locally at `16aec35`. Development game 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` completes the minimal Phase D2 technical gate and is committed locally at `91b156a`; plugin remains 1.10.7 and production remains game 1.10.7/plugin 1.10.6. Product multiplayer work remains out of scope._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
