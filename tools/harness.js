@@ -1,69 +1,142 @@
-// Shared headless engine loader for trailers. boot(opts) → {S, main, ctx, W0, H0, els, tick(n)}
-const fs=require('fs'),path=require('path');
-function moduleBody(source){return source.replace(/^import .*;\r?\n/gm,'').replace(/\bexport\s+/g,'');}
-function legacySource(file){
-  const root=path.resolve(__dirname,'..'),read=relative=>fs.readFileSync(path.join(root,relative),'utf8');
-  let legacy=fs.readFileSync(file,'utf8').replace(/^import .*;\r?\n/gm,'');
-  const boundary="const PLATFORM=createPlatform();\nconst WP=PLATFORM.config;";
-  if(legacy.split(boundary).length!==2)throw new Error(`Legacy platform boundary changed in ${file}`);
-  legacy=legacy.replace(boundary,"const PLATFORM={config:null,identity:()=>null,capabilities:()=>({accountSaves:false,scores:false,localScores:true}),onLifecycle:()=>()=>{},request:async()=>{},save:async()=>null,score:async()=>({skipped:true}),navigate:()=>{},reload:()=>{}};\nconst WP=null;");
-  return ['game/src/config/build.js','game/src/config/maps.js','game/src/config/flags.mjs','game/src/config/signing.js','game/src/utils/storage.js','game/src/audio/audio-state.js'].map(relative=>moduleBody(read(relative))).concat('const __STATEFALL_TEST_BRIDGE__=false;',legacy).join('\n');
+'use strict';
+
+// Synchronous CommonJS adapter for Node 22's require(ESM) support.
+const {createEngine,ENGINE_TEST_DIAGNOSTICS}=require('../game/src/sim/engine.mjs');
+
+const DEFAULT_FLAG=[['h','#ffffff','#0038a8']];
+
+function replayName(value){
+  return String(value||'').replace(/[<>&"]/g,'').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,40)||'Unnamed nation';
 }
+
+function replayLayers(value){
+  const layers=Array.isArray(value)&&value.length&&value.length<=8?value:null;
+  const color=value=>typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value);
+  const number=(value,min,max)=>Number.isFinite(+value)&&+value>=min&&+value<=max;
+  const emblems=new Set(['anchor','warship','battleship','sub','fighter','bomber','missile','gun','city','factory','radar','satellite','shield','samstar','eagle','lion','sun','crescent','crown','sword','laurel','tree','mountain','tower','torch']);
+  if(!layers) return DEFAULT_FLAG.map(layer=>layer.slice());
+  const valid=layer=>{
+    if(!Array.isArray(layer)||typeof layer[0]!=='string') return false;
+    switch(layer[0]){
+      case 'h': case 'v': return layer.length>=2&&layer.length<=4&&layer.slice(1).every(color);
+      case 'diag': return layer.length===3&&color(layer[1])&&color(layer[2]);
+      case 'rect': return layer.length===6&&color(layer[1])&&layer.slice(2).every(value=>number(value,0,1));
+      case 'disc': return layer.length===5&&color(layer[1])&&layer.slice(2).every(value=>number(value,0,1));
+      case 'ring': return layer.length===6&&color(layer[1])&&layer.slice(2).every(value=>number(value,0,1));
+      case 'star': return (layer.length===5||layer.length===6)&&color(layer[1])&&number(layer[2],0,1)&&number(layer[3],0,1)&&number(layer[4],0,.6)&&(layer.length===5||number(layer[5],3,12));
+      case 'cross': return layer.length===4&&color(layer[1])&&number(layer[2],0,.6)&&number(layer[3],0,1);
+      case 'sal': return layer.length===3&&color(layer[1])&&number(layer[2],0,.6);
+      case 'tri': return layer.length>=5&&layer.length<=8&&color(layer[1])&&layer.slice(2).every(point=>Array.isArray(point)&&point.length===2&&number(point[0],0,1)&&number(point[1],0,1));
+      case 'emb': return (layer.length===6||layer.length===7)&&color(layer[1])&&emblems.has(layer[2])&&number(layer[3],0,1)&&number(layer[4],0,1)&&number(layer[5],.05,.6)&&(layer.length===6||layer[6]==null||color(layer[6]));
+      default: return false;
+    }
+  };
+  return layers.every(valid)?layers:DEFAULT_FLAG.map(layer=>layer.slice());
+}
+
+function replayIdentity(value,slot){
+  const source=value&&typeof value==='object'?value:{};
+  return {
+    name:replayName(source.name),
+    layers:replayLayers(source.layers),
+    userId:Number.isInteger(+source.userId)?+source.userId:0,
+    ...(slot==null?{}:{slot:Math.max(0,Math.min(8,Number.isInteger(+source.slot)?+source.slot:slot))})
+  };
+}
+
 module.exports=function boot(opts={}){
-  const gameFile=opts.file||process.env.GAME||path.resolve(__dirname,'..','game','src','legacy-game.js');
-  const count=(text,needle)=>text.split(needle).length-1;
-  const exactIndex=(text,needle,label,expected=1)=>{ const found=count(text,needle); if(found!==expected) throw new Error(`Harness ${label}: expected ${expected} occurrence${expected===1?'':'s'}, found ${found} in ${gameFile}`); return text.indexOf(needle); };
-  const replaceExact=(text,needle,replacement,label,expected=1)=>{ exactIndex(text,needle,label,expected); return text.split(needle).join(replacement); };
-  const src=legacySource(gameFile);
-  const stub=()=>new Proxy(function(){}, {get:(t,k)=>k==='length'?0:k==='checked'?false:k==='value'?'50':k==='style'?stub():k==='classList'?stub():(k===Symbol.toPrimitive?()=>800:stub()), set:()=>true, apply:()=>stub()});
-  let createCanvas,Image;
-  if(opts.render===false){
-    createCanvas=(width,height)=>{ const ctx=stub(); return {width,height,getContext:()=>ctx,toDataURL:()=>'',style:{},addEventListener(){}}; };
-    Image=class { constructor(){ this.complete=false; this.naturalWidth=0; } };
-  }else ({createCanvas,Image}=require('canvas'));
-  global.Image=Image; const W0=opts.w||1280,H0=opts.h||720; const main=createCanvas(W0,H0);
-  const vals={stTroops:String(opts.troops??120),stGold:String(opts.gold??100),focus:'50',ratio:'50',seedIn:opts.seed||'',diffSel:opts.diff||'hard',teamSel:String(opts.teams||0)};
-  const els={}; global.document={querySelector:()=>stub(),getElementById:(id)=>{ if(id==='map') return main; if(vals[id]!==undefined&&!els[id]){ els[id]={value:vals[id],checked:false,style:{},textContent:'',innerHTML:'',classList:{toggle(){},add(){},remove(){}},addEventListener(){},querySelectorAll:()=>[],querySelector:()=>null,dataset:{},appendChild(){},after(){},remove(){},focus(){}}; } return els[id]||(els[id]=stub()); },createElement:(tag)=>tag==='canvas'?createCanvas(64,64):stub(),querySelectorAll:()=>[],body:stub(),addEventListener(){}};
-  global.window={addEventListener(){},innerWidth:W0,innerHeight:H0,STATEFALL_WP:null,devicePixelRatio:1,location:{search:''}};
-  global.__now=0; global.performance={now:()=>global.__now}; global.localStorage={getItem:()=>null,setItem(){},removeItem(){}}; global.sessionStorage=global.localStorage;
-  global.requestAnimationFrame=()=>{}; global.setInterval=()=>1; global.clearInterval=()=>{}; global.setTimeout=(f)=>{}; global.location={search:''}; global.crypto={subtle:{}}; global.navigator={clipboard:null};
-  global.tip=stub(); global.ovTitle=stub(); global.ovText=stub(); global.overlay=stub(); global.ratio={value:50};
-  main.getBoundingClientRect=()=>({left:0,top:0,width:W0,height:H0}); main.addEventListener=()=>{}; main.style={};
-  global.__opt=opts;
-  let code="const Math=global.Math;\n"+replaceExact(src,"$('startBtn').onclick=()=>{","global.__start=()=>{",'start handler replacement');
-  code=replaceExact(code,"let chosen='normal'","let chosen='"+(opts.diff||'hard')+"'",'difficulty replacement');
-  code=replaceExact(code,"START.seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed();","START.seed='"+(opts.seed||'TRAILER')+"';",'seed replacement');
-  if(opts.gridW&&opts.gridH) code=replaceExact(code,'const W=720, H=414, TICK=100;',`const W=${opts.gridW}, H=${opts.gridH}, TICK=100;`,'grid dimensions replacement');
-  code=replaceExact(code,"START.quick=$('quickStart').checked;","START.quick=!!global.__opt.quick;",'quick-start replacement');
-  code=replaceExact(code,"START.garrison=$('garrisonOn').checked;","START.garrison=!!global.__opt.garrison;",'garrison replacement');
-  code=replaceExact(code,"START.instant=$('instantOn').checked;","START.instant=!!global.__opt.instant;",'instant-build replacement');
-  code=replaceExact(code,"START.noCap=$('stNoCap').checked;","START.noCap=!!global.__opt.noCap;",'no-cap replacement');
-  code=replaceExact(code,"START.bots=$('stBots').checked;","START.bots=!!global.__opt.bots;",'bots replacement');
-  code=replaceExact(code,"START.fog=$('fogOn').checked;","START.fog=!!global.__opt.fog;",'fog replacement');
-  code=replaceExact(code,"START.risky=$('riskyOn').checked&&!$('endgameOn').checked;","START.risky=!!global.__opt.risky;",'risky replacement');
-  code=replaceExact(code,"START.endgame=$('endgameOn').checked;","START.endgame=!!global.__opt.endgame;",'endgame replacement');
-  code=replaceExact(code,"START.billionaire=$('billionaireOn').checked;","START.billionaire=!!global.__opt.billionaire;",'billionaire replacement');
-  code=replaceExact(code,"START.pauseBuild=$('stPauseBuild').checked;","START.pauseBuild=!!global.__opt.pauseBuild;",'pause-build replacement');
-  code=replaceExact(code,"function end(title,text){","function end(title,text){ if(!global.__allowEnd) return;",'end guard replacement');
-  code=replaceExact(code,"function drawMap(){","function drawMap(){ if(global.__opt.render===false) return;",'draw-map guard replacement');
-  code=replaceExact(code,"if(!REPLAY.on){ START.customBots=null;","if(!REPLAY.on&&!global.__opt.customBots){ START.customBots=null;",'custom-bot replacement');
-  if(opts.frenzy){
-    code=replaceExact(code,"rnd(6000,12000)/(DIFF.build||1)","1200",'frenzy structure timing replacement',2);
-    code=replaceExact(code,"rnd(4000,8000)/(DIFF.build||1)","900",'frenzy vehicle timing replacement',2);
+  const sourceFile=opts.file||process.env.GAME;
+  if(sourceFile) throw new Error('Custom simulation source files are unsupported; tools/harness.js loads game/src/sim/engine.mjs directly.');
+  if(opts.render!==undefined&&opts.render!==false) throw new Error('Harness rendering is unsupported; use the browser/Playwright renderer capture path.');
+
+  const W=opts.gridW??720,H=opts.gridH??414;
+  const settings={
+    troops:opts.troops??120,gold:opts.gold??100,bots:!!opts.bots,teams:opts.teams??0,
+    noCap:!!opts.noCap,map:opts.map||'random',quick:!!opts.quick,fog:!!opts.fog,
+    instant:!!opts.instant,risky:!!opts.risky,endgame:!!opts.endgame,
+    billionaire:!!opts.billionaire,garrison:!!opts.garrison,pauseBuild:!!opts.pauseBuild,
+    seed:opts.seed||'TRAILER',customBots:null
+  };
+  if(opts.customBots) settings.customBots=opts.customBots.slice(0,9).map((bot,index)=>replayIdentity(bot,index));
+
+  let selectedFlag=null;
+  const sink=event=>{
+    if(event.type==='warn') console.warn(...event.args);
+    if(typeof opts.eventSink==='function') opts.eventSink(event);
+  };
+  const engine=createEngine({
+    W,H,tickMs:100,settings,difficulty:opts.diff||'hard',
+    ...(opts.frenzy?{structureBuildDelay:1200,vehicleBuildDelay:900}:{}),
+    ...(Array.isArray(opts.allowed)?{allowed:opts.allowed}:{}),
+    endEnabled:!!opts.allowEnd,
+    [ENGINE_TEST_DIAGNOSTICS]:true
+  },{eventSink:sink});
+  const {state,runtime,systems,rules}=engine.compatibility;
+  const {map,actors,fog,diplomacy,lifecycle}=state;
+  const countries=systems.worldSetup;
+
+  if(opts.customFlag) selectedFlag={...replayIdentity(opts.customFlag),idx:-1,custom:true};
+  else if(opts.countryIdx!=null&&opts.countryIdx>=0) selectedFlag=countries.countryByIdx(opts.countryIdx);
+  else if(opts.country){
+    const index=engine.compatibility.countries.findIndex(country=>country[0]===opts.country);
+    if(index>=0) selectedFlag=countries.countryByIdx(index);
   }
-  code=replaceExact(code,"  { const total=(ROLL.tEnd||ROLL.dur)+6;","  if(!global.__trailer){ const total=(ROLL.tEnd||ROLL.dur)+6;",'credits progress replacement');
-  code=replaceExact(code,"  else { const bw=110,bh=34,bx=Wd-bw-16,by=Hd-bh-12; ROLL.skipBox=[bx,by,bw,bh];","  else if(!global.__trailer){ const bw=110,bh=34,bx=Wd-bw-16,by=Hd-bh-12; ROLL.skipBox=[bx,by,bw,bh];",'credits skip replacement');
-  { const anchor="ctx.fillText(ROLL.paused?'Paused · ← → seek · wheel to scroll'",k=exactIndex(code,anchor,'credits controls line'); const ls=code.lastIndexOf("\n",k),le=code.indexOf("\n",k); if(ls<0||le<0) throw new Error(`Harness credits controls line boundaries not found in ${gameFile}`); code=code.slice(0,ls+1)+"  if(!global.__trailer){"+code.slice(ls+1,le)+" }"+code.slice(le); }
-  code+=`\nglobal.S={get me(){return me},get players(){return players},get cam(){return cam},render:()=>render(),tick:()=>tick(),get W(){return W},get H(){return H},get tickN(){return tickN},get owner(){return owner},get land(){return land},get structures(){return structures},get warships(){return warships},get transports(){return transports},get missiles(){return missiles},get attacks(){return attacks},get aircraft(){return (typeof aircraft!=='undefined')?aircraft:[]},get STRUCT(){return STRUCT},get SHIPS(){return SHIPS},get AIR(){return (typeof AIRCRAFT!=='undefined')?AIRCRAFT:{}},
-    ownTilesOf,coastTilesOf,centroid,launchAttack,placeStructure,orderWarship,launchMissile,isCoast,idx,inb,get START(){return START},get COUNTRIES(){return COUNTRIES},set chosenIdx(i){ chosenFlag=countryByIdx(i); },set customBots(b){ START.customBots=b; },set allowed(a){ ALLOWED.clear(); for(const k of a) ALLOWED.add(k); },set customFlag(f){ chosenFlag={name:f.name,layers:f.layers,idx:-1,custom:true,userId:f.userId}; },set map(m){ START.map=m; },applySettings,statsSnapshot,beginCredits,get ROLL(){return ROLL},get userPaused(){return userPaused},set userPaused(v){userPaused=v},set over(v){over=v},get drawFlag(){return drawFlag}};`;
-  code+="\nObject.defineProperties(global.S,{srandN:{get(){return srandN}},landCount:{get(){return landCount}},CMD:{get(){return CMD}},REPLAY:{get(){return REPLAY}},stateHash:{value:stateHash},issueClick:{value:issueClick},issueMenu:{value:issueMenu},issue:{value:issue},replayApply:{value:replayApply},resolveReplayCommands:{value:resolveReplayCommands},setBuild:{value:setBuild},updateUI:{value:updateUI},resetWorld:{value:resetWorld},restart:{value:()=>__start()},drawEmblem:{value:drawEmblem},drawFlagFn:{value:drawFlag},EMBLEMS:{value:EMBLEMS},computeLabelPos:{value:computeLabelPos},seededTierOrder:{value:seededTierOrder},cruiseTargets:{value:cruiseTargets},dirtyTransientState:{value:()=>{planes.push({test:true});satUntil=11;satCool=12;planeCool=13;vis=new Uint8Array([1]);radarLayer=new Uint8Array([1]);myBorders.add(7);}},transientState:{get(){return {planes:planes.length,satUntil,satCool,planeCool,vis,radarLayer,myBorders:[...myBorders]}}}});";
-  eval(code);
-  if(opts.map) global.S.map=opts.map;
-  if(opts.country){ const ci=global.S.COUNTRIES.findIndex(c=>c.name===opts.country); if(ci>=0) global.S.chosenIdx=ci; }
-  if(opts.countryIdx!=null&&opts.countryIdx>=0) global.S.chosenIdx=opts.countryIdx;
-  if(opts.customFlag) global.S.customFlag=opts.customFlag;
-  if(opts.customBots) global.S.customBots=opts.customBots;
-  if(Array.isArray(opts.allowed)) global.S.allowed=opts.allowed;
-  __start();
-  return {S:global.S,main,ctx:main.getContext('2d'),W0,H0,els,tick:(n=1)=>{ for(let i=0;i<n;i++){ global.__now+=100; global.S.tick(); } }};
+
+  let buildMode=null;
+  const applySettings=values=>{
+    const next={};
+    for(const key of ['garrison','quick','risky','endgame','fog','instant','billionaire','noCap','bots','pauseBuild']) if(Object.hasOwn(values,key)) next[key]=!!values[key];
+    for(const key of ['troops','gold','teams','map']) if(Object.hasOwn(values,key)) next[key]=values[key];
+    if(Object.hasOwn(values,'customBots')) next.customBots=Array.isArray(values.customBots)?values.customBots.slice(0,9).map((bot,index)=>replayIdentity(bot,index)):null;
+    const config={settings:next};
+    if(values.diff) config.difficulty=values.diff;
+    if(Array.isArray(values.allowed)) config.allowed=values.allowed;
+    if(values.customFlag&&values.customFlag.layers) selectedFlag={...replayIdentity(values.customFlag),idx:-1,custom:true};
+    else if(values.country!=null) selectedFlag=countries.countryByIdx(values.country);
+    if(selectedFlag) config.chosenFlag=selectedFlag;
+    engine.reset();
+    engine.configure(config);
+    return S;
+  };
+  const dispatch=()=>engine.dispatchEvents();
+  const run=operation=>{ try{ return operation(); }finally{ dispatch(); } };
+  const issueClick=(tile,env,actorId)=>run(()=>engine.issue({kind:'click',args:[tile,env||{ratio:50,pick:null,build:buildMode}],actor:actorId}));
+  const restart=()=>run(()=>engine.start({chosenFlag:selectedFlag}));
+
+  const S={
+    get me(){ return engine.compatibility.getMe(); },
+    get players(){ return actors.players; }, get structures(){ return actors.structures; },
+    get warships(){ return actors.warships; }, get transports(){ return actors.transports; },
+    get missiles(){ return actors.missiles; }, get attacks(){ return actors.attacks; },
+    get aircraft(){ return actors.aircraft; }, get W(){ return W; }, get H(){ return H; },
+    get tickN(){ return state.clock.tickN; }, get owner(){ return map.owner; }, get land(){ return map.land; },
+    get landCount(){ return map.landCount; }, get difficulty(){ return state.match.difficulty; },
+    set difficulty(value){ state.setDifficulty(value); }, get START(){ return state.rules.settings; },
+    get CMD(){ return runtime.commands; }, get REPLAY(){ return runtime.replay; },
+    get srandN(){ return runtime.rngDraws; }, get STRUCT(){ return rules.STRUCT; },
+    get SHIPS(){ return rules.SHIPS; }, get AIR(){ return rules.AIR; },
+    get stateOracleVersion(){ return engine.compatibility.stateOracle.version; },
+    get transientState(){ return {planes:actors.planes.length,satUntil:fog.satUntil,satCool:fog.satCool,planeCool:fog.planeCool,vis:fog.vis,radarLayer:fog.radarLayer,myBorders:[...fog.myBorders]}; },
+    get diplomacyState(){ return {hostile:{...diplomacy.hostile},proposals:diplomacy.proposals.map(value=>({...value}))}; },
+    get draft(){ return state.draft.draft; },
+    get userPaused(){ return lifecycle.userPaused; }, set userPaused(value){ state.setLifecycle('userPaused',value); },
+    get paused(){ return lifecycle.paused; }, set paused(value){ state.setLifecycle('paused',value); },
+    get over(){ return lifecycle.over; }, set over(value){ state.setLifecycle('over',value); },
+    idx:(x,y)=>y*W+x, inb:(x,y)=>x>=0&&y>=0&&x<W&&y<H,
+    ownTilesOf:systems.landCombat.ownTilesOf, coastTilesOf:systems.landCombat.coastTilesOf,
+    isCoast:systems.landCombat.isCoast, centroid:engine.compatibility.calculateCentroid,
+    issue:(...args)=>run(()=>engine.issue(...args)), issueFor:(actorId,kind,...args)=>run(()=>engine.issue({kind,args,actor:actorId})),
+    issueClick, issueMenu:(d,t,selIds,siteT,ratioV,aidGold,aidTroops,actorId)=>run(()=>engine.issue({kind:'menu',args:[d,t,selIds,siteT,ratioV,aidGold,aidTroops],actor:actorId})),
+    replayApply:systems.commandRouter.replayApply, resolveReplayCommands:systems.commandRouter.resolveReplayCommands,
+    stateHash:engine.stateHash, serializeCanonicalState:engine.serializeCanonical,
+    checkStateInvariants:engine.checkInvariants, setBuild:value=>{ buildMode=value; },
+    applySettings, resetWorld:engine.reset, restart,
+    seededTierOrder:systems.naval.seededTierOrder, cruiseTargets:systems.naval.cruiseTargets,
+    dirtyTransientState:()=>{ actors.planes.push({test:true}); state.setFogScalar('satUntil',11); state.setFogScalar('satCool',12); state.setFogScalar('planeCool',13); state.replaceFogBuffer('vis',new Uint8Array([1])); state.replaceFogBuffer('radarLayer',new Uint8Array([1])); state.replaceMyBorders([7]); },
+    dirtyDiplomacyState:()=>{ diplomacy.hostile['0,1']=123; diplomacy.proposals.push({from:1,type:'nap',until:999}); },
+    takeOverReplay:engine.takeOverReplay, drainEvents:engine.drainEvents
+  };
+
+  restart();
+  return {S,engine,tick:(count=1)=>{ for(let index=0;index<count;index++) run(()=>engine.tick()); }};
 };

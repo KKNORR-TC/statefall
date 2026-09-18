@@ -9,6 +9,10 @@ test('source and built module applications load every chunk and preserve the can
   page.on('response',response=>{if(response.status()>=400)failures.push(`${response.status()} ${response.url()}`);});
   await page.addInitScript(()=>{window.__STATEFALL_TEST_MODE__=true;Object.defineProperty(Performance.prototype,'now',{value:()=>1_000});localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));});
   await page.goto('/index.html?browserTest=1',{waitUntil:'networkidle'});
+  if(testInfo.project.name==='chromium-source-contract'){
+    const browserAdapter=await page.evaluate(()=>fetch('/src/legacy-game.js').then(response=>response.text()));
+    expect(browserAdapter).not.toMatch(/engine\.compatibility\b/);
+  }
   if(testInfo.project.name==='chromium-built-contract'){
     expect(await page.evaluate(()=>('__STATEFALL_TEST__' in window))).toBe(false);
     await page.locator('#seedIn').fill('PHASECBUILT');

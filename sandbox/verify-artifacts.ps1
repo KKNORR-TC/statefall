@@ -59,9 +59,9 @@ if ($LASTEXITCODE -ne 0 -or $marker.Trim() -ne 'preserve-me') { throw 'Plugin ZI
 
 $paths = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\.artifacts\package-fixtures\paths.json')) | ConvertFrom-Json
 $play = Invoke-WebRequest -Uri "$base/play/" -UseBasicParsing -TimeoutSec 30
-if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch "GAME_VERSION='1\.10\.9'") { throw 'Private exact-game HTML failed.' }
+if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch "GAME_VERSION='1\.10\.11'") { throw 'Private exact-game HTML failed.' }
 if (($play.Headers['Cache-Control'] -join ',') -notmatch 'no-cache|no-store') { throw 'Play HTML is not private/uncached.' }
-$exactBase = "$base/play/releases/1.10.9-2026-09-15-phase-c/"
+$exactBase = "$base/play/releases/1.10.11-2026-09-18-phase-d2/"
 $exactManifest = Invoke-RestMethod -Uri ($exactBase + 'release.json') -TimeoutSec 30
 $exactChunks = @($exactManifest.files | Where-Object { $_.path -match '^assets/.+\.js$' })
 $exactChunk = if ($exactChunks.Count) { $exactChunks[0] } else { $null }

@@ -1,0 +1,327 @@
+const assert=require('node:assert/strict');
+const path=require('node:path');
+const {pathToFileURL}=require('node:url');
+
+(async()=>{
+  const protectedGlobals=['window','document','Image','HTMLCanvasElement','AudioContext','localStorage','sessionStorage','fetch','requestAnimationFrame'];
+  const prior=new Map(protectedGlobals.map(name=>[name,Object.getOwnPropertyDescriptor(globalThis,name)]));
+  for(const name of protectedGlobals) Object.defineProperty(globalThis,name,{configurable:true,get(){ throw new Error(`authoritative state accessed browser global ${name}`); }});
+  try{
+    const {createAuthoritativeState}=await import(pathToFileURL(path.resolve(__dirname,'..','game','src','sim','authoritative-state.mjs')).href);
+    const left=createAuthoritativeState({tileCount:3}),right=createAuthoritativeState({tileCount:2});
+    assert.deepEqual([...left.map.owner],[-1,-1,-1]);
+    assert.deepEqual([...left.map.structOwner],[-1,-1,-1]);
+    assert.deepEqual([...left.map.region],[-1,-1,-1]);
+    const leftHostile=left.diplomacy.hostile,leftProposals=left.diplomacy.proposals;
+    const leftSupplyAt=left.garrison.supplyAt;
+    const leftMapRefs={land:left.map.land,owner:left.map.owner,regions:left.map.regions,unclaimed:left.map.unclaimed};
+
+    leftHostile['0,1']=10;
+    right.diplomacy.proposals.push({from:2,type:'nap',until:50});
+    leftProposals.push({from:1,type:'ally',until:40},{from:3,type:'nap',until:60});
+    right.diplomacy.hostile['3,4']=20;
+    left.garrison.areaOf=new Int32Array([1,1,2]);
+    left.garrison.nextAreaId=3;
+    leftSupplyAt[2]=100;
+    right.garrison.areaOf=new Int32Array([7,8]);
+    right.garrison.nextAreaId=9;
+    right.garrison.supplyAt[8]=200;
+    left.map.land.set([1,1,0]);
+    left.map.owner.set([0,1,-1]);
+    left.map.region.set([0,0,-1]);
+    left.map.regions.push({id:0,size:2});
+    left.map.unclaimed.add(2);
+    left.map.landCount=2;
+    left.map.NP=4;
+    left.map.regCount=new Int32Array([1,1,0,0]);
+    right.map.land.set([0,1]);
+    right.map.owner.set([-1,3]);
+    right.map.landCount=1;
+
+    left.retainProposals(proposal=>proposal.from!==1);
+    assert.equal(left.diplomacy.proposals,leftProposals);
+    assert.deepEqual(leftProposals,[{from:3,type:'nap',until:60}]);
+    assert.deepEqual(right.diplomacy.proposals,[{from:2,type:'nap',until:50}]);
+    assert.deepEqual(right.diplomacy.hostile,{'3,4':20});
+    assert.deepEqual([...left.garrison.areaOf],[1,1,2]);
+    assert.equal(left.garrison.nextAreaId,3);
+    assert.deepEqual(leftSupplyAt,{2:100});
+    assert.deepEqual([...right.garrison.areaOf],[7,8]);
+    assert.equal(right.garrison.nextAreaId,9);
+    assert.deepEqual(right.garrison.supplyAt,{8:200});
+    assert.deepEqual([...left.map.land],[1,1,0]);
+    assert.deepEqual([...left.map.owner],[0,1,-1]);
+    assert.deepEqual(left.map.regions,[{id:0,size:2}]);
+    assert.deepEqual([...left.map.unclaimed],[2]);
+    assert.equal(left.map.landCount,2);
+    assert.equal(left.map.NP,4);
+    assert.deepEqual([...left.map.regCount],[1,1,0,0]);
+    assert.deepEqual([...right.map.land],[0,1]);
+    assert.deepEqual([...right.map.owner],[-1,3]);
+    assert.equal(right.map.landCount,1);
+
+    left.resetDiplomacy();
+    assert.equal(left.diplomacy.hostile,leftHostile);
+    assert.equal(left.diplomacy.proposals,leftProposals);
+    assert.deepEqual(leftHostile,{});
+    assert.deepEqual(leftProposals,[]);
+    assert.deepEqual(right.diplomacy.hostile,{'3,4':20});
+    assert.deepEqual(right.diplomacy.proposals,[{from:2,type:'nap',until:50}]);
+    left.resetGarrison();
+    assert.equal(left.garrison.areaOf,null);
+    assert.equal(left.garrison.nextAreaId,1);
+    assert.equal(left.garrison.supplyAt,leftSupplyAt);
+    assert.deepEqual(leftSupplyAt,{});
+    assert.deepEqual([...right.garrison.areaOf],[7,8]);
+    assert.equal(right.garrison.nextAreaId,9);
+    assert.deepEqual(right.garrison.supplyAt,{8:200});
+    left.resetMap();
+    assert.equal(left.map.land,leftMapRefs.land);
+    assert.equal(left.map.owner,leftMapRefs.owner);
+    assert.equal(left.map.regions,leftMapRefs.regions);
+    assert.equal(left.map.unclaimed,leftMapRefs.unclaimed);
+    assert.deepEqual([...left.map.land],[0,0,0]);
+    assert.deepEqual([...left.map.owner],[-1,-1,-1]);
+    assert.deepEqual([...left.map.region],[-1,-1,-1]);
+    assert.deepEqual(left.map.regions,[]);
+    assert.deepEqual([...left.map.unclaimed],[]);
+    assert.equal(left.map.landCount,0);
+    assert.equal(left.map.NP,0);
+    assert.equal(left.map.regCount,null);
+    assert.deepEqual([...right.map.land],[0,1]);
+    assert.deepEqual([...right.map.owner],[-1,3]);
+    assert.equal(right.map.landCount,1);
+
+    const fogLeft=createAuthoritativeState(),fogRight=createAuthoritativeState();
+    const fogRef=fogLeft.fog,bordersRef=fogLeft.fog.myBorders;
+    const vis=new Uint8Array([1,0]),radarLayer=new Uint8Array([0,1]);
+    assert.equal(Object.isFrozen(fogRef),true);
+    assert.deepEqual(Object.keys(fogRef),['vis','radarLayer','satUntil','satCool','planeCool','myBorders']);
+    for(const name of Object.keys(fogRef)){
+      const descriptor=Object.getOwnPropertyDescriptor(fogRef,name);
+      assert.equal(typeof descriptor.get,'function');
+      assert.equal(descriptor.set,undefined);
+    }
+    fogLeft.replaceFogBuffer('vis',vis);
+    fogLeft.replaceFogBuffer('radarLayer',radarLayer);
+    fogLeft.setFogScalar('satUntil',11);
+    fogLeft.setFogScalar('satCool',12);
+    fogLeft.setFogScalar('planeCool',13);
+    fogLeft.replaceMyBorders([2,4]);
+    assert.equal(fogLeft.fog,fogRef);
+    assert.equal(fogLeft.fog.vis,vis);
+    assert.equal(fogLeft.fog.radarLayer,radarLayer);
+    assert.deepEqual({satUntil:fogLeft.fog.satUntil,satCool:fogLeft.fog.satCool,planeCool:fogLeft.fog.planeCool},{satUntil:11,satCool:12,planeCool:13});
+    assert.equal(fogLeft.fog.myBorders,bordersRef);
+    assert.deepEqual([...bordersRef],[2,4]);
+    assert.deepEqual({vis:fogRight.fog.vis,radarLayer:fogRight.fog.radarLayer,satUntil:fogRight.fog.satUntil,satCool:fogRight.fog.satCool,planeCool:fogRight.fog.planeCool,borders:[...fogRight.fog.myBorders]},
+      {vis:null,radarLayer:null,satUntil:0,satCool:0,planeCool:0,borders:[]});
+    fogLeft.replaceMyBorders(fogLeft.fog.myBorders);
+    assert.equal(fogLeft.fog.myBorders,bordersRef);
+    assert.deepEqual([...bordersRef],[2,4]);
+    assert.throws(()=>fogLeft.replaceFogBuffer('unknown',null),/unknown fog buffer/);
+    assert.throws(()=>fogLeft.setFogScalar('unknown',0),/unknown fog scalar/);
+    fogLeft.resetFog();
+    assert.equal(fogLeft.fog,fogRef);
+    assert.equal(fogLeft.fog.myBorders,bordersRef);
+    assert.deepEqual({vis:fogRef.vis,radarLayer:fogRef.radarLayer,satUntil:fogRef.satUntil,satCool:fogRef.satCool,planeCool:fogRef.planeCool,borders:[...bordersRef]},
+      {vis:null,radarLayer:null,satUntil:0,satCool:0,planeCool:0,borders:[]});
+
+    const actorLeft=createAuthoritativeState(),actorRight=createAuthoritativeState();
+    const actorRefs=Object.fromEntries(Object.entries(actorLeft.actors));
+    actorLeft.actors.players.push({id:0},{id:1},{id:2});
+    actorRight.actors.players.push({id:0,side:'right'});
+    const visited=[];
+    actorLeft.retainActors('players',(player,index)=>{ visited.push([player.id,index]); return player.id!==1; });
+    assert.deepEqual(visited,[[0,0],[1,1],[2,2]]);
+    assert.equal(actorLeft.actors.players,actorRefs.players);
+    assert.deepEqual(actorLeft.actors.players,[{id:0},{id:2}]);
+    assert.deepEqual(actorRight.actors.players,[{id:0,side:'right'}]);
+    actorLeft.replaceActors('missiles',[{id:4},{id:5}]);
+    actorLeft.replaceActors('missiles',actorLeft.actors.missiles);
+    assert.equal(actorLeft.actors.missiles,actorRefs.missiles);
+    assert.deepEqual(actorLeft.actors.missiles,[{id:4},{id:5}]);
+    assert.throws(()=>actorLeft.retainActors('unknown',()=>true),/unknown actor collection/);
+    assert.throws(()=>actorLeft.replaceActors('unknown',[]),/unknown actor collection/);
+    actorLeft.resetActors();
+    for(const [name,ref] of Object.entries(actorRefs)){
+      assert.equal(actorLeft.actors[name],ref);
+      assert.equal(ref.length,0);
+    }
+    assert.deepEqual(actorRight.actors.players,[{id:0,side:'right'}]);
+    assert.equal(actorLeft.nextUid(),1);
+    assert.equal(actorLeft.nextUid(),2);
+    assert.equal(actorRight.nextUid(),1);
+    assert.equal(actorLeft.uidSeq,2);
+    actorLeft.resetIdentity();
+    assert.equal(actorLeft.uidSeq,0);
+    assert.equal(actorRight.uidSeq,1);
+    const matchLeft=createAuthoritativeState({difficulty:'hard'}),matchRight=createAuthoritativeState({difficulty:'easy'});
+    const matchRef=matchLeft.match,leftPlayer={id:0,side:'left'},replacement={id:0,side:'replacement'},rightPlayer={id:0,side:'right'};
+    assert.equal(Object.isFrozen(matchRef),true);
+    assert.deepEqual(Object.keys(matchRef),['playerId','difficulty']);
+    matchLeft.actors.players.push(leftPlayer);
+    matchRight.actors.players.push(rightPlayer);
+    matchLeft.setPlayerId(0);
+    matchRight.setPlayerId(0);
+    matchLeft.setDifficulty('impossible');
+    assert.equal(matchLeft.match,matchRef);
+    assert.equal(matchLeft.match.playerId,0);
+    assert.equal(matchLeft.actors.players[matchLeft.match.playerId],leftPlayer);
+    assert.equal(matchLeft.match.difficulty,'impossible');
+    assert.equal(matchRight.actors.players[matchRight.match.playerId],rightPlayer);
+    assert.equal(matchRight.match.difficulty,'easy');
+    matchLeft.actors.players[0]=replacement;
+    assert.equal(matchLeft.actors.players[matchLeft.match.playerId],replacement);
+    matchLeft.resetMatch();
+    assert.equal(matchLeft.match,matchRef);
+    assert.deepEqual({playerId:matchRef.playerId,difficulty:matchRef.difficulty},{playerId:null,difficulty:'hard'});
+    assert.deepEqual({playerId:matchRight.match.playerId,difficulty:matchRight.match.difficulty,player:matchRight.actors.players[matchRight.match.playerId]},{playerId:0,difficulty:'easy',player:rightPlayer});
+    assert.throws(()=>matchLeft.setPlayerId(-1),/playerId/);
+    assert.throws(()=>matchLeft.setDifficulty(''),/difficulty/);
+    assert.deepEqual({tickN:actorLeft.clock.tickN,simMs:actorLeft.clock.simMs},{tickN:0,simMs:0});
+    actorLeft.setClock(12,1200);
+    actorRight.setClock(7,700);
+    assert.deepEqual({tickN:actorLeft.clock.tickN,simMs:actorLeft.clock.simMs},{tickN:12,simMs:1200});
+    assert.deepEqual({tickN:actorRight.clock.tickN,simMs:actorRight.clock.simMs},{tickN:7,simMs:700});
+    actorLeft.setClock(13,1300);
+    assert.deepEqual({tickN:actorLeft.clock.tickN,simMs:actorLeft.clock.simMs},{tickN:13,simMs:1300});
+    assert.deepEqual({tickN:actorRight.clock.tickN,simMs:actorRight.clock.simMs},{tickN:7,simMs:700});
+    actorLeft.resetClock();
+    assert.deepEqual({tickN:actorLeft.clock.tickN,simMs:actorLeft.clock.simMs},{tickN:0,simMs:0});
+    assert.deepEqual({tickN:actorRight.clock.tickN,simMs:actorRight.clock.simMs},{tickN:7,simMs:700});
+    const lifecycleNames=['over','freeplay','spectating','decided','paused','userPaused'];
+    const lifecycleLeft=createAuthoritativeState(),lifecycleRight=createAuthoritativeState();
+    const lifecycleRef=lifecycleLeft.lifecycle;
+    assert.equal(Object.isFrozen(lifecycleRef),true);
+    assert.deepEqual(Object.keys(lifecycleRef),lifecycleNames);
+    assert.deepEqual(Object.fromEntries(lifecycleNames.map(name=>[name,lifecycleRef[name]])),{
+      over:false,freeplay:false,spectating:false,decided:false,paused:false,userPaused:false
+    });
+    for(const name of lifecycleNames){
+      const descriptor=Object.getOwnPropertyDescriptor(lifecycleRef,name);
+      assert.equal(typeof descriptor.get,'function');
+      assert.equal(descriptor.set,undefined);
+      lifecycleLeft.setLifecycle(name,true);
+    }
+    lifecycleRight.setLifecycle('paused',true);
+    assert.deepEqual(Object.fromEntries(lifecycleNames.map(name=>[name,lifecycleRef[name]])),{
+      over:true,freeplay:true,spectating:true,decided:true,paused:true,userPaused:true
+    });
+    assert.deepEqual(Object.fromEntries(lifecycleNames.map(name=>[name,lifecycleRight.lifecycle[name]])),{
+      over:false,freeplay:false,spectating:false,decided:false,paused:true,userPaused:false
+    });
+    assert.throws(()=>lifecycleLeft.setLifecycle('unknown',true),/unknown lifecycle field/);
+    assert.throws(()=>lifecycleLeft.setLifecycle('over',1),/must be boolean/);
+    assert.equal(lifecycleLeft.lifecycle.over,true);
+    lifecycleLeft.resetLifecycle();
+    assert.equal(lifecycleLeft.lifecycle,lifecycleRef);
+    assert.deepEqual(Object.fromEntries(lifecycleNames.map(name=>[name,lifecycleRef[name]])),{
+      over:false,freeplay:false,spectating:false,decided:false,paused:false,userPaused:false
+    });
+    assert.equal(lifecycleRight.lifecycle.paused,true);
+    const draftLeft=createAuthoritativeState(),draftRight=createAuthoritativeState();
+    const draftRef=draftLeft.draft,draftPicksRef=draftRef.draftPicks;
+    assert.equal(Object.isFrozen(draftRef),true);
+    assert.deepEqual(Object.keys(draftRef),['draft','draftPicks','draftTicks']);
+    assert.equal(typeof Object.getOwnPropertyDescriptor(draftRef,'draft').get,'function');
+    assert.equal(typeof Object.getOwnPropertyDescriptor(draftRef,'draft').set,'function');
+    assert.equal(typeof Object.getOwnPropertyDescriptor(draftRef,'draftTicks').get,'function');
+    assert.equal(typeof Object.getOwnPropertyDescriptor(draftRef,'draftTicks').set,'function');
+    const leftRound={order:[{id:1}],idx:0,per:2,round:0,timer:0};
+    const rightRound={order:[{id:2}],idx:0,per:3,round:1,timer:0};
+    draftLeft.draft.draft=leftRound;
+    draftRight.draft.draft=rightRound;
+    draftLeft.draft.draftPicks.push({owner:1,n:1});
+    draftRight.draft.draftPicks.push({owner:2,n:1});
+    draftLeft.draft.draftTicks++;
+    draftRight.draft.draftTicks=7;
+    draftLeft.draft.draftTicks++;
+    assert.equal(draftLeft.draft,draftRef);
+    assert.equal(draftLeft.draft.draft,leftRound);
+    assert.equal(draftRight.draft.draft,rightRound);
+    assert.deepEqual(draftPicksRef,[{owner:1,n:1}]);
+    assert.deepEqual(draftRight.draft.draftPicks,[{owner:2,n:1}]);
+    assert.equal(draftLeft.draft.draftTicks,2);
+    assert.equal(draftRight.draft.draftTicks,7);
+    const decisionLeft={type:'allied-endgame',rivalIds:[1,2]},decisionRight={type:'allied-endgame',rivalIds:[3]};
+    draftLeft.setPendingDecision(decisionLeft);
+    draftRight.setPendingDecision(decisionRight);
+    assert.equal(draftLeft.pendingDecision,decisionLeft);
+    assert.equal(draftRight.pendingDecision,decisionRight);
+    draftLeft.resetMatchFlow();
+    assert.equal(draftLeft.pendingDecision,null);
+    assert.equal(draftRight.pendingDecision,decisionRight);
+    assert.throws(()=>draftLeft.setPendingDecision([]),/pendingDecision/);
+    draftLeft.resetDraft();
+    assert.equal(draftLeft.draft,draftRef);
+    assert.equal(draftLeft.draft.draftPicks,draftPicksRef);
+    assert.equal(draftLeft.draft.draft,null);
+    assert.deepEqual(draftPicksRef,[]);
+    assert.equal(draftLeft.draft.draftTicks,0);
+    assert.equal(draftRight.draft.draft,rightRound);
+    assert.deepEqual(draftRight.draft.draftPicks,[{owner:2,n:1}]);
+    assert.equal(draftRight.draft.draftTicks,7);
+    const setupLeft=createAuthoritativeState(),setupRight=createAuthoritativeState();
+    const setupRef=setupLeft.setup,countryPoolRef=setupRef.countryPool;
+    const leftPreset={name:'left'},rightPreset={name:'right'};
+    const leftCid=new Int16Array([1,2]),rightCid=new Int16Array([3]);
+    const leftFlag={name:'Left flag',idx:1},rightFlag={name:'Right flag',idx:3};
+    assert.equal(Object.isFrozen(setupRef),true);
+    assert.deepEqual(Object.keys(setupRef),['PRESET','cid','countryPool','chosenFlag']);
+    for(const name of ['PRESET','cid','chosenFlag']){
+      const descriptor=Object.getOwnPropertyDescriptor(setupRef,name);
+      assert.equal(typeof descriptor.get,'function');
+      assert.equal(descriptor.set,undefined);
+    }
+    setupLeft.setSetupMap(leftPreset,leftCid);
+    setupRight.setSetupMap(rightPreset,rightCid);
+    setupLeft.setChosenFlag(leftFlag);
+    setupRight.setChosenFlag(rightFlag);
+    setupLeft.replaceCountryPool([0,1,2]);
+    setupRight.replaceCountryPool([3,4]);
+    setupLeft.setup.countryPool.pop();
+    assert.equal(setupLeft.setup,setupRef);
+    assert.notEqual(setupRef.PRESET,leftPreset);
+    assert.notEqual(setupRef.cid,leftCid);
+    assert.notEqual(setupRef.chosenFlag,leftFlag);
+    assert.deepEqual(setupRef.PRESET,leftPreset);
+    assert.deepEqual(setupRef.cid,leftCid);
+    assert.deepEqual(setupRef.chosenFlag,leftFlag);
+    assert.equal(setupRef.countryPool,countryPoolRef);
+    assert.deepEqual(countryPoolRef,[0,1]);
+    assert.notEqual(setupRight.setup.PRESET,rightPreset);
+    assert.notEqual(setupRight.setup.cid,rightCid);
+    assert.notEqual(setupRight.setup.chosenFlag,rightFlag);
+    assert.deepEqual(setupRight.setup.PRESET,rightPreset);
+    assert.deepEqual(setupRight.setup.cid,rightCid);
+    assert.deepEqual(setupRight.setup.chosenFlag,rightFlag);
+    assert.deepEqual(setupRight.setup.countryPool,[3,4]);
+    setupLeft.replaceCountryPool(setupLeft.setup.countryPool);
+    assert.equal(setupRef.countryPool,countryPoolRef);
+    assert.deepEqual(countryPoolRef,[0,1]);
+    setupLeft.resetSetup();
+    assert.equal(setupLeft.setup,setupRef);
+    assert.equal(setupRef.countryPool,countryPoolRef);
+    assert.deepEqual({PRESET:setupRef.PRESET,cid:setupRef.cid,chosenFlag:setupRef.chosenFlag,countryPool:countryPoolRef},
+      {PRESET:null,cid:null,chosenFlag:null,countryPool:[]});
+    assert.deepEqual(setupRight.setup.PRESET,rightPreset);
+    assert.deepEqual(setupRight.setup.cid,rightCid);
+    assert.deepEqual(setupRight.setup.chosenFlag,rightFlag);
+    assert.deepEqual(setupRight.setup.countryPool,[3,4]);
+    const ruleLeft=createAuthoritativeState({settings:{seed:'A',fog:false},allowed:['city','port']});
+    const ruleRight=createAuthoritativeState({settings:{seed:'B',fog:true},allowed:['sam']});
+    ruleLeft.rules.settings.seed='C';
+    ruleLeft.rules.allowed.delete('port');
+    assert.deepEqual(ruleLeft.rules.settings,{seed:'C',fog:false});
+    assert.deepEqual([...ruleLeft.rules.allowed],['city']);
+    assert.deepEqual(ruleRight.rules.settings,{seed:'B',fog:true});
+    assert.deepEqual([...ruleRight.rules.allowed],['sam']);
+    console.log('Authoritative state isolation contracts PASS');
+  }finally{
+    for(const [name,descriptor] of prior){
+      if(descriptor) Object.defineProperty(globalThis,name,descriptor);
+      else delete globalThis[name];
+    }
+  }
+})().catch(error=>{ console.error(error.stack||error); process.exitCode=1; });

@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.10.11 - 2026-09-18
+
+- Repository-only Phase D candidate; verified locally but uncommitted, not handed off, and not deployed.
+- Completed the browser-free engine boundary: isolated authoritative state, setup/map generation, command/replay routing, match flow, world systems, full graph checkpoints, read-only presentation/query views, immutable event delivery, detached render buffers, non-authoritative interpolation frames, and detached/frozen replay API results with no production authority return leaks in the final audit.
+- Replaced the source-rewriting/evaluating Node harness with direct engine imports and added interleaved-engine isolation plus old-versus-extracted parity evidence across 7 scenarios from `ad30188`.
+- Preserved canonical v1's virtual `labelPos` and historical deterministic RNG draws for compatibility visual descriptors without allowing rendering or event cadence to consume RNG.
+- Assigned a fresh candidate identity and moved browser trailer capture output outside production `dist/`.
+- Certified the Phase D technical architecture complete with no critical or high defects after final static review; handoff remains administratively NO-GO while the source is dirty/uncommitted and authorization is pending.
+- Upgraded full checkpoints to schema v2 with canonical-compatibility label metadata; v1 is rejected because exact between-cadence canonical bytes cannot be reconstructed.
+- Added periodic/final canonical, RNG, command-count, and cursor replay evidence plus exact-target watch/resume semantics, closing post-end continuation serialization and resume divergence.
+
+## 1.10.10 - 2026-09-17
+
+- Repository-only Phase D1 game version; it has not been deployed.
+- Added an importable browser-free deterministic runtime seam for counted seeded RNG, command/replay bookkeeping, canonical v1 serialization, and exact tick ordering.
+- Added explicit command reset/history, replay configuration/takeover, and versioned JSON-compatible runtime checkpoint/restore semantics with exact RNG continuation.
+- Moved authoritative settings/allowed rules, match identity/difficulty, clocks, lifecycle, fog, draft, map/index storage, actor collections, hostility/proposals, garrison indexes, and the actor UID allocator behind a browser-free per-instance state factory with stable reset/filter identity and interleaved isolation contracts.
+- Removed the presentation-centroid cache from authoritative setup/draft decisions and added a rendered-versus-headless cadence gate covering standard and risky-start simulations.
+- Routed the legacy game and Node harness through the same runtime while preserving every approved 1.10.8 simulation, replay, and visual baseline.
+- Added poisoned-browser-global, RNG compatibility, runtime isolation, canonical-v1, replay-order, pause-order, and checkpoint-order contracts.
+- At the 1.10.10 checkpoint Phase D remained in progress: setup scratch state and world systems were still legacy callbacks, visual effects preserved historical simulation-RNG draws, and the compatibility harness still rewrote/evaluated the legacy application. Candidate 1.10.11 completes those extraction items while retaining the required RNG compatibility behavior.
+
 ## 1.10.9 - 2026-09-15
 
 - Repository-only game version; recovered and normalized on 17 September 2026 with all Phase C correctness, artifact, and production-build performance gates passing. It has not been deployed.

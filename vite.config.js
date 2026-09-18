@@ -1,12 +1,12 @@
 const {defineConfig}=require('vite');
 const path=require('node:path');
 
-module.exports=defineConfig(({command})=>({
+module.exports=defineConfig(({command,mode})=>({
   root:path.resolve(__dirname,'game'),
   base:command==='build'?'/__STATEFALL_ASSET_BASE__/':'/',
-  define:{__STATEFALL_TEST_BRIDGE__:command==='serve'},
+  define:{__STATEFALL_TEST_BRIDGE__:command==='serve'||mode==='capture'},
   build:{
-    outDir:path.resolve(__dirname,'dist'),
+    outDir:path.resolve(__dirname,mode==='capture'?'.artifacts/trailer-dist':'dist'),
     emptyOutDir:true,
     assetsDir:'assets',
     rollupOptions:{output:{entryFileNames:'assets/[name].[hash].js',chunkFileNames:'assets/[name].[hash].js',assetFileNames:'assets/[name].[hash][extname]'}}

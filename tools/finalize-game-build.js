@@ -17,6 +17,11 @@ function walk(directory,prefix=''){
 
 const entry=path.join(dist,'index.html');
 let html=fs.readFileSync(entry,'utf8');
+for(const file of walk(dist)){
+  if(/\.(?:html|js|css|json|txt)$/.test(file.path)&&/__STATEFALL_TEST(?:_[A-Z]+)?__/.test(file.data.toString('utf8'))){
+    throw new Error(`Production dist contains capture bridge marker: ${file.path}`);
+  }
+}
 for(const file of fs.readdirSync(path.join(dist,'assets'))){
   if(!/\.(?:js|css)$/.test(file))continue;
   const source=path.join(dist,'assets',file),data=fs.readFileSync(source);

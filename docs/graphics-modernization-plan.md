@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 17 September 2026. Phases 0 through C are complete in local repository game 1.10.9/plugin 1.10.7. Phase C recovery evidence is in `docs/phase-c-recovery-evidence.md`; production remains unchanged._
+_Updated 18 September 2026. Phases 0 through D are technically complete in local candidate game 1.10.11/plugin 1.10.7. Candidate source is uncommitted and not handed off; production remains unchanged._
 
 ## 1. Goal
 
@@ -160,7 +160,7 @@ These are release blockers, not preferences.
 - Replay commands are applied at the same point relative to tick advancement as today.
 - Simulation uses only the seeded simulation RNG and tick-derived time.
 - Rendering, particles, audio, interface animation, and camera use separate visual randomness and wall-clock time.
-- Remove visual-effect creation from the simulation RNG before changing effect counts.
+- Compatibility visual descriptors continue to consume deterministic simulation RNG inside the engine so approved historical draw counts and later outcomes remain unchanged. Rendering, event delivery cadence, particles, audio, interface animation, and camera never consume that RNG. Removing or changing compatibility draws is a future versioned behavior/replay-oracle change, not part of extraction.
 - Fix seeded randomness inside `sort` comparators before claiming cross-browser determinism.
 - Rendering at 30, 60, 120, or zero frames per second must produce identical simulation hashes.
 - No module under `src/sim/` may import PixiJS, DOM APIs, Web Audio, `performance.now()`, `Date.now()`, or unseeded `Math.random()`.
@@ -303,7 +303,7 @@ Gate: visual behavior is materially unchanged, all existing tests pass, and the 
 
 Status: PASS on 15 September 2026 in repository game 1.10.9, recovered at commit `97dcc76`, and normalized at `951db36`, `5583fc9`, and `0d1cae9` on 17 September. Vite source and production projects retain the legacy Canvas renderer and the explicit 1.10.8 simulation/visual oracles. The reproducible build emits hashed relative release assets, a bundle report, signing-key digest metadata, schema-1 `release.json`, and the Phase B-compatible exact ZIP without evaluating the application. Local and WordPress adapters own account requests, saves, scores, identity/capabilities, navigation, audio permission, and lifecycle notification without beginning Phase D engine extraction; specialized media and response-sensitive legacy fetches remain documented for later extraction. Production bundles omit browser test internals. Correctness, artifact, and fresh production-build performance gates passed during recovery normalization, as recorded in `docs/phase-c-recovery-evidence.md`.
 
-### Phase D: Simulation/presentation boundary
+### Phase D: Simulation/presentation boundary (complete)
 
 - Wrap mutable simulation state in an engine instance.
 - Extract seeded RNG, commands, replay, map generation, and tick systems without reordering behavior.
@@ -313,6 +313,10 @@ Status: PASS on 15 September 2026 in repository game 1.10.9, recovered at commit
 - Add snapshot interpolation data without changing authoritative state.
 
 Gate: old and extracted engines produce identical checkpoint and final canonical digests for the same replay corpus. Tests run without DOM, Canvas, or PixiJS.
+
+Status: CERTIFIED COMPLETE technically on 18 September 2026 in local candidate game 1.10.11, build `2026-09-18-phase-d2`, with no critical or high defects after final static review. The browser-free engine now owns isolated runtime/state, setup/map generation, command/replay routing, match flow, all world systems, full validated graph checkpoints, canonical oracles, immutable presentation events, detached render buffers, read-only presentation/query views, frozen interpolation frames, and detached/frozen replay API results. The final read-only API audit found no production authority return leaks. Browser and Node compatibility callers import it directly without rewriting or evaluating application source. Interleaved complete engines pass isolation and continuation; the frozen `ad30188` old-engine corpus matches 7 scenarios; headless/event/render cadence leaves canonical bytes, legacy hash, RNG count, and tick unchanged; and production determinism remains `bc43ad4e` / `509ad7e54aa2` with 85/85 command application. The sole blocker is administrative: the worktree is dirty/uncommitted at HEAD `ad301888827571e57514766c9892f12943197d05`, with review, commit, and handoff authorization pending. See `docs/phase-d-progress.md` and `docs/release-record-1.10.11-phase-d2.md`.
+
+Compatibility detail: canonical v1 historically serialized `player.labelPos`. Authoritative players no longer contain that presentation field; the state oracle supplies a canonical virtual `labelPos` at the legacy cadence solely for byte compatibility. Full checkpoint schema `statefall-engine-checkpoint/v2` stores `statefall-canonical-compatibility/v1` label metadata separately; v1 checkpoints are rejected because exact canonical bytes between 30-tick refresh points cannot be reconstructed. Presentation label layout and smoothing are read-only. Interpolation frames are non-authoritative, excluded from checkpoints/canonical state, reset on restore, and contain only prior/current stable actor positions and tick time. Replay saves carry periodic/final canonical, RNG, command-count, and replay-cursor evidence; watch and resume verify the exact recorded target, including serialized post-end continuation.
 
 ### Phase D2: Minimal multiplayer architecture proof
 
@@ -444,16 +448,16 @@ Quality tiers should control resolution scale, particles, trails, lighting, wate
 
 ### Pre-modernization assessment and current disposition
 
-The roadmap originally identified the limitations below. Phases 0 through C strengthened the suite, but the remaining limitations continue to define Phase D and later work.
+The roadmap originally identified the limitations below. Phases 0 through D strengthened the suite; remaining limitations define Phase D2 and later work.
 
 | Existing check | What it currently proves | Important limitation |
 |---|---|---|
 | `tests/smoke.js` | Ten reduced-grid map/mode scenarios pass periodic invariants and pinned canonical hashes. | Reduced grid, selected combinations, rendering disabled. |
 | `tests/restart-replay.js` | Standard, fog, and garrison commands reproduce pinned canonical state after same-page restart. | Few command families and reduced grid. |
-| `tools/determinism.js` | A production-grid replay matches across fresh processes with pinned checkpoints and final digest. | One main scenario and no renderer-cadence matrix yet. |
+| `tools/determinism.js` | A production-grid replay matches across fresh processes with 85/85 command application and final `bc43ad4e` / `509ad7e54aa2`. | One production-grid scenario; broader cases are covered by the Phase D corpus and focused suites. |
 | `tests/security.js` | Focused replay-name normalization remains present. | Does not execute the vulnerable flow in a real DOM/browser. |
-| `tools/replaycheck.js` | Strictly rejects malformed input, command failures, missing checkpoints, incomplete playback, and divergence. | The replay corpus is still narrower than the planned Phase D/I matrix. |
-| `tools/harness.js` | Runs the modularized legacy game quickly under Node stubs with guarded transformations. | Still rewrites/evaluates source, stubs timers/DOM, and bypasses rendering; Phase D must replace it with direct engine imports. |
+| `tools/replaycheck.js` | Strictly rejects malformed input, command failures, missing checkpoints, incomplete playback, and divergence. | The 7-scenario Phase D corpus is still narrower than the planned Phase I release matrix. |
+| `tools/harness.js` | Synchronously imports the same browser-free engine as the game and provides a compatibility facade for existing Node tools. | It remains a compatibility API and bypasses browser rendering; browser/Playwright owns Canvas and trailer capture evidence. |
 | `sandbox/verify.ps1` | PHP syntax, public routes, one admin nonce session, and basic save CRUD. | Tests mounted source, not installable ZIPs; mostly positive paths. |
 | `sandbox/security-regression.ps1` | Focused save/replay quota, migration, sanitization, and bot-record regressions. | Separately invoked and incomplete for auth, lifecycle, package, and failure paths. |
 | Playwright and exact-artifact checks | Committed Windows pixels, cross-engine behavior, built/source contracts, reproducibility, package lifecycle, MIME, and cache checks. | Windows pixels do not certify other platforms; performance, accessibility, long sessions, and the complete renderer matrix remain open. |
@@ -476,17 +480,17 @@ The current suite can continue as a fast smoke layer, but passing it must not be
 
 #### Fast simulation layer
 
-Retain the Phase 0/C Node scripts while Phase D extracts an importable engine. Continue expanding:
+Retain the Phase 0/C Node scripts as compatibility coverage around the importable Phase D engine. Continue expanding:
 
 - `assertStateInvariants(engine)` at setup and regular tick intervals.
 - Strict expected-match helpers for every temporary legacy-harness source transformation.
 - Table-driven coverage for every map and individual mode, then selected pairwise combinations.
 - Command-family scenarios for structures/upgrades, ships/orders, transports, aircraft, missiles, diplomacy, aid, automation, garrisons, pause, draft, and stale/invalid ids.
-- Actual victory, defeat, overrun, spectate, keep-playing, credits, final replay, and post-end save/resume paths.
+- Retain the now-passing victory, defeat, overrun, spectate, keep-playing, credits, final replay, and post-end save/resume paths; expand their scenario breadth during later stabilization.
 - A controllable scheduler for timers and animation frames instead of callbacks that never run.
 - Separate-process cold replay comparisons so process globals cannot conceal state leakage.
 
-When ES modules exist in Phase D, move engine unit and contract tests to Vitest or an equivalent module-aware runner. The extracted engine must run without DOM, Canvas, PixiJS, Web Audio, or network access. Keep a temporary compatibility facade for tools until all callers migrate.
+Direct engine and system contract tests now run through Node 22's ESM support without DOM, Canvas, PixiJS, Web Audio, network, storage, or timer access. Keep the small CommonJS compatibility facade only while existing callers need its historical API.
 
 #### Authoritative state oracle
 
@@ -708,10 +712,10 @@ Decisions still requiring a concrete prototype or measurement:
 
 ## 15. Immediate Work Order
 
-1. Begin Phase D deterministic engine extraction from the completed Phase C Vite/module foundation.
+1. Review and commit the verified Phase D source/evidence; do not hand off candidate 1.10.11 unless explicitly requested.
 2. Preserve the Phase B exact-artifact suite as a required gate for every subsequent package change.
-3. Extract the deterministic engine, then complete the Phase D2 two-client multiplayer proof using the legacy renderer.
+3. Complete the Phase D2 two-client multiplayer proof using the extracted engine and legacy renderer.
 4. Resolve issues found by the multiplayer proof before beginning the full Pixi terrain and entity migration.
 5. At the Phase E gate, review the deferred Statefall Landings decisions and decide whether to authorize its narrow vertical slice.
 
-No production graphics package should be built until Phases B through D pass their gates.
+Phases B through D pass their technical gates. No production graphics package should be handed off or deployed without the separate release-readiness and approval process.

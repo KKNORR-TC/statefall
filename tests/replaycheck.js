@@ -45,6 +45,8 @@ try{
   failed(run([]),/missing replay file/,2);
 
   assert.deepEqual(validateReplay(fixture),[]);
+  const canonicalRequired=structuredClone(fixture);
+  assert.match(validateReplay(canonicalRequired,{requireCanonicalCheckpoints:true}).join('\n'),/canonical must be an object/);
   const missingCheckpoint=structuredClone(fixture);
   missingCheckpoint.hashes.pop();
   assert.match(validateReplay(missingCheckpoint).join('\n'),/missing checkpoint 200/);
@@ -65,13 +67,13 @@ try{
     replay.hashes.pop();
   }),/missing checkpoint 200/,2);
 
-  verifyMutation(replay=>{
-    replay.tick=1;
-    replay.hashes=[];
-    replay.cmds=[{t:2,k:'focus',a:[0.2]}];
-    delete replay.finalHash;
-    delete replay.finalDigest;
-  },/unapplied commands: applied 0 of 1/);
+  const beyondTarget=structuredClone(fixture);
+  beyondTarget.tick=1;
+  beyondTarget.hashes=[];
+  beyondTarget.cmds=[{t:2,k:'focus',a:[0.2]}];
+  delete beyondTarget.finalHash;
+  delete beyondTarget.finalDigest;
+  assert.match(validateReplay(beyondTarget).join('\n'),/must not exceed the replay target/);
 
   verifyMutation(replay=>{
     replay.tick=25;
@@ -114,6 +116,35 @@ try{
     replay.finalHash='00000000';
     replay.finalDigest.sha256='0'.repeat(64);
   },/final state mismatch: recorded 00000000, replay [0-9a-f]{8}[\s\S]*final canonical digest mismatch/);
+
+  const canonicalCheckpoint=structuredClone(fixture);
+  canonicalCheckpoint.hashes[0][2].canonical={version:'statefall-authoritative-state/v1',sha256:'0'.repeat(64)};
+  canonicalCheckpoint.hashes[0][2].rngDraws=canonicalCheckpoint.hashes[0][2].rng;
+  canonicalCheckpoint.hashes[0][2].commandCount=1;
+  canonicalCheckpoint.hashes[0][2].replayCursor=null;
+  assert.deepEqual(validateReplay(canonicalCheckpoint),[]);
+  const canonicalResult=verifyReplay(canonicalCheckpoint,{logger:{log(){}},bootOptions:{gridW:120,gridH:69}});
+  assert.match(canonicalResult.errors.join('\n'),/checkpoint 100 canonical digest mismatch/);
+
+  const continuation=structuredClone(fixture);
+  continuation.seed='FREEPLAYCHECK';
+  continuation.settings={...continuation.settings,seed:continuation.seed,teams:1,endgame:true};
+  continuation.tick=2;
+  continuation.hashes=[];
+  continuation.cmds=[{t:1,k:'continueAfterEnd',a:[true],phase:'post-systems'}];
+  delete continuation.finalHash;
+  delete continuation.finalDigest;
+  const continuationEvidence=verifyReplay(continuation,{logger:{log(){}}});
+  assert.equal(continuationEvidence.ok,true,continuationEvidence.errors.join('\n'));
+  assert.equal(continuationEvidence.commandsApplied,1);
+  continuation.finalHash=continuationEvidence.finalHash;
+  continuation.finalDigest=continuationEvidence.finalDigest;
+  continuation.final={tick:2,legacyHash:continuationEvidence.finalHash,canonical:continuationEvidence.finalDigest,rngDraws:continuationEvidence.rngDraws,commandCount:1,replayCursor:1};
+  const continuationFile=path.join(temp,'freeplay-continuation.state');
+  fs.writeFileSync(continuationFile,JSON.stringify(continuation));
+  const continuationOfficial=run([continuationFile]);
+  assert.equal(continuationOfficial.status,0,continuationOfficial.stdout+continuationOfficial.stderr);
+  assert.match(continuationOfficial.stdout,/REPLAY MATCH FREEPLAYCHECK 2 ticks 1 commands/);
 
   console.log('Replay checker strict positive and negative checks PASS');
 }finally{

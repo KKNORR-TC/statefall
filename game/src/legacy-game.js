@@ -4,96 +4,61 @@ import {COUNTRIES,EMBLEMS,EMBLEM_LABEL,drawEmblem,drawFlag} from './config/flags
 import {createPlatform} from './integration/platform.js';
 import {createAudioState,saveAudioLevels} from './audio/audio-state.js';
 import {STATEFALL_SIGN_KEY} from './config/signing.js';
+import {createEngine} from './sim/engine.mjs';
+import {
+  WIN_SHARE,BOTS,TILES_PER_NEUTRAL,QUICK_TILES,DIFFS,FOG,STRUCT,CMD_RANGE,CMD_DISCOUNT,CMD_DISCOUNT_MAX,
+  BUILD_TICKS,SHIELD,UPGRADE,LSHIELD,HEAVY,CRUISE,AIR,GUNS,ARMOR,CMD_RESERVE,SHIP_BUILD,CANCEL_REFUND,TRUCK,
+  CITY_POP,CONQUEST_GOLD,CONQUEST_EARLY,CONQUEST_EARLY_TICKS,NAP_TICKS,BETRAY_TICKS,PROPOSAL_TTL,PROVOKE_TICKS,
+  FORT_RANGE,STRUCT_SPACING,WALL_TOLL,REGION_MIN,CAPTURE_BONUS,HOLD_BONUS,SHIPS,WARSHIP_COST,SHIP_SPEED,
+  WARSHIP_HP,SHELL_SPEED,TRADE_INTERVAL,TRADE_GOLD,TRADE_PER_TILE,TRADE_SPEED,SINK_BOUNTY,BARRAGE_KILL_FLAT,
+  BARRAGE_KILL_PCT,BARRAGE_KILL_CAP,SUPPRESS_TICKS,SUPPRESS_RING,SUPPRESS_COST,LINK_RANGE,LINK_MAX_PER_CITY,
+  LINK_MAX_PER_PORT,LINK_MAX_PER_FACTORY,LINK_GOLD_PER,LINK_TROOPS,LINK_PORT_GOLD,LINK_SHIP_DISCOUNT,NUKE_COST,
+  NUKE_RADIUS,SAM_RANGE,SAM_HIT,SAM_REACT,INTERCEPTOR_SPEED,SAM_COOLDOWN,SILO_COOLDOWN,BOT_NAMES,NEUTRAL_NAMES,COLORS
+} from './sim/rules.mjs';
 
 // ---------------------------------------------------------------- config
 const W=720, H=414, TICK=100;               // map size in tiles, ms per tick
-const WIN_SHARE=0.72, BOTS=9, TILES_PER_NEUTRAL=1300;
-const DIFFS={
-  supereasy:{label:'Super easy', eco:0.55, aggr:0.5,  build:0.25, brain:0, desc:'Bots grow at half speed, rarely pick fights and never learn. Learn the map.'},
-  easy:     {label:'Easy',       eco:0.75, aggr:0.75, build:0.35, brain:1, desc:'Bots are slower and cautious; they place defenses sensibly but don\'t react.'},
-  normal:   {label:'Normal',     eco:1.0,  aggr:1.0,  build:0.5, brain:2, desc:'Even footing. Bots build at half pace, place defenses sensibly and reinforce a winning attack, but don\'t react to being hit or manage their economy.'},
-  hard:     {label:'Hard',       eco:1.2,  aggr:1.15, build:0.8, brain:3, desc:'Bots manage their economy, remember where they were hit and build answers, pick a focus enemy, break off losing attacks, and gang up on a runaway leader.'},
-  superhard:{label:'Super hard', eco:1.4,  aggr:1.3,  build:1.4, brain:4, coalition:0.45, desc:'Everything in Hard plus a real economy: bots open with cities, never sit on gold, fortify their coasts, land where your guns are not, and turn on the leader together. Air power by minute six.'},
-  impossible:{label:'Impossible',eco:1.7,  aggr:1.5,  build:4.0, brain:5, coalition:0.28, desc:'The Super hard brain with a city rush that ignores every cooldown, more guns, an earlier navy, and a coalition against anyone holding more than a quarter of the map.'},
-};
-let DIFF=DIFFS.normal;
 const PLATFORM=createPlatform();
 const WP=PLATFORM.config;
 const IDENTITY=PLATFORM.identity(), CAPABILITIES=PLATFORM.capabilities();
 async function sfSign(rec){ const canon=JSON.stringify({when:rec.when,result:rec.result,country:rec.country,map:rec.map,diff:rec.diff,fog:!!rec.fog,risky:!!rec.risky,cls:rec.cls,land:rec.land,minutes:rec.minutes,kills:rec.kills,peak:rec.peak,gold:rec.gold,seed:rec.seed}); const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(STATEFALL_SIGN_KEY),{name:'HMAC',hash:'SHA-256'},false,['sign']); const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(canon)); return [...new Uint8Array(sig)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
-async function sfPost(rec){ rec.flag=me&&me.flag&&me.flag.custom?{name:me.flag.name,layers:me.flag.layers}:null; if(!CAPABILITIES.scores){ console.info('[statefall] score not posted: '+(WP?'not logged in':'not hosted')); return {skipped:true}; } try{ const sig=await sfSign(rec); console.info('[statefall] posting score',rec); const result=await PLATFORM.score({...rec,sig}); console.info('[statefall] post result',result); return result; }catch(e){ console.error('[statefall] post failed',e); return {error:e.body?.error||'network',message:e.body?.message||String(e),status:e.status}; } }
+async function sfPost(rec){ rec.flag=me()&&me().flag&&me().flag.custom?{name:me().flag.name,layers:me().flag.layers}:null; if(!CAPABILITIES.scores){ console.info('[statefall] score not posted: '+(WP?'not logged in':'not hosted')); return {skipped:true}; } try{ const sig=await sfSign(rec); console.info('[statefall] posting score',rec); const result=await PLATFORM.score({...rec,sig}); console.info('[statefall] post result',result); return result; }catch(e){ console.error('[statefall] post failed',e); return {error:e.body?.error||'network',message:e.body?.message||String(e),status:e.status}; } }
 function sfOutbox(){ try{ return JSON.parse(localStorage.getItem('statefall-outbox')||'[]'); }catch(e){ return []; } }
 function sfSaveOutbox(b){ try{ localStorage.setItem('statefall-outbox',JSON.stringify(b.slice(-20))); }catch(e){} }
 async function sfFlushOutbox(){ if(!IDENTITY) return; const box=sfOutbox(); if(!box.length) return; const keep=[]; for(const rec of box){ const res=await sfPost(rec); if(res.error&&res.status!==422&&res.status!==403) keep.push(rec); } sfSaveOutbox(keep); }
 const HOTKEYS={c:'city',f:'factory',p:'port',s:'sam',m:'silo',d:'fort',k:'command',n:'nuke',h:'shield',g:'shore',b:'battery',t:'bertha',a:'airfield',o:'flightops',r:'radar',l:'lradar',j:'jammer',u:'subbase',e:'engcmd',y:'troopcmd',i:'satellite'};
 const KEY_OF={}; for(const kk in HOTKEYS) KEY_OF[HOTKEYS[kk]]=kk.toUpperCase();
-const START={troops:120,gold:100,bots:false,teams:0,noCap:false,map:'random',quick:false,fog:false,instant:false,risky:false,endgame:false,billionaire:false,garrison:false,pauseBuild:false,seed:0};
-function mulberry32(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-function seedFrom(str){ let h=2166136261; for(const ch of String(str)){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
-function newSeed(){ return Math.floor(Math.random()*1e9).toString(36).toUpperCase(); } let draft=null, draftPicks=[], draftDoneAt=0, draftTicks=0;
-const FOG={base:8,radar:45,lradar:110,rship:60,jam:30,plane:{r:35,dur:450,cd:900,cost:40,speed:6,grace:150,hit:0.15,maxShots:3},sat:{cost:400,dur:450,cd:1200}};
-let hoverAir=null, hoverArea=-1, hoverPickArea=-1; let vis=null, radarLayer=null, planes=[], satUntil=0, satCool=0, planeCool=0, myBorders=new Set(); const QUICK_TILES=2200; let PRESET=null, cid=null; const TEAM_NAMES=['Red','Blue','Green','Gold'], TEAM_COLS=['#e35d5d','#4da3ff','#5fc76a','#e5a53c']; const ALLOWED=new Set(['city','factory','port','sam','silo','fort','command','shield','battery','shore','bertha','airfield','flightops','subbase','troopcmd','engcmd','radar','lradar','satellite','jammer','scout','sub','hunter','rship','privateer','warship','cruiser','battleship','missile']);
-const STRUCT={
-  city:   {key:'city',   label:'City',        cost:120, desc:'+300 troops now, +cap and growth; linked factories add troops'},
-  factory:{key:'factory',label:'Factory',     cost:110, desc:'15 s to build. +2.2 gold / s, +30% per supply line'},
-  port:   {key:'port',   label:'Port',        cost:160, desc:'Coast only, 20 s to build. Ships, trade, +gold', coast:true},
-  sam:    {key:'sam',    label:'SAM site',    cost:220, desc:'30 s to build. Near-certain kill on hostile missiles in range, 2.5 s reload. Knocked out under bombardment'},
-  silo:   {key:'silo',   label:'Missile silo',cost:420, desc:'2 min to build. Launches missiles; 20 s reload per silo'},
-  fort:   {key:'fort',   label:'Bastion',        cost:90,  desc:'Doubles the cost of taking land within 16 tiles — and every extra bastion covering the same ground doubles it again, up to 64×. Each one you own makes the next 40 gold dearer. Upgrade to II and III for range. Fortified ground never falls to a collapse and always costs a wall toll to take, garrison or not. Shelling cancels it; overrun destroys it'},
-  command:{key:'command',label:'Missile command',cost:350, desc:'90 s to build. Controls silos within 45 tiles and fires them at high-value targets. Overlapping centers make missiles cheaper'},
-  shield: {key:'shield', label:'Shield generator',cost:900, desc:'150 s to build. 12-tile dome that stops every missile aimed inside it, 100%, losing 2 of 10 hit points per hit. Repair from the right-click menu'},
-  battery:{key:'battery',label:'Coastal battery',cost:420, desc:'60 s to build, coast only. 34-tile gun, 3 damage every 8 s. Knocked out under bombardment', coast:true},
-  shore:  {key:'shore',  label:'Shore guns',   cost:150, desc:'20 s to build, coast only. 14-tile rapid fire: shreds transports and light ships', coast:true},
-  bertha: {key:'bertha', label:'Big Bertha',   cost:700, desc:'2 min to build. 60-tile artillery, one shell every 20 s at the nearest enemy building. Cannot be intercepted'},
-  airfield:{key:'airfield',label:'Airfield',cost:600, desc:'90 s to build. Hangar for up to 4 aircraft; buy fighters and bombers from its right-click menu. Spy planes fly from here'},
-  flightops:{key:'flightops',label:'Flight operations',cost:400, desc:'60 s to build. Runs your air war: buys aircraft (keeping a gold reserve), keeps fighter patrols over your assets, recalls damaged pilots, and strikes with bombers when the sky is clear'},
-  subbase:{key:'subbase',label:'Submarine base',cost:450, desc:'60 s to build, coast only, needs a level II port within 34 tiles. Builds attack subs and hunter subs', coast:true},
-  engcmd:{key:'engcmd',label:'Engineering command',cost:450, desc:'60 s to build. Sends up to 4 repair trucks over your contiguous land to fix shields, airfield shields, guns, Big Bertha and port II guns, 15 gold per pip'},
-  troopcmd:{key:'troopcmd',label:'Troop command',cost:400, desc:'90 s to build. +10% troop growth each, up to four. With Garrisons it runs logistics: heavy transport or paradrop to any area under 40% of home density, keeping a reserve'},
-  radar:  {key:'radar',  label:'Radar station',cost:180, desc:'20 s to build. Reveals 45 tiles around it (fog of war)', fog:true},
-  lradar: {key:'lradar', label:'Long-range radar',cost:500, desc:'60 s to build. Reveals 110 tiles around it (fog of war)', fog:true},
-  jammer: {key:'jammer', label:'Radar jammer',cost:400, desc:'45 s to build. Blanks enemy radar stations, long-range radar and radar ships within 30 tiles. Eyes still see: territory, warships, spy planes, satellites', fog:true},
-  satellite:{key:'satellite',label:'Satellite launch site',cost:900, desc:'3 min to build. Launch a spy satellite for 400 gold: the whole map for 45 s', fog:true},
-};
-const CMD_RANGE=45, CMD_DISCOUNT=0.15, CMD_DISCOUNT_MAX=0.45;
-const BUILD_TICKS={city:0,fort:0,factory:150,port:200,sam:300,silo:1200,command:900,radar:200,lradar:600,satellite:1800,jammer:450,airfield:900,flightops:600,subbase:600,troopcmd:900,engcmd:600,battery:600,shore:200,bertha:1200,shield:1500}, SHIELD={r:12,hp:10,hit:2,repairCost:25,repairTicks:60}, UPGRADE={port:{cost:500,ticks:600},airfield:{cost:600,ticks:900},fort:{cost:200,ticks:300,max:3,cost3:400,ticks3:600}}, LSHIELD={r:8,hp:6}, HEAVY={hp:4,speedMul:0.75,gun:12,dmg:1,cd:5}, CRUISE={cost:400,ticks:300,range:120,count:2,cd:400,speed:2.5,radius:3,samMul:0.6}, AIR={hangar:4,reserve:300,
-  fighter:{cost:350,build:300,speed:6,range:160,patrol:25,endurance:6000,refuel:1200,hp:5,heal:200,dog:30},
-  bomber:{cost:450,build:400,speed:5,range:260,bombs:8,spacing:4,radius:2,rearm:300},
-  carrier:{cost:500,build:400,speed:5,range:200,capacity:1500,rearm:200}},
-GUNS={battery:{range:34,dmg:3,cd:80,hp:6},shore:{range:14,dmg:1,cd:4,hp:3},bertha:{range:60,cd:200,radius:3,hp:8}}, ARMOR={scout:1,rship:1,privateer:1,warship:2,cruiser:3,battleship:5,sub:1,hunter:1}, CMD_RESERVE=150, SHIP_BUILD={scout:0,sub:350,hunter:350,rship:200,privateer:300,warship:250,cruiser:450,battleship:900}, CANCEL_REFUND=0.5;
-const CITY_POP=300, CONQUEST_GOLD=0.12, CONQUEST_EARLY=3, CONQUEST_EARLY_TICKS=4800;
-const NAP_TICKS=1800, BETRAY_TICKS=600, PROPOSAL_TTL=250;
-const PROVOKE_TICKS=400, FORT_RANGE=16, STRUCT_SPACING=6, WALL_TOLL=15;
-const REGION_MIN=120, LAND_MIN=40, CONTINENT_MIN=3500, CAPTURE_BONUS=0.22, HOLD_BONUS=0.003;
-const SHIPS={
-  sub:       {key:'sub',       label:'Attack sub',     cost:300, hp:3,  gun:0,  dmg:0, sam:0,  samHit:0,    samCd:99, speed:1.6, sub:true, torpedo:{range:14,dmg:3,cd:100}, desc:'Invisible beyond 8 tiles of a destroyer, hunter or radar ship. Torpedoes: 3 damage, one-shot ordinary transports, 10 s reload'},
-  hunter:    {key:'hunter',    label:'Hunter sub',     cost:300, hp:3,  gun:0,  dmg:0, sam:0,  samHit:0,    samCd:99, speed:1.7, sub:true, hunter:true, torpedo:{range:14,dmg:3,cd:80}, desc:'Sees subs at 20 tiles and torpedoes them. Fires at nothing else'},
-  rship:     {key:'rship',     label:'Radar ship',     cost:250, hp:3,  gun:0,  dmg:0, sam:0,  samHit:0,    samCd:99, speed:1.6, desc:'Unarmed picket that reveals 60 tiles around it. Easy prey — escort it'},
-  privateer: {key:'privateer', label:'Privateer',      cost:300, hp:4,  gun:0,  dmg:0, sam:0,  samHit:0,    samCd:99, speed:2.2, pirate:{range:8,board:20,cd:100}, desc:'Boards merchants within 8 tiles and sails them to your nearest port for double cargo. Piracy starts hostilities'},
-  scout:     {key:'scout',     label:'Scout boat',     cost:110, hp:2,  gun:12, dmg:1, sam:0,  samHit:0,    samCd:99, speed:3.2, desc:'Very fast, lightly armed, fragile. Picket and courier'},
-  warship:   {key:'warship',   label:'Destroyer',      cost:200, hp:5,  gun:26, dmg:1, sam:16, samHit:0.6,  samCd:80, speed:1.4, desc:'Fast escort, deadly to cruisers. Short-range SAM'},
-  cruiser:   {key:'cruiser',   label:'Missile cruiser',cost:450, hp:6,  gun:22, dmg:1, sam:26, samHit:0.75, samCd:60, speed:0.95, barrage:{range:30,count:4,radius:2,cd:150}, desc:'Bombards enemy land, hunting SAM sites first. Medium SAM. Thin armor: destroyers hit it twice as hard'},
-  battleship:{key:'battleship',label:'Battleship',     cost:900, hp:12, gun:32, dmg:2, sam:26, samHit:0.75, samCd:60, speed:0.6, barrage:{range:36,count:6,radius:3,cd:250}, desc:'Heavy guns, land missiles and SAM. Slow reload, slow to arrive'},
-};
-const WARSHIP_COST=200, SHIP_SPEED=1.1, WARSHIP_RANGE=26, WARSHIP_HP=5, SHELL_SPEED=4, TRADE_INTERVAL=220, TRADE_GOLD=18, TRADE_PER_TILE=0.12, TRADE_SPEED=1.3, SHIP_SAM_RANGE=16, SHIP_SAM_COOLDOWN=80, SHIP_SAM_HIT=0.6, SINK_BOUNTY=0.3, BARRAGE_KILL_FLAT=20, BARRAGE_KILL_PCT=0.008, BARRAGE_KILL_CAP=150, SUPPRESS_TICKS=300, SUPPRESS_RING=3, SUPPRESS_COST=0.5, LINK_RANGE=34, LINK_MAX_PER_CITY=3, LINK_MAX_PER_PORT=2, LINK_MAX_PER_FACTORY=4, LINK_GOLD_PER=0.3, LINK_TROOPS=1.2, LINK_PORT_GOLD=1.0, LINK_SHIP_DISCOUNT=0.15;
-const NUKE_COST=280, NUKE_RADIUS=20, SAM_RANGE=40, SAM_HIT=0.96, SAM_REACT=6, INTERCEPTOR_SPEED=9, SAM_COOLDOWN=25, SILO_COOLDOWN=200;
-const BOT_NAMES=['Vardania','Kestrel Union','Orrin','Thalassa','Novgard','Serendib','Ashkar','Meridia','Cordova','Halvard','Zephyria','Ostmark'];
-const NEUTRAL_NAMES=['Free Tribes','Hill Clans','Coastal League','Old Kingdom','Marsh Folk','Steppe Horde','Island Council','Mountain Holds'];
-const COLORS=['#4da3ff','#e35d5d','#5fc76a','#e5a53c','#b06ee8','#3fc9c9','#f07ab0','#a8d15a','#ff8f4d','#8b93ff','#d4c34a','#5ad1a5','#e07b9f','#7fd0ff'];
+const engine=createEngine({W,H,tickMs:TICK},{eventSink:presentEngineEvent,testBridge:__STATEFALL_TEST_BRIDGE__});
+const {state:engineState,runtime:deterministicRuntime}=engine.presentation(),Q=engine.queries;
+const renderState=engine.renderBuffers();
+const START={...engineState.rules.settings},ALLOWED=new Set(engineState.rules.allowed);
+const setupState=engineState.setup;
+function newSeed(){ return Math.floor(Math.random()*1e9).toString(36).toUpperCase(); } let draftDoneAt=0;
+let hoverAir=null, hoverArea=-1, hoverPickArea=-1; const TEAM_NAMES=['Red','Blue','Green','Gold'], TEAM_COLS=['#e35d5d','#4da3ff','#5fc76a','#e5a53c'];
 
 // ---------------------------------------------------------------- state
-let land, owner, struct, structOwner, region, river, shelled, rough;  // typed arrays per tile
-let regions=[], regCount=null, NP=0; const unclaimed=new Set();                   // landmasses and per-owner tile counts
-let simMs=0, uidSeq=0; let players=[], attacks=[], missiles=[], structures=[], transports=[], warships=[], shots=[], interceptors=[], shells=[], links=[], traders=[], aircraft=[], trucks=[]; const hostile={};
-let landCount=0, tickN=0, over=false, startTime=0, freeplay=false, spectating=false, decided=false, paused=false, userPaused=false, pausedAt=0;
-let me=null;
+const clockState=engineState.clock;
+const lifecycleState=engineState.lifecycle;
+const matchState=engineState.match;
+const me=()=>matchState.playerId==null?null:engineState.actors.players[matchState.playerId]||null;
+const DIFF=()=>DIFFS[matchState.difficulty];
+let startTime=0, pausedAt=0, lastSuccessfulTickAt=0;
+const presentationState={matchRecorded:false,controllerTasks:[]};
 const N4=[[1,0],[-1,0],[0,1],[0,-1]];
 const N8=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 const idx=(x,y)=>y*W+x;
 const inb=(x,y)=>x>=0&&y>=0&&x<W&&y<H;
-let srandN=0; let srand=Math.random; const urnd=(a,b)=>a+Math.random()*(b-a), upick=a=>a[Math.floor(Math.random()*a.length)]; // browser RNG for visuals/UI
-const rnd=(a,b)=>a+srand()*(b-a);
-const pick=a=>a[Math.floor(srand()*a.length)];
+const mapState=engineState.map;
+const fogState=engineState.fog;
+const draftState=engineState.draft;
+const {land,owner,struct,structOwner,region,river,shelled,rough}=renderState.map,{regions,unclaimed}=mapState;
+const calculateCentroid=Q.centroid;
+const {players,attacks,missiles,structures,transports,warships,shots,interceptors,shells,links,traders,aircraft,trucks,planes}=engineState.actors;
+const {hostile,proposals}=engineState.diplomacy;
+const {supplyAt}=engineState.garrison;
+const urnd=(a,b)=>a+Math.random()*(b-a), upick=a=>a[Math.floor(Math.random()*a.length)]; // browser RNG for visuals/UI
+const {fortRange,commandCover,crowded,snapBuild,maxTroops,density,troopGrowth,goldGrowth,areaAt,areaTouching,relation,missileCost,siloReadyIn,silosReady,missilePosition:missilePos,shipPosition:shipXY,subVisibleTo:subSeenBy,visibleAt:visAt}=Q;
+const fortMult=Q.fortMultiplier,structCost=Q.structureCost,gOn=Q.garrisonEnabled,countryByIdx=Q.countryByIndex,cruiseTargets=Q.cruiseTargets,atPeace=Q.atPeace,airfieldsOf=Q.airfields,hangarCount=Q.hangarCount,hangarMax=Q.hangarMax;
 
 // ---------------------------------------------------------------- audio (all sounds synthesized with Web Audio; no files)
 const AUD=createAudioState(); // levels persist; Music / Ambient / Mute all always start on, off, off
@@ -101,7 +66,7 @@ function audioInit(){
   if(AUD.ctx||!PLATFORM.audioPermission()) return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; const C=new AC(); AUD.ctx=C;
   AUD.bus.master=C.createGain(); AUD.bus.master.connect(C.destination);
   for(const b of ['sfx','alert','amb','music']){ AUD.bus[b]=C.createGain(); AUD.bus[b].connect(AUD.bus.master); }
-  applyVolumes(); startAmbient(); if(!(AUD.menuMute&&!me)) MUS.start(me?'game':'menu');
+  applyVolumes(); startAmbient(); if(!(AUD.menuMute&&!me())) MUS.start(me()?'game':'menu');
 }
 function applyVolumes(){ if(!AUD.ctx) return; const v=AUD.vol; AUD.bus.master.gain.value=v.mute?0:v.master; AUD.bus.sfx.gain.value=v.sfx; AUD.bus.alert.gain.value=v.alert; AUD.bus.amb.gain.value=v.ambOn?v.amb:0; AUD.bus.music.gain.value=v.musicOn?v.music:0;
   saveAudioLevels(localStorage,v); }
@@ -190,7 +155,7 @@ const BUILTIN={id:'builtin',title:'Dynamic score (built-in)'};
 function jukePrefs(){ try{ const p=JSON.parse(localStorage.getItem('statefall-juke')||'{}'); if(p.mode) JUKE.mode=p.mode; if(Array.isArray(p.sel)) JUKE.sel=new Set(p.sel); JUKE.known=new Set(Array.isArray(p.known)?p.known:[]); }catch(e){} }
 function jukeSave(){ try{ localStorage.setItem('statefall-juke',JSON.stringify({mode:JUKE.mode,sel:[...JUKE.sel],known:[...(JUKE.known||[])]})); }catch(e){} }
 async function jukeLoad(){ if(!WP||!WP.playlist) return; try{ const r=await fetch(WP.playlist,{credentials:'same-origin'}); const j=await r.json(); JUKE.list.menu=j.menu||[]; JUKE.list.game=j.game||[]; JUKE.stings=j.stings||{}; JUKE.loaded=true; jukePrefs(); JUKE.known=JUKE.known||new Set(); let changed=false; for(const t of [...JUKE.list.menu,...JUKE.list.game]){ if(!JUKE.known.has(t.id)){ JUKE.known.add(t.id); JUKE.sel.add(t.id); changed=true; } } // tracks added to the library since the last visit join the rotation automatically
-    if(!JUKE.sel.size){ for(const t of [...JUKE.list.menu,...JUKE.list.game]) JUKE.sel.add(t.id); if(!JUKE.list.menu.length&&!JUKE.list.game.length) JUKE.sel.add('builtin'); changed=true; } if(changed) jukeSave(); jukeRender(); JUKE.ctx=me?'game':'menu'; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on&&!(AUD.menuMute&&!me)) jukeStart(JUKE.ctx); }catch(e){ console.warn('[statefall] playlist unavailable',e); } }
+    if(!JUKE.sel.size){ for(const t of [...JUKE.list.menu,...JUKE.list.game]) JUKE.sel.add(t.id); if(!JUKE.list.menu.length&&!JUKE.list.game.length) JUKE.sel.add('builtin'); changed=true; } if(changed) jukeSave(); jukeRender(); JUKE.ctx=me()?'game':'menu'; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on&&!(AUD.menuMute&&!me())) jukeStart(JUKE.ctx); }catch(e){ console.warn('[statefall] playlist unavailable',e); } }
 function jukeTracks(ctx){ const real=JUKE.list[ctx]||[]; return real.length?real:[BUILTIN]; }
 function jukeQueue(ctx){ const all=jukeTracks(ctx); const q=all.filter(t=>JUKE.sel.has(t.id)); return q.length?q:(all.length&&all[0].id!=='builtin'?[all[0]]:all); }
 async function jukeBuf(url){ if(JUKE.bufs[url]) return JUKE.bufs[url]; const r=await fetch(url,{credentials:'same-origin'}); const ab=await r.arrayBuffer(); const b=await AUD.ctx.decodeAudioData(ab); JUKE.bufs[url]=b; return b; }
@@ -201,7 +166,7 @@ async function jukePlay(track,ctx){ if(!AUD.ctx) return; const seq=++JUKE.seq; J
   let buf; try{ buf=await jukeBuf(track.url); }catch(e){ console.warn('[statefall] track failed',track.title,e); return jukeNext(); }
   if(JUKE.cur!==track||JUKE.seq!==seq) return; // superseded while loading
   jukeStopSrc();
-  if(me&&!ROLL.on&&!CUSTOM.previewing&&JUKE.lastAnnounced!==track.id){ JUKE.lastAnnounced=track.id; songBanner=({title:track.title,age:0,life:70}); }
+  if(me()&&!ROLL.on&&!CUSTOM.previewing&&JUKE.lastAnnounced!==track.id){ JUKE.lastAnnounced=track.id; songBanner=({title:track.title,age:0,life:70}); }
   const src=AUD.ctx.createBufferSource(); src.buffer=buf; const g=AUD.ctx.createGain(); const t=AUD.ctx.currentTime; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(1,t+1.5); src.connect(g); g.connect(AUD.bus.music);
   src.loop=JUKE.mode==='one'&&!JUKE.hold; JUKE.src=src; JUKE.gain=g; JUKE.startedAt=t; JUKE.dur=buf.duration; src.onended=()=>{ if(JUKE.src!==src||JUKE.paused||JUKE.hold) return; if(JUKE.mode==='one'){ jukePlay(track,JUKE.ctx); } else jukeNext(1); }; src.start(t); }
 function jukeStart(ctx){ const same=JUKE.ctx===ctx; JUKE.ctx=ctx; const q=jukeQueue(ctx); if(!q.length) return; let t=q[0]; if(JUKE.mode==='shuffle') t=upick(q); else if(same&&JUKE.cur&&q.includes(JUKE.cur)) t=JUKE.cur; if(JUKE.cur===t&&JUKE.src&&same) return; jukePlay(t,ctx); }
@@ -209,7 +174,7 @@ function jukeNext(dir=1){ const q=jukeQueue(JUKE.ctx); if(!q.length) return; let
 function jukePause(){ if(!AUD.ctx) return; if(JUKE.paused){ JUKE.paused=false; if(JUKE.cur) jukePlay(JUKE.cur,JUKE.ctx); else jukeStart(JUKE.ctx); } else { JUKE.paused=true; jukeStopSrc(0.3); MUS.stop(); } jukeRender(); }
 function jukeStingPick(kind){ const v=JUKE.stings&&JUKE.stings[kind]; if(!v) return null; return Array.isArray(v)?(v.length?upick(v):null):v; }
 async function jukeSting(kind){ const st=jukeStingPick(kind); if(!st||!AUD.ctx) return false; try{ const buf=await jukeBuf(st.url); const t=AUD.ctx.currentTime; if(JUKE.gain){ JUKE.gain.gain.setValueAtTime(JUKE.gain.gain.value,t); JUKE.gain.gain.linearRampToValueAtTime(0.15,t+0.4); JUKE.gain.gain.setValueAtTime(0.15,t+buf.duration-0.5); JUKE.gain.gain.linearRampToValueAtTime(1,t+buf.duration+1); } const s=AUD.ctx.createBufferSource(); s.buffer=buf; s.connect(AUD.bus.music); s.start(t); return true; }catch(e){ return false; } }
-function jukeRender(){ const box=$('jukeBox'); if(!box) return; { const mp=$('miniPlayer'); if(mp){ mp.style.display=(JUKE.loaded&&me)?'':'none'; const now=$('mpNow'); if(now){ const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); now.textContent=(JUKE.paused?'▮▮ ':'♪ ')+(JUKE.cur?JUKE.cur.title:'—')+(JUKE.dur&&JUKE.src?' · '+fm(el)+' / '+fm(JUKE.dur):''); } } } if(!JUKE.loaded){ box.style.display='none'; return; } box.style.display='';
+function jukeRender(){ const box=$('jukeBox'); if(!box) return; { const mp=$('miniPlayer'); if(mp){ mp.style.display=(JUKE.loaded&&me())?'':'none'; const now=$('mpNow'); if(now){ const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); now.textContent=(JUKE.paused?'▮▮ ':'♪ ')+(JUKE.cur?JUKE.cur.title:'—')+(JUKE.dur&&JUKE.src?' · '+fm(el)+' / '+fm(JUKE.dur):''); } } } if(!JUKE.loaded){ box.style.display='none'; return; } box.style.display='';
   const q=jukeTracks(JUKE.ctx); const now=JUKE.cur?JUKE.cur.title:'—'; const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
   $('jukeNow').innerHTML=`<b>${JUKE.paused?'▮▮ ':''}${now}</b>${JUKE.dur&&(JUKE.src||(JUKE.cur&&JUKE.cur.id==='builtin'))?` <span class="muted">${fmt(el)} / ${fmt(JUKE.dur)}</span>`:''}`;
   $('jukeMode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.mode===JUKE.mode));
@@ -223,15 +188,15 @@ function jukeRender(){ const box=$('jukeBox'); if(!box) return; { const mp=$('mi
 
 // ---------------------------------------------------------------- match record: counters, timeline, superlatives → credit roll
 function showNotice(o){ const box=$('notices'); if(!box||SAVES.catchup||REPLAY.creditsMode||REPLAY.on&&o.buttons) return null; const n=document.createElement('div'); n.className='notice '+(o.kind||''); if(o.flag){ const img=document.createElement('img'); img.src=flagURL(o.flag); img.alt=''; n.appendChild(img); } const text=document.createElement('div'),title=document.createElement('b'),detail=document.createElement('span'); text.className='t'; title.textContent=o.title||''; detail.textContent=o.text||''; text.appendChild(title); text.appendChild(detail); n.appendChild(text); for(const b of (o.buttons||[])){ const bt=document.createElement('button'); bt.textContent=b.label; if(b.primary) bt.style.background='#2f5a8c'; bt.onclick=()=>{ n.remove(); if(b.onClick) b.onClick(); }; n.appendChild(bt); } if(!o.buttons||!o.buttons.length||o.closeable!==false){ const x=document.createElement('button'); x.textContent='✕'; x.title='Dismiss'; x.style.padding='4px 8px'; x.onclick=()=>n.remove(); n.appendChild(x); } box.appendChild(n); while(box.children.length>4) box.firstChild.remove(); if(o.ttl!==0) setTimeout(()=>{ if(n.parentNode) n.remove(); },o.ttl||9000); return n; }
-function invasionNotice(p,t,naval){ if(!me||over) return; const k='inv'+p.id; const now=performance.now(); if((notedAt[k]||0)+60000>now) return; notedAt[k]=now; showNotice({kind:'warn',flag:p.flag,title:`You are being invaded by ${p.name}`,text:naval?'A landing force is coming ashore.':'Ground forces are crossing your border.',buttons:[{label:'Take me there',primary:true,onClick:()=>goTo(t)}],ttl:12000}); }
+function invasionNotice(p,t,naval){ if(!me()||lifecycleState.over) return; const k='inv'+p.id; const now=performance.now(); if((notedAt[k]||0)+60000>now) return; notedAt[k]=now; showNotice({kind:'warn',flag:p.flag,title:`You are being invaded by ${p.name}`,text:naval?'A landing force is coming ashore.':'Ground forces are crossing your border.',buttons:[{label:'Take me there',primary:true,onClick:()=>goTo(t)}],ttl:12000}); }
 const notedAt={};
 function goTo(t){ const x=t%W,y=(t-x)/W; cam.s=Math.max(cam.s,2.2); cam.x=cv.width/2-(x+.5)*cam.s; cam.y=cv.height/2-(y+.5)*cam.s; }
 const STATS={c:{},tl:[],nukedBy:{},campaigns:{},bigLoss:{n:0,by:''}};
 function sInc(k,n=1){ STATS.c[k]=(STATS.c[k]||0)+n; }
-function sMin(){ return Math.max(0,((userPaused?pausedAt:performance.now())-startTime)/60000); }
+function sMin(){ return Math.max(0,((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/60000); }
 function sEvent(text,kind='note'){ if(STATS.tl.length<200) STATS.tl.push({m:Math.round(sMin()*10)/10,t:text,k:kind}); }
 function statsSnapshot(title){
-  const c=STATS.c; const rivals=players.filter(p=>p.kind==='bot').map(p=>({name:p.name,flag:p.flag,alive:p.alive,land:Math.round(p.tiles/landCount*1000)/10,peak:Math.round(p.peakTroops||p.troops||0),killedBy:p.killedBy!=null?players[p.killedBy].name:null,diedAt:p.diedAt!=null?Math.round((p.diedAt*TICK/60000)*10)/10:null}));
+  const c=STATS.c; const rivals=players.filter(p=>p.kind==='bot').map(p=>({name:p.name,flag:p.flag,alive:p.alive,land:Math.round(p.tiles/mapState.landCount*1000)/10,peak:Math.round(p.peakTroops||p.troops||0),killedBy:p.killedBy!=null?players[p.killedBy].name:null,diedAt:p.diedAt!=null?Math.round((p.diedAt*TICK/60000)*10)/10:null}));
   const fallen=players.filter(p=>p.kind!=='neutral'&&!p.alive&&p.killedBy!=null).map(p=>({name:p.name,flag:p.flag,by:players[p.killedBy].name,m:p.diedAt!=null?Math.round((p.diedAt*TICK/60000)*10)/10:null}));
   let nemesis=null,nn=0; for(const k in STATS.nukedBy) if(STATS.nukedBy[k]>nn){ nn=STATS.nukedBy[k]; nemesis=k; }
   let longest=null,ln=0; for(const k in STATS.campaigns){ const d=STATS.campaigns[k].end!=null?STATS.campaigns[k].end-STATS.campaigns[k].start:0; if(d>ln){ ln=d; longest=k; } }
@@ -240,7 +205,7 @@ function statsSnapshot(title){
   // flags only for nations that appear in the roll: rivals, the fallen, and anyone named in the timeline
   const named=new Set([...rivals.map(r=>r.name),...fallen.map(f=>f.name),...Object.keys(STATS.nukedBy)]); for(const e of STATS.tl) for(const p of players) if(p.kind!=='neutral'&&e.t.includes(p.name)) named.add(p.name);
   const flags={}; for(const p of players) if(named.has(p.name)) flags[p.name]=p.flag;
-  return {v:1,title,name:me.name,player:(WP&&WP.user)?WP.user.name:me.name,flag:me.flag,flags,color:me.color,result:title,minutes:Math.round(sMin()*10)/10,land:Math.round(me.tiles/landCount*1000)/10,c,tl:STATS.tl,hon,rivals,fallen,seed:START.seed,map:START.map,diff:chosen,cls:matchClass()};
+  return {v:1,title,name:me().name,player:(WP&&WP.user)?WP.user.name:me().name,flag:me().flag,flags,color:me().color,result:title,minutes:Math.round(sMin()*10)/10,land:Math.round(me().tiles/mapState.landCount*1000)/10,c,tl:STATS.tl,hon,rivals,fallen,seed:START.seed,map:START.map,diff:matchState.difficulty,cls:matchClass()};
 }
 // ---- the roll
 const ROLLIMG={}; function rollImg(key){ if(ROLLIMG[key]) return ROLLIMG[key]; if(typeof Image==='undefined') return null; let url=''; const col='#7fb3ff'; if(key.startsWith('ship:')) url=shipURL(key.slice(5),col); else if(key.startsWith('air:')) url=airURL(key.slice(4),col); else if(key==='skull'||key==='star'||key==='medal'||key==='hands'||key==='heart'||key==='flag'){ const c=document.createElement('canvas'); c.width=40; c.height=40; const x=c.getContext('2d'); x.translate(20,20); if(key==='hands') drawHandshake(x,0,0,16); else if(key==='heart') drawBrokenHeart(x,0,0,16); else { x.fillStyle='#0f1a26'; x.beginPath(); x.arc(0,0,17,0,6.3); x.fill(); x.strokeStyle='#ffd27a'; x.lineWidth=2; x.stroke(); x.fillStyle='#ffd27a'; x.strokeStyle='#ffd27a'; if(key==='star'||key==='medal'){ x.beginPath(); for(let i=0;i<10;i++){ const ang=-Math.PI/2+i*Math.PI/5, rr=i%2?4:10; x.lineTo(Math.cos(ang)*rr,Math.sin(ang)*rr); } x.closePath(); x.fill(); } else if(key==='skull'){ x.beginPath(); x.arc(0,-2,8,Math.PI,0); x.lineTo(8,4); x.lineTo(-8,4); x.closePath(); x.fill(); x.fillRect(-6,4,12,4); x.fillStyle='#0f1a26'; x.beginPath(); x.arc(-3.5,-2,2.2,0,6.3); x.arc(3.5,-2,2.2,0,6.3); x.fill(); x.fillRect(-1,1,2,3); } else { x.fillRect(-8,-9,2,18); x.beginPath(); x.moveTo(-6,-9); x.lineTo(9,-5); x.lineTo(-6,-1); x.closePath(); x.fill(); } } url=c.toDataURL(); } else url=iconURL(key,col); const im=new Image(); im.src=url; ROLLIMG[key]=im; return im; }
@@ -381,28 +346,29 @@ const DISCLAIMER=["No artificial intelligences were harmed in the making of this
 function beginCredits(d,song,watch=false){ try{ audioInit(); }catch(e){}
   ROLL.data=d; ROLL.lines=rollLines(d); ROLL.watch=watch; ROLL.done=false; ROLL.paused=false; ROLL.y=0; ROLL.drift=0; ROLL.playBox=null; ROLL.skipBox=null; ROLL.replay=!!(watch&&ROLL.watchReplay&&REPLAY.creditsMode); ROLL.speedSet=false;
   // a live match replays itself behind the roll: restart from the seed and feed the recorded orders at a pace that ends with the credits
-  if(!watch&&!REPLAY.on&&CMD.log.length&&over){ try{ ROLL.saved={title:ovTitle.textContent,text:ovText.textContent,post:(document.getElementById('ovPost')||{}).textContent||'',tick:tickN,log:CMD.log.slice(),hashes:CMD.hashes.slice()}; REPLAY.on=true; REPLAY.creditsMode=true; REPLAY.cmds=ROLL.saved.log; REPLAY.i=0; REPLAY.hashes=ROLL.saved.hashes; REPLAY.hashv=2; REPLAY.mismatch=false; REPLAY.toTick=ROLL.saved.tick; REPLAY.resume=false; ROLL.replay=true; ROLL.on=true; resetWorld(); $('startBtn').click(); overlay.style.display='none'; }catch(e){ console.warn('[statefall] credits replay',e); ROLL.replay=false; REPLAY.on=false; REPLAY.creditsMode=false; } }
+  if(!watch&&!REPLAY.on&&CMD.log.length&&lifecycleState.over){ try{ ROLL.saved={title:ovTitle.textContent,text:ovText.textContent,post:(document.getElementById('ovPost')||{}).textContent||'',tick:clockState.tickN,log:CMD.log.slice(),hashes:CMD.hashes.slice()}; engine.configureReplay({on:true,creditsMode:true,cmds:ROLL.saved.log,i:0,hashes:ROLL.saved.hashes,hashv:2,mismatch:false,toTick:ROLL.saved.tick,resume:false}); ROLL.replay=true; ROLL.on=true; resetWorld(); $('startBtn').click(); overlay.style.display='none'; }catch(e){ console.warn('[statefall] credits replay',e); ROLL.replay=false; engine.configureReplay({on:false,creditsMode:false}); } }
   ROLL.dur=90; ROLL.t0=performance.now(); ROLL.on=true; overlay.style.display='none'; $('side').classList.add('rolling'); JUKE.hold=true; MUS.stop(); jukeStopSrc(0.4); if(AUD.ctx){ ROLL.musicWas=AUD.vol.musicOn; AUD.bus.music.gain.value=AUD.vol.mute?0:Math.max(AUD.vol.music,0.25); } cv.style.cursor='default'; hover=-1; hoverShip=null; hoverStruct=null; tip.style.display='none'; hideCtx();
   // the song joins when it is ready; the roll never waits on the network
   (async()=>{ try{ if(song&&song!=='builtin'&&JUKE.loaded&&AUD.ctx){ const t=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].find(x=>x&&x.id===song); if(t){ const buf=await Promise.race([jukeBuf(t.url),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]); if(!ROLL.on) return; ROLL.dur=t.seconds||buf.duration||90; JUKE.mode='one'; await jukePlay(t,'game'); if(JUKE.src) JUKE.src.loop=false; return; } }
       if(AUD.ctx&&ROLL.on) MUS._start('menu'); }catch(e){ console.warn('[statefall] credits music',e); if(AUD.ctx&&ROLL.on) MUS._start('menu'); } })(); }
 async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+encodeURIComponent(id),{credentials:'same-origin'}); const j=await r.json(); if(!r.ok||!j.stats) throw new Error(j.message||'no stats'); const d=j.stats; d.name=d.name||j.country; d.player=d.player||(j.user&&j.user.name)||d.name; if(j.custom) d.custom=j.custom; const qs2=new URLSearchParams(location.search); const wantEdit=qs2.get('edit')==='1'&&WP.user&&j.user&&WP.user.id===j.user.id; lastPostId=j.id; lastStats=d; // set up the map from the record's seed so the roll has a backdrop
     let rep=null; try{ const rr=await fetch(WP.rest+'scores/'+encodeURIComponent(id)+'/replay',{credentials:'same-origin'}); if(rr.ok){ const rj=await rr.json(); if(rj&&rj.data&&Array.isArray(rj.data.cmds)) rep=rj.data; } }catch(e){}
-    if(rep&&!wantEdit){ applySettings(rep.settings||{}); $('seedIn').value=rep.seed||j.seed; REPLAY.on=true; REPLAY.creditsMode=true; REPLAY.cmds=rep.cmds; REPLAY.i=0; REPLAY.hashes=rep.hashes||[]; REPLAY.hashv=rep.hashv||1; REPLAY.mismatch=false; REPLAY.toTick=rep.tick||0; REPLAY.resume=false; ROLL.watchReplay=true; ROLL.on=true; resetWorld(); $('startBtn').click(); $('start').style.display='none'; $('overlay').style.display='none'; }
-    else { $('seedIn').value=j.seed; START.map=j.map; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); const ci=COUNTRIES.findIndex(c=>c.name===j.country); if(ci>=0){ chosenFlag=countryByIdx(ci); $('countrySel').value=ci; }
-    $('startBtn').click(); userPaused=true; pausedAt=performance.now(); $('start').style.display='none'; $('overlay').style.display='none'; spectating=true; over=true; }
+    if(rep&&!wantEdit){ engine.loadReplay(rep,{otherVersion:!!(rep.game&&rep.game!==GAME_VERSION)}); engine.configureReplay({creditsMode:true}); Object.assign(START,engineState.rules.settings); ALLOWED.clear(); for(const rule of engineState.rules.allowed) ALLOWED.add(rule); applySettings(rep.settings||{},false); $('seedIn').value=rep.seed||j.seed; ROLL.watchReplay=true; ROLL.on=true; resetWorld(); $('startBtn').click(); $('start').style.display='none'; $('overlay').style.display='none'; }
+    else { $('seedIn').value=j.seed; START.map=j.map; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); const ci=COUNTRIES.findIndex(c=>c.name===j.country); if(ci>=0){ engine.configure({chosenFlag:countryByIdx(ci)}); $('countrySel').value=ci; }
+    $('startBtn').click(); engine.enterSpectatorEndState(); pausedAt=performance.now(); $('start').style.display='none'; $('overlay').style.display='none'; }
     { const cl=document.getElementById('credLoad'); if(cl) cl.remove(); }
     setTimeout(()=>{ if(wantEdit){ openBuilder(d,j.custom||null); return; } const st=jukeStingPick(/ictory/.test(d.result||'')?'victory':'defeat')||jukeStingPick('credits'); beginCredits(d,(d.custom&&d.custom.song)||(st?st.id:'builtin'),true); },600); }catch(e){ console.warn('[statefall] credits unavailable',e); const cl=document.getElementById('credLoad'); if(cl) cl.textContent='Could not load those credits.'; } }
 function rollSeek(sec){ if(ROLL.paused){ ROLL.t0-=sec*1000; const now=ROLL.pausedAt; if(now-ROLL.t0<0) ROLL.t0=now; } else { ROLL.t0-=sec*1000; if(performance.now()-ROLL.t0<0) ROLL.t0=performance.now(); } ROLL.done=false; }
 function rollTogglePause(){ if(ROLL.paused){ ROLL.t0+=performance.now()-ROLL.pausedAt; ROLL.paused=false; if(AUD.ctx) AUD.ctx.resume(); } else { ROLL.paused=true; ROLL.pausedAt=performance.now(); if(AUD.ctx) AUD.ctx.suspend(); } }
-function resetWorld(){ players=[]; attacks=[]; missiles=[]; structures=[]; transports=[]; warships=[]; shots=[]; interceptors=[]; shells=[]; links=[]; traders=[]; aircraft=[]; trucks=[]; planes=[]; vis=null; radarLayer=null; satUntil=0; satCool=0; planeCool=0; myBorders=new Set(); for(const k in hostile) delete hostile[k]; proposals=[]; badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; draftPicks=[]; draft=null; selected.clear(); unclaimed.clear(); areaOf=null; nextAreaId=1; for(const k in supplyAt) delete supplyAt[k]; tickN=0; simMs=0; uidSeq=0; over=false; freeplay=false; spectating=false; decided=false; paused=false; userPaused=false; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; CMD.log=[]; CMD.hashes=[]; me=null; }
+function resetPresentationState(){ badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; visualShots=[]; flagUrlCache=new WeakMap(); shellRenderState=new WeakMap(); shipRenderState.clear(); labelRenderState.clear(); selected.clear(); presentationState.matchRecorded=false; presentationState.controllerTasks.length=0; for(const key of Object.keys(centCache)) delete centCache[key]; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; }
+function resetWorld(){ replayCatchUpCancel(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
 function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||'')+'/'; const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); overlay.style.display='none';
   const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 6px;font-size:24px">Your credits are posted</h2><p class="muted" style="font-size:13px;margin:0 0 14px">Anyone with the link can watch them, with the whole match replayed behind the roll.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><a href="${fb}" target="_blank" rel="noopener" class="sf-fb">Share on Facebook</a><button id="pmCopy">Copy link</button></div><div style="display:grid;gap:8px;grid-template-columns:1fr 1fr"><button id="pmPlay" style="background:#2f5a8c;font-weight:600;padding:10px">Play another match</button><button id="pmBoard" style="padding:10px">Leaderboard</button><button id="pmHome" style="padding:10px">Home page</button><button id="pmWatch" style="padding:10px">Watch again</button></div></div>`);
   m.querySelector('#pmCopy').onclick=()=>{ const b=m.querySelector('#pmCopy'); (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy link'; },1800); }).catch(()=>prompt('Copy this link:',url)); };
   m.querySelector('#pmPlay').onclick=()=>location.reload(); m.querySelector('#pmBoard').onclick=()=>{ location.href=WP&&WP.boardUrl?WP.boardUrl:'/leaderboard/'; }; m.querySelector('#pmHome').onclick=()=>{ location.href=WP&&WP.homeUrl?WP.homeUrl:'/'; }; m.querySelector('#pmWatch').onclick=()=>{ closeModal(); if(lastStats){ CUSTOM.previewing=false; beginCredits(Object.assign({},lastStats,{custom:CUSTOM.data}),(CUSTOM.data&&CUSTOM.data.song)||ROLL.autoSong||'builtin',false); } }; }
-function endCredits(){ ROLL.on=false; ROLL.speedSet=false; $('side').classList.remove('rolling'); if(ROLL.watchReplay){ ROLL.watchReplay=false; ROLL.replay=false; REPLAY.creditsMode=false; REPLAY.on=false; paused=true; userPaused=true; over=true; $('start').style.display='flex'; return; } if(AUD.ctx) applyVolumes();
-  if(ROLL.replay&&REPLAY.creditsMode){ const sv=ROLL.saved; const finish=()=>{ REPLAY.on=false; REPLAY.creditsMode=false; REPLAY.speed=1; over=true; userPaused=false; paused=true; CMD.log=sv.log; CMD.hashes=sv.hashes; overlay.classList.remove('replay'); ovTitle.textContent=sv.title; ovText.textContent=sv.text; const el=document.getElementById('ovPost'); if(el) el.textContent=sv.post; $('replayBar').style.display='none'; overlay.style.display='flex'; ROLL.replay=false; };
-    if(tickN<sv.tick){ ROLL.replay=false; replayCatchUp(sv.tick,'Finishing the replay',{label:'Continue',fn:()=>{ finish(); paused=true; }}); return; } finish(); return; } ROLL.playBox=null; ROLL.editBox=null; ROLL.approveBox=null; CUSTOM.previewing=false; JUKE.hold=false; { const cb=document.getElementById('ovCredits'); if(cb) cb.textContent='Watch credits again'; } cv.style.cursor=buildMode?'cell':'crosshair'; if(ROLL.top1Pending){ ROLL.top1Pending=false; setTimeout(()=>jukeSting('top1'),600); } if(ROLL.watch){ $('start').style.display='flex'; } else { overlay.style.display='flex'; } MUS.stop(); jukeStopSrc(); if(AUD.vol.musicOn) MUS.start(me?'game':'menu'); }
+function endCredits(){ ROLL.on=false; ROLL.speedSet=false; $('side').classList.remove('rolling'); if(ROLL.watchReplay){ ROLL.watchReplay=false; ROLL.replay=false; engine.finishReplayWatch(); engine.configureReplay({creditsMode:false,on:false}); $('start').style.display='flex'; return; } if(AUD.ctx) applyVolumes();
+  if(ROLL.replay&&REPLAY.creditsMode){ const sv=ROLL.saved; const finish=()=>{ engine.enterCreditsEndState(); engine.configureReplay({on:false,creditsMode:false,speed:1}); engine.setCommandHistory(sv.log,sv.hashes); overlay.classList.remove('replay'); ovTitle.textContent=sv.title; ovText.textContent=sv.text; const el=document.getElementById('ovPost'); if(el) el.textContent=sv.post; $('replayBar').style.display='none'; overlay.style.display='flex'; ROLL.replay=false; };
+    if(clockState.tickN<sv.tick){ ROLL.replay=false; replayCatchUp(sv.tick,'Finishing the replay',{label:'Continue',fn:finish}); return; } finish(); return; } ROLL.playBox=null; ROLL.editBox=null; ROLL.approveBox=null; CUSTOM.previewing=false; JUKE.hold=false; { const cb=document.getElementById('ovCredits'); if(cb) cb.textContent='Watch credits again'; } cv.style.cursor=buildMode?'cell':'crosshair'; if(ROLL.top1Pending){ ROLL.top1Pending=false; setTimeout(()=>jukeSting('top1'),600); } if(ROLL.watch){ $('start').style.display='flex'; } else { overlay.style.display='flex'; } MUS.stop(); jukeStopSrc(); if(AUD.vol.musicOn) MUS.start(me()?'game':'menu'); }
 function drawCredits(){ if(!ROLL.on) return; const d=ROLL.data; const Wd=cv.width, Hd=cv.height;
   // the map drifts slowly but never leaves the screen: fit-to-screen zoom, sinusoidal wander within the margins
   const el=(ROLL.paused?ROLL.pausedAt:performance.now())-ROLL.t0; const fitS=Math.min(Wd/W,Hd/H); cam.s=fitS*1.15; const mw=W*cam.s, mh=H*cam.s; const wx=Math.max(0,mw-Wd), wy=Math.max(0,mh-Hd); cam.x=-wx*(0.5+0.5*Math.sin(el/38000)); cam.y=-wy*(0.5+0.5*Math.cos(el/29000));
@@ -418,7 +384,7 @@ function drawCredits(){ if(!ROLL.on) return; const d=ROLL.data; const Wd=cv.widt
   const dist1=Math.max(0,startY+discTop-70); // scroll offset (px) at the disclaimer hold
   const dist2=Math.max(0,(startY+endTop-(Hd-endH)/2)-dist1); // further offset to the end card
   const t1=HOLD+Math.max(0,dist1)/SPEED, t2=t1+DHOLD, t3=t2+Math.max(0,dist2)/SPEED; ROLL.tEnd=t3;
-  if(ROLL.replay&&REPLAY.on&&!ROLL.speedSet){ ROLL.speedSet=true; const need=Math.max(1,Math.ceil(REPLAY.toTick/Math.max(20,t2)/10)); REPLAY.speed=Math.min(15,need); }
+  if(ROLL.replay&&REPLAY.on&&!ROLL.speedSet){ ROLL.speedSet=true; const need=Math.max(1,Math.ceil(REPLAY.toTick/Math.max(20,t2)/10)); engine.configureReplay({speed:Math.min(15,need)}); }
   let off; if(t<HOLD) off=0; else if(t<t1) off=(t-HOLD)*SPEED; else if(t<t2) off=dist1; else if(t<t3) off=dist1+(t-t2)*SPEED; else off=dist1+dist2;
   const y0=startY-off; const endFade=t>t2?Math.min(1,Math.max(0,(t-t2)/1.5)):0; // the disclaimer fades as we leave it
   ctx.save(); ctx.globalAlpha=fade; ctx.textBaseline='middle'; let y=y0; const cx=Wd/2; const F=(w,px)=>`${w} ${px}px "Segoe UI",system-ui,sans-serif`;
@@ -495,144 +461,70 @@ async function approveCustom(){ if(!lastPostId||!CUSTOM.data) { fail('Post a sco
   try{ const r=await fetch(WP.rest+'scores/'+lastPostId+'/custom',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':WP.nonce},body:JSON.stringify(CUSTOM.data)}); const j=await r.json().catch(()=>({})); if(!r.ok){ fail(j.message||'Could not save the credits.'); return false; } CUSTOM.approved=true; log('Custom credits posted — the watch page and share link now show them.',true); return true; }catch(e){ fail('Could not reach the site.'); return false; } }
 
 // ---------------------------------------------------------------- command layer: every player action is a serialisable command (replays, saves, multiplayer)
-const CMD={log:[],replaying:false,hashes:[]};
-const DECIDE={share:null,war:null}; const REPLAY={on:false,cmds:[],i:0,speed:1,resume:false,toTick:0};
-function cmdLog(kind,args){ if(CMD.replaying||!me||REPLAY.on) return; CMD.log.push({t:tickN,k:kind,a:args}); }
-function shipById(id){ return warships.find(w=>w.id===id); }
-function structAtT(t){ return structures.find(s=>s.t===t); }
-function issueMenu(d,t,selIds,siteT,ratioV,aidGold,aidTroops){ if(REPLAY.on) return; if(userPaused&&!START.pauseBuild&&!over&&!['toggle','focus','unfocus','pickattack','pickreinf','ally','nap','war','askGold','askTroops','giveGold','giveTroops'].includes(d.act)){ fail('Paused — unpause to give orders (or tick "Paused orders" on the start card).'); return; } cmdLog('menu',[d,t,selIds,siteT,ratioV,aidGold,aidTroops]); menuAction(d,t,selIds.map(shipById).filter(Boolean),siteT>=0?structAtT(siteT):null,ratioV,aidGold,aidTroops); }
-function issueClick(t,env){ if(REPLAY.on) return; if(userPaused&&!START.pauseBuild&&!over&&!draft){ fail('Paused — unpause to give orders (or tick "Paused orders" on the start card).'); return; } env=env||{ratio:+ratio.value,pick:pickMode?{kind:pickMode.kind,t:pickMode.t}:null,build:buildMode||null}; cmdLog('click',[t,env]); clickTile(t,env); }
-function issue(kind,...args){ if(REPLAY.on) return; cmdLog(kind,args); applySimple(kind,args); }
-function applySimple(kind,a){ switch(kind){
-  case 'focus': me.focus=a[0]; break;
-  case 'airAuto': me.airAuto=a[0]; break;
-  case 'logAuto': me.logisticsAuto=a[0]; break;
-  case 'autoFire': me.autoFire=a[0]; break;
-  case 'recall': { const ac=aircraft.find(x=>x.id===a[0]); if(ac) recallAircraft(ac); break; }
-  case 'recallAll': aircraft.filter(x=>x.owner===me.id&&(a[0]==='dmg'?(x.type==='fighter'&&x.hp<=2):true)).forEach(recallAircraft); break;
-  case 'sat': launchSatellite(); break;
-  case 'accept': { const f=players[a[0]]; const ty=a[1]; proposals=proposals.filter(q=>q.from!==f.id); if(ty==='reqTroops') sendTroops(me,f,a[2]); else if(ty==='reqGold') sendGold(me,f,a[2]); else { setRelation(me,f,ty); log(`${ty==='ally'?'Alliance':'Pact'} with ${f.name}.`,true); snd('unified'); } break; }
-  case 'decline': proposals=proposals.filter(q=>q.from!==a[0]); break;
-  case 'decShare': if(DECIDE.share) DECIDE.share(); break;
-  case 'decWar': if(DECIDE.war) DECIDE.war(); break;
-} if(!CMD.replaying) updateUI(); }
-function replayApply(c){ CMD.replaying=true; try{ if(c.k==='menu') menuAction(c.a[0],c.a[1],c.a[2].map(shipById).filter(Boolean),c.a[3]>=0?structAtT(c.a[3]):null,c.a[4],c.a[5],c.a[6]); else if(c.k==='click') clickTile(c.a[0],c.a[1]); else applySimple(c.k,c.a); }catch(e){ console.warn('[statefall] replay command failed',c,e); } finally{ CMD.replaying=false; } }
-function resolveReplayCommands(){ if(REPLAY.on){ while(REPLAY.i<REPLAY.cmds.length&&REPLAY.cmds[REPLAY.i].t<=tickN){ replayApply(REPLAY.cmds[REPLAY.i]); REPLAY.i++; } } }
-function stateDetail(){ const d={rng:srandN}; for(const p of players){ if(p.kind==='neutral'||!p.alive) continue; d[p.id]=[Math.round(p.troops),Math.round(p.gold),p.tiles]; } d.n=[warships.length,attacks.length,structures.length,transports.length]; return d; }
-function stateDiff(a,b){ if(!a||!b) return ''; const out=[]; if(a.rng!=null&&b.rng!=null&&a.rng!==b.rng) out.push(`random draws recorded ${a.rng} vs ${b.rng}`); for(const k in a){ if(k==='n'||k==='rng') continue; const x=a[k],y=b[k]; if(!y){ out.push(`${players[+k]?players[+k].name:k} missing`); continue; } if(x[0]!==y[0]||x[1]!==y[1]||x[2]!==y[2]) out.push(`${players[+k]?players[+k].name:k}: recorded ${x.join('/')} vs ${y.join('/')}`); } if(a.n&&b.n&&a.n.join()!==b.n.join()) out.push(`counts ${a.n.join('/')} vs ${b.n.join('/')}`); return out.slice(0,6).join('; '); }
-function stateHash(full){ if(full==null) full=!(REPLAY.on&&REPLAY.hashv!==2); let h=2166136261; const mix=v=>{ h^=(v|0)&0xffffffff; h=Math.imul(h,16777619); };
-  const step=full?1:5; for(let t=0;t<W*H;t+=step) mix(owner[t]+2+(struct[t]?100:0));
-  for(const p of players){ if(!p.alive) continue; mix(p.id); mix(Math.round(p.troops*10)); mix(Math.round(p.gold*10)); mix(p.tiles); }
-  mix(warships.length); for(const w of warships) mix(Math.round(w.x*4)+Math.round(w.y*4)*4096+w.hp*1e6);
-  mix(attacks.length); for(const a of attacks) mix(Math.round(a.troops)+a.front.size*1e5);
-  mix(structures.length); mix(missiles.length); mix(transports.length); mix(aircraft.length);
-  return (h>>>0).toString(16).padStart(8,'0'); }
-// Phase 0 state oracle. This is separate from stateHash and replay files so their shipped formats stay unchanged.
-const STATE_ORACLE_VERSION='statefall-authoritative-state/v1';
-function authoritativeState(){ return {
-  version:STATE_ORACLE_VERSION, clock:{tickN,simMs,uidSeq,srandN,over,freeplay,spectating,decided,paused,userPaused,draftTicks,satUntil,satCool,planeCool,nextAreaId},
-  rules:{W,H,settings:START,difficulty:chosen,allowed:ALLOWED},
-  map:{land,owner,struct,structOwner,region,river,shelled,rough,landCount,regions,regCount,NP,unclaimed},
-  actors:{me:me&&me.id,players,attacks,missiles,structures,transports,warships,shots,interceptors,shells,links,traders,aircraft,trucks,planes},
-  fog:{vis,radarLayer,myBorders}, diplomacy:{hostile,proposals}, garrison:{areaOf,supplyAt}, draft:{draft,draftPicks}
-}; }
-function canonicalState(){
-  let nextId=1; const seen=new Map();
-  const norm=value=>{
-    if(value===null||typeof value==='string'||typeof value==='boolean') return value;
-    if(typeof value==='number'){ if(Number.isNaN(value)) return {$number:'NaN'}; if(value===Infinity) return {$number:'Infinity'}; if(value===-Infinity) return {$number:'-Infinity'}; if(Object.is(value,-0)) return {$number:'-0'}; return value; }
-    if(typeof value==='undefined') return {$undefined:true};
-    if(typeof value==='bigint') return {$bigint:String(value)};
-    if(typeof value==='function'||typeof value==='symbol') return {$unsupported:typeof value};
-    if(seen.has(value)) return {$ref:seen.get(value)};
-    const id=nextId++; seen.set(value,id);
-    if(ArrayBuffer.isView(value)){ const values=new Array(value.length); for(let i=0;i<value.length;i++) values[i]=value[i]; return {$id:id,$typed:value.constructor.name,$values:values}; }
-    if(value instanceof Set){ const values=Array.from(value,norm).map((value,index)=>({value,index,key:JSON.stringify(value)})); values.sort((a,b)=>a.key<b.key?-1:a.key>b.key?1:a.index-b.index); return {$id:id,$set:values.map(x=>x.value)}; }
-    if(value instanceof Map){ const entries=Array.from(value,([k,v],index)=>({entry:[norm(k),norm(v)],index})); entries.sort((a,b)=>{ const x=JSON.stringify(a.entry[0]),y=JSON.stringify(b.entry[0]); return x<y?-1:x>y?1:a.index-b.index; }); return {$id:id,$map:entries.map(x=>x.entry)}; }
-    if(Array.isArray(value)) return {$id:id,$array:value.map(norm)};
-    const out={$id:id}; for(const key of Object.keys(value).sort()){ if(!key.startsWith('_u')&&key!=='labelDraw') out[key]=norm(value[key]); } return out;
-  };
-  return JSON.stringify(norm(authoritativeState()));
-}
-function checkStateInvariants(){
-  const errors=[], n=W*H, arrays={land,owner,struct,structOwner,region,river,shelled,rough};
-  for(const [name,a] of Object.entries(arrays)) if(!a||a.length!==n) errors.push(`${name} length ${a&&a.length} != ${n}`);
-  if(!players.length) errors.push('players is empty');
-  if(me&&players[me.id]!==me) errors.push('human player is not indexed by id');
-  const tileCounts=new Int32Array(players.length), regionCounts=new Int32Array(regCount?regCount.length:0); let countedLand=0, unclaimedCount=0;
-  if(land&&owner) for(let t=0;t<n;t++){
-    const o=owner[t]; if(land[t]) countedLand++; else if(o>=0) errors.push(`water tile ${t} has owner ${o}`);
-    if(o>=0){ if(o>=players.length) errors.push(`tile ${t} has invalid owner ${o}`); else { tileCounts[o]++; const r=region&&region[t]; if(r>=0&&r<regions.length&&r*NP+o<regionCounts.length) regionCounts[r*NP+o]++; } }
-    if(land[t]&&o<0){ unclaimedCount++; if(!unclaimed.has(t)) errors.push(`unclaimed land tile ${t} missing from index`); }
-    else if(unclaimed.has(t)) errors.push(`tile ${t} incorrectly present in unclaimed index`);
-    if(errors.length>=100) break;
-  }
-  if(countedLand!==landCount) errors.push(`landCount ${landCount} != ${countedLand}`);
-  if(unclaimed.size!==unclaimedCount) errors.push(`unclaimed size ${unclaimed.size} != ${unclaimedCount}`);
-  players.forEach((p,i)=>{ if(p.id!==i) errors.push(`player index ${i} has id ${p.id}`); if(p.tiles!==tileCounts[i]) errors.push(`player ${i} tiles ${p.tiles} != ${tileCounts[i]}`); for(const k in p.rel){ const q=players[+k]; if(!q||q.rel[i]!==p.rel[k]) errors.push(`relationship ${i}/${k} is not symmetric`); } });
-  if(regCount&&regionCounts.length===regCount.length) for(let i=0;i<regCount.length;i++) if(regCount[i]!==regionCounts[i]){ errors.push(`regCount ${i} is ${regCount[i]} != ${regionCounts[i]}`); if(errors.length>=100) break; }
-  const byTile=new Map(); for(const st of structures){ if(!Number.isInteger(st.t)||st.t<0||st.t>=n) errors.push(`structure has invalid tile ${st.t}`); else { if(byTile.has(st.t)) errors.push(`duplicate structure at tile ${st.t}`); byTile.set(st.t,st); if(!struct[st.t]) errors.push(`structure at ${st.t} missing from tile index`); if(structOwner[st.t]!==st.owner) errors.push(`structure owner index differs at ${st.t}`); if(owner[st.t]!==st.owner) errors.push(`structure owner differs from land owner at ${st.t}`); } if(!players[st.owner]) errors.push(`structure has invalid owner ${st.owner}`); }
-  if(struct) for(let t=0;t<n;t++) if(!!struct[t]!==byTile.has(t)){ errors.push(`structure tile index differs at ${t}`); if(errors.length>=100) break; }
-  const visited=new Set(); const findBad=(v,path)=>{ if(errors.length>=100||v==null) return; if(typeof v==='number'){ if(Number.isNaN(v)) errors.push(`${path} is NaN`); return; } if(typeof v!=='object'||visited.has(v)) return; visited.add(v); if(ArrayBuffer.isView(v)) return; if(v instanceof Set){ let i=0; for(const x of v) findBad(x,`${path}.set[${i++}]`); return; } for(const k of Object.keys(v)) findBad(v[k],`${path}.${k}`); };
-  findBad(authoritativeState(),'state'); return errors;
-}
-Object.defineProperties(stateHash,{oracleVersion:{value:STATE_ORACLE_VERSION},serializeCanonical:{value:canonicalState},checkInvariants:{value:checkStateInvariants}});
-function exposeStateOracle(){ const s=typeof globalThis!=='undefined'&&globalThis.S; if(!s||s.stateHash!==stateHash) return; Object.defineProperties(s,{stateOracleVersion:{value:STATE_ORACLE_VERSION},serializeCanonicalState:{value:canonicalState},checkStateInvariants:{value:checkStateInvariants}}); }
-function replayFile(result){ return {v:1,hashv:2,game:GAME_VERSION,seed:START.seed,settings:{...START,diff:chosen,country:me&&me.flag&&me.flag.idx!=null?me.flag.idx:null,customFlag:me&&me.flag&&me.flag.custom?{name:me.flag.name,layers:me.flag.layers,userId:me.flag.userId}:null,customBots:START.customBots||null,allowed:[...ALLOWED]},cmds:CMD.log,hashes:CMD.hashes,result:result||null,tick:tickN,when:Date.now()}; }
-function saveReplayDownload(kind){ const f=replayFile(over?ovTitle.textContent:'in progress'); const name=`statefall-${kind==='save'?'game':'replay'}-${START.seed}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.state`;
+const CMD=deterministicRuntime.commands;
+const REPLAY=deterministicRuntime.replay;
+function issueMenu(d,t,selIds,siteT,ratioV,aidGold,aidTroops,actorId){ return runEngineOperation(()=>engine.issue({kind:'menu',args:[d,t,selIds,siteT,ratioV,aidGold,aidTroops],actor:actorId})); }
+function issueClick(t,env,actorId){ env=env||{ratio:+ratio.value,pick:pickMode?{kind:pickMode.kind,t:pickMode.t}:null,build:buildMode||null}; return runEngineOperation(()=>engine.issue({kind:'click',args:[t,env],actor:actorId})); }
+function issue(kind,...args){ return runEngineOperation(()=>engine.issue(kind,...args)); }
+const stateHash=engine.stateHash,canonicalState=engine.serializeCanonical,checkStateInvariants=engine.checkInvariants;
+function exposeStateOracle(){ const s=typeof globalThis!=='undefined'&&globalThis.S; if(!s||s.stateHash!==stateHash) return; Object.defineProperties(s,{serializeCanonicalState:{value:canonicalState},checkStateInvariants:{value:checkStateInvariants}}); }
+function replayFile(result){ const final=engine.replayMetadata(),requiresCanonicalCheckpoints=CMD.hashes.every(item=>item[2]&&item[2].canonical); return {v:1,hashv:2,game:GAME_VERSION,seed:START.seed,settings:{...START,diff:matchState.difficulty,country:me()&&me().flag&&me().flag.idx!=null?me().flag.idx:null,customFlag:me()&&me().flag&&me().flag.custom?{name:me().flag.name,layers:me().flag.layers,userId:me().flag.userId}:null,customBots:START.customBots||null,allowed:[...ALLOWED]},cmds:CMD.log,hashes:CMD.hashes,requiresCanonicalCheckpoints,result:result||null,tick:clockState.tickN,when:Date.now(),finalHash:final.legacyHash,finalDigest:final.canonical,final}; }
+function saveReplayDownload(kind){ const f=replayFile(lifecycleState.over?ovTitle.textContent:'in progress'); const name=`statefall-${kind==='save'?'game':'replay'}-${START.seed}-${new Date().toISOString().slice(0,16).replace(/[:T]/g,'-')}.state`;
   try{ const blob=new Blob([JSON.stringify(f)],{type:'application/octet-stream'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); }catch(e){}
   log(`${kind==='save'?'Game saved':'Replay saved'} — ${name}.`,true); return f; }
-function applySettings(st){ // put a saved match's settings back onto the start card, so pressing Start reproduces it
+function applySettings(st,configure=true){ // put a saved match's settings back onto the start card, so pressing Start reproduces it
   const set=(id,v)=>{ const el=$(id); if(el&&typeof v==='boolean') el.checked=v; };
   set('garrisonOn',!!st.garrison); set('quickStart',!!st.quick); set('riskyOn',!!st.risky); set('endgameOn',!!st.endgame); set('fogOn',!!st.fog); set('instantOn',!!st.instant); set('billionaireOn',!!st.billionaire); set('stNoCap',!!st.noCap); set('stBots',!!st.bots); set('stPauseBuild',!!st.pauseBuild);
   if($('stTroops')) $('stTroops').value=st.troops; if($('stGold')) $('stGold').value=st.gold; START.teams=st.teams||0; if($('teamSel')) $('teamSel').value=String(START.teams);
-  START.map=st.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map));
-  if(st.diff&&DIFFS[st.diff]){ chosen=st.diff; if($('diffSel')) $('diffSel').value=chosen; }
-  if(st.customFlag&&st.customFlag.layers){ const f=replayIdentity(st.customFlag); chosenFlag={name:f.name,layers:f.layers,idx:-1,custom:true,userId:f.userId}; }
-  else if(st.country!=null&&COUNTRIES[st.country]){ chosenFlag=countryByIdx(st.country); if($('countrySel')) $('countrySel').value=st.country; }
-  START.customBots=Array.isArray(st.customBots)?st.customBots.slice(0,9).map((b,i)=>replayIdentity(b,i)):null;
-  if(Array.isArray(st.allowed)){ ALLOWED.clear(); for(const k of st.allowed) ALLOWED.add(k); }
+  if(configure) START.map=st.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===(st.map||START.map)));
+  if(st.diff&&DIFFS[st.diff]){ if(configure) engine.configure({difficulty:st.diff}); if($('diffSel')) $('diffSel').value=st.diff; }
+  if(configure&&st.customFlag&&st.customFlag.layers){ const f=replayIdentity(st.customFlag); engine.configure({chosenFlag:{name:f.name,layers:f.layers,idx:-1,custom:true,userId:f.userId}}); }
+  else if(configure&&st.country!=null&&COUNTRIES[st.country]) engine.configure({chosenFlag:countryByIdx(st.country)});
+  if(st.country!=null&&COUNTRIES[st.country]&&$('countrySel')) $('countrySel').value=st.country;
+  if(configure){ START.customBots=Array.isArray(st.customBots)?st.customBots.slice(0,9).map((b,i)=>replayIdentity(b,i)):null; if(Array.isArray(st.allowed)){ ALLOWED.clear(); for(const k of st.allowed) ALLOWED.add(k); } }
 }
 function replayName(value){ return String(value||'').replace(/[<>&"]/g,'').replace(/[\u0000-\u001f\u007f]/g,'').replace(/\s+/g,' ').trim().slice(0,40)||'Unnamed nation'; }
 function replayLayers(value){ const layers=Array.isArray(value)&&value.length&&value.length<=8?value:null, col=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v), num=(v,a,b)=>Number.isFinite(+v)&&+v>=a&&+v<=b, emb=new Set(['anchor','warship','battleship','sub','fighter','bomber','missile','gun','city','factory','radar','satellite','shield','samstar','eagle','lion','sun','crescent','crown','sword','laurel','tree','mountain','tower','torch']); if(!layers) return [['h','#ffffff','#0038a8']]; const ok=L=>{ if(!Array.isArray(L)||typeof L[0]!=='string') return false; switch(L[0]){ case'h':case'v':return L.length>=2&&L.length<=4&&L.slice(1).every(col); case'diag':return L.length===3&&col(L[1])&&col(L[2]); case'rect':return L.length===6&&col(L[1])&&L.slice(2).every(v=>num(v,0,1)); case'disc':return L.length===5&&col(L[1])&&L.slice(2).every(v=>num(v,0,1)); case'ring':return L.length===6&&col(L[1])&&L.slice(2).every(v=>num(v,0,1)); case'star':return (L.length===5||L.length===6)&&col(L[1])&&num(L[2],0,1)&&num(L[3],0,1)&&num(L[4],0,.6)&&(L.length===5||num(L[5],3,12)); case'cross':return L.length===4&&col(L[1])&&num(L[2],0,.6)&&num(L[3],0,1); case'sal':return L.length===3&&col(L[1])&&num(L[2],0,.6); case'tri':return L.length>=5&&L.length<=8&&col(L[1])&&L.slice(2).every(p=>Array.isArray(p)&&p.length===2&&num(p[0],0,1)&&num(p[1],0,1)); case'emb':return (L.length===6||L.length===7)&&col(L[1])&&emb.has(L[2])&&num(L[3],0,1)&&num(L[4],0,1)&&num(L[5],.05,.6)&&(L.length===6||L[6]==null||col(L[6])); default:return false; } }; return layers.every(ok)?layers:[['h','#ffffff','#0038a8']]; }
 function replayIdentity(value,slot){ const v=value&&typeof value==='object'?value:{}; return {name:replayName(v.name),layers:replayLayers(v.layers),userId:Number.isInteger(+v.userId)?+v.userId:0,...(slot==null?{}:{slot:Math.max(0,Math.min(8,Number.isInteger(+v.slot)?+v.slot:slot))})}; }
-function loadReplayFile(f,mode,item){ REPLAY.saveId=item&&item.id||null; // mode 'watch' = replay at chosen speed; 'resume' = fast-forward silently, then hand control back
-  if(!f||!Array.isArray(f.cmds)) { fail('That is not a Statefall replay or save file.'); return; }
-  REPLAY.otherVersion=!!(f.game&&f.game!==GAME_VERSION); if(REPLAY.otherVersion) log(`This replay was recorded on game ${f.game}; you are on ${GAME_VERSION}. Rules have changed since, so it may play out differently.`,true);
-  applySettings(f.settings||{}); $('seedIn').value=f.seed||'';
-  REPLAY.fileGame=f.game||''; REPLAY.hashv=f.hashv||1; REPLAY.on=true; REPLAY.cmds=f.cmds; REPLAY.i=0; REPLAY.resume=mode==='resume'; REPLAY.toTick=f.tick||0; REPLAY.hashes=f.hashes||[]; REPLAY.mismatch=false; REPLAY.speed=1;
+function loadReplayFile(f,mode,item){ replayCatchUpCancel(); const saveId=item&&item.id||null; // mode 'watch' = replay at chosen speed; 'resume' = fast-forward silently, then hand control back
+  const otherVersion=!!(f.game&&f.game!==GAME_VERSION); if(otherVersion) log(`This replay was recorded on game ${f.game}; you are on ${GAME_VERSION}. Rules have changed since, so it may play out differently.`,true);
+  try{ runEngineOperation(()=>engine.loadReplay(f,{saveId,otherVersion,resume:mode==='resume',speed:1})); }catch(error){ fail(error.message); throw error; }
+  Object.assign(START,engineState.rules.settings); ALLOWED.clear(); for(const rule of engineState.rules.allowed) ALLOWED.add(rule);
+  applySettings(f.settings||{},false); $('seedIn').value=f.seed||'';
   $('startBtn').click();
-  if(REPLAY.resume){ replayCatchUp(REPLAY.toTick,'Loading your match',{label:'▶ Play now',fn:()=>{ replayTakeOver(); log(`Resumed at ${Math.floor(tickN*TICK/60000)}:${String(Math.floor(tickN*TICK/1000%60)).padStart(2,'0')}.`,true); }}); }
-  else if(!REPLAY.creditsMode){ $('replayBar').style.display='flex'; userPaused=true; paused=true; $('pauseBtn').textContent='\u25B6'; openModal(`<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 6px;font-size:22px">Replay loaded</h2><p class="muted" style="font-size:13px;margin:0 0 12px">${REPLAY.cmds.length} orders · ${Math.floor(REPLAY.toTick*TICK/60000)} min. Use the bar at the bottom for speed, and Take over to play it yourself from any point.</p><button id="rpPlay" style="background:#2f5a8c;font-weight:600;font-size:15px;padding:10px 24px;text-align:center">▶ Watch</button></div>`); $('modal').querySelector('#rpPlay').onclick=()=>{ closeModal(); userPaused=false; paused=false; $('pauseBtn').textContent='\u275A\u275A'; }; }
+  if(REPLAY.resume){ replayCatchUp(REPLAY.toTick,'Loading your match',{label:'▶ Play now',fn:()=>{ replayTakeOver(); log(`Resumed at ${Math.floor(clockState.tickN*TICK/60000)}:${String(Math.floor(clockState.tickN*TICK/1000%60)).padStart(2,'0')}.`,true); }}); }
+  else if(!REPLAY.creditsMode){ $('replayBar').style.display='flex'; engine.pauseReplayPreview(); $('pauseBtn').textContent='\u25B6'; openModal(`<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 6px;font-size:22px">Replay loaded</h2><p class="muted" style="font-size:13px;margin:0 0 12px">${REPLAY.cmds.length} orders · ${Math.floor(REPLAY.toTick*TICK/60000)} min. Use the bar at the bottom for speed, and Take over to play it yourself from any point.</p><button id="rpPlay" style="background:#2f5a8c;font-weight:600;font-size:15px;padding:10px 24px;text-align:center">▶ Watch</button></div>`); $('modal').querySelector('#rpPlay').onclick=()=>{ closeModal(); engine.beginReplayPlayback(); $('pauseBtn').textContent='\u275A\u275A'; }; }
 }
 function replayFastForward(){ replayCatchUp(REPLAY.toTick,'Loading',{label:'▶ Play now',fn:replayTakeOver}); }
-function divergenceCard(){ if(!REPLAY.on) return; userPaused=true; paused=true; $('pauseBtn').textContent='\u25B6'; const clock=`${Math.floor(REPLAY.divTick*TICK/60000)}:${String(Math.floor(REPLAY.divTick*TICK/1000%60)).padStart(2,'0')}`;
-  const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 8px;font-size:22px;color:#ff9a9a">This replay has diverged</h2><p class="muted" style="font-size:13px;margin:0 0 6px">At ${clock} the replay stopped matching what was recorded. That is a bug on our side, not something you did. Reporting it sends the details to the site's admins so it can be fixed.</p><p style="font-size:12px;margin:0 0 12px;color:#bfd0e2">${REPLAY.why||''}</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button id="dvReport" style="background:#2f5a8c;font-weight:600">Report this error</button><button id="dvCont">Continue anyway</button><button id="dvStop">Stop</button></div><p id="dvMsg" class="muted" style="font-size:12px;margin:10px 0 0"></p></div>`);
-  const resume=()=>{ closeModal(); userPaused=false; paused=false; $('pauseBtn').textContent='\u275A\u275A'; };
-  m.querySelector('#dvCont').onclick=resume; m.querySelector('#dvStop').onclick=()=>{ location.href=WP&&WP.homeUrl?WP.homeUrl:'/'; };
-  m.querySelector('#dvReport').onclick=async()=>{ const msg=m.querySelector('#dvMsg'); if(!WP||!WP.user){ msg.textContent='Log in to send a report.'; return; } msg.textContent='Sending…'; try{ const r=await sfApi('reports',{method:'POST',body:{kind:'divergence',gameVersion:GAME_VERSION,saveId:REPLAY.saveId||null,tick:REPLAY.divTick,summary:`Replay diverged at ${clock}: ${REPLAY.why||''}`,data:{seed:START.seed,settings:{...START,diff:chosen},mode:REPLAY.resume?'resume':'watch',speed:REPLAY.speed,tick:REPLAY.divTick,recorded:REPLAY.divRec,replay:REPLAY.divNow,commandsApplied:REPLAY.i,commandsTotal:REPLAY.cmds.length,recentCommands:REPLAY.cmds.slice(Math.max(0,REPLAY.i-12),REPLAY.i),hashes:(REPLAY.hashes||[]).slice(0,Math.max(1,Math.floor(REPLAY.divTick/100))).map(h=>[h[0],h[1]]),ua:navigator.userAgent}}}); msg.textContent=`Thank you — report #${r.id} sent.`; m.querySelector('#dvReport').disabled=true; }catch(e){ msg.textContent='Could not send the report: '+e.message; } }; }
-function replayTakeOver(){ REPLAY.on=false; $('replayBar').style.display='none'; CMD.log=REPLAY.cmds.slice(0,REPLAY.i); userPaused=false; paused=false; $('pauseBtn').textContent='\u275A\u275A'; updateUI(); }
+function divergenceCard(){ if(!REPLAY.on) return; replayCatchUpSuspend(); engine.pauseForReplayDivergence(); $('pauseBtn').textContent='\u25B6'; const clock=`${Math.floor(REPLAY.divTick*TICK/60000)}:${String(Math.floor(REPLAY.divTick*TICK/1000%60)).padStart(2,'0')}`;
+  const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 8px;font-size:22px;color:#ff9a9a">This replay has diverged</h2><p class="muted" style="font-size:13px;margin:0 0 6px">At ${clock} the replay stopped matching what was recorded. That is a bug on our side, not something you did. Reporting it sends the details to the site's admins so it can be fixed.</p><p style="font-size:12px;margin:0 0 12px;color:#bfd0e2">${REPLAY.why||''}</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button id="dvReport" style="background:#2f5a8c;font-weight:600">Report this error</button><button id="dvCont">Continue anyway</button>${me()?'<button id="dvTake">Take over</button>':''}<button id="dvStop">Stop replay</button></div><p id="dvMsg" class="muted" style="font-size:12px;margin:10px 0 0"></p></div>`);
+  m.querySelector('#dvCont').onclick=()=>{ closeModal(); engine.resumeAfterReplayDivergence(); $('pauseBtn').textContent='\u275A\u275A'; if(CATCHUP.status==='suspended') replayCatchUpResume(); };
+  m.querySelector('#dvStop').onclick=stopReplay;
+  const take=m.querySelector('#dvTake'); if(take) take.onclick=()=>{ closeModal(); replayTakeOver(); log('You have taken control.',true); };
+  m.querySelector('#dvReport').onclick=async()=>{ const msg=m.querySelector('#dvMsg'); if(!WP||!WP.user){ msg.textContent='Log in to send a report.'; return; } msg.textContent='Sending…'; try{ const r=await sfApi('reports',{method:'POST',body:{kind:'divergence',gameVersion:GAME_VERSION,saveId:REPLAY.saveId||null,tick:REPLAY.divTick,summary:`Replay diverged at ${clock}: ${REPLAY.why||''}`,data:{seed:START.seed,settings:{...START,diff:matchState.difficulty},mode:REPLAY.resume?'resume':'watch',speed:REPLAY.speed,tick:REPLAY.divTick,recorded:REPLAY.divRec,replay:REPLAY.divNow,commandsApplied:REPLAY.i,commandsTotal:REPLAY.cmds.length,recentCommands:REPLAY.cmds.slice(Math.max(0,REPLAY.i-12),REPLAY.i),hashes:(REPLAY.hashes||[]).slice(0,Math.max(1,Math.floor(REPLAY.divTick/100))).map(h=>[h[0],h[1]]),ua:navigator.userAgent}}}); msg.textContent=`Thank you — report #${r.id} sent.`; m.querySelector('#dvReport').disabled=true; }catch(e){ msg.textContent='Could not send the report: '+e.message; } }; }
+function replayTakeOver(){ replayCatchUpCancel(); engine.takeOverReplay(); $('replayBar').style.display='none'; engine.beginControllerCatchUp(); $('pauseBtn').textContent='\u275A\u275A'; updateUI(); }
 
 // ---------------------------------------------------------------- saves and replays on the site (logged-in players only)
 const SAVES={list:[],loaded:false,catchup:false};
+const CATCHUP={status:'idle',token:0,frame:0,target:0,startTick:0,label:'',onDone:null,acceptedDivergence:false,framesScheduled:0,framesRun:0};
 function canSave(){ return CAPABILITIES.accountSaves; }
 function loginPitch(title){ return `<div class="card" style="text-align:center;width:min(480px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">${title||'Save games and replays'}</h2><p class="muted" style="font-size:14px;margin:0 0 14px">Create a free account to save a match and pick it up later on any device, keep a replay of every game you finish, and post to the leaderboard.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><a href="${WP?WP.registerUrl:'#'}" class="sf-fb" style="background:#2f5a8c">Register</a><a href="${WP?WP.loginUrl:'#'}" class="sf-fb" style="background:#33475c">Log in</a><button data-close style="padding:7px 14px">Not now</button></div></div>`; }
 function openModal(html){ const m=$('modal'); m.innerHTML=html; m.style.display='flex'; m.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal); return m; }
 function closeModal(){ const m=$('modal'); m.style.display='none'; m.innerHTML=''; }
 async function sfApi(path,opt={}){ return PLATFORM.request(path,opt); }
-function slotName(){ const mapName={random:'Continents',land:'Land',islands_l:'Large islands',islands_m:'Medium islands',islands_s:'Small islands',atoll:'Atoll',world:'World',europe:'Europe',americas:'Americas',africa:'Africa',asia:'Asia',mideast:'Middle East'}[START.map]||START.map; return `${me.name} on ${mapName} · ${Math.floor(tickN*TICK/60000)} min`; }
-async function siteSave(kind,slot,opts={}){ if(!canSave()||!me) return null; const data=replayFile(kind==='replay'?(opts.result||ovTitle.textContent||'finished'):'in progress'); const body={kind,slot,data,country:me.name,cls:matchClass()}; if(opts.id) body.id=opts.id; if(opts.bySlot) body.bySlot=true; return PLATFORM.save(body); }
-async function autoSave(){ if(!me||over||REPLAY.on||SAVES.catchup||tickN<100||!canSave()) return; try{ await siteSave('save','Autosave',{bySlot:true}); }catch(e){ console.warn('[statefall] autosave',e); } }
+function slotName(){ const mapName={random:'Continents',land:'Land',islands_l:'Large islands',islands_m:'Medium islands',islands_s:'Small islands',atoll:'Atoll',world:'World',europe:'Europe',americas:'Americas',africa:'Africa',asia:'Asia',mideast:'Middle East'}[START.map]||START.map; return `${me().name} on ${mapName} · ${Math.floor(clockState.tickN*TICK/60000)} min`; }
+async function siteSave(kind,slot,opts={}){ if(!canSave()||!me()) return null; const data=replayFile(kind==='replay'?(opts.result||ovTitle.textContent||'finished'):'in progress'); const body={kind,slot,data,country:me().name,cls:matchClass()}; if(opts.id) body.id=opts.id; if(opts.bySlot) body.bySlot=true; return PLATFORM.save(body); }
+async function autoSave(){ if(!me()||lifecycleState.over||REPLAY.on||SAVES.catchup||clockState.tickN<100||!canSave()) return; try{ await siteSave('save','Autosave',{bySlot:true}); }catch(e){ console.warn('[statefall] autosave',e); } }
 async function saveAndQuit(){ if(!canSave()){ openModal(loginPitch('Save this match')); return; } const name=slotName(); try{ const r=await siteSave('save',name); if(r&&r.dropped) console.info('[statefall] oldest save dropped:',r.dropped); showNotice({kind:'good',title:'Saved to your account',text:name,ttl:4000}); setTimeout(()=>PLATFORM.navigate(WP.homeUrl||'/'),900); }catch(e){ fail('Could not save: '+e.message); } }
-function openSaveModal(){ if(!canSave()){ openModal(loginPitch('Save this match')); return; } if(!me||over){ return; } const name=slotName();
+function openSaveModal(){ if(!canSave()){ openModal(loginPitch('Save this match')); return; } if(!me()||lifecycleState.over){ return; } const name=slotName();
   const m=openModal(`<div class="card" style="text-align:center;width:min(480px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">Save this match?</h2><p class="muted" style="font-size:13px;margin:0 0 10px">It goes to your account on the site; resume it from Games &amp; replays on any device.</p><label style="display:block;font-size:13px;margin:0 0 12px">Name<input id="svName" value="${name.replace(/"/g,'&quot;')}" maxlength="80" style="display:block;width:100%;margin-top:4px;background:var(--panel2);color:var(--ink);border:1px solid #33475c;border-radius:6px;padding:6px 8px;font:inherit"></label><div style="display:flex;gap:8px;justify-content:center"><button id="svGo" style="background:#2f5a8c;font-weight:600">Save</button><button data-close>Cancel</button></div><p id="svMsg" class="muted" style="font-size:12px;margin:10px 0 0"></p></div>`);
   m.querySelector('#svGo').onclick=async()=>{ const nm=cleanText(m.querySelector('#svName').value,80)||name; m.querySelector('#svMsg').textContent='Saving…'; try{ await siteSave('save',nm); closeModal(); showNotice({kind:'good',title:'Saved to your account',text:nm,ttl:5000}); }catch(e){ m.querySelector('#svMsg').textContent='Could not save: '+e.message; } }; }
 // ---- pause modal
-function openPauseModal(){ if(!me||over||ROLL.on) return; if(!userPaused) togglePause(); const m=openModal(`<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 6px;font-size:26px">Paused</h2><p class="muted" style="margin:0 0 16px;font-size:13px">The clock is stopped. Look around the map if you like.</p><div style="display:grid;gap:8px"><button id="pmResume" style="background:#2f5a8c;font-weight:600;text-align:center;font-size:15px;padding:10px">▶ Resume</button><button id="pmSave" style="text-align:center;padding:10px">Save &amp; quit — keep this match on your account and leave</button><button id="pmRestart" style="text-align:center;padding:10px">Restart — abandon this match</button></div><p class="muted" style="font-size:11px;margin:12px 0 0">Space or Esc resumes.</p></div>`);
-  m.querySelector('#pmResume').onclick=()=>{ closeModal(); if(userPaused) togglePause(); };
+function openPauseModal(){ if(!me()||lifecycleState.over||ROLL.on) return; if(!lifecycleState.userPaused) togglePause(); const m=openModal(`<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 6px;font-size:26px">Paused</h2><p class="muted" style="margin:0 0 16px;font-size:13px">The clock is stopped. Look around the map if you like.</p><div style="display:grid;gap:8px"><button id="pmResume" style="background:#2f5a8c;font-weight:600;text-align:center;font-size:15px;padding:10px">▶ Resume</button><button id="pmSave" style="text-align:center;padding:10px">Save &amp; quit — keep this match on your account and leave</button><button id="pmRestart" style="text-align:center;padding:10px">Restart — abandon this match</button></div><p class="muted" style="font-size:11px;margin:12px 0 0">Space or Esc resumes.</p></div>`);
+  m.querySelector('#pmResume').onclick=()=>{ closeModal(); if(lifecycleState.userPaused) togglePause(); };
   m.querySelector('#pmSave').onclick=()=>{ closeModal(); saveAndQuit(); };
   m.querySelector('#pmRestart').onclick=()=>{ closeModal(); $('restart').style.display='flex'; $('restart').dataset.wasPaused='1'; }; }
-function closePauseModal(){ const m=$('modal'); if(m.style.display!=='none'&&m.querySelector('#pmResume')){ closeModal(); if(userPaused) togglePause(); return true; } return false; }
+function closePauseModal(){ const m=$('modal'); if(m.style.display!=='none'&&m.querySelector('#pmResume')){ closeModal(); if(lifecycleState.userPaused) togglePause(); return true; } return false; }
 // ---- Games & replays
 async function openGamesModal(){ if(!canSave()){ openModal(loginPitch('Games & replays')); return; }
   const m=openModal(`<div class="card" style="text-align:left;width:min(760px,94vw);max-height:90vh;overflow:auto"><div class="row" style="align-items:center"><h2 style="margin:0;font-size:22px">Games &amp; replays</h2><button data-close>Close</button></div><p class="muted" style="font-size:13px;margin:6px 0 10px">Saved matches resume where you left off. Finished matches are kept as replays you can watch at up to 8× — or take over and play differently.</p><div id="gmBody"><p class="muted">Loading…</p></div></div>`);
@@ -646,15 +538,34 @@ async function openGamesModal(){ if(!canSave()){ openModal(loginPitch('Games & r
       const full=await sfApi('saves/'+id); if(act==='dl'){ const blob=new Blob([JSON.stringify(full.data)],{type:'application/octet-stream'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`statefall-${item.kind==='replay'?'replay':'game'}-${item.seed}-${item.updatedAt.slice(0,10)}.state`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); return; }
       closeModal(); loadReplayFile(full.data,act==='resume'?'resume':'watch',item); }); }
   catch(e){ body.innerHTML='<p class="muted">Could not load your saves ('+e.message+').</p>'; } }
-// ---- catch-up: run the sim silently in slices with a progress bar, then wait for Play now
-function replayCatchUp(target,label,onDone){ SAVES.catchup=true; paused=false; userPaused=false; const startTick=tickN; const m=openModal(`<div class="card" style="text-align:center;width:min(460px,94vw)"><h2 style="margin:0 0 6px;font-size:22px">${label||'Loading your match'}</h2><p class="muted" id="cuInfo" style="font-size:13px;margin:0 0 10px">Catching up…</p><div style="height:10px;background:#0f1a26;border-radius:5px;overflow:hidden"><div id="cuBar" style="height:100%;width:0;background:#7fb3ff"></div></div><div id="cuDone" style="display:none;margin-top:14px"><p style="margin:0 0 10px">Game loaded.</p><button id="cuPlay" style="background:#2f5a8c;font-weight:600;font-size:15px;padding:10px 24px;text-align:center">${onDone&&onDone.label||'▶ Play now'}</button></div></div>`);
-  const bar=m.querySelector('#cuBar'), info=m.querySelector('#cuInfo'); const clock=t=>`${Math.floor(t*TICK/60000)}:${String(Math.floor(t*TICK/1000%60)).padStart(2,'0')}`;
-  const step=()=>{ const t0=performance.now(); while(tickN<target&&performance.now()-t0<60) tick(); const pr=Math.min(1,(tickN-startTick)/Math.max(1,target-startTick)); bar.style.width=(pr*100).toFixed(1)+'%'; info.textContent=`Catching up… ${clock(tickN)} of ${clock(target)}`;
-    if(tickN<target&&!over){ requestAnimationFrame(step); return; }
-    SAVES.catchup=false; document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); badges.length=0; nukeAlerts.length=0; songBanner=null; drawMap(); updateUI(); computeLabelPos(); info.textContent=`Ready at ${clock(tickN)}.`; bar.style.width='100%'; m.querySelector('#cuDone').style.display='';
-    userPaused=true; paused=true; $('pauseBtn').textContent='\u25B6';
-    m.querySelector('#cuPlay').onclick=()=>{ closeModal(); if(onDone&&onDone.fn) onDone.fn(); userPaused=false; paused=false; $('pauseBtn').textContent='\u275A\u275A'; if(AUD.ctx&&AUD.vol.musicOn) MUS.start('game'); }; };
-  requestAnimationFrame(step); }
+// ---- catch-up: run the sim silently in cancellable slices, then wait for Play now
+function replayCatchUpClock(t){ return `${Math.floor(t*TICK/60000)}:${String(Math.floor(t*TICK/1000%60)).padStart(2,'0')}`; }
+function replayCatchUpCancel(){ CATCHUP.token++; if(CATCHUP.frame) cancelAnimationFrame(CATCHUP.frame); CATCHUP.frame=0; CATCHUP.status='idle'; CATCHUP.onDone=null; CATCHUP.acceptedDivergence=false; SAVES.catchup=false; }
+function replayCatchUpSuspend(){ if(CATCHUP.status!=='running') return false; if(CATCHUP.frame) cancelAnimationFrame(CATCHUP.frame); CATCHUP.frame=0; CATCHUP.status='suspended'; return true; }
+function replayCatchUpModal(ready=false){
+  const done=CATCHUP.onDone;
+  openModal(`<div class="card" style="text-align:center;width:min(460px,94vw)"><h2 style="margin:0 0 6px;font-size:22px">${CATCHUP.label||'Loading your match'}</h2><p class="muted" id="cuInfo" style="font-size:13px;margin:0 0 10px">${ready?`Ready at ${replayCatchUpClock(clockState.tickN)}.`:'Catching up…'}</p><div style="height:10px;background:#0f1a26;border-radius:5px;overflow:hidden"><div id="cuBar" style="height:100%;width:${ready?'100':'0'}%;background:#7fb3ff"></div></div><div id="cuDone" style="display:${ready?'':'none'};margin-top:14px"><p style="margin:0 0 10px">Game loaded.</p><button id="cuPlay" style="background:#2f5a8c;font-weight:600;font-size:15px;padding:10px 24px;text-align:center">${done&&done.label||'▶ Play now'}</button></div></div>`);
+  if(ready){ const token=CATCHUP.token; $('cuPlay').onclick=()=>{ if(token!==CATCHUP.token||CATCHUP.status!=='ready') return; const callback=CATCHUP.onDone&&CATCHUP.onDone.fn; replayCatchUpCancel(); closeModal(); if(callback) callback(); if(me()&&lifecycleState.paused) engine.beginControllerCatchUp(); $('pauseBtn').textContent='\u275A\u275A'; if(AUD.ctx&&AUD.vol.musicOn) MUS.start('game'); }; }
+}
+function replayCatchUpUpdate(){ const info=$('cuInfo'),bar=$('cuBar'); if(!info||!bar) return; const progress=Math.min(1,(clockState.tickN-CATCHUP.startTick)/Math.max(1,CATCHUP.target-CATCHUP.startTick)); bar.style.width=(progress*100).toFixed(1)+'%'; info.textContent=`Catching up… ${replayCatchUpClock(clockState.tickN)} of ${replayCatchUpClock(CATCHUP.target)}`; }
+function replayCatchUpSchedule(token){ if(token!==CATCHUP.token||CATCHUP.status!=='running'||CATCHUP.frame) return; CATCHUP.framesScheduled++; CATCHUP.frame=requestAnimationFrame(()=>{ CATCHUP.frame=0; replayCatchUpStep(token); }); }
+function replayCatchUpStep(token){
+  if(token!==CATCHUP.token||CATCHUP.status!=='running') return; CATCHUP.framesRun++;
+  if(lifecycleState.paused||REPLAY.mismatch&&!CATCHUP.acceptedDivergence){ replayCatchUpSuspend(); return; }
+  const started=performance.now(),before=clockState.tickN; let count=0;
+  while(clockState.tickN<CATCHUP.target&&count++<500&&performance.now()-started<60){
+    const prior=clockState.tickN,advanced=tick();
+    if(token!==CATCHUP.token||CATCHUP.status!=='running') return;
+    if(REPLAY.mismatch&&!CATCHUP.acceptedDivergence||lifecycleState.paused){ replayCatchUpSuspend(); return; }
+    if(!advanced||clockState.tickN===prior){ replayCatchUpSuspend(); return; }
+  }
+  replayCatchUpUpdate();
+  if(clockState.tickN<CATCHUP.target){ if(clockState.tickN===before) replayCatchUpSuspend(); else replayCatchUpSchedule(token); return; }
+  CATCHUP.status='ready'; SAVES.catchup=false; document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); badges.length=0; nukeAlerts.length=0; songBanner=null; drawMap(); updateUI(); engine.finishControllerCatchUp(); $('pauseBtn').textContent='\u25B6'; replayCatchUpModal(true);
+}
+function replayCatchUpResume(){ if(CATCHUP.status!=='suspended') return; CATCHUP.acceptedDivergence=true; CATCHUP.status='running'; SAVES.catchup=true; replayCatchUpModal(); replayCatchUpUpdate(); replayCatchUpSchedule(CATCHUP.token); }
+function replayCatchUp(target,label,onDone){ replayCatchUpCancel(); CATCHUP.status='running'; CATCHUP.target=target; CATCHUP.startTick=clockState.tickN; CATCHUP.label=label||'Loading your match'; CATCHUP.onDone=onDone||null; SAVES.catchup=true; engine.beginControllerCatchUp(); replayCatchUpModal(); replayCatchUpUpdate(); replayCatchUpSchedule(CATCHUP.token); }
+function stopReplay(){ replayCatchUpCancel(); closeModal(); if(window.__tickTimer){ clearInterval(window.__tickTimer); window.__tickTimer=null; } resetWorld(); engine.configureReplay({on:false,cmds:[],i:0,speed:1,resume:false,toTick:0,hashes:[],hashv:1,mismatch:false,creditsMode:false,otherVersion:false,fileGame:'',saveId:null,requiresCanonicalCheckpoints:false}); $('replayBar').style.display='none'; $('overlay').style.display='none'; $('start').style.display='flex'; $('pauseBtn').textContent='\u25B6'; }
 
 const MUS={mode:null,next:0,bar:0,timer:null,section:0,intensity:0,lead:0};
 const mtof=m=>440*Math.pow(2,(m-69)/12);
@@ -697,7 +608,7 @@ MUS.menuBar=function(){ const t=MUS.next, bl=60/MENU.bpm*4, b=MUS.bar%16; const 
 MUS.gameBar=function(){ const t=MUS.next, bl=60/GAME.bpm*4; if(MUS.bar%64===0&&MUS.bar>0) MUS.section=(MUS.section+1)%GAME.sections.length;
   const S=GAME.sections[MUS.section]; const [root,iv]=S.chords[MUS.bar%4];
   // intensity: how hard the player is being pressed right now (0..1), smoothed
-  const pressed=me?attacks.filter(a=>a.target===me.id).reduce((n,a)=>n+a.troops,0):0; const want=me?Math.min(1,pressed/Math.max(200,me.troops*0.4)):0; MUS.intensity+=(want-MUS.intensity)*0.25;
+  const pressed=me()?attacks.filter(a=>a.target===me().id).reduce((n,a)=>n+a.troops,0):0; const want=me()?Math.min(1,pressed/Math.max(200,me().troops*0.4)):0; MUS.intensity+=(want-MUS.intensity)*0.25;
   // pad every bar, quieter when calm
   for(const i of iv) mnote({m:root+12+i,t,d:bl*0.98,g:0.035+0.02*MUS.intensity,type:'sawtooth',a:1.2,det:6,lp:700+500*MUS.intensity,lp2:450});
   // bass: root on 1, sometimes the fifth on the and-of-3
@@ -719,1002 +630,103 @@ function startAmbient(){ const C=AUD.ctx;
   for(const [fr,gn] of [[55,.06],[82.4,.03],[55.5,.04]]){ const o=C.createOscillator(); o.type='sine'; o.frequency.value=fr; const og=C.createGain(); og.gain.value=gn; o.connect(og); og.connect(AUD.bus.amb); o.start(); }
 }
 
-// ---------------------------------------------------------------- map generation (value noise)
-function genMap(){
-  land=new Uint8Array(W*H); owner=new Int16Array(W*H).fill(-1);
-  struct=new Uint8Array(W*H); structOwner=new Int16Array(W*H).fill(-1); river=new Uint8Array(W*H); shelled=new Int32Array(W*H); rough=new Float32Array(W*H);
-  const layers=[[18,.5],[36,.5],[72,.6],[144,.7]];
-  const grids=layers.map(([s])=>{
-    const gw=Math.ceil(W/s)+2, gh=Math.ceil(H/s)+2;
-    return {s,gw,gh,v:Float32Array.from({length:gw*gh},()=>srand())};
-  });
-  const smooth=t=>t*t*(3-2*t);
-  const n=(x,y)=>{
-    let v=0, amp=0;
-    grids.forEach((g,i)=>{
-      const fx=x/g.s, fy=y/g.s, x0=Math.floor(fx), y0=Math.floor(fy), tx=smooth(fx-x0), ty=smooth(fy-y0);
-      const a=g.v[y0*g.gw+x0], b=g.v[y0*g.gw+x0+1], c=g.v[(y0+1)*g.gw+x0], d=g.v[(y0+1)*g.gw+x0+1];
-      v+=((a*(1-tx)+b*tx)*(1-ty)+(c*(1-tx)+d*tx)*ty)*layers[i][1]; amp+=layers[i][1];
-    });
-    return v/amp;
-  };
-  // seed several continents far apart, shape each with noise, sprinkle islands in open ocean
-  const GEN={random:{K:[6,8],r:[70,125],gap:18,body:0.7,thr:0.25,isl:0.68},islands_l:{K:[12,16],r:[38,62],gap:14,body:0.75,thr:0.25,isl:0.72},islands_m:{K:[22,30],r:[24,38],gap:10,body:0.8,thr:0.25,isl:0.74},islands_s:{K:[45,65],r:[12,22],gap:7,body:0.9,thr:0.22,isl:0.76}}[START.map]||{K:[6,8],r:[70,125],gap:18,body:0.7,thr:0.25,isl:0.68};
-  const conts=[]; const K=GEN.K[0]+Math.floor(srand()*(GEN.K[1]-GEN.K[0]+1));
-  for(let tries=0;tries<4000&&conts.length<K;tries++){
-    const r=rnd(GEN.r[0],GEN.r[1]), x=rnd(r+6,W-r-6), y=rnd(r+6,H-r-6);
-    if(conts.every(c=>Math.hypot(c.x-x,c.y-y)>c.r+r+GEN.gap)) conts.push({x,y,r,ax:rnd(0.75,1.35),rot:rnd(0,Math.PI),a1:rnd(0.12,0.32),k1:2+Math.floor(srand()*3),p1:rnd(0,6.28),a2:rnd(0.05,0.18),k2:5+Math.floor(srand()*4),p2:rnd(0,6.28)});
-  }
-  const rn=(()=>{ const L=[[6,.5],[12,.5],[24,.7]]; const gs=L.map(([sz])=>{ const gw=Math.ceil(W/sz)+2, gh=Math.ceil(H/sz)+2; return {sz,gw,v:Float32Array.from({length:gw*gh},()=>srand())}; });
-    return (x,y)=>{ let v=0,amp=0; gs.forEach((g,i)=>{ const fx=x/g.sz,fy=y/g.sz,x0=Math.floor(fx),y0=Math.floor(fy),tx=smooth(fx-x0),ty=smooth(fy-y0); const a=g.v[y0*g.gw+x0],b=g.v[y0*g.gw+x0+1],c=g.v[(y0+1)*g.gw+x0],d=g.v[(y0+1)*g.gw+x0+1]; v+=((a*(1-tx)+b*tx)*(1-ty)+(c*(1-tx)+d*tx)*ty)*L[i][1]; amp+=L[i][1]; }); return v/amp; }; })();
-  if(MAPS[START.map]){ // prebuilt map: decode the country grid
-    PRESET=MAPS[START.map]; cid=new Int16Array(W*H); let i=0; const r=PRESET.rle; for(let k=0;k<r.length;k+=2){ const v=r[k]-1, n=r[k+1]; for(let j=0;j<n;j++) cid[i++]=v; }
-    landCount=0; for(let t=0;t<W*H;t++){ rough[t]=rn(t%W,(t-t%W)/W); if(cid[t]>=0){ land[t]=1; landCount++; } }
-    findRegions(); for(const rg of regions) if(rg.size<LAND_MIN){ for(let t=0;t<W*H;t++) if(region[t]===rg.id){ land[t]=0; region[t]=-1; landCount--; } rg.size=0; }
-    nameRegionsByContinent(); carveRivers(); cleanupFragments(); return;
-  }
-  PRESET=null; cid=null;
-  if(START.map==='atoll'){ // a great ring of land around a central lagoon, open sea outside, gaps and lumps from the noise
-    const cx=W/2, cy=H/2, ax=W*0.36, ay=H*0.33, rot=rnd(-0.2,0.2), a1=rnd(0.05,0.12), k1=2+Math.floor(srand()*3), p1=rnd(0,6.28);
-    const chans=[]; { const nC=2+Math.floor(srand()*2); const base=rnd(0,6.28); for(let i=0;i<nC;i++) chans.push({a:base+i*6.28/nC+rnd(-0.5,0.5),w:rnd(0.05,0.09)}); } // passages from the sea into the lagoon
-    landCount=0;
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const t=idx(x,y); rough[t]=rn(x,y);
-      const ux=x-cx, uy=y-cy; const rx=ux*Math.cos(rot)+uy*Math.sin(rot), ry=-ux*Math.sin(rot)+uy*Math.cos(rot);
-      const th=Math.atan2(ry/ay,rx/ax); const e=Math.hypot(rx/ax,ry/ay)*(1+a1*Math.sin(k1*th+p1)); // 1 = ring centerline
-      const width=0.22+0.09*Math.sin(3*th+p1*2)+0.07*Math.sin(7*th-p1); // ring thickness varies around the loop
-      const ring=1-Math.abs(e-1)/width; // 1 at the centerline, 0 at the edges of the ring
-      const v=ring*0.75+n(x,y)*0.45+rough[t]*0.3-0.42;
-      const lagoonIsle=e<0.45&&n(x,y)>0.74&&rough[t]>0.5; // a few islets inside the lagoon
-      const inChannel=chans.some(c=>{ let d=th-c.a; d=Math.atan2(Math.sin(d),Math.cos(d)); return Math.abs(d)<c.w&&e>0.55; });
-      if((v>0.25&&!inChannel)||lagoonIsle){ land[t]=1; landCount++; } }
-    findRegions(); for(const rg of regions) if(rg.size<LAND_MIN){ for(let t=0;t<W*H;t++) if(region[t]===rg.id){ land[t]=0; region[t]=-1; landCount--; } rg.size=0; }
-    carveRivers(); cleanupFragments(); return;
-  }
-  if(START.map==='land'){ // one great landmass: lakes from the noise field, many rivers, no ocean
-    landCount=0; for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const t=idx(x,y); rough[t]=rn(x,y); const v=n(x,y); if(v<0.71){ land[t]=1; landCount++; } }
-    findRegions(); for(const rg of regions) if(rg.size<LAND_MIN){ for(let t=0;t<W*H;t++) if(region[t]===rg.id){ land[t]=0; region[t]=-1; landCount--; } rg.size=0; }
-    // small ponds become land again so lakes are few and large
-    { const seen=new Uint8Array(W*H), q=new Int32Array(W*H); for(let t0=0;t0<W*H;t0++){ if(land[t0]||seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; const ch=[t0];
-      while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const nn=idx(x+dx,y+dy); if(!land[nn]&&!seen[nn]){ seen[nn]=1; q[tl++]=nn; ch.push(nn); } } }
-      if(ch.length<400){ for(const t of ch){ land[t]=1; landCount++; } } }
-      findRegions(); }
-    carveRivers(true); cleanupFragments(); return;
-  }
-  landCount=0;
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    rough[idx(x,y)]=rn(x,y);
-    let best=0, near=1e9;
-    for(const c of conts){ const ux=x-c.x, uy=y-c.y; const rx=ux*Math.cos(c.rot)+uy*Math.sin(c.rot), ry=-ux*Math.sin(c.rot)+uy*Math.cos(c.rot); const th=Math.atan2(ry,rx);
-      const rr=c.r*(1+c.a1*Math.sin(c.k1*th+c.p1)+c.a2*Math.sin(c.k2*th+c.p2)); // lumpy outline, different for every island
-      const d=Math.hypot(rx*c.ax,ry/c.ax); near=Math.min(near,d-rr); const f=1-d/rr; if(f>best) best=f; }
-    const nv=n(x,y);
-    let v=best*GEN.body+nv*0.45+rough[idx(x,y)]*0.3-0.28;
-    if(near>12&&nv>GEN.isl) v=1;
-    if(v>GEN.thr){land[idx(x,y)]=1;landCount++;}
-  }
-  findRegions();
-  for(const r of regions) if(r.size<LAND_MIN){ for(let t=0;t<W*H;t++) if(region[t]===r.id){ land[t]=0; region[t]=-1; landCount--; } r.size=0; }
-  carveRivers(); cleanupFragments();
-}
-function cleanupFragments(){
-  { // fragments the rivers cut off (or created mid-stream) that are too small to matter become water
-    const seen=new Uint8Array(W*H), q=new Int32Array(W*H);
-    for(let t0=0;t0<W*H;t0++){ if(!land[t0]||seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; const chunk=[t0];
-      while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&!seen[n]){ seen[n]=1; q[tl++]=n; chunk.push(n); } } }
-      if(chunk.length<LAND_MIN) for(const t of chunk){ land[t]=0; river[t]=1; landCount--; if(region[t]>=0) regions[region[t]].size--; } }
-  }
-}
-function nameRegionsByContinent(){ // on real maps, landmasses take the name of the continent most of their countries belong to
-  const used={};
-  for(const rg of regions){ if(rg.size<REGION_MIN) continue; const tally={}; for(let t=0;t<W*H;t+=3){ if(region[t]!==rg.id||cid[t]<0) continue; const c=PRESET.cont[cid[t]]||'Land'; tally[c]=(tally[c]||0)+1; }
-    let best='Land',bn=0; for(const k in tally) if(tally[k]>bn){bn=tally[k];best=k;} used[best]=(used[best]||0)+1; rg.name=used[best]>1?`${best} (${used[best]})`:best; rg.cont=rg.size>=CONTINENT_MIN; }
-}
-const SYL=['al','dra','ke','sh','or','mi','van','tor','is','el','ra','no','qu','ith','ar','bel','os','ty','ul','mar'];
-function regionName(cont){ let n=''; const k=2+Math.floor(srand()*2); for(let i=0;i<k;i++) n+=pick(SYL); n=n[0].toUpperCase()+n.slice(1); return cont?n:'Isle of '+n; }
-function findRegions(){ // flood-fill landmasses
-  region=new Int16Array(W*H).fill(-1); regions=[]; const q=new Int32Array(W*H);
-  for(let t0=0;t0<W*H;t0++){ if(!land[t0]||region[t0]>=0) continue;
-    const id=regions.length; let h=0,tl=0; q[tl++]=t0; region[t0]=id; let size=0, sx=0, sy=0;
-    while(h<tl){ const c=q[h++]; size++; sx+=c%W; sy+=(c-c%W)/W; const x=c%W,y=(c-x)/W;
-      for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&region[n]<0){region[n]=id;q[tl++]=n;} } }
-    regions.push({id,size,cx:sx/size,cy:sy/size,cont:size>=CONTINENT_MIN,name:''});
-  }
-  for(const r of regions) if(r.size>=REGION_MIN) r.name=regionName(r.cont);
-}
-function carveRivers(landMode){
-  for(const r of regions){ if(!r.cont) continue;
-    const coast=[]; for(let t=0;t<W*H;t+=2){ if(region[t]!==r.id||!land[t]) continue; const x=t%W,y=(t-x)/W; if(isCoast(t)||(landMode&&(x<2||y<2||x>=W-2||y>=H-2))) coast.push(t); }
-    if(coast.length<20) continue;
-    const count=landMode?Math.min(14,4+Math.floor(r.size/12000)):Math.min(3,1+Math.floor(r.size/9000));
-    for(let k=0;k<count;k++){
-      const A=pick(coast); const ax=A%W,ay=(A-ax)/W; let B=A,bd=0;
-      for(let i=0;i<40;i++){ const c=pick(coast); const d=(c%W-ax)**2+((c-c%W)/W-ay)**2; if(d>bd){bd=d;B=c;} }
-      const bx=B%W,by=(B-bx)/W, L=Math.hypot(bx-ax,by-ay); if(L<60) continue;
-      const nx=-(by-ay)/L, ny=(bx-ax)/L, a1=rnd(8,22), a2=rnd(3,8), f1=rnd(1,2.5), f2=rnd(4,7), p1=rnd(0,6.28), p2=rnd(0,6.28);
-      for(let i=0;i<=L;i+=0.7){ const u=i/L, off=a1*Math.sin(u*Math.PI*f1+p1)*Math.sin(u*Math.PI)+a2*Math.sin(u*Math.PI*f2+p2);
-        const x=ax+(bx-ax)*u+nx*off, y=ay+(by-ay)*u+ny*off;
-        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){ const X=Math.round(x+dx),Y=Math.round(y+dy); if(!inb(X,Y)) continue; if(dx*dx+dy*dy>1.5) continue;
-          const t=idx(X,Y); if(land[t]){ land[t]=0; river[t]=1; landCount--; regions[region[t]].size--; } } }
-    }
-  }
-}
-function markHostile(a,b){ if(a<0||b<0||a===b) return; hostile[a+','+b]=tickN; hostile[b+','+a]=tickN; }
-function inConflict(a,b){ if(a===b) return false; if(atPeace(a,b)) return false; const h=hostile[a+','+b]; return h!=null&&tickN-h<600; }
-function setOwner(t,o){ // every ownership change goes through here
-  const prev=owner[t]; if(prev===o) return;
-  if(prev>=0){ players[prev].tiles--; regCount[region[t]*NP+prev]--; }
-  if(o>=0){ players[o].tiles++; regCount[region[t]*NP+o]++; unclaimed.delete(t); } else if(land[t]) unclaimed.add(t);
-  owner[t]=o;
-}
-function isCoast(t){
-  const x=t%W,y=(t-x)/W;
-  return land[t]&&N4.some(([dx,dy])=>inb(x+dx,y+dy)&&!land[idx(x+dx,y+dy)]);
-}
-function claimBlob(p,cx,cy,r){
-  for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){
-    if(inb(x,y)&&land[idx(x,y)]&&(owner[idx(x,y)]<0||players[owner[idx(x,y)]].kind==='neutral')&&(x-cx)**2+(y-cy)**2<=r*r) setOwner(idx(x,y),p.id);
-  }
-}
-function findSpawn(minDist){
-  for(let tries=0;tries<400;tries++){
-    const x=Math.floor(rnd(6,W-6)), y=Math.floor(rnd(6,H-6));
-    if(!land[idx(x,y)]||regions[region[idx(x,y)]].size<(START.map==='islands_s'?300:START.map==='islands_m'?700:1500)) continue;
-    let ok=true;
-    for(const p of players){ if(p.sx==null) continue; if((p.sx-x)**2+(p.sy-y)**2<minDist*minDist){ok=false;break;} }
-    if(ok) return [x,y];
-  }
-  return null;
-}
-
+// ---------------------------------------------------------------- map generation lives in sim/map-generation.mjs
 // ---------------------------------------------------------------- flags (real countries, drawn from a small layer spec)
 // layers: ['h',c1,c2,...] equal horizontal bands · ['v',...] vertical · ['rect',c,x,y,w,h] · ['disc',c,cx,cy,r] · ['ring',c,cx,cy,r,t]
 // ['star',c,cx,cy,r,pts] · ['tri',c,[x,y],[x,y],[x,y]] · ['cross',c,t,cx] (nordic) · ['sal',c,t] saltire · ['cres',c,cx,cy,r,bg]
-function flagURL(f,w=36,h=24){ const key='_u'+w; if(f[key]) return f[key]; const cv2=document.createElement('canvas'); cv2.width=w; cv2.height=h; drawFlag(cv2.getContext('2d'),f,0,0,w,h); f[key]=cv2.toDataURL(); return f[key]; }
-let countryPool=[];
-function resetCountryPool(){ countryPool=COUNTRIES.map((c,i)=>i); for(let i=countryPool.length-1;i>0;i--){ const j=Math.floor(srand()*(i+1)); [countryPool[i],countryPool[j]]=[countryPool[j],countryPool[i]]; } }
-function takeCountry(){ if(!countryPool.length) return null; const i=countryPool.pop(); return {name:COUNTRIES[i][0],layers:COUNTRIES[i].slice(1),idx:i}; }
-function countryByIdx(i){ return {name:COUNTRIES[i][0],layers:COUNTRIES[i].slice(1),idx:i}; }
+function flagURL(f,w=36,h=24){ let sizes=flagUrlCache.get(f); if(!sizes){ sizes=new Map(); flagUrlCache.set(f,sizes); } const key=w+'x'+h; if(sizes.has(key)) return sizes.get(key); const cv2=document.createElement('canvas'); cv2.width=w; cv2.height=h; drawFlag(cv2.getContext('2d'),f,0,0,w,h); const url=cv2.toDataURL(); sizes.set(key,url); return url; }
 function myNation(){ const n=WP&&WP.user&&WP.user.nation; if(!n||!n.flag||!Array.isArray(n.flag.layers)||!(n.tier>=1)) return null; return {name:n.tier>=2&&n.name?n.name:(WP.user.name||'Your nation'),layers:n.flag.layers,idx:-1,custom:true,userId:WP.user.id}; }
 function nationOption(){ const sel=$('countrySel'); if(!sel||sel.querySelector('option[value="-1"]')) return; const n=myNation(); if(!n) return; const o=document.createElement('option'); o.value='-1'; o.textContent='★ '+n.name+' (your nation)'; sel.insertBefore(o,sel.firstChild); }
 function renderFlagPicker(){ const g=$('flags'); g.innerHTML=''; const pool=COUNTRIES.map((c,i)=>i).sort(()=>Math.random()-.5).slice(0,12);
-  { const n=myNation(); if(n){ nationOption(); const b=document.createElement('button'); b.className='flagbtn on'; b.style.outline='2px solid var(--gold)'; b.title=n.name; b.innerHTML=`<img src="${flagURL(n,72,48)}" alt=""><span>★ ${n.name}</span>`; b.onclick=()=>{ chosenFlag=n; document.querySelectorAll('.flagbtn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('countrySel').value='-1'; }; g.appendChild(b); chosenFlag=n; $('countrySel').value='-1'; pool.length=11; } }
-  pool.forEach((i,n)=>{ const f=countryByIdx(i); const b=document.createElement('button'); b.className='flagbtn'; b.title=f.name; b.innerHTML=`<img src="${flagURL(f,72,48)}" alt=""><span>${f.name}</span>`; b.onclick=()=>{ chosenFlag=f; document.querySelectorAll('.flagbtn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('countrySel').value=i; }; g.appendChild(b); if(n===0&&!myNation()){ chosenFlag=f; b.classList.add('on'); $('countrySel').value=i; } }); }
-let chosenFlag=null;
+  { const n=myNation(); if(n){ nationOption(); const b=document.createElement('button'); b.className='flagbtn on'; b.style.outline='2px solid var(--gold)'; b.title=n.name; b.innerHTML=`<img src="${flagURL(n,72,48)}" alt=""><span>★ ${n.name}</span>`; b.onclick=()=>{ engine.configure({chosenFlag:n}); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('countrySel').value='-1'; }; g.appendChild(b); engine.configure({chosenFlag:n}); $('countrySel').value='-1'; pool.length=11; } }
+  pool.forEach((i,n)=>{ const f=countryByIdx(i); const b=document.createElement('button'); b.className='flagbtn'; b.title=f.name; b.innerHTML=`<img src="${flagURL(f,72,48)}" alt=""><span>${f.name}</span>`; b.onclick=()=>{ engine.configure({chosenFlag:f}); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.remove('on')); b.classList.add('on'); $('countrySel').value=i; }; g.appendChild(b); if(n===0&&!myNation()){ engine.configure({chosenFlag:f}); b.classList.add('on'); $('countrySel').value=i; } }); }
 
 // ---------------------------------------------------------------- players
-function hslHex(h,sl,l){ const a=sl*Math.min(l,1-l)/100*100; const f=n=>{const k=(n+h/30)%12; const c=l*100-a*Math.max(-1,Math.min(k-3,9-k,1)); return Math.round(c*2.55).toString(16).padStart(2,'0');}; return '#'+f(0)+f(8)+f(4); }
-const NEUTRAL_KIND=['Republic of ','Kingdom of ','Duchy of ','Emirate of ','Free State of ','Commonwealth of ','Principality of ',''];
-function flagFor(name){ const n=NE_ALIAS[name]||name; const i=COUNTRIES.findIndex(c=>c[0]===n); return i>=0?countryByIdx(i):{name,layers:[['rect','#8a8f86',0,0,1,1]],generic:true}; }
-function makeNeutrals(){
-  if(PRESET){ const byC={}; for(let t=0;t<W*H;t++){ if(!land[t]||cid[t]<0) continue; (byC[cid[t]]??=[]).push(t); }
-    const q=new Int32Array(W*H);
-    const per=Math.max(TILES_PER_NEUTRAL,landCount/75); // the same country-size rule as generated maps: big real countries split into provinces
-    for(const k in byC){ const tiles=byC[k]; if(tiles.length<80) continue; const name=PRESET.names[k]; const flag=flagFor(name);
-      const parts=Math.max(1,Math.round(tiles.length/per));
-      if(parts===1){ const p=makePlayer(name,hslHex(srand()*360,18+srand()*10,48+srand()*12),'neutral'); p.flag=flag; p.name=name; p.country=+k; for(const t of tiles) setOwner(t,p.id); continue; }
-      // multi-source flood fill inside the country's own tiles, seeds spread apart
-      const seeds=[]; for(let tries=0;tries<400&&seeds.length<parts;tries++){ const t=pick(tiles); const x=t%W,y=(t-x)/W; if(seeds.every(sd=>(sd%W-x)**2+((sd-sd%W)/W-y)**2>(Math.sqrt(tiles.length/parts)*0.6)**2)) seeds.push(t); }
-      const hue=srand()*360; const ids=seeds.map((sd,i)=>{ const p=makePlayer(`${name} (${regionName(true)})`,hslHex((hue+i*23)%360,18+srand()*10,44+srand()*16),'neutral'); p.flag=flag; p.name=`${name} (${regionName(true)})`; p.country=+k; return p.id; });
-      let h=0,tl=0; const mine=new Uint8Array(W*H); for(const t of tiles) mine[t]=1;
-      seeds.forEach((sd,i)=>{ setOwner(sd,ids[i]); q[tl++]=sd; });
-      while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W, o=owner[c]; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const nn=idx(x+dx,y+dy); if(mine[nn]&&owner[nn]<0){ setOwner(nn,o); q[tl++]=nn; } } }
-    }
-    for(let t0=0;t0<W*H;t0++){ if(!land[t0]||owner[t0]>=0) continue;
-      let h=0,tl=0; q[tl++]=t0; const chunk=[t0]; const seen=new Set([t0]);
-      while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]<0&&!seen.has(n)){ seen.add(n); q[tl++]=n; chunk.push(n); } } }
-      const cx=chunk[0]%W, cy=(chunk[0]-cx)/W; let best=-1,bd=1e12;
-      for(let rr=2;rr<=60&&best<0;rr+=2){ for(let y=cy-rr;y<=cy+rr;y+=1)for(let x=cx-rr;x<=cx+rr;x+=1){ if(!inb(x,y)) continue; const t=idx(x,y); if(owner[t]<0) continue; const d=(x-cx)**2+(y-cy)**2; if(d<bd){bd=d;best=owner[t];} } }
-      if(best>=0) for(const t of chunk) setOwner(t,best); else for(const t of chunk) owner[t]=-2; }
-    for(let t=0;t<W*H;t++) if(owner[t]===-2) owner[t]=-1;
-    for(const p of players) if(p.kind==='neutral'){ p.troops=p.tiles*0.05+15; p.nextThink=rnd(1000,3000); }
-    return; }
-  // seed neutral nations per landmass, grow them with a multi-source flood fill so borders follow terrain
-  const seeds=[];
-  for(const r of regions){ if(r.size<REGION_MIN) continue; // smaller islands are absorbed by whoever is nearest
-    const per=Math.max(TILES_PER_NEUTRAL,landCount/75); // bigger land, bigger countries: about 75 neutral nations at most
-    const k=Math.max(1,Math.round(r.size/per));
-    const tiles=[]; for(let t=0;t<W*H;t+=3) if(region[t]===r.id&&land[t]) tiles.push(t);
-    for(let i=0;i<k;i++){ const p=makePlayer(regionName(true),hslHex(srand()*360,18+srand()*10,48+srand()*12),'neutral'); seeds.push([pick(tiles),p.id]); }
-  }
-  const q=new Int32Array(W*H); let h=0,tl=0;
-  for(const [t,id] of seeds){ if(owner[t]<0){ setOwner(t,id); q[tl++]=t; } }
-  while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W, o=owner[c];
-    for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]<0){ setOwner(n,o); q[tl++]=n; } } }
-  // land cut off by rivers or missed by seeding: each sizeable chunk becomes its own small nation
-  for(let t0=0;t0<W*H;t0++){ if(!land[t0]||owner[t0]>=0) continue;
-    let h=0,tl=0; q[tl++]=t0; const chunk=[t0]; const seen=new Set([t0]);
-    while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]<0&&!seen.has(n)){ seen.add(n); q[tl++]=n; chunk.push(n); } } }
-    if(chunk.length>=80&&players.length<NP-1){ const p=makePlayer(regionName(true),hslHex(srand()*360,18+srand()*10,48+srand()*12),'neutral'); for(const t of chunk) setOwner(t,p.id); }
-    else { // a sliver: hand it to the nearest nation so no land is ever unclaimable
-      const cx=chunk[0]%W, cy=(chunk[0]-cx)/W; let best=-1,bd=1e12;
-      for(let rr=2;rr<=40&&best<0;rr+=2){ for(let y=cy-rr;y<=cy+rr;y+=1)for(let x=cx-rr;x<=cx+rr;x+=1){ if(!inb(x,y)) continue; const t=idx(x,y); if(owner[t]<0) continue; const d=(x-cx)**2+(y-cy)**2; if(d<bd){bd=d;best=owner[t];} } }
-      if(best>=0) for(const t of chunk) setOwner(t,best); else for(const t of chunk) owner[t]=-2;
-    }
-  }
-  for(let t=0;t<W*H;t++) if(owner[t]===-2) owner[t]=-1;
-  for(const p of players) if(p.kind==='neutral'){ p.troops=p.tiles*0.05+15; p.nextThink=rnd(1000,3000); }
-}
-function makePlayer(name,color,kind){
-  const c=kind==='neutral'&&PRESET?null:takeCountry(); const p={id:players.length,name:c?c.name:name,color,kind,flag:c||{name,layers:[['rect',color,0,0,1,1]]},troops:120,gold:100,tiles:0,alive:true,
-    cities:0,factories:0,ports:0,sams:0,silos:0,nextThink:rnd(2000,5000),held:new Set(),claimed:new Set(),grudge:{},focus:0.5,rel:{},rep:0.7,penaltyUntil:0,lastProposal:{}};
-  players.push(p); return p;
-}
-function maxTroops(p){ if(p.kind==='neutral') return 60+p.tiles*0.15; return 120+p.tiles*0.34+p.cities*400; }
-function troopGrowth(p){ // per second
-  const cap=maxTroops(p), fill=START.noCap&&p.kind!=='neutral'?1:Math.max(0,1-p.troops/cap);
-  if(p.kind==='neutral') return (1+p.tiles*0.0015)*(isProvoked(p)?2:1)*fill; // about a quarter of a player's rate per tile, slower still when calm
-  let held=0; for(const id of p.held) held+=regions[id].size;
-  const empire=1+0.4*(p.tiles/Math.max(1,landCount));
-  const pen=p.penaltyUntil>tickN?0.5:1; const tc=1+0.1*Math.min(4,p.troopcmds||0);
-  return pen*tc*(4+p.tiles*0.0068+p.cities*3+(p.cityLinks||0)*LINK_TROOPS+held*HOLD_BONUS)*empire*(0.3+0.7*fill)*troopMult(p);
-}
-function goldGrowth(p){return (1.2+p.tiles*0.00077+p.factories*2.2+(p.factoryLinks||0)*2.2*LINK_GOLD_PER+p.ports*1.4+(p.portLinks||0)*LINK_PORT_GOLD)*goldMult(p);}
-function troopMult(p){return p.kind==='neutral'?1:(0.4+1.2*p.focus)*(p.kind==='bot'?bd(p).eco:1);}
-function goldMult(p){return p.kind==='neutral'?1:(0.4+1.2*(1-p.focus))*(p.kind==='bot'?bd(p).eco:1);}
-function density(p){return p.troops/Math.max(1,p.tiles);}
-
-function setup(){
-  genMap();
-  resetCountryPool(); if(chosenFlag) countryPool=countryPool.filter(i=>i!==chosenFlag.idx);
-  me=makePlayer('You',COLORS[0],'human'); if(chosenFlag){ me.flag=chosenFlag; } me.name=me.flag.name; me.sx=null;
-  for(let i=0;i<BOTS;i++) makePlayer(BOT_NAMES[i],COLORS[i+1],'bot');
-  if(START.customBots) for(const cb of START.customBots){ const bots=players.filter(q=>q.kind==='bot'); const b=bots[Math.min(bots.length-1,cb.slot|0)]; if(b){ b.flag={name:cb.name,layers:cb.layers,idx:-1,custom:true,userId:cb.userId}; b.name=cb.name; b.customNation={userId:cb.userId,name:cb.name}; setTimeout(()=>{ log(`${cb.name}, another player's nation, has joined this war — it plays at ${(DIFF.brain||2)<4?'Super hard':DIFF.label} regardless of your difficulty.`,true); showNotice({kind:'gold',flag:b.flag,title:`${cb.name} has entered the war`,text:`A player's own nation, playing at ${(DIFF.brain||2)<4?'Super hard':DIFF.label}. Beat it and it goes on their record.`,ttl:12000}); },1500); } }
-  const nPlayers=players.length;
-  // neutrals are created next; size regCount for everyone once we know the total
-  NP=256; regCount=new Int32Array(regions.length*NP);
-  makeNeutrals();
-  if(START.risky){ for(const p of players) if(p.kind!=='neutral'){ p.sx=W/2; p.sy=H/2; } }
-  else if(PRESET){ // each player takes over a whole country: yours by choice, bots the biggest free ones spread out
-    const free=(cap=3000)=>players.filter(q=>q.kind==='neutral'&&q.alive&&q.tiles>=250&&q.tiles<=cap); // bots don't get to start as Russia
-    const takeover=(p,c)=>{ for(let t=0;t<W*H;t++) if(owner[t]===c.id) setOwner(t,p.id); c.alive=false; c.tiles=0; const siblings=players.filter(q=>q.country===c.country).length; if(!(p.flag&&p.flag.custom)){ p.name=(c.country!=null&&siblings===1)?PRESET.names[c.country]:c.name; p.flag=c.flag; } p.country=c.country; const ce=centroid(p); p.sx=ce[0]; p.sy=ce[1]; };
-    const want=chosenFlag?players.filter(q=>q.kind==='neutral'&&q.alive&&q.country!=null&&(PRESET.names[q.country]===chosenFlag.name||NE_ALIAS[PRESET.names[q.country]]===chosenFlag.name)).sort((a,b)=>b.tiles-a.tiles)[0]:null;
-    takeover(me, want&&want.tiles>=120?want:pick(free(4000).sort((a,b)=>b.tiles-a.tiles).slice(0,25)));
-    for(const p of players){ if(p.kind!=='bot') continue; const cands=free().filter(q=>{ const c=centroid(q); return players.every(o=>o.sx==null||(o.sx-c[0])**2+(o.sy-c[1])**2>60*60); }).sort((a,b)=>b.tiles-a.tiles).slice(0,12); const c=cands.length?pick(cands):pick(free()); if(c) takeover(p,c); else { const s2=findSpawn(18)||[W>>1,H>>1]; p.sx=s2[0]; p.sy=s2[1]; claimBlob(p,s2[0],s2[1],9); } }
-  } else for(const p of players){ if(p.kind==='neutral') continue;
-    const s=findSpawn(START.map.startsWith('islands')?36:60)||findSpawn(18)||[W>>1,H>>1];
-    p.sx=s[0];p.sy=s[1];
-    claimBlob(p,s[0],s[1],9);
-  }
-  if(START.endgame){ // the whole map is already carved up: flood-fill outward from every player until no neutral land is left
-    const q=new Int32Array(W*H); let h=0,tl=0; for(let t=0;t<W*H;t++){ if(owner[t]>=0&&players[owner[t]].kind!=='neutral') q[tl++]=t; }
-    while(h<tl){ const c=q[h++]; const x=c%W,y=(c-x)/W, o=owner[c]; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&(owner[n]<0||players[owner[n]].kind==='neutral')){ if(struct[n]) captureStructure(n,players[o]); setOwner(n,o); q[tl++]=n; } } }
-    for(let t=0;t<W*H;t++){ if(!land[t]||(owner[t]>=0&&players[owner[t]].kind!=='neutral')) continue; // islands nobody reached: nearest player
-      const x=t%W,y=(t-x)/W; let best=-1,bd=1e12; for(const p of players){ if(p.kind==='neutral'||p.sx==null) continue; const d=(p.sx-x)**2+(p.sy-y)**2; if(d<bd){bd=d;best=p.id;} } if(best>=0) setOwner(t,best); }
-    for(const p of players) if(p.kind==='neutral'){ p.alive=false; p.tiles=0; }
-    for(const p of players) if(p.kind!=='neutral'){ const c=centroid(p); p.sx=c[0]; p.sy=c[1]; }
-  }
-  if(START.quick&&!START.endgame&&!START.risky){ // grow each player into its neutral neighbours until it holds a solid contiguous block
-    for(const p of players){ if(p.kind==='neutral') continue;
-      for(let guard=0;guard<40&&p.tiles<QUICK_TILES;guard++){ const {r}=borderOwners(p); const nb=Object.keys(r).map(Number).filter(o=>players[o].kind==='neutral'&&players[o].alive).sort((a,b)=>r[b]-r[a]);
-        if(!nb.length) break; const c=players[nb[0]]; for(let t=0;t<W*H;t++) if(owner[t]===c.id) setOwner(t,p.id); for(const st of structures) if(st.owner===c.id) captureStructure(st.t,p); c.alive=false; c.tiles=0; }
-      const ce=centroid(p); p.sx=ce[0]; p.sy=ce[1]; } }
-  for(let t=0;t<W*H;t++) if(land[t]&&owner[t]<0) unclaimed.add(t);
-  for(const p of players) if(p.kind==='neutral'&&p.tiles<=0) p.alive=false;
-  me.troops=START.troops; me.gold=START.gold; if(START.bots) for(const p of players) if(p.kind==='bot'){ p.troops=START.troops; p.gold=START.gold; }
-  if(START.quick&&!START.endgame) for(const p of players) if(p.kind!=='neutral'){ p.troops*=4; p.gold*=5; }
-  if(START.endgame) for(const p of players) if(p.kind!=='neutral'){ p.troops=45000; p.gold=15000; }
-  if(START.billionaire){ me.troops=1e9; me.gold=1e9; }
-  rebuildAreas();
-  if(START.risky) startDraft();
-  if(START.teams>0){ const ps=players.filter(q=>q.kind!=='neutral'); ps.forEach((q,i)=>{ q.team=i%START.teams; }); }
-  startTime=performance.now();
-  log('Matches last about 20 minutes. Expand fast, but keep troops in reserve — a thin army invites invasion.');
-}
+function setup(configuration={settings:START,allowed:ALLOWED}){ const result=runEngineOperation(()=>engine.setup(configuration)); lastSuccessfulTickAt=performance.now(); return result; }
 
 // ---------------------------------------------------------------- diplomacy
-let proposals=[]; // incoming to the human: {from, type, until}
-function relation(a,b){ if(a.team!=null&&a.team===b.team&&a!==b) return {type:'ally',until:Infinity,team:true}; const r=a.rel[b.id]; if(!r) return null; if(r.type==='nap'&&r.until<=tickN){ delete a.rel[b.id]; delete b.rel[a.id]; return null; } return r; }
-function atPeace(aId,bId){ if(aId<0||bId<0||aId===bId) return false; const a=players[aId], b=players[bId]; if(a.kind==='neutral'||b.kind==='neutral') return false; return !!relation(a,b); }
-function setRelation(a,b,type){ const r={type,until:type==='nap'?tickN+NAP_TICKS:Infinity,since:tickN}; a.rel[b.id]=r; b.rel[a.id]=r; if(a===me||b===me){ const o=a===me?b:a; sInc(type==='ally'?'alliances':'pacts'); sEvent(`${type==='ally'?'Alliance':'Pact'} with ${o.name}`,'diplo'); } if(a===me||b===me){ const other=a===me?b:a; other.handshake=tickN+120; }
-  // an existing attack between them stands down
-  attacks=attacks.filter(x=>{ const hit=(x.owner===a.id&&x.target===b.id)||(x.owner===b.id&&x.target===a.id); if(hit) players[x.owner].troops+=x.troops*0.9; return !hit; });
-  transports=transports.filter(x=>{ const hit=(x.owner===a.id&&x.target===b.id)||(x.owner===b.id&&x.target===a.id); if(hit) players[x.owner].troops+=x.troops; return !hit; }); }
-function breakRelation(a,b){ const r=relation(a,b); if(!r) return false; if(r.team){ if(a===me) fail('Teammates cannot go to war.'); return false; } delete a.rel[b.id]; delete b.rel[a.id];
-  if(a===me||b===me){ const other=a===me?b:a; other.heartbreak=tickN+150; me.heartbreak=tickN+150; if(a===me){ sInc('betrayals'); sEvent(`Broke with ${other.name}`,'diplo'); } else { sInc('betrayed'); sEvent(`Betrayed by ${other.name}`,'diplo'); } }
-  a.penaltyUntil=tickN+BETRAY_TICKS*(r.type==='ally'?2:1); a.rep=Math.max(0,a.rep-(r.type==='ally'?0.4:0.25)); if(b.kind==='bot') b.rep=Math.min(1,b.rep+0.05);
-  log(`${a.name} broke ${r.type==='ally'?'the alliance':'the pact'} with ${b.name}!`, a===me||b===me); if(a===me||b===me) snd('pushback'); return true; }
-function botConsider(bot,from,type){ if(botLevel(bot)>=3&&from.tiles/landCount>=0.45&&type==='nap') return false; // would this bot accept?
-  if(relation(bot,from)) return false;
-  const str=from.tiles/Math.max(1,bot.tiles); const busy=attacks.some(x=>x.owner===bot.id&&x.target!==from.id)||attacks.some(x=>x.target===bot.id&&x.owner!==from.id);
-  let pr=0.15+from.rep*0.4+(str>1.2?0.3:str<0.6?-0.2:0)+(busy?0.25:0)-(neutralShare()<0.15?0.1:0);
-  if(type==='ally') pr-=0.25; pr/=bd(bot).aggr; return srand()<Math.max(0.03,Math.min(0.95,pr)); }
-function propose(from,to,type){
-  if(from===me){ const last=from.lastProposal[to.id]||-1e9; if(tickN-last<300) return fail(`${to.name} isn't ready to talk again yet.`); from.lastProposal[to.id]=tickN;
-    if(botConsider(to,from,type)){ setRelation(from,to,type); log(`${to.name} accepted ${type==='ally'?'an alliance':'a non-aggression pact'}.`,true); snd('unified'); showNotice({kind:'good',flag:to.flag,title:`${to.name} accepted`,text:type==='ally'?'You are now allies.':'Non-aggression pact for three minutes.',ttl:8000}); }
-    else { log(`${to.name} declined ${type==='ally'?'the alliance':'the pact'}.`,true); snd('error'); showNotice({kind:'warn',flag:to.flag,title:`${to.name} declined`,text:type==='ally'?'No alliance — they are not convinced yet.':'No pact — try again later.',ttl:8000}); } return; }
-  if(to===me){ if(proposals.some(q=>q.from===from.id)) return; proposals.push({from:from.id,type,until:tickN+PROPOSAL_TTL}); log(`${from.name} proposes ${type==='ally'?'an alliance':'a non-aggression pact'}.`,true); snd('foghorn');
-    showNotice({kind:'gold',flag:from.flag,title:`${from.name} proposes ${type==='ally'?'an alliance':'a non-aggression pact'}`,text:type==='ally'?'Permanent: shared defense, vision and trade. Breaking it costs reputation.':'Three minutes of peace on both sides.',closeable:false,ttl:PROPOSAL_TTL*100,buttons:[{label:'Accept',primary:true,onClick:()=>{ if(!proposals.some(q=>q.from===from.id)) return; issue('accept',from.id,type,0); }},{label:'Decline',onClick:()=>{ issue('decline',from.id); }}]}); return; }
-  if(botConsider(to,from,type)) setRelation(from,to,type);
-}
-function stepDiplomacy(){
-  proposals=proposals.filter(q=>q.until>tickN&&players[q.from].alive);
-  if(tickN%40) return;
-  const ns=neutralShare();
-  for(const p of players){ if(p.kind!=='bot'||!p.alive) continue;
-    // sue for peace when under attack by someone bigger
-    for(const a of attacks){ if(a.target!==p.id) continue; const from=players[a.owner]; if(from.kind==='neutral'||relation(p,from)) continue;
-      if(from.tiles>p.tiles*1.3&&srand()<0.12/bd(p).aggr) propose(p,from,'nap'); }
-    // an ally under attack asks for help
-    for(const k in p.rel){ const q=players[k]; const r=relation(p,q); if(!r||r.type!=='ally'||q!==me) continue;
-      const under=attacks.some(a=>a.target===p.id&&players[a.owner].kind!=='neutral');
-      if(under&&p.troops<maxTroops(p)*0.35&&srand()<0.15&&!proposals.some(x=>x.from===p.id)){ proposals.push({from:p.id,type:'reqTroops',amt:Math.round(maxTroops(p)*0.25),until:tickN+PROPOSAL_TTL}); log(`${p.name} asks for ${Math.round(maxTroops(p)*0.25)} troops.`,true); snd('foghorn'); }
-      else if(p.gold<120&&srand()<0.06&&!proposals.some(x=>x.from===p.id)){ proposals.push({from:p.id,type:'reqGold',amt:200,until:tickN+PROPOSAL_TTL}); log(`${p.name} asks for 200 gold.`,true); } }
-    // a strong bot offers an alliance to a strong neighbour now and then
-    if(srand()<0.02){ const cand=players.filter(q=>q!==p&&q.alive&&q.kind!=='neutral'&&!relation(p,q)&&q.tiles>p.tiles*0.7); if(cand.length) propose(p,pick(cand),'nap'); }
-    // betrayal: once the land grab is over, drop a pact with a partner that has gone soft
-    if(ns<0.15) for(const k in p.rel){ const q=players[k]; const r=relation(p,q); if(!r) continue;
-      if(q.tiles<p.tiles*0.5&&density(q)<density(p)*0.6&&srand()<0.02*bd(p).aggr) breakRelation(p,q); }
-  }
-}
-function shareBorder(a,b){ for(let y=0;y<H;y+=1)for(let x=0;x<W;x+=1){ const t=idx(x,y); if(owner[t]!==a) continue; for(const [dx,dy] of N4){ if(inb(x+dx,y+dy)&&owner[idx(x+dx,y+dy)]===b) return true; } } return false; }
-function sendGold(from,to,amt){ amt=Math.min(Math.floor(amt),Math.floor(from.gold)); if(amt<=0) return false; from.gold-=amt; to.gold+=amt; log(`${from.name} sent ${amt} gold to ${to.name}.`, from===me||to===me); if(to===me){ snd('cash'); const c=centroid(to); cashFloat(c[0],c[1],amt); } else if(from===me) snd('coin'); return true; }
-function sendTroops(from,to,amt){ amt=Math.min(Math.floor(amt),Math.floor(from.troops)); if(amt<10) return false;
-  if(shareBorder(from.id,to.id)){ if(gOn(from)) takeTroopsFrom(from,from.areas[0],amt); else from.troops-=amt; if(gOn(to)) addTroopsAt(to,null,amt); else to.troops+=amt; log(`${from.name} sent ${amt} troops to ${to.name}.`, from===me||to===me); if(from===me||to===me) snd('foghorn'); return true; }
-  const coast=coastTilesOf(to.id); if(!coast.length){ if(from===me) fail(`${to.name} has no coastline to land on.`); return false; }
-  const seed=nearestCoastOf(to.id,nearestCoast(from,coast[0])>=0?nearestCoast(from,coast[0]):coast[0],-1);
-  const fromT=nearestCoast(from,seed>=0?seed:coast[0]); if(fromT<0){ if(from===me) fail('You need a coastline to embark from.'); return false; }
-  const path=waterPath(waterNeighbor(fromT),waterNeighbor(seed>=0?seed:coast[0])); if(!path){ if(from===me) fail('No sea route to your ally.'); return false; }
-  if(gOn(from)) takeTroopsFrom(from,from.areas.find(a=>a.coast)||from.areas[0],amt); else from.troops-=amt; { const hv=heavyFrom(from,fromT,areaAt(fromT)); transports.push({owner:from.id,target:to.id,troops:amt,seed:seed>=0?seed:coast[0],path,pos:0,hdg:0,wake:[],gift:true,heavy:hv,hp:hv?HEAVY.hp:1}); }
-  log(`${from.name} shipped ${amt} troops to ${to.name}.`, from===me||to===me); if(from===me) snd('foghorn'); return true; }
-function botAnswerRequest(bot,from,kind,amt){ const r=relation(bot,from); if(!r||r.type!=='ally') return false;
-  if(kind==='gold'){ const spare=bot.gold-300; if(spare<50) return false; return sendGold(bot,from,Math.min(amt,spare*0.6)); }
-  const spare=bot.troops-maxTroops(bot)*0.45; if(spare<100) return false; return sendTroops(bot,from,Math.min(amt,spare*0.6)); }
-function knownTroops(p){ if(!START.fog||p===me||relation(me,p)?.type==='ally'||myBorders.has(p.id)) return String(Math.round(p.troops)); const c=centroid(p); if(visAt(c[0],c[1])) return String(Math.round(p.troops)); return '?'; }
-function relText(p){ const r=p===me?null:relation(me,p); if(!r) return ''; return `<span class="muted"> — ${r.type==='ally'?'ally':'pact, '+Math.ceil((r.until-tickN)/10)+'s left'}</span>`; }
-function relBadge(p){ const r=p===me?null:relation(me,p); if(!r) return ''; return `<span style="font-size:10px;color:${r.type==='ally'?'#7fd0ff':'#bde5b8'};margin-left:4px">${r.type==='ally'?'ALLY':'PACT'}</span>`; }
+function knownTroops(p){ if(!START.fog||p===me()||relation(me().id,p.id)?.type==='ally'||fogState.myBorders.has(p.id)) return String(Math.round(p.troops)); const c=centroid(p); if(visAt(c[0],c[1])) return String(Math.round(p.troops)); return '?'; }
+function relText(p){ const r=p===me()?null:relation(me().id,p.id); if(!r) return ''; return `<span class="muted"> — ${r.type==='ally'?'ally':'pact, '+Math.ceil((r.until-clockState.tickN)/10)+'s left'}</span>`; }
+function relBadge(p){ const r=p===me()?null:relation(me().id,p.id); if(!r) return ''; return `<span style="font-size:10px;color:${r.type==='ally'?'#7fd0ff':'#bde5b8'};margin-left:4px">${r.type==='ally'?'ALLY':'PACT'}</span>`; }
 
-// ---------------------------------------------------------------- attacks
-function frontierOf(att,target,areaId){ // tiles owned by target adjacent to att (optionally only to one of att's areas)
-  const f=new Set();
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const t=idx(x,y); if(owner[t]!==att) continue; if(areaId!=null&&areaOf&&areaOf[t]!==areaId) continue;
-    for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]===target) f.add(n); }
-  }
-  return f;
-}
-function launchAttack(p,target,troops,seed,fromArea){ if(pausedBlock(p)) return false;
-  if(atPeace(p.id,target)){ if(p===me) fail(`You have ${relation(p,players[target]).type==='ally'?'an alliance':'a pact'} with ${players[target].name}. Declare war first.`); return false; }
-  let origin=null; if(gOn(p)&&p.areas&&p.areas.length){ origin=fromArea||(seed!=null?null:areaTouching(p,target)); if(seed!=null&&!origin){ const c=nearestCoast(p,seed); origin=(c>=0&&areaAt(c))||p.areas.find(a=>a.coast)||p.areas[0]; } if(!origin){ if(p===me) fail('None of your areas borders that nation — send a transport from one of them.'); return false; } troops=Math.min(troops,origin.troops); if(p===me&&fromArea==null) p.lastOrigin=origin; }
-  else troops=Math.min(troops,p.troops);
-  if(troops<5){ if(p===me) fail(origin?`${areaLabel(p,origin)} has too few troops to attack with.`:'Need at least 5 troops to attack.'); return false; }
-  // merge into existing attack on same target
-  const ex=attacks.find(a=>a.owner===p.id&&a.target===target);
-  if(ex&&!seed&&(!origin||ex.origin===origin.id)){ex.troops+=takeTroopsFrom(p,origin,troops); ex.spent=ex.spent||0;if(p===me) snd('attack');return true;}
-  if(seed!=null) return launchTransport(p,target,troops,seed,origin);
-  const front=frontierOf(p.id,target,origin?origin.id:null);
-  if(front.size===0){ if(p===me&&origin) fail('That area does not border the target.'); return false; }
-  troops=takeTroopsFrom(p,origin,troops);
-  if(p===me&&target>=0&&!STATS.campaigns[players[target].name]){ STATS.campaigns[players[target].name]={start:sMin()}; if(!STATS.c.firstAttack){ sInc('firstAttack'); sEvent(`First campaign: ${players[target].name}`); } }
-  attacks.push({owner:p.id,target,troops,front,naval:false,age:0,origin:origin?origin.id:null,startTiles:target>=0?players[target].tiles:0});
-  if(target===me.id&&p!==me) invasionNotice(p,[...front][0],false);
-  if(p===me) snd('attack');
-  return true;
-}
-function fortRange(st){ return (st.level||1)>=3?32:(st.level||1)>=2?24:FORT_RANGE; }
-function fortStack(t,id){ const x=t%W,y=(t-x)/W; let n=0; for(const st of structures){ if(st.type!=='fort'||st.building||st.owner!==id) continue; const r=fortRange(st); if((st.t%W-x)**2+((st.t-st.t%W)/W-y)**2<=r*r){ n++; if(n>=6) break; } } return n; }
-function fortMult(t,id){ const n=fortStack(t,id); return n?Math.min(64,Math.pow(2,n)):1; }
-function fortified(t,id){ return fortStack(t,id)>0; }
-function tileCost(a,def,t){
-  const dloc=(def&&t!=null&&gOn(def))?densityAt(def,t):null;
-  const terr=t!=null?0.65+0.7*rough[t]:1; // easy ground and hard ground: fronts flow along the cheap paths
-  if(def==null) return 0.38*terr;
-  const d=Math.min(8,dloc!=null?dloc:density(def)); // packing troops denser than 8 per tile stops raising the price
-  return terr*(def.kind==='neutral'?0.3+d*1.2:0.38+d*2.8)*(a.naval?1.4:1)*(players[a.owner].kind==='neutral'?1.5:1)*(t!=null&&shelled[t]>tickN?SUPPRESS_COST:(t!=null?fortMult(t,def.id):1));
-}
-function absorbRemnant(def,p,force,front){ // a nation cut down to scraps, or with no army left, is finished off by its conqueror — but only the land the fight can reach, and never fortified ground
-  if(!force&&(def===me||def.tiles>=25)) return; if(def.tiles<=0||!def.alive) return;
-  // flood from the front (or from wherever the attacker touches the defender) through the defender's own connected land
-  const seen=new Uint8Array(W*H), q=[]; const push=t=>{ if(t>=0&&t<W*H&&!seen[t]&&owner[t]===def.id){ seen[t]=1; q.push(t); } };
-  if(front) for(const t of front) push(t);
-  if(!q.length){ for(let t=0;t<W*H;t++){ if(owner[t]!==def.id) continue; const x=t%W,y=(t-x)/W; for(const [dx,dy] of N4){ if(inb(x+dx,y+dy)&&owner[idx(x+dx,y+dy)]===p.id){ push(t); break; } } } }
-  let taken=0; for(let h=0;h<q.length;h++){ const c=q[h]; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(inb(x+dx,y+dy)) push(idx(x+dx,y+dy)); } }
-  const keep=[]; for(const t of q){ if(def.kind!=='neutral'&&fortStack(t,def.id)>0&&!(shelled[t]>tickN)){ keep.push(t); continue; } setOwner(t,p.id); if(struct[t]) captureStructure(t,p); taken++; }
-  if(keep.length&&(p===me||def===me)) log(`${def.name}'s fortified ground held — ${keep.length} tiles behind the bastions did not fall.`,true);
-  const left=def.tiles;
-  if(left>0&&def.kind!=='neutral') log(`${def.name} collapsed here; ${left} tiles of holdings elsewhere remain.`, p===me||def===me);
-  structCounts(def); }
-function stepAttacks(){
-  for(const a of attacks){
-    a.age++;
-    const p=players[a.owner], def=a.target>=0?players[a.target]:null;
-    if(!p.alive){a.dead=true;continue;}
-    // advance speed scales with how badly the attacker outmatches the defense along this front
-    const unit=tileCost(a,def,null), strength=a.troops/Math.max(1,a.front.size*unit); // how many full sweeps of the frontier the force can pay for
-    const pace=Math.min(3,Math.max(0.25,0.3+0.4*Math.sqrt(strength)));
-    const take=Math.max(1,Math.ceil(a.front.size*0.22*pace));
-    let n=0;
-    const it=Array.from(a.front);
-    for(let i=0;i<it.length;i++){ const j=i+Math.floor(srand()*(it.length-i)); [it[i],it[j]]=[it[j],it[i]]; } // random order, not insertion order
-    for(const t of it){
-      if(n>=take) break;
-      // tiles hemmed in on several sides fall first; exposed salients wait — rounds the front and fills pockets
-      { const x=t%W,y=(t-x)/W; let k=0; for(const [dx,dy] of N4){ if(inb(x+dx,y+dy)&&owner[idx(x+dx,y+dy)]===p.id) k++; } if(k===0&&a.took){ a.front.delete(t); continue; } if(k===1&&a.took&&srand()<0.4) continue; } // a tile must touch the attacker; lone salients fall slowly, so two fronts can't leapfrog into a checkerboard
-      a.front.delete(t);
-      if(owner[t]!==a.target||!land[t]) continue;
-      let cost=def?tileCost(a,def,t):0; // unclaimed land is free to take: the force just has to be there
-      if(def){ const pool=gOn(def)?(areaAt(t)?areaAt(t).troops:def.troops):def.troops; const base=0.38*(0.65+0.7*rough[t]); const cap=base+Math.max(0,pool)*1.5/Math.max(1,a.front.size); cost=Math.min(cost,Math.max(base,cap)); if(def.kind!=='neutral'&&!(shelled[t]>tickN)){ const n=fortStack(t,def.id); if(n) cost+=WALL_TOLL*Math.pow(2,n-1); } } // you can't lose more than the defender has to spend — except the walls, which cost what they cost
-      if(a.troops<cost){a.dead=true;break;}
-      a.troops-=cost; a.spent=(a.spent||0)+cost;
-      if(def){ if(gOn(def)) loseTroopsAt(def,t,cost*0.55); else def.troops=Math.max(0,def.troops-cost*0.55); if(def.kind==='neutral'&&p.kind!=='neutral'){ def.grudge[p.id]=tickN; if(!isProvokedBy(def,p.id,1)) def.warned=false; }}
-      setOwner(t,p.id);n++; a.took=(a.took||0)+1; if(visAt(t%W,(t-t%W)/W)) fxSpark(t%W,(t-t%W)/W,p.color); if(def) markHostile(p.id,def.id); if(def===me) snd('invaded');
-      if(struct[t]){captureStructure(t,p);}
-      const x=t%W,y=(t-x)/W;
-      for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const m=idx(x+dx,y+dy); if(land[m]&&owner[m]===a.target) a.front.add(m); }
-    }
-    if(a.front.size===0) a.dead=true;
-    if(def&&def.alive&&def.tiles>0&&n>0&&(def.tiles<25||def.troops<1)){ if(def.troops<1&&def.tiles>=25) log(`${def.name} has no army left — ${p.name} takes the rest.`, p===me||def===me); absorbRemnant(def,p,def.troops<1,a.front); }
-    if(def&&def.tiles<=0&&def.alive){ def.alive=false; if(p===me){ snd('conquered'); me.kills=(me.kills||0)+1; sInc('conquests'); if(def.kind!=='neutral') sInc('kills'); sEvent(def.kind==='neutral'?`Conquered ${def.name}`:`Eliminated ${def.name}`,def.kind==='neutral'?'note':'kill'); if(STATS.campaigns[def.name]) STATS.campaigns[def.name].end=sMin(); } if(def===me&&p.kind!=='neutral') sEvent(`Fell to ${p.name}`,'death');
-      if(def.kind!=='neutral'){ def.killedBy=p.id; def.diedAt=tickN; badges.push({text:`${def.name}`,sub:`killed by ${p.name}`,flag:def.flag,kflag:p.flag,col:p.color,age:0,life:130,snd:(p===me||def===me)?'taps':'tapsq'}); }
-      if(def.kind==='neutral'&&p.kind!=='neutral'){ const early=1+(CONQUEST_EARLY-1)*Math.max(0,1-tickN/CONQUEST_EARLY_TICKS); const g=Math.round(a.startTiles*CONQUEST_GOLD*early); p.gold+=g; if(p===me){ snd('cash'); log(`Conquered ${def.name}: +${g} gold plunder${early>1.5?' (early-game bonus)':''}.`,true); cashFloat(centroid(def)[0],centroid(def)[1],g); } }
-      else if(def.kind!=='neutral'&&p.kind!=='neutral'){ const g=Math.floor(def.gold); def.gold=0; if(g>0){ p.gold+=g; log(`${p.name} seized ${def.name}'s treasury: ${g} gold.`, p===me||def===me); if(p===me){ snd('cash'); cashFloat(centroid(def)[0],centroid(def)[1],g); } } } log(p.kind==='neutral'?`${def.name} overextended and was conquered by ${p.name}.`:`${p.name} wiped out ${def.name}.`, p===me||def===me); }
-  }
-  attacks=attacks.filter(a=>{ if(a.dead){ const p=players[a.owner]; const back=Math.max(0,a.troops-(a.target<0?0:(a.spent||0)*0.1)); /* unspent troops all come home; attrition is 10% of what the fight cost */ if(gOn(p)){ const ar=a.origin!=null?areaById(a.origin):null; if(ar&&ar.owner===p.id){ ar.troops+=back; syncTroops(p); } else addTroopsAt(p,a.landAt!=null&&owner[a.landAt]===p.id?a.landAt:null,back); } else p.troops+=back; return false;} return true; }); // everyone comes home from unclaimed land; 10% attrition from a real fight
-}
-
-// ---------------------------------------------------------------- structures
-function rebuildLinks(){ // factories tie to nearby same-owner cities and ports; every link boosts both ends
-  links=[]; const load=new Map();
-  const hubs=structures.filter(st=>(st.type==='city'||st.type==='port')&&!st.building), facs=structures.filter(st=>st.type==='factory'&&!st.building);
-  for(const st of structures){ st.links=0; }
-  for(const f of facs){ const fx=f.t%W,fy=(f.t-fx)/W; const cands=[];
-    for(const h of hubs){ if(h.owner!==f.owner) continue; const hx=h.t%W,hy=(h.t-hx)/W; const d=(hx-fx)**2+(hy-fy)**2; if(d<=LINK_RANGE*LINK_RANGE) cands.push([d,h]); }
-    cands.sort((u,v)=>u[0]-v[0]);
-    for(const [,h] of cands){ if(f.links>=LINK_MAX_PER_FACTORY) break; const cap=h.type==='city'?LINK_MAX_PER_CITY:LINK_MAX_PER_PORT; if((load.get(h)||0)>=cap) continue;
-      links.push({a:f,b:h,owner:f.owner}); load.set(h,(load.get(h)||0)+1); f.links++; h.links++; } }
-  for(const p of players){ p.factoryLinks=0; p.cityLinks=0; p.portLinks=0; }
-  for(const l of links){ const p=players[l.owner]; p.factoryLinks+=1; if(l.b.type==='city') p.cityLinks++; else p.portLinks++; }
-  for(const st of structures) st.linked=st.links>0;
-}
-function structCounts(p){ p.cities=p.factories=p.ports=p.sams=p.silos=p.forts=p.commands=p.troopcmds=0;
-  for(const s of structures) if(s.owner===p.id&&!s.building){ if(s.type==='city')p.cities++; else if(s.type==='factory')p.factories++; else if(s.type==='port')p.ports++; else if(s.type==='sam')p.sams++; else if(s.type==='silo')p.silos++; else if(s.type==='fort')p.forts++; else if(s.type==='command')p.commands++; else if(s.type==='troopcmd')p.troopcmds++; } }
-function crowded(t){ const x=t%W,y=(t-x)/W; for(const st of structures){ const dx=st.t%W-x, dy=(st.t-st.t%W)/W-y; if(dx*dx+dy*dy<STRUCT_SPACING*STRUCT_SPACING) return true; } return false; }
-function snapBuild(p,t,type,R=5){ const S=STRUCT[type]; const ok=c=>land[c]&&owner[c]===p.id&&!struct[c]&&!crowded(c)&&(!S.coast||isCoast(c)); if(ok(t)) return t; const x=t%W,y=(t-x)/W; let best=-1,bd=1e9; for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){ const X=x+dx,Y=y+dy; if(!inb(X,Y)) continue; const c=idx(X,Y); if(!ok(c)) continue; const d=dx*dx+dy*dy; if(d<bd){bd=d;best=c;} } return best; }
-function snapToCoast(p,t,R=5){ if(isCoast(t)&&owner[t]===p.id&&!struct[t]) return t; const x=t%W,y=(t-x)/W; let best=-1,bd=1e9; for(let dy=-R;dy<=R;dy++)for(let dx=-R;dx<=R;dx++){ const X=x+dx,Y=y+dy; if(!inb(X,Y)) continue; const c=idx(X,Y); if(!land[c]||owner[c]!==p.id||struct[c]||!isCoast(c)||crowded(c)) continue; const d=dx*dx+dy*dy; if(d<bd){bd=d;best=c;} } return best; }
-function industrialNear(p,t){ const x=t%W,y=(t-x)/W; for(const c of structures){ if(c.type!=='city'||c.owner!==p.id||c.building||(c.links||0)<3) continue; if((c.t%W-x)**2+((c.t-c.t%W)/W-y)**2<=LINK_RANGE*LINK_RANGE) return true; } return false; }
-function pausedBlock(p){ if(p===me&&userPaused&&!START.pauseBuild&&!over){ fail('Paused — unpause to give orders (or tick "Paused orders" on the start card).'); return true; } return false; }
-function structCost(p,type){ const base=STRUCT[type].cost; if(type==='fort'){ const n=structures.filter(st=>st.type==='fort'&&st.owner===p.id).length; return base+40*n; } return base; }
-function placeStructure(p,type,t){ if(pausedBlock(p)) return false; if(p.kind==='bot'){ if(p.nextBuildAt>simMs) return false; }
-  const S=STRUCT[type]; if(!ALLOWED.has(type)) return false;
-  { const c=snapBuild(p,t,type); if(c<0) return false; t=c; }
-  if(type==='subbase'){ const ok=structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===p.id&&((st.t%W-t%W)**2+((st.t-st.t%W)/W-(t-t%W)/W)**2)<=LINK_RANGE*LINK_RANGE); if(!ok){ if(p===me) fail('Submarine bases need a level II port within 34 tiles.'); return false; } }
-  const cost=structCost(p,type); if(owner[t]!==p.id||struct[t]||crowded(t)) return false; if(p.gold<cost){ if(p===me) fail(`Not enough gold — ${STRUCT[type].label.toLowerCase()} costs ${cost}.`); return false; }
-  if(S.coast&&!isCoast(t)) return false;
-  p.gold-=cost; struct[t]=1; structOwner[t]=p.id;
-  let ticks=(START.instant&&type!=='shield')?0:(BUILD_TICKS[type]||0); if(ticks&&industrialNear(p,t)) ticks=Math.round(ticks*0.75); /* shields keep their timer even with Instant build, so they can be worn down */
-  if(p===me) sInc('built'); if(p.kind==='bot') p.nextBuildAt=simMs+rnd(6000,12000)/(bd(p).build||1);
-  const st={type,owner:p.id,t,cost,building:ticks>0,done:tickN+ticks,total:ticks}; if(GUNS[type]) st.hp=GUNS[type].hp; if(type==='shield') st.hp=SHIELD.hp; structures.push(st); structCounts(p);
-  if(p===me) snd(type==='city'?'city':'build');
-  if(st.building&&p===me) log(`${S.label} under construction — ${Math.ceil(ticks/10)} s.`,true);
-  if(type==='city'){ if(gOn(p)) addTroopsAt(p,t,CITY_POP); else p.troops+=CITY_POP; if(p===me) log(`New city: ${CITY_POP} citizens joined the army.`,true); }
-  return true;
-}
-function captureStructure(t,p){
-  const s=structures.find(s=>s.t===t); if(!s) return; fxPuff(t%W,(t-t%W)/W,3,'200,200,200');
-  if(s.type==='fort'||s.type==='shore'||s.type==='battery'||s.type==='shield'){ const old=players[s.owner]; destroyStructure(t); structCounts(old); flashes.push({x:t%W,y:(t-t%W)/W,r:3,age:0,col:'#ffb347'}); if(p===me||old===me) log(`${p.name} overran ${old.name}'s bastion.`,true); return; }
-  const old=players[s.owner]; s.owner=p.id; structOwner[t]=p.id; structCounts(old); structCounts(p);
-  if(p===me) log(`Captured a ${STRUCT[s.type].label.toLowerCase()} from ${old.name}.`,true);
-}
-function destroyStructure(t){ const st=structures.find(q=>q.t===t); structures=structures.filter(s=>s.t!==t); struct[t]=0; structOwner[t]=-1; if(st){ fxPuff(t%W,(t-t%W)/W,6,'90,90,90'); fxScorch(t%W+.5,(t-t%W)/W+.5,st.type==='shield'?5:3.5); if(st.type==='shield'||(st.type==='airfield'&&(st.level||1)>=2)) wrecks.push({kind:'dome',x:t%W+.5,y:(t-t%W)/W+.5,r:domeR(st),age:0}); } }
-
-// ---------------------------------------------------------------- missiles
-function siloReadyIn(p){ let best=1e9; for(const s of structures) if(s.owner===p.id&&s.type==='silo') best=Math.min(best,Math.max(0,(s.cool||0)-tickN)); return best===1e9?0:best; }
-function silosReady(p,cmdOnly){ let n=0; for(const s of structures) if(s.owner===p.id&&s.type==='silo'&&!s.building&&!(s.cool>tickN)&&(!cmdOnly||commandCover(s.t)>0)) n++; return n; }
-function launchMissile(p,t,cmdOnly){ if(!cmdOnly&&pausedBlock(p)) return false;
-  if(!ALLOWED.has('missile')||p.silos<1||!land[t]) return false;
-  if(atPeace(p.id,owner[t])){ if(p===me) fail(`You're at peace with ${players[owner[t]].name}.`); return false; }
-  const readySilos=structures.filter(s=>s.owner===p.id&&s.type==='silo'&&!s.building&&!(s.cool>tickN)&&(!cmdOnly||commandCover(s.t)>0)).sort((a,b)=>missileCost(p,a)-missileCost(p,b));
-  const silo=readySilos[0];
-  if(!silo){ if(p===me) log(`All silos reloading — next ready in ${Math.ceil((siloReadyIn(p))/10)}s.`,true); return false; }
-  const cost=missileCost(p,silo); if(p.gold<cost) return false;
-  p.gold-=cost; silo.cool=tickN+SILO_COOLDOWN;
-  if(p===me){ sInc('missiles'); } missiles.push({owner:p.id,t,from:silo.t,age:0,flight:55}); snd(owner[t]===me.id?'missile_in':p===me?'missile':'missile_other',silo.t%W,(silo.t-silo.t%W)/W); markHostile(p.id,owner[t]);
-  log(`${p.name} launched a missile!`, true); return true;
-}
-function missilePos(m,age){ // tile-space position along a lobbed arc (cruise missiles fly flat)
-  const k=Math.min(1,age/m.flight), x0=m.from%W+.5,y0=(m.from-m.from%W)/W+.5, x1=m.t%W+.5,y1=(m.t-m.t%W)/W+.5;
-  const h=m.cruise?0:Math.hypot(x1-x0,y1-y0)*0.35;
-  return [x0+(x1-x0)*k, y0+(y1-y0)*k-Math.sin(k*Math.PI)*h];
-}
-function stepInterceptors(){
-  // One battery engages each inbound at a time: the nearest ready SAM site or ship. If it misses, the next one fires.
-  for(const m of missiles){ if(m.done||m.age<SAM_REACT||m.age>m.flight-8) continue;
-    if(interceptors.some(it=>it.target===m&&!it.done)) continue;
-    const tx=m.t%W,ty=(m.t-tx)/W; const [mx,my]=missilePos(m,m.age); let best=null,bd=1e12;
-    // a battery engages when the missile is inside its umbrella now, or is headed for a point inside it — so a ring of sites covers the approach, not just the target
-    const inRange=(x,y,R)=>((x-mx)**2+(y-my)**2<=R*R)||((x-tx)**2+(y-ty)**2<=R*R);
-    // who has standing to shoot: the nation whose land is targeted, its allies, and anyone at war with the launcher
-    const tow=owner[m.t]; const defends=id=>id===tow||(tow>=0&&relation(players[tow],players[id])?.type==='ally')||inConflict(id,m.owner);
-    for(const st of structures){ if(st.type!=='sam'||st.building||st.owner===m.owner||st.cool>tickN||shelled[st.t]>tickN||atPeace(st.owner,m.owner)||!defends(st.owner)) continue; if(START.fog&&st.owner===me.id&&!visAt(mx,my)) continue; if(m.fired&&m.fired.has(st.t)) continue;
-      const sx=st.t%W+.5,sy=(st.t-st.t%W)/W+.5; if(!inRange(sx,sy,SAM_RANGE)) continue; const d=(sx-mx)**2+(sy-my)**2; if(d<bd){ bd=d; best={kind:'site',st,x:sx,y:sy,owner:st.owner,hit:SAM_HIT,key:st.t}; } }
-    warships.forEach((w,i)=>{ const S=SHIPS[w.cls]; if(!S.sam||w.owner===m.owner||w.samCool>tickN||w.hp<=0||atPeace(w.owner,m.owner)||!defends(w.owner)) return; if(START.fog&&w.owner===me.id&&!visAt(mx,my)) return; if(m.fired&&m.fired.has('w'+i)) return;
-      if(!inRange(w.x,w.y,S.sam)) return; const d=(w.x-mx)**2+(w.y-my)**2; if(d<bd){ bd=d; best={kind:'ship',w,S,x:w.x,y:w.y,owner:w.owner,hit:S.samHit,key:'w'+i}; } });
-    if(!best) continue;
-    if(m.cruise) best.hit=best.hit*CRUISE.samMul;
-    (m.fired??=new Set()).add(best.key);
-    if(best.kind==='site'){ best.st.cool=tickN+SAM_COOLDOWN; if(best.owner===me.id) log('SAM site launched an interceptor.',true); }
-    else { best.w.samCool=tickN+best.S.samCd; if(best.owner===me.id) log(`${best.S.label} launched an interceptor.`,true); }
-    interceptors.push({owner:best.owner,target:m,x:best.x,y:best.y,trail:[],age:0,hit:best.hit,ship:best.kind==='ship'}); snd('interceptor');
-  }
-  for(const it of interceptors){
-    it.age++; const m=it.target; if(m.done){ it.done=true; continue; }
-    let mx,my; { let aimed=null; for(let k=1;k<=m.flight-m.age;k++){ const [px,py]=missilePos(m,m.age+k); if(Math.hypot(px-it.x,py-it.y)<=INTERCEPTOR_SPEED*k){ aimed=[px,py]; break; } } if(!aimed) aimed=missilePos(m,m.age); [mx,my]=aimed; } // lead the missile: aim where it will be when we can get there
-    const [cx2,cy2]=missilePos(m,m.age); const dx=mx-it.x, dy=my-it.y, d=Math.hypot(dx,dy); const dNow=Math.hypot(cx2-it.x,cy2-it.y);
-    it.trail.push([it.x,it.y]); if(it.trail.length>10) it.trail.shift();
-    if(dNow<=INTERCEPTOR_SPEED*1.2||d<=INTERCEPTOR_SPEED){ it.done=true; mx=cx2; my=cy2;
-      if(srand()<(it.hit??SAM_HIT)){ m.done=true; m.intercepted=true; if(it.owner===me.id) sInc('intercepts'); flashes.push({x:mx,y:my,r:4,age:0,col:'#9df'}); { const [nx2,ny2]=missilePos(m,m.age+1); fxFrags(mx,my,Math.atan2(ny2-my,nx2-mx),8,'#ffd27a'); fxPuff(mx-.5,my-.5,4,'200,220,255'); } snd('intercept');
-        log(`${players[it.owner].name}'s ${it.ship?'warship':'SAM site'} shot down ${players[m.owner].name}'s missile.`, it.owner===me.id||m.owner===me.id); }
-      else { flashes.push({x:it.x,y:it.y,r:1.5,age:0,col:'#9df'}); frags.push({x:it.x,y:it.y,vx:dx/Math.max(1,d)*1.2,vy:dy/Math.max(1,d)*1.2+0.2,age:0,life:28,col:'#bfe6ff',dud:true}); }
-      continue; }
-    it.x+=dx/d*INTERCEPTOR_SPEED; it.y+=dy/d*INTERCEPTOR_SPEED;
-  }
-  interceptors=interceptors.filter(i=>!i.done);
-  missiles=missiles.filter(m=>!m.done);
-}
-function domeR(st){ return st.type==='shield'?SHIELD.r:LSHIELD.r; }
-function domeHp(st){ return st.type==='shield'?st.hp:(st.lshield||0); }
-function domeMax(st){ return st.type==='shield'?SHIELD.hp:LSHIELD.hp; }
-function isDome(st){ return !st.building&&((st.type==='shield'&&st.hp>0)||(st.type==='airfield'&&(st.level||1)>=2&&(st.lshield||0)>0)); }
-function hitDome(st,n,who){ if(st.type==='shield') st.hp-=n; else st.lshield=(st.lshield||0)-n; st.flash=tickN+8; const own=players[st.owner];
-  if(domeHp(st)<=0){ if(st.type==='shield'){ destroyStructure(st.t); structCounts(own); flashes.push({x:st.t%W,y:(st.t-st.t%W)/W,r:6,age:0,col:'#9df'}); log(`${own.name}'s shield generator burned out.`, own===me||who===me.id); if(own===me) snd('pushback'); }
-    else { st.lshield=0; wrecks.push({kind:'dome',x:st.t%W+.5,y:(st.t-st.t%W)/W+.5,r:LSHIELD.r,age:0}); log(`${own.name}'s airfield shield is down.`, own===me||who===me.id); } } }
-function domeFor(t,owner){ const x=t%W,y=(t-x)/W; let best=null,bd=1e12; for(const st of structures){ if(!isDome(st)||atPeace(st.owner,owner)||st.owner===owner) continue; const r=domeR(st); const d=(st.t%W-x)**2+((st.t-st.t%W)/W-y)**2; if(d<=r*r&&d<bd){bd=d;best=st;} } return best; }
-function stepShields(){
-  for(const m of missiles){ if(m.done) continue; const dome=domeFor(m.t,m.owner); if(!dome) continue;
-    const [mx,my]=missilePos(m,m.age); const dx=mx-(dome.t%W+.5), dy=my-((dome.t-dome.t%W)/W+.5);
-    if(dx*dx+dy*dy>(domeR(dome)+1)**2) continue; // not at the edge yet
-    m.done=true; flashes.push({x:mx,y:my,r:5,age:0,col:'#9df'}); snd('intercept',mx,my); hitDome(dome,m.cruise?1:SHIELD.hit,m.owner);
-    log(`${players[dome.owner].name}'s shield absorbed ${players[m.owner].name}'s missile (${Math.max(0,domeHp(dome))}/${domeMax(dome)}).`, dome.owner===me.id||m.owner===me.id);
-  }
-  missiles=missiles.filter(m=>!m.done);
-  // repairs
-  for(const st of structures){ if(!st.repairing) continue; if(st.flash&&st.flash+150>tickN&&st.repairAt<tickN+SHIELD.repairTicks){ st.repairAt=tickN+SHIELD.repairTicks; continue; } // crews take cover for 15 s after a hit
-    if(st.repairAt<=tickN){ if(st.type==='shield'){ st.hp=Math.min(SHIELD.hp,st.hp+1); if(st.hp>=SHIELD.hp){ st.repairing=false; if(st.owner===me.id) log('Shield generator fully repaired.',true); } else st.repairAt=tickN+SHIELD.repairTicks; } else if(st.type==='port'){ st.gunHp=Math.min(4,(st.gunHp||0)+1); if(st.gunHp>=4){ st.repairing=false; if(st.owner===me.id) log('Port guns repaired.',true); } else st.repairAt=tickN+SHIELD.repairTicks; } else { st.lshield=Math.min(LSHIELD.hp,(st.lshield||0)+1); if(st.lshield>=LSHIELD.hp){ st.repairing=false; if(st.owner===me.id) log('Airfield shield restored.',true); } else st.repairAt=tickN+SHIELD.repairTicks; } } }
-}
-function stepMissiles(){
-  for(const m of missiles){
-    m.age++;
-    if(m.age<m.flight) continue;
-    { const dome=domeFor(m.t,m.owner); if(dome){ m.done=true; const [mx,my]=missilePos(m,m.age); flashes.push({x:mx,y:my,r:5,age:0,col:'#9df'}); snd('intercept',mx,my); hitDome(dome,m.cruise?1:SHIELD.hit,m.owner); log(`${players[dome.owner].name}'s shield absorbed ${players[m.owner].name}'s missile (${Math.max(0,domeHp(dome))}/${domeMax(dome)}).`, dome.owner===me.id||m.owner===me.id); continue; } }
-    m.done=true;
-    if(m.cruise){ const cx=m.t%W,cy=(m.t-cx)/W; fxTracer(m.from%W+.5,(m.from-m.from%W)/W+.5,cx+.5,cy+.5,'255,200,120'); fxPuff(cx,cy,4,'110,100,90'); crater(cx,cy,CRUISE.radius,m.owner,{flat:40,pct:0.006,cap:120}); snd('bomb',cx,cy); continue; }
-    const tx=m.t%W,ty=(m.t-tx)/W, victim=owner[m.t];
-    flashes.push({x:tx,y:ty,r:NUKE_RADIUS,age:0,col:'#ffb347'}); snd(victim===me.id||m.owner===me.id?'impact':'impact_other',tx,ty);
-    if(victim>=0) noteThreat(victim,m.t,'missile',m.owner);
-    if(victim===me.id&&m.owner!==me.id){ sInc('nuked'); STATS.nukedBy[players[m.owner].name]=(STATS.nukedBy[players[m.owner].name]||0)+1; sEvent(`Nuked by ${players[m.owner].name}`,'nuke'); const lx=m.from%W+.5, ly=(m.from-m.from%W)/W+.5; nukeAlerts.push({from:[lx,ly],at:[tx+.5,ty+.5],owner:m.owner,age:0,life:88}); /* matches the siren: four 2.2 s sweeps */ snd('siren'); }
-    // domes overlapping the blast shield the ground under them and take a hit for it
-    const domes=structures.filter(st=>isDome(st)&&st.owner!==m.owner&&!atPeace(st.owner,m.owner)&&((st.t%W-tx)**2+((st.t-st.t%W)/W-ty)**2)<(NUKE_RADIUS+domeR(st))**2);
-    const underDome=(x,y)=>domes.some(dm=>(dm.t%W-x)**2+((dm.t-dm.t%W)/W-y)**2<=domeR(dm)*domeR(dm));
-    for(const dm of domes){ log(`${players[dm.owner].name}'s shield held against the blast (${Math.max(0,domeHp(dm)-SHIELD.hit)}/${domeMax(dm)}).`, dm.owner===me.id||m.owner===me.id); }
-    const lost={};
-    for(let y=ty-NUKE_RADIUS;y<=ty+NUKE_RADIUS;y++)for(let x=tx-NUKE_RADIUS;x<=tx+NUKE_RADIUS;x++){
-      if(!inb(x,y)||(x-tx)**2+(y-ty)**2>NUKE_RADIUS**2) continue;
-      const t=idx(x,y); if(!land[t]) continue;
-      if(underDome(x,y)) continue;
-      if(struct[t]) destroyStructure(t);
-      const o=owner[t]; if(o>=0){ lost[o]=(lost[o]||0)+1; setOwner(t,-1); }
-    }
-    for(const dm of domes) if(structures.includes(dm)) hitDome(dm,SHIELD.hit,m.owner);
-    for(const o in lost){ const q=players[o]; const pool=gOn(q)?((areaAt(m.t)&&areaAt(m.t).owner===q.id)?areaAt(m.t).troops:(q.areas&&q.areas[0]?q.areas[0].troops:q.troops)):q.troops; const dloc=gOn(q)?densityAt(q,m.t):density(q); const kn=Math.min(lost[o]*dloc*1.0,pool); // the garrison standing on the cratered ground dies; cover the whole island and that's everyone
-      if(gOn(q)) loseTroopsAt(q,m.t,kn); else q.troops=Math.max(0,q.troops-kn); if(q===me&&kn>STATS.bigLoss.n) STATS.bigLoss={n:Math.round(kn),by:`${players[m.owner].name}'s missile`}; if(q===me||m.owner===me.id) log(`Missile killed ${Math.round(kn)} ${q.name} troops.`,true); structCounts(q);
-      if(q.tiles<=0&&q.alive){q.alive=false;log(`${q.name} was annihilated.`,true); seizeTreasury(players[m.owner],q);} }
-    log(`Missile struck ${victim>=0?players[victim].name:'open land'}.`, victim===me.id);
-  }
-  missiles=missiles.filter(m=>!m.done);
-}
-let songBanner=null, badges=[], nukeAlerts=[], lastStats=null, lastPostId=null; let flashes=[], floaters=[], sparks=[], puffs=[], wrecks=[], frags=[], tracers=[], scorches=[];
+// ---------------------------------------------------------------- missiles live in sim/systems/missiles.mjs
+let songBanner=null, badges=[], nukeAlerts=[], lastStats=null, lastPostId=null; let flashes=[], floaters=[], sparks=[], puffs=[], wrecks=[], frags=[], tracers=[], scorches=[], visualShots=[];
+let flagUrlCache=new WeakMap(), shellRenderState=new WeakMap();
+const shipRenderState=new Map(), labelRenderState=new Map();
 function fxSpark(x,y,col){ if(sparks.length<900) sparks.push({x,y,age:0,col}); }
-function fxPuff(x,y,n=4,col='120,120,120'){ for(let i=0;i<n;i++) puffs.push({x:x+.5,y:y+.5,vx:(srand()-.5)*.25,vy:-(.1+srand()*.2),r:1+srand()*1.5,age:0,life:30+srand()*25,col}); }
-function fxWreck(kind,x,y,hdg,col,cls){ wrecks.push({kind,x,y,hdg,col,cls,age:0,spin:(srand()-.5)*.08}); }
-function fxFrags(x,y,ang,n=6,col='#ffd27a'){ for(let i=0;i<n;i++){ const a=ang+(srand()-.5)*1.2; const sp=.6+srand()*1.2; frags.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,age:0,life:12+srand()*10,col}); } }
+function presentCompatibilityEffect({type,descriptor}){ const visual=structuredClone(descriptor); if(type==='puff') puffs.push(visual); else if(type==='wreck') wrecks.push(visual); else if(type==='fragment') frags.push(visual); }
+function presentEngineEvent({type,args}){
+  const [a,b,c]=args;
+  if(type==='invalidateMap') drawMap();
+  else if(type==='invalidateUi') updateUI();
+  else if(type==='log') log(a,b);
+  else if(type==='sound') snd(...args);
+  else if(type==='fail') fail(a);
+  else if(type==='warn') console.warn(...args);
+  else if(type==='matchEnded') presentEnd(a,b);
+  else if(type==='alliedDecisionRequested') showAlliedDecision(a);
+  else if(type==='closeAlliedDecision') closeAlliedDecision();
+  else if(type==='draftCompleted') draftDoneAt=performance.now();
+  else if(type==='controllerTaskRequested') presentationState.controllerTasks.push(a);
+  else if(type==='replayDiverged'){
+    if(a.otherVersion) showNotice({kind:'gold',title:'Replay drifted from the recording',text:`Recorded on game ${(a.fileGame||'an earlier version')}; the rules have changed since. Nothing to report.`,ttl:9000});
+    else log('Replay diverged from the recording at '+Math.floor(a.tick*TICK/60000)+':'+String(Math.floor(a.tick*TICK/1000%60)).padStart(2,'0')+(a.reason?' — '+a.reason:'')+'.',true);
+  }else if(type==='compatibilityEffect') presentCompatibilityEffect(a);
+  else if(type==='flash') flashes.push(structuredClone(a));
+  else if(type==='floater') floaters.push(structuredClone(a));
+  else if(type==='tracer') fxTracer(...args);
+  else if(type==='scorch') fxScorch(...args);
+  else if(type==='cashFloat') cashFloat(...args);
+  else if(type==='incrementStat') sInc(...args);
+  else if(type==='timeline') sEvent(...args);
+  else if(type==='notice') showNotice(a);
+  else if(type==='setPickMode'){ pickMode=a; updateHint(); }
+  else if(type==='clearBuildMode') setBuild(null);
+  else if(type==='customBot') setTimeout(()=>{ log(`${a.name}, another player's nation, has joined this war — it plays at ${(DIFF().brain||2)<4?'Super hard':DIFF().label} regardless of your difficulty.`,true); showNotice({kind:'gold',flag:a.flag,title:`${a.name} has entered the war`,text:`A player's own nation, playing at ${(DIFF().brain||2)<4?'Super hard':DIFF().label}. Beat it and it goes on their record.`,ttl:12000}); },1500);
+  else if(type==='setupComplete'){ startTime=performance.now(); log('Matches last about 20 minutes. Expand fast, but keep troops in reserve — a thin army invites invasion.'); }
+  else if(type==='proposalNotice') showNotice({kind:'gold',flag:a.from.flag,title:`${a.from.name} proposes ${a.type==='ally'?'an alliance':'a non-aggression pact'}`,text:a.type==='ally'?'Permanent: shared defense, vision and trade. Breaking it costs reputation.':'Three minutes of peace on both sides.',closeable:false,ttl:a.ttl,buttons:[{label:'Accept',primary:true,onClick:()=>issue('accept',a.from.id,a.type,0)},{label:'Decline',onClick:()=>issue('decline',a.from.id)}]});
+  else if(type==='attackStarted'){ if(a.id===me()?.id&&b>=0&&!STATS.campaigns[players[b].name]){ STATS.campaigns[players[b].name]={start:sMin()}; if(!STATS.c.firstAttack){ sInc('firstAttack'); sEvent(`First campaign: ${players[b].name}`); } } }
+  else if(type==='invasion') invasionNotice(...args);
+  else if(type==='tileCaptured'){ if(visAt(a%W,(a-a%W)/W)) fxSpark(a%W,(a-a%W)/W,b.color); }
+  else if(type==='conquest'){ sInc('conquests'); if(a.kind!=='neutral') sInc('kills'); sEvent(a.kind==='neutral'?`Conquered ${a.name}`:`Eliminated ${a.name}`,a.kind==='neutral'?'note':'kill'); if(STATS.campaigns[a.name]) STATS.campaigns[a.name].end=sMin(); }
+  else if(type==='fell') sEvent(`Fell to ${a.name}`,'death');
+  else if(type==='badge'&&c!=null) badges.push({kind:'unify',text:a.name,sub:`unified by ${b.name} — +${c} troops now, +${(a.size*HOLD_BONUS).toFixed(1)} troops/s while held`,flag:b.flag,col:b.color,age:0,life:b.id===me()?.id?130:90,snd:b.id===me()?.id?'fanfare':'fanfareq'});
+  else if(type==='badge') badges.push({text:`${a.name}`,sub:`killed by ${b.name}`,flag:a.flag,kflag:b.flag,col:b.color,age:0,life:130,snd:(a.id===me()?.id||b.id===me()?.id)?'taps':'tapsq'});
+  else if(type==='plunder'){ snd('cash'); log(`Conquered ${a.name}: +${b} gold plunder${c>1.5?' (early-game bonus)':''}.`,true); cashFloat(centroid(a)[0],centroid(a)[1],b); }
+  else if(type==='treasury'){ log(`${a.name} seized ${b.name}'s treasury: ${c} gold.`,a.id===me()?.id||b.id===me()?.id); if(a.id===me()?.id){ snd('cash'); cashFloat(centroid(a)[0],centroid(a)[1],c); } }
+  else if(type==='nuclearAlert'){ sInc('nuked'); STATS.nukedBy[players[a.owner].name]=(STATS.nukedBy[players[a.owner].name]||0)+1; sEvent(`Nuked by ${players[a.owner].name}`,'nuke'); const lx=a.from%W+.5,ly=(a.from-a.from%W)/W+.5; nukeAlerts.push({from:[lx,ly],at:[b+.5,c+.5],owner:a.owner,age:0,life:88}); snd('siren'); }
+  else if(type==='bigLoss'){ if(a>STATS.bigLoss.n) STATS.bigLoss={n:Math.round(a),by:`${b.name}'s missile`}; }
+  else if(type==='cleanupSelection'){ const ids=new Set(a.map(value=>value.id)); for(const ship of selected) if(!ids.has(ship.id)) selected.delete(ship); }
+  else if(type==='barrageResolved'){ if(a.victim===me()?.id&&a.cas>STATS.bigLoss.n) STATS.bigLoss={n:Math.round(a.cas),by:`${players[a.owner].name}'s ${(SHIPS[a.cls]||STRUCT[a.cls]).label.toLowerCase()}`}; log(`${players[a.owner].name}'s ${(SHIPS[a.cls]||STRUCT[a.cls]).label.toLowerCase()} ${a.cls==='bertha'?'shell':'barrage'} killed ${Math.round(a.cas)} ${players[a.victim].name} troops.`,true); }
+  else if(type==='cash'){ const point=centroid(a); cashFloat(point[0],point[1],b); }
+  else if(type==='playerAccrued'){ STATS.c.peak=Math.round(a.peakTroops||0); STATS.c.gold=Math.round(a.goldEarned||0); if(b>=0.5&&!STATS.c.half){ STATS.c.half=1; sEvent('Crossed half the world','milestone'); } if(b>=0.25&&!STATS.c.quarter){ STATS.c.quarter=1; sEvent('A quarter of the world'); } }
+}
+function processEngineEvents(){
+  engine.renderBuffers();
+  const {errors}=engine.dispatchEvents(presentEngineEvent);
+  for(const item of errors) console.error('[statefall] event adapter failed',item.event.type,item.error);
+  while(presentationState.controllerTasks.length){
+    const task=presentationState.controllerTasks.shift();
+    try{
+      if(task==='showReplayDivergence') divergenceCard();
+      else console.warn('[statefall] unknown controller task',task);
+    }catch(error){ console.error('[statefall] controller task failed',task,error); }
+  }
+}
+function runEngineOperation(operation){
+  try{ return operation(); }finally{ processEngineEvents(); }
+}
 function fxTracer(x0,y0,x1,y1,col='255,240,200'){ tracers.push({x0,y0,x1,y1,age:0,col}); }
 function fxScorch(x,y,r){ if(scorches.length>400) scorches.shift(); scorches.push({x,y,r,age:0}); }
 
 
 // ---------------------------------------------------------------- naval: transports and warships
-function waterNeighbor(t){ const x=t%W,y=(t-x)/W; for(const [dx,dy] of N8){ if(inb(x+dx,y+dy)&&!land[idx(x+dx,y+dy)]) return idx(x+dx,y+dy); } return -1; }
-function nearestCoast(p,t){ let best=-1,bd=1e12; const tx=t%W,ty=(t-tx)/W;
-  for(let c=0;c<W*H;c++){ if(owner[c]!==p.id) continue; const x=c%W,y=(c-x)/W; const d=(x-tx)**2+(y-ty)**2; if(d<bd&&isCoast(c)){bd=d;best=c;} }
-  return best; }
-function nearestPort(p,t){ let best=null,bd=1e12; const tx=t%W,ty=(t-tx)/W;
-  for(const st of structures){ if(st.type!=='port'||st.building||st.owner!==p.id) continue; const x=st.t%W,y=(st.t-x)/W; const d=(x-tx)**2+(y-ty)**2; if(d<bd){bd=d;best=st;} }
-  return best; }
-function waterPath(a,b){ // BFS across water, 8-connected
-  if(a<0||b<0) return null;
-  const par=new Int32Array(W*H).fill(-1), q=new Int32Array(W*H); let h=0,tl=0; q[tl++]=a; par[a]=a;
-  while(h<tl){ const c=q[h++]; if(c===b) break; const x=c%W,y=(c-x)/W;
-    for(const [dx,dy] of N8){ const nx=x+dx,ny=y+dy; if(!inb(nx,ny)) continue; const n=idx(nx,ny); if(land[n]||par[n]>=0) continue; par[n]=c; q[tl++]=n; } }
-  if(par[b]<0) return null;
-  const path=[]; for(let c=b;c!==a;c=par[c]) path.push(c); path.push(a); return path.reverse();
-}
-function shipXY(sh){ const i=Math.min(sh.path.length-1,Math.floor(sh.pos)); const t=sh.path[i]; return [t%W+.5,(t-t%W)/W+.5]; }
-function nearestCoastOf(id,t,reg){ let best=-1,bd=1e12; const tx=t%W,ty=(t-tx)/W;
-  for(let c=0;c<W*H;c++){ if(owner[c]!==id||(reg>=0&&region[c]!==reg)) continue; const x=c%W,y=(c-x)/W; const d=(x-tx)**2+(y-ty)**2; if(d<bd&&isCoast(c)){bd=d;best=c;} }
-  return best; }
-function heavyFrom(p,fromTile,origin){ if(gOn(p)&&origin) return structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===p.id&&areaOf&&areaOf[st.t]===origin.id); return structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===p.id); }
-function launchTransport(p,target,troops,seed,origin){
-  let from=nearestCoast(p,seed); if(origin&&gOn(p)){ let best=-1,bd=1e12; const sx=seed%W,sy=(seed-sx)/W; for(let c=0;c<W*H;c++){ if(owner[c]!==p.id||areaOf[c]!==origin.id||!isCoast(c)) continue; const d=(c%W-sx)**2+((c-c%W)/W-sy)**2; if(d<bd){bd=d;best=c;} } if(best<0){ if(p===me) fail('That area has no coastline to embark from.'); return false; } from=best; } if(from<0){ if(p===me) log('You need some coastline to embark from.',true); return false; }
-  if(!isCoast(seed)||owner[seed]!==target){ const near=nearestCoastOf(target,from,region[seed]); if(near>=0) seed=near; }
-  const path=waterPath(waterNeighbor(from),waterNeighbor(seed));
-  if(!path){ if(p===me) log('No sea route from your coast to that spot.',true); return false; }
-  troops=takeTroopsFrom(p,origin,troops); if(p===me) snd('foghorn');
-  const heavy=heavyFrom(p,from,origin&&gOn(p)?origin:areaAt(from));
-  transports.push({owner:p.id,target,troops,seed,path,pos:0,hdg:0,wake:[],origin:origin?origin.id:null,heavy,hp:heavy?HEAVY.hp:1});
-  return true;
-}
-function moveShip(w,t){ if(land[t]) return false; const cur=idx(Math.floor(w.x),Math.floor(w.y)); const from=!land[cur]?cur:waterNeighbor(cur); const path=waterPath(from,t); if(!path) return false; w.path=path; w.pos=0; w.dest=t; return true; }
-function moveSelected(t,group){ let n=0; const ships=(group||[...selected]).filter(w=>warships.includes(w)&&w.hp>0); ships.forEach((w,i)=>{ // spread the group around the point
-    let tt=t; if(ships.length>1){ const ang=i/ships.length*Math.PI*2, r=4+Math.floor(ships.length/3); const x=Math.floor(t%W+Math.cos(ang)*r), y=Math.floor((t-t%W)/W+Math.sin(ang)*r); if(inb(x,y)&&!land[idx(x,y)]) tt=idx(x,y); }
-    if(moveShip(w,tt)) n++; });
-  return n; }
-function structAt(px,py){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; const rad=Math.max(14,cam.s*4.5); for(const st of structures){ if(vis&&!vis[st.t]) continue; const sx=cam.x+(st.t%W+.5)*cam.s, sy=cam.y+((st.t-st.t%W)/W+.5)*cam.s; const d=(sx-mx)**2+(sy-my)**2; if(d<rad*rad&&d<bd){bd=d;best=st;} } return best; }
-function shipAt(px,py,any){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; for(const w of warships){ if((!any&&w.owner!==me.id)||w.x==null||!visAt(w.x,w.y)||(SHIPS[w.cls].sub&&!subSeenBy(w,me.id))) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; const d=(sx-mx)**2+(sy-my)**2; const rad=Math.max(10,cam.s*4); if(d<rad*rad&&d<bd){bd=d;best=w;} } return best; }
-function nearestSubBase(p,t){ let best=null,bd=1e12; const tx=t%W,ty=(t-tx)/W; for(const st of structures){ if(st.type!=='subbase'||st.building||st.owner!==p.id) continue; const d=(st.t%W-tx)**2+((st.t-st.t%W)/W-ty)**2; if(d<bd){bd=d;best=st;} } return best; }
-function orderWarship(p,t,cls='warship'){ if(pausedBlock(p)) return false; if(p.kind==='bot'){ if(p.nextBuildAt>simMs) return false; p.nextBuildAt=simMs+rnd(4000,8000)/(bd(p).build||1); }
-  const S=SHIPS[cls]; if(land[t]||!ALLOWED.has(cls)) return false;
-  const port=S.sub?nearestSubBase(p,t):nearestPort(p,t); if(!port){ if(p===me&&S.sub) fail('Subs are built at a submarine base.'); return false; }
-  const cost=Math.round(S.cost*(port.linked?1-LINK_SHIP_DISCOUNT:1)); if(p.gold<cost) return false;
-  const path=waterPath(waterNeighbor(port.t),t); if(!path) return false;
-  p.gold-=cost;
-  let ticks=START.instant?0:(SHIP_BUILD[cls]||0); if(ticks&&port.linked) ticks=Math.round(ticks*0.75);
-  if(ticks<=0){ warships.push({id:++uidSeq,owner:p.id,cls,path,pos:0,dest:t,hp:S.hp,cool:0,ang:srand()*6.28,hdg:0,wake:[],barCool:0}); return true; }
-  port.queue=port.queue||[]; const idle=port.queue.length===0; port.queue.push({cls,dest:t,total:ticks,done:idle?tickN+ticks:0});
-  if(p===me) log(`${S.label} laid down at ${S.sub?'the pens':'the yard'}${port.queue.length>1?' (queued)':''} — ${Math.ceil(ticks/10)} s.`,true);
-  return true;
-}
-function enemyOf(w,o){ if(o<0||o===w.owner||atPeace(w.owner,o)) return false; const q=players[o]; if(!q.alive) return false; if(q.kind==='neutral') return !!(q.grudge&&q.grudge[w.owner]!=null&&tickN-q.grudge[w.owner]<PROVOKE_TICKS); return true; }
+
+function structAt(px,py){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; const rad=Math.max(14,cam.s*4.5); for(const st of structures){ if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue; const sx=cam.x+(st.t%W+.5)*cam.s, sy=cam.y+((st.t-st.t%W)/W+.5)*cam.s; const d=(sx-mx)**2+(sy-my)**2; if(d<rad*rad&&d<bd){bd=d;best=st;} } return best; }
+function shipAt(px,py,any){ const r=cv.getBoundingClientRect(); const mx=px-r.left,my=py-r.top; let best=null,bd=1e9; for(const w of warships){ if((!any&&w.owner!==me().id)||w.x==null||!visAt(w.x,w.y)||(SHIPS[w.cls].sub&&!subSeenBy(w.id,me().id))) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; const d=(sx-mx)**2+(sy-my)**2; const rad=Math.max(10,cam.s*4); if(d<rad*rad&&d<bd){bd=d;best=w;} } return best; }
+
 function cashFloat(x,y,g){ floaters.push({x,y,txt:'+$'+Math.round(g),age:0,col:'#ffd27a',big:true}); }
-function seizeTreasury(p,def){ if(!p||p.kind==='neutral'||def.kind==='neutral') return; const g=Math.floor(def.gold); def.gold=0; if(g>0){ p.gold+=g; if(p===me){ snd('cash'); const c=centroid(def); cashFloat(c[0],c[1],g); } log(`${p.name} seized ${def.name}'s treasury: ${g} gold.`, p===me||def===me); } }
-function crater(cx,cy,r,by,opt,spare){
-  flashes.push({x:cx,y:cy,r:r+1,age:0,col:'#ffb347'}); const lost={}; if(owner[idx(cx,cy)]>=0) markHostile(by,owner[idx(cx,cy)]);
-  const R2=r+SUPPRESS_RING; for(let y=cy-R2;y<=cy+R2;y++)for(let x=cx-R2;x<=cx+R2;x++){ if(inb(x,y)&&(x-cx)**2+(y-cy)**2<=R2*R2&&land[idx(x,y)]) shelled[idx(x,y)]=tickN+SUPPRESS_TICKS; }
-  for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){ if(!inb(x,y)||(x-cx)**2+(y-cy)**2>r*r) continue; const t=idx(x,y); if(!land[t]) continue;
-    const oo=owner[t]; if(spare!=null&&oo>=0&&(oo===spare||atPeace(spare,oo))) continue;
-    if(struct[t]){ const st=structures.find(q=>q.t===t); if(st&&(st.level||1)>=2){ st.level=1; st.lshield=0; if(st.owner===me.id) log(`${STRUCT[st.type].label} knocked back to level I by bombardment.`,true); } else { destroyStructure(t); if(st) structCounts(players[st.owner]); } }
-    const o=owner[t]; if(spare!=null&&o>=0&&(o===spare||atPeace(spare,o))) continue; if(o>=0&&o!==by){ lost[o]=(lost[o]||0)+1; setOwner(t,-1); } }
-  let cas=0;
-  for(const o in lost){ const q=players[o];
-    const poolB=gOn(q)?((areaAt(idx(cx,cy))&&areaAt(idx(cx,cy)).owner===q.id)?areaAt(idx(cx,cy)).troops:q.troops):q.troops; const dB=gOn(q)?densityAt(q,idx(cx,cy)):density(q);
-    const kill=Math.min(lost[o]*dB*1.0,poolB)+Math.min(opt?opt.cap:BARRAGE_KILL_CAP,(opt?opt.flat:BARRAGE_KILL_FLAT)+q.troops*(opt?opt.pct:BARRAGE_KILL_PCT)); // shrapnel on the tiles plus casualties in the defending army
-    const k=Math.min(q.troops,kill); if(gOn(q)) loseTroopsAt(q,idx(cx,cy),k); else q.troops-=k; cas+=k; floaters.push({x:cx,y:cy,txt:'-'+Math.round(k),age:0,col:'#ff9a9a'});
-    if(q.kind==='neutral') q.grudge[by]=tickN; if(q.tiles<=0&&q.alive){ q.alive=false; log(`${q.name} was bombarded into oblivion.`,true); seizeTreasury(players[by],q); } if(q===me) snd('invaded'); }
-  if(Object.keys(lost).length&&(by===me.id||lost[me.id])) snd('shellhit');
-  return cas;
-}
-function shipPiracy(w){
-  const P=SHIPS[w.cls].pirate; if(!P) return;
-  if(w.boarding){ const tr=w.boarding; if(tr.done||tr.owner===w.owner){ w.boarding=null; return; }
-    tr.held=tickN+3; // grappled: the merchant heaves to while the privateer comes alongside
-    const dx=tr.x-w.x, dy=tr.y-w.y, dd=Math.hypot(dx,dy); if(dd>1.2){ const sp=SHIPS[w.cls].speed; steer(w,w.x+dx/dd*Math.min(sp,dd-1),w.y+dy/dd*Math.min(sp,dd-1)); return; }
-    if(--w.boardT>0) return; // boarded: the merchant changes hands and sails for our nearest port
-    const port=nearestPort(players[w.owner],idx(Math.floor(tr.x),Math.floor(tr.y))); w.boarding=null; w.pirateCool=tickN+P.cd; markHostile(w.owner,tr.owner);
-    if(!port){ if(w.owner===me.id) log('Privateer boarded a merchant but you have no port to bring it to.',true); return; }
-    const cur=idx(Math.floor(tr.x),Math.floor(tr.y)); const from=!land[cur]?cur:waterNeighbor(cur); const path=waterPath(from,waterNeighbor(port.t)); if(!path) return;
-    const victim=players[tr.owner]; tr.from.busy=false; tr.owner=w.owner; tr.to=port; tr.from=port; tr.path=path; tr.pos=0; tr.prize=true; tr.held=0;
-    { const cur2=idx(Math.floor(w.x),Math.floor(w.y)); const back=waterPath(!land[cur2]?cur2:waterNeighbor(cur2),w.dest); if(back){ w.path=back; w.pos=0; } }
-    if(w.owner===me.id) sInc('merchantsCaptured'); log(`${players[w.owner].name}'s privateer captured a ${victim.name} merchant.`, w.owner===me.id||victim===me); if(w.owner===me.id) snd('cash'); flashes.push({x:tr.x,y:tr.y,r:2,age:0,col:'#ffd27a'}); return; }
-  if(w.pirateCool>tickN) return;
-  let best=null,bd=P.range*P.range; for(const tr of traders){ if(tr.done||tr.x==null||tr.owner===w.owner||tr.prize||atPeace(w.owner,tr.owner)) continue; const d=(tr.x-w.x)**2+(tr.y-w.y)**2; if(d<bd){bd=d;best=tr;} }
-  if(best){ w.boarding=best; w.boardT=P.board; if(w.owner===me.id) log('Privateer boarding a merchant…',true); }
-}
-function seededTierOrder(candidates,tier,rng=srand){
-  return candidates.map((value,index)=>({value,index,key:rng()})).sort((a,b)=>tier(a.value)-tier(b.value)||a.key-b.key||a.value.t-b.value.t||a.value.owner-b.value.owner||a.index-b.index).map(x=>x.value);
-}
-function cruiseTargets(candidates,rng=srand){ const tier=t=>t.type==='shield'?0:t.type==='sam'?1:2; return seededTierOrder(candidates,tier,rng).slice(0,CRUISE.count); }
-function shipCruise(w){ if(!w.cruise||w.cruiseCool>tickN) return; const R=CRUISE.range, cx=w.x,cy=w.y;
-  const foes=structures.filter(st=>!st.building&&enemyOf(w,st.owner)&&((st.t%W+.5-cx)**2+((st.t-st.t%W)/W+.5-cy)**2)<=R*R&&!(START.fog&&w.owner===me.id&&vis&&!vis[st.t]));
-  if(!foes.length) return;
-  w.cruiseCool=tickN+CRUISE.cd; const picks=cruiseTargets(foes);
-  for(const st of picks){ const dist=Math.hypot(st.t%W+.5-cx,(st.t-st.t%W)/W+.5-cy); missiles.push({owner:w.owner,t:st.t,from:idx(Math.floor(cx),Math.floor(cy)),age:0,flight:Math.max(40,Math.round(dist/CRUISE.speed)),cruise:true}); }
-  markHostile(w.owner,picks[0].owner); if(w.owner===me.id||picks.some(q=>q.owner===me.id)){ snd('missile'); log(`${players[w.owner].name}'s battleship launched cruise missiles at ${players[picks[0].owner].name}'s ${STRUCT[picks[0].type].label.toLowerCase()}${picks.length>1?' and more':''}.`,true); } }
-function shipBarrage(w){
-  const B=SHIPS[w.cls].barrage; if(!B||w.barCool>tickN) return;
-  const R=B.range, cx=Math.round(w.x), cy=Math.round(w.y); const targets=[];
-  const sams=[]; for(const st of structures){ const sx=st.t%W,sy=(st.t-sx)/W; if((sx-cx)**2+(sy-cy)**2<=R*R&&enemyOf(w,st.owner)){ ((st.type==='sam'||st.type==='battery'||st.type==='shore'||st.type==='shield'||(st.type==='port'&&(st.level||1)>=2))?sams:targets).push(st.t); if(st.type==='shield') sams.push(st.t,st.t); } }
-  if(sams.length){ targets.length=0; for(const t of sams){ targets.push(t,t); } } // air defenses first, double weight
-  if(targets.length<B.count){ for(let k=0;k<60&&targets.length<B.count*3;k++){ const x=cx+Math.round(rnd(-R,R)), y=cy+Math.round(rnd(-R,R)); if(!inb(x,y)||(x-cx)**2+(y-cy)**2>R*R) continue; const t=idx(x,y); if(land[t]&&enemyOf(w,owner[t])) targets.push(t); } }
-  if(!targets.length) return;
-  w.barCool=tickN+B.cd;
-  const volley={cas:0,left:B.count,owner:w.owner,victim:owner[targets[0]],cls:w.cls};
-  for(let i=0;i<B.count;i++){ const t=pick(targets); const ang=(w.hdg||0)+Math.PI/2+(i/(B.count-1)-0.5)*1.2; const ox=w.x,oy=w.y; // launchers fan out across the beam, staggered by a tenth of a second
-    shells.push({owner:w.owner,x:w.x+Math.cos(ang)*1.5,y:w.y+Math.sin(ang)*1.5,kind:'land',tx:t%W+.5,ty:(t-t%W)/W+.5,radius:B.radius,trail:[],delay:i,volley,arc:true,missile:true,speed:3.2,rise:14+i*3,ox,oy}); }
-  flashes.push({x:w.x,y:w.y,r:1.5,age:0,col:'#ffd27a'});
-  if(w.owner===me.id||targets.some(t=>owner[t]===me.id)) snd('shell');
-  if(w.owner===me.id) log(`${SHIPS[w.cls].label} opened a barrage.`,true);
-}
-function steer(sh,nx,ny){ // move, turn smoothly toward the direction of travel, record a wake
-  if(sh.x!=null){ const dx=nx-sh.x, dy=ny-sh.y; if(dx*dx+dy*dy>1e-4){ const want=Math.atan2(dy,dx); let d=want-sh.hdg; d=Math.atan2(Math.sin(d),Math.cos(d)); sh.hdg+=d*0.35; } }
-  sh.x=nx; sh.y=ny; sh.wake.push([nx,ny]); if(sh.wake.length>14) sh.wake.shift();
-}
-function commandCover(t){ const x=t%W,y=(t-x)/W; let n=0; for(const c of structures){ if(c.type!=='command'||c.building) continue; if(c.owner!==structOwner[t]&&c.owner!==owner[t]) continue; if((c.t%W-x)**2+((c.t-c.t%W)/W-y)**2<=CMD_RANGE*CMD_RANGE) n++; } return n; }
-function missileCost(p,silo){ const n=silo?commandCover(silo.t):0; return Math.round(NUKE_COST*(1-Math.min(CMD_DISCOUNT_MAX,n*CMD_DISCOUNT))); }
-function coveringSam(st){ const x=st.t%W,y=(st.t-x)/W; let best=null,bd=1e12; for(const q of structures){ if(q.type!=='sam'||q.building||q.owner!==st.owner||shelled[q.t]>tickN) continue; const d=(q.t%W-x)**2+((q.t-q.t%W)/W-y)**2; if(d<=SAM_RANGE*SAM_RANGE&&d<bd){bd=d;best=q;} } return best; }
-function missileCommand(){
-  if(tickN%15) return;
-  for(const p of players){ if(!p.alive||p.kind==='neutral'||!(p.commands>0)||p.autoFire===false) continue;
-    if(silosReady(p,true)<1) continue; // only silos inside a command center's range are under automatic control
-    // focus nation (set by the player) or every nation we are fighting
-    let foes; if(p.cmdFocus!=null){ const f=players[p.cmdFocus]; if(!f||!f.alive||atPeace(p.id,f.id)){ p.cmdFocus=null; foes=[]; } else foes=[f]; }
-    else foes=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&inConflict(p.id,q.id));
-    if(!foes.length) continue;
-    const foeIds=new Set(foes.map(q=>q.id));
-    // stay on the current objective until it is gone
-    let obj=p.cmdTarget; if(obj&&(!structures.includes(obj)||!foeIds.has(obj.owner)||(p===me&&vis&&!vis[obj.t]))) obj=null;
-    if(!obj){ let bs=0; const fx=p.cmdFocusT!=null?p.cmdFocusT%W:null, fy=p.cmdFocusT!=null?(p.cmdFocusT-fx)/W:null;
-      const nearFocus=st=>fx==null||((st.t%W-fx)**2+((st.t-st.t%W)/W-fy)**2)<=3600; const anyNear=fx!=null&&structures.some(st=>foeIds.has(st.owner)&&nearFocus(st)&&!(p===me&&vis&&!vis[st.t]));
-      for(const st of structures){ if(!foeIds.has(st.owner)) continue; if(p===me&&vis&&!vis[st.t]) continue; if(anyNear&&!nearFocus(st)) continue; // no firing blind
-        let sc={sam:5,silo:6,command:7,bertha:7,shield:5,airfield:7,flightops:6,battery:4,shore:2,city:4,port:3,factory:2,fort:1}[st.type]||1; if(st.type==='sam'&&shelled[st.t]>tickN) sc=8; if(st.building) sc*=0.6;
-        let cover=0; const x=st.t%W,y=(st.t-x)/W; for(const q of structures){ if(q.type!=='sam'||q.building||q.owner!==st.owner||shelled[q.t]>tickN) continue; if((q.t%W-x)**2+((q.t-q.t%W)/W-y)**2<=SAM_RANGE*SAM_RANGE) cover++; }
-        sc/= 1+cover*0.7; sc*=0.85+srand()*0.3; if(sc>bs){bs=sc;obj=st;} }
-      p.cmdTarget=obj; if(obj&&p===me) log(`Missile command: new objective, ${players[obj.owner].name}'s ${STRUCT[obj.type].label.toLowerCase()}.`,true); }
-    if(!obj) continue;
-    // if the objective is under an active SAM umbrella, hammer the nearest covering site first — same site, every launch, until it falls
-    const dome=obj.type==='shield'?null:domeFor(obj.t,p.id); if(dome){ const needM=Math.ceil(dome.hp/SHIELD.hit); if(silosReady(p,true)<Math.min(needM,Math.max(1,p.silos))||p.gold<needM*NUKE_COST*0.6+CMD_RESERVE){ if(p===me&&p.cmdWait!==dome){ p.cmdWait=dome; log(`Missile command: target is under a shield (${dome.hp} hp, ${needM} missiles to break) — holding until the salvo is affordable.`,true); } continue; } }
-    const cover=obj.type==='sam'?null:coveringSam(obj); if(cover&&p===me&&vis&&!vis[cover.t]){ if(p.cmdWait!==cover){ p.cmdWait=cover; log(`Missile command: ${players[obj.owner].name}'s target is under a SAM site you can't see — get eyes on it first.`,true); } continue; } const aim=cover||obj;
-    const inflight=missiles.filter(m=>!m.done&&m.owner===p.id&&m.t===aim.t).length;
-    if(aim.type!=='sam'&&!domeFor(aim.t,p.id)){ // anything undefended: one missile, then wait to see it land
-      if(inflight>0) continue;
-      if(launchMissile(p,aim.t,true)&&p===me) log(`Missile command fired at ${players[aim.owner].name}'s ${STRUCT[aim.type].label.toLowerCase()}.`,true);
-      continue; }
-    // a SAM site: it and every other active site whose umbrella covers it each get about two shots during a flight, so the salvo must be 2 per covering site + 1, launched together
-    if(inflight>0) continue;
-    const dm=domeFor(aim.t,p.id); const domeNeed=dm?Math.ceil(dm.hp/SHIELD.hit):0;
-    const ax=aim.t%W,ay=(aim.t-ax)/W; let cov=0; for(const q of structures){ if(q.type!=='sam'||q.building||q.owner!==aim.owner||shelled[q.t]>tickN||(p===me&&vis&&!vis[q.t])) continue; if((q.t%W-ax)**2+((q.t-q.t%W)/W-ay)**2<=SAM_RANGE*SAM_RANGE) cov++; }
-    const ctrl=structures.filter(q=>q.owner===p.id&&q.type==='silo'&&!q.building&&commandCover(q.t)>0).length;
-    const need=Math.min(2*cov+1+domeNeed, Math.max(1,ctrl));
-    const ready=silosReady(p,true); if(ready<need||p.gold<need*NUKE_COST+CMD_RESERVE){ if(p===me&&p.cmdWait!==aim){ p.cmdWait=aim; log(`Missile command: need a ${need}-missile salvo for ${players[aim.owner].name}'s SAM site — ${ready} of ${need} silos ready.`,true); } continue; }
-    p.cmdWait=null; let fired=0; for(let i=0;i<need;i++) if(launchMissile(p,aim.t,true)) fired++;
-    if(fired&&p===me) log(`Missile command: ${fired}-missile salvo at ${players[aim.owner].name}'s SAM site${cover?' (clearing the way)':''}.`,true);
-  }
-}
-function stampVis(cx,cy,r){ const R=Math.round(r); for(let y=Math.max(0,cy-R);y<=Math.min(H-1,cy+R);y++){ const dx=Math.floor(Math.sqrt(Math.max(0,R*R-(y-cy)*(y-cy)))); const x0=Math.max(0,cx-dx), x1=Math.min(W-1,cx+dx); vis.fill(1,y*W+x0,y*W+x1+1); } }
-function computeVision(){
-  if(!START.fog){ vis=null; return; }
-  if(!vis) vis=new Uint8Array(W*H); else vis.fill(0);
-  if(satUntil>tickN){ vis.fill(1); return; }
-  const friends=new Set([me.id]); for(const q of players) if(q!==me&&q.alive&&relation(me,q)?.type==='ally') friends.add(q.id);
-  const q=new Int32Array(W*H); const d=new Uint8Array(W*H).fill(255); let h=0,tl=0;
-  for(let t=0;t<W*H;t++){ if(owner[t]>=0&&friends.has(owner[t])){ const x=t%W,y=(t-x)/W; let edge=false; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)||!friends.has(owner[idx(x+dx,y+dy)])){edge=true;break;} } vis[t]=1; if(edge){ d[t]=0; q[tl++]=t; } } }
-  while(h<tl){ const c=q[h++]; if(d[c]>=FOG.base) continue; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N8){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(d[n]===255){ d[n]=d[c]+1; vis[n]=1; q[tl++]=n; } } }
-  // radar vision is a separate layer so jammers can blank it without touching line of sight
-  const base=vis; vis=radarLayer||(radarLayer=new Uint8Array(W*H)); vis.fill(0);
-  for(const st of structures){ if(st.building||!friends.has(st.owner)) continue; if(st.type==='radar') stampVis(st.t%W,(st.t-st.t%W)/W,FOG.radar); else if(st.type==='lradar') stampVis(st.t%W,(st.t-st.t%W)/W,FOG.lradar); }
-  for(const w of warships){ if(!friends.has(w.owner)||w.x==null||w.cls!=='rship') continue; stampVis(Math.round(w.x),Math.round(w.y),FOG.rship); }
-  for(const st of structures){ if(st.type!=='jammer'||st.building||friends.has(st.owner)) continue; const cx=st.t%W,cy=(st.t-cx)/W,R=FOG.jam; for(let y=Math.max(0,cy-R);y<=Math.min(H-1,cy+R);y++){ const dx=Math.floor(Math.sqrt(Math.max(0,R*R-(y-cy)*(y-cy)))); vis.fill(0,y*W+Math.max(0,cx-dx),y*W+Math.min(W-1,cx+dx)+1); } }
-  for(let t=0;t<W*H;t++) if(vis[t]) base[t]=1; vis=base;
-  for(const w of warships){ if(!friends.has(w.owner)||w.x==null||w.cls==='rship') continue; stampVis(Math.round(w.x),Math.round(w.y),Math.max(10,SHIPS[w.cls].gun)); }
-  for(const pl of planes){ if(pl.owner===me.id&&pl.phase==='orbit') stampVis(Math.round(pl.tx),Math.round(pl.ty),FOG.plane.r); }
-  for(const a of aircraft){ if(friends.has(a.owner)&&a.type==='fighter'&&a.state==='patrol') stampVis(Math.round(a.tx),Math.round(a.ty),AIR.fighter.patrol); }
-}
-function visAt(x,y){ if(!vis) return true; const X=Math.floor(x),Y=Math.floor(y); if(!inb(X,Y)) return false; return vis[Y*W+X]===1; }
-function stepPlanes(){
-  for(const pl of planes){
-    if(pl.phase==='out'){ const dx=pl.tx-pl.x, dy=pl.ty-pl.y, dd=Math.hypot(dx,dy); if(dd<=FOG.plane.speed){ pl.phase='orbit'; pl.until=tickN+FOG.plane.dur; pl.onStation=tickN; pl.ang=Math.atan2(dy,dx); if(pl.owner===me.id) log('Spy plane on station.',true); } else { pl.x+=dx/dd*FOG.plane.speed; pl.y+=dy/dd*FOG.plane.speed; pl.hdg=Math.atan2(dy,dx); } }
-    else if(pl.phase==='orbit'){ pl.ang+=0.045; pl.x=pl.tx+Math.cos(pl.ang)*12; pl.y=pl.ty+Math.sin(pl.ang)*12; pl.hdg=pl.ang+Math.PI/2;
-      if(tickN%30===0&&tickN-(pl.onStation||0)>=FOG.plane.grace&&(pl.shots||0)<FOG.plane.maxShots) for(const st of structures){ if(st.type!=='sam'||st.building||st.owner===pl.owner||shelled[st.t]>tickN||atPeace(st.owner,pl.owner)||pl.shot?.has(st.t)) continue; const sx=st.t%W,sy=(st.t-sx)/W; if((sx-pl.tx)**2+(sy-pl.ty)**2>FOG.plane.r*FOG.plane.r) continue;
-        (pl.shot??=new Set()).add(st.t); pl.shots=(pl.shots||0)+1; if(pl.shots>FOG.plane.maxShots) break; if(srand()<FOG.plane.hit){ pl.phase='down'; flashes.push({x:pl.x,y:pl.y,r:3,age:0,col:'#ffb347'}); log(`${players[st.owner].name}'s SAM site shot down ${players[pl.owner].name}'s spy plane.`, pl.owner===me.id||st.owner===me.id); if(pl.owner===me.id) snd('intercept'); break; } }
-      if(pl.phase==='orbit'&&tickN-(pl.onStation||0)>=50&&enemyPatrolAt(pl.tx,pl.ty,pl.owner).length){ pl.phase='down'; flashes.push({x:pl.x,y:pl.y,r:3,age:0,col:'#ffb347'}); log(`Fighters shot down ${players[pl.owner].name}'s spy plane.`, pl.owner===me.id); }
-      if(pl.phase==='orbit'&&pl.until<=tickN){ pl.phase='home'; }
-    }
-    else if(pl.phase==='home'){ const dx=pl.hx-pl.x, dy=pl.hy-pl.y, dd=Math.hypot(dx,dy); if(dd<=FOG.plane.speed) pl.phase='done'; else { pl.x+=dx/dd*FOG.plane.speed; pl.y+=dy/dd*FOG.plane.speed; pl.hdg=Math.atan2(dy,dx); } }
-  }
-  planes=planes.filter(pl=>pl.phase!=='done'&&pl.phase!=='down');
-}
-function callPlane(p,t){ if(pausedBlock(p)) return false;
-  if(!START.fog) return false; const fld=airfieldsOf(p).sort((a,b)=>Math.hypot(a.t%W-t%W,(a.t-a.t%W)/W-(t-t%W)/W)-Math.hypot(b.t%W-t%W,(b.t-b.t%W)/W-(t-t%W)/W))[0]; if(!fld||Math.hypot(fld.t%W-t%W,(fld.t-fld.t%W)/W-(t-t%W)/W)>150){ if(p===me) fail(fld?'That point is beyond 150 tiles of your nearest airfield.':'Spy planes need an airfield.'); return false; } if(p===me&&planeCool>tickN){ fail(`Spy plane ready in ${Math.ceil((planeCool-tickN)/10)} s.`); return false; }
-  if(p.gold<FOG.plane.cost){ if(p===me) fail('Not enough gold for a spy plane.'); return false; }
-  const tx=t%W+.5, ty=(t-t%W)/W+.5; const hx=fld.t%W+.5, hy=(fld.t-fld.t%W)/W+.5;
-  p.gold-=FOG.plane.cost; if(p===me) planeCool=tickN+FOG.plane.cd;
-  planes.push({owner:p.id,x:hx,y:hy,hx,hy,tx,ty,phase:'out',hdg:0}); if(p===me){ log('Spy plane launched.',true); snd('interceptor'); } return true;
-}
-function launchSatellite(){ if(!START.fog) return; const site=structures.find(st=>st.owner===me.id&&st.type==='satellite'&&!st.building); if(!site) return fail('You need a finished satellite launch site.');
-  if(satCool>tickN) return fail(`Next launch window in ${Math.ceil((satCool-tickN)/10)} s.`); if(me.gold<FOG.sat.cost) return fail('Not enough gold for a satellite launch.');
-  me.gold-=FOG.sat.cost; satUntil=tickN+FOG.sat.dur; satCool=tickN+FOG.sat.cd; log('Satellite in orbit — full map for 45 s.',true); snd('missile'); }
-function gunTarget(st){ return (GUNS[st.type]&&st.type!=='bertha')||(st.type==='port'&&(st.level||1)>=2&&(st.gunHp||0)>0); }
-function stepGuns(){
-  for(const st of structures){ const G=GUNS[st.type]||(st.type==='port'&&(st.level||1)>=2?GUNS.shore:null); if(!G||st.building||shelled[st.t]>tickN) continue; if(st.cool>tickN) continue;
-    const gx=st.t%W+.5, gy=(st.t-st.t%W)/W+.5, R2=G.range*G.range; const own=st.owner;
-    if(st.type==='bertha'){ // nearest enemy building in range; SAM sites and bastions first
-      let best=null,bs=1e12; for(const q of structures){ if(q.owner===own||q.building||atPeace(own,q.owner)||!inConflict(own,q.owner)&&players[q.owner].kind!=='neutral') continue; if(players[q.owner].kind==='neutral'&&!(players[q.owner].grudge&&players[q.owner].grudge[own]!=null)) continue;
-        const d=(q.t%W+.5-gx)**2+((q.t-q.t%W)/W+.5-gy)**2; if(d>R2) continue; const pri=(q.type==='sam'||q.type==='fort'||q.type==='battery'||q.type==='shore')?0.5:1; if(d*pri<bs){ bs=d*pri; best=q; } }
-      if(!best) continue; st.cool=tickN+G.cd; const tx=best.t%W+.5, ty=(best.t-best.t%W)/W+.5;
-      shells.push({owner:own,x:gx,y:gy,kind:'land',tx,ty,radius:G.radius,trail:[],delay:0,speed:3,arc:true,volley:{cas:0,left:1,owner:own,victim:best.owner,cls:'bertha'},ox:gx,oy:gy});
-      if(own===me.id||best.owner===me.id) snd('bertha',gx,gy); continue; }
-    // naval guns: nearest hostile ship or transport in range; shore guns prefer transports and merchants
-    let tgt=null,bd=R2,kind=null;
-    for(const tr of transports){ if(tr.done||tr.x==null||tr.owner===own||atPeace(own,tr.owner)) continue; // any non-allied transport in range is a target
-      const d=(tr.x-gx)**2+(tr.y-gy)**2; if(d<bd){bd=d;tgt=tr;kind='transport';} }
-    if(!tgt){ bd=R2; for(const w of warships){ if(w.owner===own||w.hp<=0||w.x==null||SHIPS[w.cls].sub||atPeace(own,w.owner)||!inConflict(own,w.owner)&&!(w.cls==='cruiser'||w.cls==='battleship')) continue; const d=(w.x-gx)**2+(w.y-gy)**2; if(d<bd){bd=d;tgt=w;kind='warship';} } }
-    if(!tgt) continue; st.cool=tickN+G.cd;
-    const dmg=(st.type==='shore'||st.type==='port')&&kind==='warship'?G.dmg/(ARMOR[tgt.cls]||1):G.dmg; // shore guns barely dent armored hulls
-    st.lastShotAt=tgt.owner;
-    shells.push({owner:own,cls:st.type==='port'?'shore':st.type,x:gx,y:gy,target:tgt,kind,trail:[],dmg,speed:(st.type==='shore'||st.type==='port')?7:4,from:st});
-    if(own===me.id||tgt.owner===me.id) snd((st.type==='shore'||st.type==='port')?'shoreguns':'battery',gx,gy);
-  }
-}
-// ---------------------------------------------------------------- air: airfields, fighters, bombers, flight operations
-function airfieldsOf(p){ return structures.filter(st=>st.type==='airfield'&&!st.building&&st.owner===p.id); }
-function hangarMax(st){ return (st.level||1)>=2?6:AIR.hangar; }
-function hangarCount(st){ return aircraft.filter(a=>a.home===st).length+(st.aq?st.aq.length:0); }
-function buyAircraft(p,st,type){ if(pausedBlock(p)) return false; if(p.kind==='bot'){ if(p.nextBuildAt>simMs) return false; p.nextBuildAt=simMs+rnd(4000,8000)/(bd(p).build||1); } const A=AIR[type]; if(!st||st.building||st.type!=='airfield'||st.owner!==p.id) return false; if(hangarCount(st)>=hangarMax(st)||p.gold<A.cost) return false; if(type==='carrier'&&(st.level||1)<2){ if(p===me) fail('Troop transports need a level II airfield.'); return false; }
-  p.gold-=A.cost; st.aq=st.aq||[]; const ticks=START.instant?0:A.build; st.aq.push({type,done:tickN+ticks,total:ticks}); if(p===me){ log(`${type==='fighter'?'Stealth fighter':type==='carrier'?'Stealth troop transport':'Stealth bomber'} ordered — ${Math.ceil(ticks/10)} s.`,true); snd('build'); } return true; }
-function spawnAircraft(st,type){ if(st.owner===me.id) sInc('planesBuilt'); const x=st.t%W+.5,y=(st.t-st.t%W)/W+.5; const a={id:++uidSeq,owner:st.owner,type,home:st,state:'hangar',x,y,hdg:0,hp:type==='fighter'?AIR.fighter.hp:1,until:0}; aircraft.push(a); return a; }
-function idleAircraft(p,type,t){ const x=t%W,y=(t-x)/W; return aircraft.filter(a=>a.owner===p.id&&a.type===type&&a.state==='hangar'&&structures.includes(a.home)&&Math.hypot(a.home.t%W-x,(a.home.t-a.home.t%W)/W-y)<=AIR[type].range).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0]; }
-function launchFighter(p,t){ if(pausedBlock(p)) return false; const a=idleAircraft(p,'fighter',t); if(!a){ if(p===me) fail('No fighter ready within range of that point.'); return false; } a.state='out'; a.tx=t%W+.5; a.ty=(t-t%W)/W+.5; a.until=0; if(p===me){ log('Fighter patrol launched.',true); snd('jet'); } return true; }
-function launchParadrop(p,t,troops){ if(pausedBlock(p)) return false; const a=idleAircraft(p,'carrier',t); if(!a){ if(p===me) fail('No troop transport ready within range of that point.'); return false; }
-  const origin=gOn(p)?(areaAt(a.home.t)||p.areas[0]):null; troops=Math.min(troops,AIR.carrier.capacity,origin?origin.troops:p.troops); if(troops<10){ if(p===me) fail('Not enough troops to load.'); return false; }
-  const o=owner[t]; if(o>=0&&atPeace(p.id,o)&&o!==p.id){ if(p===me) fail(`You're at peace with ${players[o].name}.`); return false; }
-  a.troops=takeTroopsFrom(p,origin,troops); if(p===me) sInc('paradrops'); a.state='out'; a.tx=t%W+.5; a.ty=(t-t%W)/W+.5; a.dropT=t; if(p===me){ log(`Troop transport airborne with ${Math.round(a.troops)} troops.`,true); snd('jet'); } return true; }
-function launchBomber(p,t){ if(pausedBlock(p)) return false; const a=idleAircraft(p,'bomber',t); if(!a){ if(p===me) fail('No bomber ready within range of that point.'); return false; } a.state='out'; a.runHdg=srand()*Math.PI*2; const half=AIR.bomber.bombs*AIR.bomber.spacing/2; a.tx=t%W+.5-Math.cos(a.runHdg)*half; a.ty=(t-t%W)/W+.5-Math.sin(a.runHdg)*half; a.bombs=AIR.bomber.bombs; a.dropAt=AIR.bomber.spacing; a.runLen=0; if(p===me){ log('Bomber launched.',true); snd('jet'); } return true; }
-function recallAircraft(a){ if(!['out','patrol','run'].includes(a.state)) return false; a.state='return'; if(a.owner===me.id) log(`${a.type==='fighter'?'Fighter':'Bomber'} recalled.`,true); return true; }
-function fly(a,tx,ty,sp){ const dx=tx-a.x,dy=ty-a.y,d=Math.hypot(dx,dy); if(d<=sp){ a.x=tx; a.y=ty; return true; } a.x+=dx/d*sp; a.y+=dy/d*sp; a.hdg=Math.atan2(dy,dx); return false; }
-function enemyPatrolAt(x,y,owner){ return aircraft.filter(f=>f.type==='fighter'&&f.state==='patrol'&&f.owner!==owner&&!atPeace(f.owner,owner)&&Math.hypot(f.tx-x,f.ty-y)<=AIR.fighter.patrol); }
-function bomb(a,x,y){ const cx=Math.floor(x),cy=Math.floor(y); if(!inb(cx,cy)) return false; if(a.owner===me.id) sInc('bombs'); const o0=owner[idx(cx,cy)]; if(o0===a.owner||(o0>=0&&atPeace(a.owner,o0))) return false; // hold the bomb over friendly ground
-  const dome=domeFor(idx(cx,cy),a.owner);
-  if(dome){ flashes.push({x:cx,y:cy,r:2,age:0,col:'#9df'}); hitDome(dome,1,a.owner); return; }
-  const t=idx(cx,cy); const st=struct[t]?structures.find(q=>q.t===t):null; const bunker=st&&(st.type==='bertha'||st.type==='battery'||st.type==='shield'||st.type==='silo')&&srand()<0.3;
-  if(bunker){ flashes.push({x:cx,y:cy,r:2,age:0,col:'#ffb347'}); return; }
-  crater(cx,cy,AIR.bomber.radius,a.owner,{flat:10,pct:0.004,cap:60},a.owner); if(owner[t]>=0) noteThreat(owner[t],t,'bomb',a.owner); if(a.owner===me.id||owner[t]===me.id) snd('bomb',cx,cy); return true; }
-function stepAir(){
-  for(const st of structures){ if(st.type!=='airfield'||st.building||!st.aq||!st.aq.length) continue; const job=st.aq[0]; if(job.done<=tickN){ st.aq.shift(); spawnAircraft(st,job.type); if(st.owner===me.id) log(`${job.type==='fighter'?'Stealth fighter':job.type==='carrier'?'Stealth troop transport':'Stealth bomber'} ready at the airfield.`,true); } }
-  for(const a of aircraft){
-    if(!structures.includes(a.home)){ a.dead=true; continue; }
-    const F=AIR[a.type]; const hx=a.home.t%W+.5, hy=(a.home.t-a.home.t%W)/W+.5;
-    if(a.type==='fighter'){
-      if(a.state==='out'){ if(fly(a,a.tx,a.ty,F.speed)){ a.state='patrol'; a.until=tickN+F.endurance; a.ang=0; if(a.owner===me.id) log('Fighter on patrol.',true); } }
-      else if(a.state==='patrol'){ a.ang=(a.ang||0)+0.028+0.012*Math.sin((a.ang||0)*2); const jink=(a.hitAt&&tickN-a.hitAt<40)?Math.sin(tickN*0.6)*4:0; const ex=F.patrol*0.75, ey=F.patrol*0.45; const rot=a.rot??(a.rot=srand()*Math.PI); const lx=Math.cos(a.ang)*ex, ly=Math.sin(a.ang)*ey; a.x=a.tx+lx*Math.cos(rot)-ly*Math.sin(rot)+jink; a.y=a.ty+lx*Math.sin(rot)+ly*Math.cos(rot); a.hdg=Math.atan2(a.y-(a.py??a.y),a.x-(a.px??a.x)); a.px=a.x; a.py=a.y; if(a.until<=tickN){ a.state='return'; if(a.owner===me.id) log('Fighter low on fuel, returning to base.',true); } }
-      else if(a.state==='return'){ if(fly(a,hx,hy,F.speed)){ a.state=a.hp<F.hp?'heal':'refuel'; a.until=tickN+(a.hp<F.hp?F.heal:F.refuel); } }
-      else if(a.state==='refuel'){ if(a.until<=tickN) a.state='hangar'; }
-      else if(a.state==='heal'){ if(a.until<=tickN){ a.hp++; if(a.hp>=F.hp){ a.hp=F.hp; a.state='hangar'; if(a.owner===me.id) log('Fighter repaired and ready.',true); } else a.until=tickN+F.heal; } }
-    } else if(a.type==='carrier'){ const C=AIR.carrier;
-      if(a.state==='out'){ if(fly(a,a.tx,a.ty,C.speed)){ const t=a.dropT, o=owner[t]; a.state='return'; const p=players[a.owner];
-          if(!land[t]){ addTroopsAt(p,a.home.t,a.troops); if(p===me) log('Drop zone is water — troops brought home.',true); }
-          else if(o===p.id){ addTroopsAt(p,t,a.troops); if(p===me) log(`${Math.round(a.troops)} paratroops landed on your land.`,true); }
-          else { attacks.push({owner:p.id,target:o,troops:a.troops,front:new Set([t]),naval:true,age:0,origin:null,landAt:t,startTiles:o>=0?players[o].tiles:0}); log(`${p.name} dropped ${Math.round(a.troops)} paratroops on ${o>=0?players[o].name:'open land'}.`, p===me||o===me.id); if(p===me) snd('attack'); flashes.push({x:a.tx,y:a.ty,r:3,age:0,col:'#fff'}); }
-          a.troops=0; } }
-      else if(a.state==='return'){ if(fly(a,hx,hy,C.speed)){ a.state='refuel'; a.until=tickN+C.rearm; } }
-      else if(a.state==='refuel'){ if(a.until<=tickN) a.state='hangar'; }
-    } else {
-      const B=AIR.bomber;
-      if(a.state==='out'){ if(fly(a,a.tx,a.ty,B.speed)){ a.state='run'; a.hdg=a.runHdg; a.dropAt=0; } }
-      else if(a.state==='run'){ a.x+=Math.cos(a.runHdg)*B.speed; a.y+=Math.sin(a.runHdg)*B.speed; a.dropAt+=B.speed; a.runLen=(a.runLen||0)+B.speed; if(a.dropAt>=B.spacing&&a.bombs>0){ a.dropAt=0; if(bomb(a,a.x,a.y)){ a.bombs--; frags.push({x:a.x,y:a.y,vx:Math.cos(a.runHdg)*0.4,vy:Math.sin(a.runHdg)*0.4,age:0,life:8,col:'#222',bomb:true}); } } if(a.bombs<=0||a.runLen>B.bombs*B.spacing*2||!inb(Math.floor(a.x),Math.floor(a.y))) a.state='return'; }
-      else if(a.state==='return'){ a.pull=Math.min(1,(a.pull||0)+0.08); if(fly(a,hx,hy,B.speed)){ a.state='refuel'; a.until=tickN+B.rearm; } }
-      else if(a.state==='refuel'){ if(a.until<=tickN) a.state='hangar'; }
-    }
-  }
-  for(const b of aircraft){ if(!(b.type==='bomber'||b.type==='carrier')||b.dead||!['out','run','return'].includes(b.state)) continue; const hunters=enemyPatrolAt(b.x,b.y,b.owner); if(hunters.length){ b.dead=true; if(b.owner===me.id) sInc('planesLost'); else if(hunters[0].owner===me.id) sInc('planesDown'); fxWreck('air',b.x,b.y,b.hdg,players[b.owner].color,b.type); if(b.type==='carrier'&&b.troops>0) log(`${Math.round(b.troops)} ${players[b.owner].name} paratroops were lost with the aircraft.`, b.owner===me.id); shells.push({owner:hunters[0].owner,x:hunters[0].x,y:hunters[0].y,kind:'aam',target:{x:b.x,y:b.y,static:true},trail:[],speed:9,dmgDone:true}); flashes.push({x:b.x,y:b.y,r:3,age:0,col:'#ffb347'}); log(`${players[hunters[0].owner].name}'s fighters shot down ${players[b.owner].name}'s ${b.type==='carrier'?'troop transport':'bomber'}.`, b.owner===me.id||hunters[0].owner===me.id); if(b.owner===me.id||hunters[0].owner===me.id) snd('intercept',b.x,b.y); markHostile(hunters[0].owner,b.owner); } }
-  if(tickN%AIR.fighter.dog===0){
-    for(const f of aircraft){ if(f.type!=='fighter'||f.dead||!['patrol','return'].includes(f.state)) continue; const foes=enemyPatrolAt(f.x,f.y,f.owner); if(!foes.length) continue;
-      const friends=aircraft.filter(g=>g.type==='fighter'&&g.state==='patrol'&&g.owner===f.owner&&Math.hypot(g.x-f.x,g.y-f.y)<=AIR.fighter.patrol*1.5).length;
-      const outnumbered=foes.length>friends; const hit=srand()<(outnumbered?0.85:0.6); if(hit){ f.hp--; f.hitAt=tickN; shells.push({owner:foes[0].owner,x:foes[0].x,y:foes[0].y,kind:'aam',target:f,trail:[],speed:9,dmgDone:true}); if(f.owner===me.id&&f.hp===2){ log('A fighter is down to 2 hit points — recall it!',true); snd('invaded'); } if(f.owner===me.id||foes[0].owner===me.id) snd('dogfight',f.x,f.y); markHostile(f.owner,foes[0].owner); }
-      if(f.hp<=0){ f.dead=true; if(f.owner===me.id) sInc('planesLost'); else if(foes[0].owner===me.id) sInc('planesDown'); flashes.push({x:f.x,y:f.y,r:3,age:0,col:'#ffb347'}); fxWreck('air',f.x,f.y,f.hdg,players[f.owner].color,'fighter'); log(`${players[f.owner].name} lost a fighter in a dogfight.`, f.owner===me.id||foes[0].owner===me.id); } }
-  }
-  aircraft=aircraft.filter(a=>!a.dead&&players[a.owner].alive);
-}
-function areaThreats(p){ // for each of p's areas: the hostile troops on its borders, and whether it is under attack
-  const th={}; for(const a of p.areas) th[a.id]={hostile:0,attacked:false};
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const t=idx(x,y); if(owner[t]!==p.id) continue; const id=areaOf[t]; if(id<0||!th[id]) continue;
-    for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const o=owner[idx(x+dx,y+dy)]; if(o<0||o===p.id) continue; const q=players[o]; if(!q.alive||atPeace(p.id,o)) continue;
-      const hostile=q.kind==='neutral'?!!(q.grudge&&q.grudge[p.id]!=null&&tickN-q.grudge[p.id]<PROVOKE_TICKS):(inConflict(p.id,o)||density(q)>0); if(hostile&&!th[id]['seen'+o]){ th[id]['seen'+o]=true; th[id].hostile+=gOn(q)?densityAt(q,idx(x+dx,y+dy))*50:Math.min(q.troops,density(q)*50); } } }
-  for(const at of attacks){ if(at.target!==p.id) continue; for(const t of at.front){ const id=areaOf[t]; if(id>=0&&th[id]){ th[id].attacked=true; th[id].hostile+=at.troops; break; } } }
-  return th; }
-function seaRisk(p,origin,dest){ // hostile warships along the route, subs the escort could see, guns at the landing
-  const pickCoast=(area,nearT)=>{ let best=-1,bd=1e12; const nx=nearT%W,ny=(nearT-nx)/W; for(let c=0;c<W*H;c++){ if(owner[c]!==p.id||areaOf[c]!==area.id||!isCoast(c)) continue; const d=(c%W-nx)**2+((c-c%W)/W-ny)**2; if(d<bd){bd=d;best=c;} } return best; };
-  const dT=idx(Math.round(dest.cx),Math.round(dest.cy)); const to=pickCoast(dest,dT); if(to<0) return 99; const from=pickCoast(origin,to); if(from<0) return 99;
-  const path=waterPath(waterNeighbor(from),waterNeighbor(to)); if(!path) return 99;
-  let risk=0; const pts=[]; for(let i=0;i<path.length;i+=6) pts.push(path[i]); pts.push(path[path.length-1]);
-  for(const t of pts){ const x=t%W,y=(t-x)/W;
-    for(const w of warships){ if(w.owner===p.id||w.hp<=0||w.x==null||atPeace(p.id,w.owner)) continue; if(!(inConflict(p.id,w.owner)||SHIPS[w.cls].sub)) continue; if(SHIPS[w.cls].sub&&!subSeenBy(w,p.id)) continue; if((w.x-x)**2+(w.y-y)**2<=(t===path[path.length-1]?900:400)){ risk+=SHIPS[w.cls].sub?1:2; } } }
-  const tx=to%W,ty=(to-tx)/W; for(const st of structures){ if(st.building||st.owner===p.id||atPeace(p.id,st.owner)||!inConflict(p.id,st.owner)) continue; if(!(gunTarget(st)||st.type==='bertha')) continue; const R=st.type==='port'?14:(GUNS[st.type]||{range:14}).range; if((st.t%W-tx)**2+((st.t-st.t%W)/W-ty)**2<=(R+4)**2) risk+=2; }
-  return risk; }
-// ---------------------------------------------------------------- engineering: repair trucks
-const TRUCK={max:4,speed:0.4,repairTicks:80,costPip:15,reserve:150};
-function repairNeed(st){ if(st.building) return 0; if(st.type==='shield') return SHIELD.hp-st.hp; if(st.type==='airfield'&&(st.level||1)>=2) return LSHIELD.hp-(st.lshield||0); if(st.type==='port'&&(st.level||1)>=2) return 4-(st.gunHp||0); if(GUNS[st.type]&&st.hp!=null) return GUNS[st.type].hp-st.hp; return 0; }
-function repairOne(st){ if(st.type==='shield') st.hp++; else if(st.type==='airfield') st.lshield=(st.lshield||0)+1; else if(st.type==='port') st.gunHp=(st.gunHp||0)+1; else st.hp++; }
-function landPath(p,a,b){
-  const par=new Int32Array(W*H).fill(-1), q=new Int32Array(W*H); let h=0,tl=0; q[tl++]=a; par[a]=a;
-  while(h<tl){ const c=q[h++]; if(c===b) break; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(owner[n]!==p.id||par[n]>=0) continue; par[n]=c; q[tl++]=n; } }
-  if(par[b]<0) return null; const path=[]; for(let c=b;c!==a;c=par[c]) path.push(c); path.push(a); return path.reverse(); }
-function engineering(){
-  if(tickN%20) return;
-  for(const p of players){ if(!p.alive||p.kind==='neutral') continue; const cmds=structures.filter(st=>st.type==='engcmd'&&!st.building&&st.owner===p.id); if(!cmds.length) continue;
-    const mine=trucks.filter(t=>t.owner===p.id); if(mine.length>=TRUCK.max) continue;
-    const busy=new Set(mine.map(t=>t.target)); const jobs=structures.filter(st=>st.owner===p.id&&repairNeed(st)>0&&!busy.has(st)&&!st.repairing);
-    for(const st of jobs){ if(trucks.filter(t=>t.owner===p.id).length>=TRUCK.max) break; if(p.gold<TRUCK.costPip*repairNeed(st)+TRUCK.reserve) break;
-      const base=cmds.sort((a,b)=>((a.t%W-st.t%W)**2+((a.t-a.t%W)/W-(st.t-st.t%W)/W)**2)-((b.t%W-st.t%W)**2+((b.t-b.t%W)/W-(st.t-st.t%W)/W)**2))[0];
-      const path=landPath(p,base.t,st.t); if(!path) continue; trucks.push({owner:p.id,target:st,path,pos:0,x:base.t%W+.5,y:(base.t-base.t%W)/W+.5,hdg:0,state:'out',home:base}); if(p===me) log(`Repair truck dispatched to ${STRUCT[st.type].label.toLowerCase()}.`,true); }
-  }
-}
-function stepTrucks(){
-  for(const tr of trucks){ const p=players[tr.owner];
-    if(!structures.includes(tr.target)||!structures.includes(tr.home)){ tr.dead=true; continue; }
-    const drive=()=>{ tr.pos+=TRUCK.speed; const i=Math.min(tr.path.length-1,Math.floor(tr.pos)); const t=tr.path[i]; if(owner[t]!==p.id){ tr.dead=true; if(p===me) log('A repair truck was lost on captured ground.',true); return false; } const nx=t%W+.5, ny=(t-t%W)/W+.5; if(Math.abs(nx-tr.x)+Math.abs(ny-tr.y)>0.01) tr.hdg=Math.atan2(ny-tr.y,nx-tr.x); tr.x=nx; tr.y=ny; return tr.pos>=tr.path.length-1; };
-    const goHome=()=>{ tr.state='home'; const back=landPath(p,tr.target.t,tr.home.t); if(back){ tr.path=back; tr.pos=0; } else tr.dead=true; };
-    if(tr.state==='out'){ if(drive()){ tr.state='work'; tr.workAt=tickN+TRUCK.repairTicks; } }
-    else if(tr.state==='work'){ if(repairNeed(tr.target)<=0){ goHome(); continue; } if(tr.target.flash&&tr.target.flash+150>tickN){ tr.workAt=Math.max(tr.workAt,tickN+TRUCK.repairTicks); } if(tr.workAt<=tickN){ if(p.gold<TRUCK.costPip){ goHome(); continue; } p.gold-=TRUCK.costPip; repairOne(tr.target); tr.workAt=tickN+TRUCK.repairTicks; if(repairNeed(tr.target)<=0&&p===me) log(`Repair truck restored the ${STRUCT[tr.target.type].label.toLowerCase()}.`,true); } }
-    else if(tr.state==='home'){ if(drive()) tr.dead=true; }
-  }
-  trucks=trucks.filter(t=>!t.dead&&players[t.owner].alive);
-}
 
-function troopLogistics(){
-  if(tickN%40||!START.garrison) return;
-  for(const p of players){ if(!p.alive||p.kind==='neutral'||!(p.troopcmds>0)||!p.areas||p.areas.length<2||p.logisticsAuto===false) continue;
-    const home=p.areas[0]; const hd=home.troops/Math.max(1,home.tiles); const reserve=maxTroops(p)*0.3*(home.tiles/Math.max(1,p.tiles)); const surplus=home.troops-reserve; if(surplus<50) continue;
-    const th=areaThreats(p); const inTransit=a=>transports.filter(tr=>!tr.done&&tr.owner===p.id&&tr.target===p.id&&areaOf[tr.seed]===a.id).reduce((s2,tr)=>s2+tr.troops,0)+aircraft.filter(ac=>ac.owner===p.id&&ac.type==='carrier'&&ac.state==='out'&&ac.dropT!=null&&areaOf[ac.dropT]===a.id).reduce((s2,ac)=>s2+(ac.troops||0),0);
-    const cands=p.areas.filter(a=>a!==home&&a.tiles>=40&&(supplyAt[a.id]==null||supplyAt[a.id]+200<=tickN)).map(a=>{ const dens=a.troops/a.tiles; const t2=th[a.id]||{hostile:0,attacked:false}; const threatened=t2.attacked||t2.hostile>0; const bare=dens<hd*0.2;
-      const want=(threatened?hd*0.6:hd*0.2)*a.tiles; const need=Math.max(0,want-a.troops-inTransit(a)); return {a,need,threatened,bare,score:(t2.attacked?3:0)+(threatened?2:0)+(bare?1:0)+Math.min(1,t2.hostile/Math.max(1,a.troops))}; })
-      .filter(c=>c.need>=50&&(c.threatened||c.bare)).sort((x,y)=>y.score-x.score);
-    if(!cands.length) continue; const c=cands[0]; const send=Math.min(c.need,surplus,home.troops*0.15); if(send<50) continue;
-    const dropT=idx(Math.round(c.a.cx),Math.round(c.a.cy)); const air=idleAircraft(p,'carrier',dropT); let ok=false;
-    const risk=(home.coast&&c.a.coast)?seaRisk(p,home,c.a):99;
-    if(air&&owner[dropT]===p.id&&(risk>0||send<=AIR.carrier.capacity)){ ok=launchParadrop(p,dropT,Math.min(send,AIR.carrier.capacity)); if(ok&&p===me) log(`Troop command: paradropping ${Math.round(Math.min(send,AIR.carrier.capacity))} to ${areaLabel(p,c.a)} (${c.threatened?'under threat':'bare garrison'}${risk>0?', sea lane contested':''}).`,true); }
-    else if(home.coast&&c.a.coast){ if(risk>0&&!(th[c.a.id]&&th[c.a.id].attacked)){ if(p===me&&(supplyAt['warn'+c.a.id]==null||supplyAt['warn'+c.a.id]+600<=tickN)){ supplyAt['warn'+c.a.id]=tickN; log(`Troop command: convoy to ${areaLabel(p,c.a)} held — sea lane contested (${risk>=99?'no safe route':risk+' threats'}). Clear it or add escorts.`,true); } continue; }
-      const amt=risk>0?send*0.5:send; ok=reinforceArea(p,c.a,home,amt); if(ok&&p===me) log(`Troop command: shipping ${Math.round(amt)} to ${areaLabel(p,c.a)} (${c.threatened?'under threat':'bare garrison'}${risk>0?', running a contested lane':''}).`,true); }
-    if(ok) supplyAt[c.a.id]=tickN;
-  }
-}
-function flightOps(){
-  if(tickN%30) return;
-  for(const p of players){ if(!p.alive||p.kind==='neutral'||p.airAuto===false) continue; const ops=p.kind==='bot'||structures.some(st=>st.type==='flightops'&&!st.building&&st.owner===p.id); if(!ops) continue;
-    const fields=airfieldsOf(p); if(!fields.length) continue;
-    for(const st of fields){ const own=aircraft.filter(a=>a.home===st); const q=st.aq||[]; const nf=own.filter(a=>a.type==='fighter').length+q.filter(j=>j.type==='fighter').length, nb=own.filter(a=>a.type==='bomber').length+q.filter(j=>j.type==='bomber').length;
-      if(nf<2&&p.gold>=AIR.fighter.cost+AIR.reserve) buyAircraft(p,st,'fighter'); else if(nb<1&&p.gold>=AIR.bomber.cost+AIR.reserve) buyAircraft(p,st,'bomber'); }
-    for(const f of aircraft){ if(f.owner!==p.id||f.type!=='fighter'||f.state!=='patrol') continue; const foes=enemyPatrolAt(f.x,f.y,f.owner); const friends=aircraft.filter(g=>g.type==='fighter'&&g.state==='patrol'&&g.owner===p.id&&Math.hypot(g.x-f.x,g.y-f.y)<=AIR.fighter.patrol*1.5).length; if(f.hp<=2||(foes.length>friends&&f.hp<AIR.fighter.hp)) recallAircraft(f); }
-    const assets=structures.filter(st=>st.owner===p.id&&!st.building&&['sam','airfield','silo','battery','bertha','shield','command'].includes(st.type));
-    const active=aircraft.filter(a=>a.owner===p.id&&a.type==='fighter'&&['out','patrol'].includes(a.state));
-    for(const st of assets){ const x=st.t%W+.5,y=(st.t-st.t%W)/W+.5; if(active.some(a=>Math.hypot(a.tx-x,a.ty-y)<=AIR.fighter.patrol*0.9)) continue; if(launchFighter(p,st.t)) active.push({tx:x,ty:y}); }
-    const foes=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&(p.cmdFocus===q.id||inConflict(p.id,q.id))); if(!foes.length) continue; const foeIds=new Set(foes.map(q=>q.id));
-    let best=null,bs=0; for(const st of structures){ if(!foeIds.has(st.owner)||st.building) continue; if(p===me&&vis&&!vis[st.t]) continue; const x=st.t%W+.5,y=(st.t-st.t%W)/W+.5; if(enemyPatrolAt(x,y,p.id).length||domeFor(st.t,p.id)) continue;
-      let sc={sam:6,silo:5,command:5,airfield:6,flightops:5,bertha:5,battery:4,shield:1,city:4,port:3,factory:2}[st.type]||1; sc*=0.85+srand()*0.3; if(sc>bs){bs=sc;best=st;} }
-    if(best) launchBomber(p,best.t);
-  }
-}
-
-function reclaimLand(){ // craters and burnt ground grow back into whoever surrounds them, a little at a time
-  if(tickN%10) return;
-  for(const t of [...unclaimed]){ if(!land[t]||owner[t]>=0){ unclaimed.delete(t); continue; } if(srand()>0.25) continue;
-    const x=t%W,y=(t-x)/W; const tally={}; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const o=owner[idx(x+dx,y+dy)]; if(o>=0&&players[o].alive) tally[o]=(tally[o]||0)+1; }
-    let best=-1,bn=0,second=0; for(const k in tally){ if(tally[k]>bn){ second=bn; bn=tally[k]; best=+k; } else if(tally[k]>second) second=tally[k]; }
-    if(best>=0&&bn>=2&&bn>second) setOwner(t,best); } // grows as a solid front: two same-owner neighbours and a clear majority, so rival reclaims never interleave
-}
-// ---------------------------------------------------------------- garrisons mode: troops live in contiguous areas of land, separated by water
-let areaOf=null, nextAreaId=1; const supplyAt={};
-function gOn(p){ return START.garrison&&p&&p.kind!=='neutral'; }
-function rebuildAreas(){ // connected components of each player's land; troops carried over by tile overlap so merges add and splits divide
-  if(!START.garrison) return; if(!areaOf) areaOf=new Int32Array(W*H).fill(-1);
-  const old={}; for(const p of players){ if(!gOn(p)||!p.areas) continue; for(const a of p.areas) old[a.id]=a; }
-  const seen=new Uint8Array(W*H), q=new Int32Array(W*H); const newAreaOf=new Int32Array(W*H).fill(-1); const usedIds=new Set();
-  for(const p of players){ if(!gOn(p)) continue; const areas=[];
-    for(let t0=0;t0<W*H;t0++){ if(owner[t0]!==p.id||seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; const tally={}; let n=0,sx=0,sy=0; const id=nextAreaId++;
-      while(h<tl){ const c=q[h++]; n++; sx+=c%W; sy+=(c-c%W)/W; newAreaOf[c]=id; const o=areaOf[c]; if(o>=0) tally[o]=(tally[o]||0)+1; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const m=idx(x+dx,y+dy); if(!seen[m]&&owner[m]===p.id){ seen[m]=1; q[tl++]=m; } } }
-      let troops=0, bestOld=-1, bestN=0; for(const k in tally){ const oa=old[k]; if(oa) troops+=oa.troops*tally[k]/Math.max(1,oa.tiles); if(tally[k]>bestN&&old[k]&&old[k].owner===p.id){ bestN=tally[k]; bestOld=+k; } }
-      let useId=id; if(bestOld>=0&&!usedIds.has(bestOld)){ useId=bestOld; nextAreaId--; } usedIds.add(useId); for(let i2=0;i2<tl;i2++) newAreaOf[q[i2]]=useId;
-      areas.push({id:useId,owner:p.id,tiles:n,troops,cx:sx/n,cy:sy/n,coast:false}); }
-    // unassigned troops (a brand-new player, or gains recorded before areas existed) go to the largest area
-    areas.sort((a,b)=>b.tiles-a.tiles); { const cap=p.sx!=null?idx(Math.max(0,Math.min(W-1,Math.round(p.sx))),Math.max(0,Math.min(H-1,Math.round(p.sy)))):-1; const hid=cap>=0?newAreaOf[cap]:-1; const hi=areas.findIndex(a=>a.id===hid); if(hi>0){ const [h]=areas.splice(hi,1); areas.unshift(h); } } // Home is the area holding the capital, not the biggest
-    const have=areas.reduce((s,a)=>s+a.troops,0); if(areas.length&&p.troops>have+0.5) areas[0].troops+=p.troops-have;
-    for(const a of areas) a.troops=Math.max(0,a.troops); p.areas=areas; p.troops=areas.reduce((s,a)=>s+a.troops,0); }
-  areaOf=newAreaOf;
-  for(let t=0;t<W*H;t+=2) if(areaOf[t]>=0&&land[t]&&isCoast(t)){ const a=areaById(areaOf[t]); if(a) a.coast=true; }
-}
-function areaById(id){ for(const p of players){ if(!p.areas) continue; for(const a of p.areas) if(a.id===id) return a; } return null; }
-function areaAt(t){ if(!START.garrison||!areaOf||t<0||areaOf[t]<0) return null; return areaById(areaOf[t]); }
-function areaTouching(p,target){ // which of p's areas borders the target owner; the one with the longest shared frontier
-  const count={}; for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const t=idx(x,y); if(owner[t]!==p.id) continue; const id=areaOf[t]; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]===target){ count[id]=(count[id]||0)+1; break; } } }
-  let best=null,bn=0; for(const k in count) if(count[k]>bn){ bn=count[k]; best=areaById(+k); } return best; }
-function syncTroops(p){ if(gOn(p)&&p.areas) p.troops=p.areas.reduce((s,a)=>s+a.troops,0); }
-function addTroopsAt(p,t,n){ if(!gOn(p)||!p.areas||!p.areas.length){ p.troops+=n; return; } const a=(t!=null&&areaAt(t))||p.areas[0]; if(a.owner!==p.id){ p.areas[0].troops+=n; } else a.troops+=n; syncTroops(p); }
-function takeTroopsFrom(p,a,n){ if(!gOn(p)||!a){ const k=Math.min(n,p.troops); p.troops-=k; return k; } const k=Math.min(n,a.troops); a.troops-=k; syncTroops(p); return k; }
-function loseTroopsAt(p,t,n){ if(!gOn(p)||!p.areas||!p.areas.length){ p.troops=Math.max(0,p.troops-n); return; } const a=areaAt(t)||p.areas[0]; a.troops=Math.max(0,a.troops-n); syncTroops(p); }
-function densityAt(p,t){ if(!gOn(p)||!p.areas) return density(p); const a=areaAt(t); return a?a.troops/Math.max(1,a.tiles):density(p); }
-function reinforceArea(p,dest,origin,troops){ if(pausedBlock(p)) return false; // ship a garrison from one of your areas to another across water
-  if(!gOn(p)||!dest||!origin||dest===origin) return false; troops=Math.min(troops,origin.troops); if(troops<5){ if(p===me) fail('Not enough troops in that area.'); return false; }
-  const pickCoast=(area,nearT)=>{ let best=-1,bd=1e12; const nx=nearT%W,ny=(nearT-nx)/W; for(let c=0;c<W*H;c++){ if(owner[c]!==p.id||areaOf[c]!==area.id||!isCoast(c)) continue; const d=(c%W-nx)**2+((c-c%W)/W-ny)**2; if(d<bd){bd=d;best=c;} } return best; };
-  const dT=idx(Math.round(dest.cx),Math.round(dest.cy)); const to=pickCoast(dest,dT); if(to<0){ if(p===me) fail('That area has no coastline to land on.'); return false; }
-  const from=pickCoast(origin,to); if(from<0){ if(p===me) fail('The origin area has no coastline to embark from.'); return false; }
-  const path=waterPath(waterNeighbor(from),waterNeighbor(to)); if(!path){ if(p===me) fail('No sea route between those areas.'); return false; }
-  takeTroopsFrom(p,origin,troops); { const hv=heavyFrom(p,from,origin); transports.push({owner:p.id,target:p.id,troops,seed:to,path,pos:0,hdg:0,wake:[],origin:origin.id,heavy:hv,hp:hv?HEAVY.hp:1}); }
-  if(p===me){ log(`${Math.round(troops)} troops embarking from ${areaName(p,origin)} to reinforce ${areaName(p,dest)}.`,true); snd('foghorn'); } return true; }
 function fmtN(n){ n=Math.round(n); return n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(0)+'k':n>=1000?(n/1000).toFixed(1)+'k':String(n); }
 function areaLabel(p,a){ if(!a) return ''; const i=p.areas.indexOf(a); if(i===0) return 'Home'; const rg=region[idx(Math.round(a.cx),Math.round(a.cy))]; const r=regions[rg]; const base=(r&&r.name&&r.size>=REGION_MIN)?r.name:'Area '+(i+1);
   const twins=p.areas.filter(b=>b!==a&&p.areas.indexOf(b)!==0&&region[idx(Math.round(b.cx),Math.round(b.cy))]===rg); if(!twins.length) return base;
@@ -1722,374 +734,22 @@ function areaLabel(p,a){ if(!a) return ''; const i=p.areas.indexOf(a); if(i===0)
 function areaName(p,a){ if(!a) return ''; return areaLabel(p,a)+' ('+fmtN(a.troops)+')'; }
 function areaChoices(p,exclude){ return p.areas.filter(a=>a!==exclude&&a.coast&&a.troops>=5&&(a.tiles>=20||a===p.areas[0])).sort((a,b)=>b.troops-a.troops).slice(0,5); }
 
-function upgradeStructure(p,st){ if(pausedBlock(p)) return false; if(p.kind==='bot'){ if(p.nextBuildAt>simMs) return false; p.nextBuildAt=simMs+rnd(6000,12000)/(bd(p).build||1); } const U=UPGRADE[st.type]; if(!U||st.building||st.upgrading||(st.level||1)>=(U.max||2)||st.owner!==p.id) return false; const lvl=(st.level||1); const cost=lvl>=2?(U.cost3||U.cost):U.cost, ticksU=lvl>=2?(U.ticks3||U.ticks):U.ticks; if(p.gold<cost){ if(p===me) fail('Not enough gold for the upgrade.'); return false; }
-  p.gold-=cost; const ticks=ticksU; st.upTo=lvl+1; /* upgrades always take time */ st.upgrading=true; st.upDone=tickN+ticks; st.upTotal=ticks; if(p===me){ log(`${STRUCT[st.type].label} upgrading to level ${st.upTo===3?'III':'II'} — ${Math.ceil(ticks/10)} s.`,true); snd('build'); } return true; }
-function finishUpgrades(){ for(const st of structures){ if(!st.upgrading||st.upDone>tickN) continue; st.upgrading=false; st.level=st.upTo||2; st.popAt=tickN; if(st.type==='airfield') st.lshield=LSHIELD.hp; if(st.type==='port') st.gunHp=4; if(st.owner===me.id){ log(`${STRUCT[st.type].label} is now level ${st.level>=3?'III':'II'}.`,true); snd('unified'); } } }
-// ---------------------------------------------------------------- bot brain helpers
-function noteThreat(o,t,kind,by){ const q=players[o]; if(!q||q.kind!=='bot') return; q.threats=(q.threats||[]).filter(x=>tickN-x.at<1800); q.threats.push({t,kind,by,at:tickN}); if(q.threats.length>30) q.threats.shift(); }
-function bd(p){ return (p&&p.customNation&&(DIFF.brain||2)<4)?DIFFS.superhard:DIFF; }
-function botLevel(p){ return p.kind==='bot'?(bd(p).brain||2):0; }
-function nearestTo(p,list,t){ let best=-1,bd=1e12; const x=t%W,y=(t-x)/W; for(const c of list){ const d=(c%W-x)**2+((c-c%W)/W-y)**2; if(d<bd){bd=d;best=c;} } return best; }
-function botReact(p){ // answer the most recent threats with the right building or unit
-  const L=botLevel(p); if(L<3||!p.threats||!p.threats.length) return false; const th=p.threats[p.threats.length-1]; const own=ownTilesOf(p.id); if(!own.length) return false;
-  const near=(type,R)=>{ const c=own.filter(t=>!struct[t]&&!crowded(t)&&(!STRUCT[type].coast||isCoast(t))&&((t%W-th.t%W)**2+((t-t%W)/W-(th.t-th.t%W)/W)**2)<=R*R); if(!c.length) return false; return placeStructure(p,type,nearestTo(p,c,th.t)); };
-  const has=(type,R)=>structures.some(st=>st.owner===p.id&&st.type===type&&((st.t%W-th.t%W)**2+((st.t-st.t%W)/W-(th.t-th.t%W)/W)**2)<=R*R);
-  let done=false;
-  if(th.kind==='missile'){ if(!has('sam',30)&&p.gold>=STRUCT.sam.cost+100) done=near('sam',14); else if(L>=4&&!has('shield',12)&&p.gold>=STRUCT.shield.cost+200&&structures.some(st=>st.owner===p.id&&(st.type==='silo'||st.type==='city')&&((st.t%W-th.t%W)**2+((st.t-st.t%W)/W-(th.t-th.t%W)/W)**2)<=144)) done=near('shield',8); }
-  else if(th.kind==='landing'){ if(!has('shore',16)&&p.gold>=STRUCT.shore.cost+80) done=near('shore',12); else if(!has('battery',30)&&p.gold>=STRUCT.battery.cost+150) done=near('battery',16); }
-  else if(th.kind==='bomb'){ const fld=airfieldsOf(p)[0]; if(fld&&idleAircraft(p,'fighter',th.t)) done=launchFighter(p,th.t); else if(!has('sam',30)&&p.gold>=STRUCT.sam.cost+100) done=near('sam',14); }
-  else if(th.kind==='torpedo'){ const pens=structures.filter(st=>st.type==='subbase'&&!st.building&&st.owner===p.id); if(pens.length&&p.gold>=SHIPS.hunter.cost+100){ const wn=waterNeighbor(pens[0].t); if(wn>=0) done=orderWarship(p,wn,'hunter'); } else if(p.ports>0&&p.gold>=SHIPS.warship.cost+100&&!land[th.t]) done=orderWarship(p,th.t,'warship'); }
-  else if(th.kind==='blockade'){ if(p.ports>0&&p.gold>=SHIPS.warship.cost+100&&!land[th.t]) done=orderWarship(p,th.t,'warship'); }
-  if(done){ p.threats.pop(); if(th.by===me.id) log(`${p.name} is reacting to your ${th.kind==='landing'?'landings':th.kind==='missile'?'missiles':th.kind==='bomb'?'bombing':th.kind==='torpedo'?'submarines':'blockade'}.`,true); }
-  return done; }
-function botPlaceSmart(p,type,own){ // defensive layout: cover what matters, face the enemy
-  const L=botLevel(p); if(L<1) return -1;
-  const dist=(a,b)=>(a%W-b%W)**2+((a-a%W)/W-(b-b%W)/W)**2;
-  if(type==='sam'||type==='shield'){ const assets=structures.filter(st=>st.owner===p.id&&(st.type==='silo'||st.type==='city'||st.type==='airfield'||st.type==='command')); const uncovered=assets.filter(a=>!structures.some(st=>st.owner===p.id&&st.type===type&&dist(st.t,a.t)<=(type==='sam'?900:100))); if(!uncovered.length) return -1; const a=pick(uncovered); const c=own.filter(t=>!struct[t]&&!crowded(t)&&dist(t,a.t)<=(type==='sam'?200:60)); return c.length?nearestTo(p,c,a.t):-1; }
-  if(type==='shore'||type==='battery'){ const foesPorts=structures.filter(st=>st.type==='port'&&st.owner!==p.id&&players[st.owner].kind!=='neutral'&&!atPeace(p.id,st.owner)); const foeShips=warships.filter(w=>w.owner!==p.id&&!atPeace(p.id,w.owner)&&(w.cls==='cruiser'||w.cls==='battleship')); const refs=[...foesPorts.map(x=>x.t),...foeShips.map(w=>idx(Math.floor(w.x),Math.floor(w.y)))]; const coast=own.filter(t=>isCoast(t)&&!struct[t]&&!crowded(t)); if(!coast.length) return -1; if(!refs.length) return pick(coast); const r=pick(refs); return nearestTo(p,coast,r); }
-  return -1; }
-function botElite(p,own,now){ // Super hard / Impossible: a real economy manager instead of the roll. Returns true when it acted (or is saving).
-  const L=botLevel(p); if(!own.length) return false; const cap=maxTroops(p); const cities=structures.filter(st=>st.owner===p.id&&st.type==='city').length; const factories=p.factories||0;
-  const cityCap=Math.max(2,Math.floor(p.tiles/(L>=5?40:150)));
-  const opening=now<(L>=5?120000:60000); const reserve=L>=5?250:500;
-  const canBuild=!(p.nextBuildAt>now)||(opening&&L>=5&&ALLOWED.has('city')); // Impossible's opening city rush ignores the cooldown
-  const build=(type)=>{ if(!ALLOWED.has(type)||p.gold<STRUCT[type].cost) return false; const smart=botPlaceSmart(p,type,own); if(smart>=0&&placeStructure(p,type,smart)) return true; const cands=STRUCT[type].coast?own.filter(t=>isCoast(t)&&!struct[t]):own.filter(t=>!struct[t]); for(let k=0;k<8&&cands.length;k++){ const t=pick(cands); if(!crowded(t)&&placeStructure(p,type,t)) return true; } return false; };
-  if(!canBuild) return true;
-  // 1. cities while the army is under cap and territory allows — instant troops, the human's opening
-  if(cities<cityCap&&p.troops<cap*0.9&&p.gold>=STRUCT.city.cost&&(opening||p.gold>=reserve+STRUCT.city.cost)){ if(build('city')){ if(opening) p.nextBuildAt=now+1500; return true; } }
-  if(opening&&p.gold<STRUCT.city.cost) return true; // save for the next city
-  // 2. a coast facing the strongest neighbour gets shore guns from minute two; one per ~250 coast tiles, more at Impossible
-  const coastN=coastTilesOf(p.id).length; const guns=structures.filter(st=>st.owner===p.id&&(st.type==='shore'||st.type==='battery')).length; const gunCap=Math.max(1,Math.floor(coastN/(L>=5?180:350)));
-  if(now>=110000&&coastN>20&&guns<gunCap&&p.gold>=STRUCT.shore.cost+reserve*0.5){ if(build('shore')) return true; }
-  // 3. a port early, then level II by minute three so landings are heavy transports
-  if(now>=90000&&p.ports<1&&coastN>10&&p.gold>=STRUCT.port.cost+100){ if(build('port')) return true; }
-  if(now>=180000&&p.gold>=500+reserve){ const up=structures.find(st=>st.owner===p.id&&st.type==='port'&&!st.building&&!st.upgrading&&(st.level||1)<2); if(up&&upgradeStructure(p,up)) return true; }
-  // 4. spend-down: gold above the reserve becomes factories (income) or more cities when the cap has room
-  if(p.gold>=reserve+STRUCT.factory.cost&&factories<Math.max(1,Math.floor(p.tiles/300))&&build('factory')) return true;
-  if(p.gold>=reserve+STRUCT.city.cost&&cities<cityCap&&build('city')) return true;
-  if(p.gold>=reserve+STRUCT.sam.cost&&(p.sams||0)<Math.max(1,Math.floor(cities/3))&&p.silos+structures.filter(st=>st.owner!==p.id&&st.type==='silo').length>0&&build('sam')) return true;
-  return false; }
-function botEconomy(p){ const L=botLevel(p); const cap=maxTroops(p); const atWar=attacks.some(a=>a.owner===p.id||a.target===p.id); if(L<3){ p.focus=atWar||p.troops<cap*0.4?rnd(0.6,0.85):rnd(0.3,0.55); return; }
-  if(p.troops>=cap*0.95&&!START.noCap) p.focus=rnd(0.2,0.35); else if(atWar&&p.troops<cap*0.6) p.focus=rnd(0.75,0.9); else p.focus=rnd(0.45,0.6); }
-function botAttacks(p){ const L=botLevel(p); if(L<2) return;
-  for(const a of attacks){ if(a.owner!==p.id||a.dead||a.target<0) continue; const def=players[a.target]; if(!def||!def.alive) continue; a.age=(a.age||0);
-    a.hist=a.hist||[]; a.hist.push([tickN,def.tiles]); a.hist=a.hist.filter(h=>tickN-h[0]<=200);
-    const gained=a.hist.length>1?a.hist[0][1]-def.tiles:0; const start=a.startTroops||(a.startTroops=a.troops);
-    if(gained>0&&a.troops<start*0.4&&p.troops>maxTroops(p)*0.25&&!a.reinforced){ const extra=p.troops*0.15; if(extra>50){ if(gOn(p)){ const ar=a.origin!=null?areaById(a.origin):null; if(ar&&ar.owner===p.id){ a.troops+=takeTroopsFrom(p,ar,Math.min(extra,ar.troops*0.3)); } } else { p.troops-=extra; a.troops+=extra; } a.reinforced=true; } }
-    if(L>=3&&a.hist.length>15&&gained<=0&&a.troops<start*0.6&&tickN-(a.age||0)>200){ a.dead=true; } }
-}
-function botFocus(p){ const L=botLevel(p); if(L<3) return; if(p.focusUntil>tickN&&p.cmdFocus!=null&&players[p.cmdFocus].alive) return;
-  const cands=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&!atPeace(p.id,q.id)); if(!cands.length){ p.cmdFocus=null; return; }
-  const {r}=borderOwners(p); const score=q=>(r[q.id]?3:0)+(inConflict(p.id,q.id)?4:0)+((p.threats||[]).filter(t=>t.by===q.id).length)+(q.tiles/landCount>0.45?5:0)-(q.kind==='human'&&neutralShare()>0.35?3:0);
-  cands.sort((a,b)=>score(b)-score(a)); p.cmdFocus=cands[0].id; p.focusUntil=tickN+1800; }
-function botCoalition(p){ const L=botLevel(p); if(L<3||tickN%50) return; if(L>=4){ const lead=players.filter(q=>q.alive&&q.kind!=='neutral').sort((a,b)=>b.tiles-a.tiles)[0]; if(lead&&lead!==p&&lead.tiles/landCount>=(bd(p).coalition||0.45)) p.focusTarget=lead.id; else if(p.focusTarget===(lead&&lead.id)) p.focusTarget=null; } const leader=players.filter(q=>q.alive&&q.kind!=='neutral').sort((a,b)=>b.tiles-a.tiles)[0]; if(!leader||leader===p||leader.tiles/landCount<(bd(p).coalition||0.45)) return;
-  for(const q of players){ if(q===p||!q.alive||q.kind!=='bot'||q===leader||relation(p,q)) continue; if(srand()<0.15){ setRelation(p,q,'ally'); log(`${p.name} and ${q.name} allied against ${leader.name}.`, leader===me); break; } }
-  if(relation(p,leader)&&relation(p,leader).type==='nap'&&srand()<0.02) breakRelation(p,leader); }
-function botAir(p,now){ const L=botLevel(p); if(L<4) return; if(now>360000&&p.gold>=STRUCT.airfield.cost+300&&!airfieldsOf(p).length&&!structures.some(st=>st.owner===p.id&&st.type==='airfield')){ const own=ownTilesOf(p.id).filter(t=>!struct[t]&&!crowded(t)); if(own.length) placeStructure(p,'airfield',pick(own)); return; }
-  if(L>=4&&srand()<0.25){ const fld=airfieldsOf(p)[0]; if(fld&&(fld.level||1)<2&&!fld.upgrading&&p.gold>=UPGRADE.airfield.cost+300) upgradeStructure(p,fld); }
-  // paradrop a thin enemy coast
-  const car=aircraft.find(a=>a.owner===p.id&&a.type==='carrier'&&a.state==='hangar'); if(car&&p.troops>maxTroops(p)*0.5&&srand()<0.3){ const foes=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&!atPeace(p.id,q.id)&&(p.cmdFocus==null||q.id===p.cmdFocus)); if(foes.length){ const v=pick(foes); const tiles=ownTilesOf(v.id).filter(t=>((t%W-car.home.t%W)**2+((t-t%W)/W-(car.home.t-car.home.t%W)/W)**2)<=AIR.carrier.range**2); if(tiles.length){ const t=pick(tiles); const dl=gOn(v)?densityAt(v,t):density(v); if(dl<density(p)*0.5) launchParadrop(p,t,Math.min(AIR.carrier.capacity,p.troops*0.2)); } } } }
-function stepBuild(){ finishUpgrades();
-  for(const st of structures){ if(st.building&&st.done<=tickN){ st.building=false; st.popAt=tickN; const p=players[st.owner]; structCounts(p); if(p===me){ log(`${STRUCT[st.type].label} completed.`,true); snd('build'); } }
-    if((st.type==='port'||st.type==='subbase')&&st.queue&&st.queue.length&&!st.building){ const job=st.queue[0]; if(job.done<=tickN){ st.queue.shift(); const p=players[st.owner]; if(!p.alive) continue;
-      const path=waterPath(waterNeighbor(st.t),job.dest); if(path){ st.popAt=tickN; if(p===me) sInc('shipsBuilt'); warships.push({id:++uidSeq,owner:p.id,cls:job.cls,path,pos:0,dest:job.dest,hp:SHIPS[job.cls].hp,cool:0,ang:srand()*6.28,hdg:0,wake:[],barCool:0}); if(p===me){ log(`${SHIPS[job.cls].label} launched.`,true); snd('foghorn'); } }
-      if(st.queue.length){ st.queue[0].done=tickN+st.queue[0].total; } } }
-  }
-}
-function stepTrade(){
-  if(tickN%20===0){
-    const ports=structures.filter(st=>st.type==='port'&&!st.building&&players[st.owner].kind!=='neutral'&&players[st.owner].alive);
-    for(const pt of ports){ if(pt.nextTrade==null) pt.nextTrade=tickN+rnd(30,TRADE_INTERVAL); if(pt.nextTrade>tickN||pt.busy) continue;
-      const dests=ports.filter(q=>q.owner!==pt.owner&&!inConflict(pt.owner,q.owner)); if(!dests.length){ pt.nextTrade=tickN+60; continue; }
-      const allies=dests.filter(q=>relation(players[pt.owner],players[q.owner])?.type==='ally'); const to=allies.length&&srand()<0.6?pick(allies):pick(dests);
-      const path=waterPath(waterNeighbor(pt.t),waterNeighbor(to.t)); pt.nextTrade=tickN+TRADE_INTERVAL; if(!path||path.length<8) continue;
-      pt.busy=true; traders.push({owner:pt.owner,from:pt,to,path,pos:0,hdg:0,wake:[],x:null,y:null});
-    }
-  }
-  for(const tr of traders){ if(tr.held&&tr.held>tickN){ continue; } tr.pos+=TRADE_SPEED; const [x,y]=shipXY(tr); steer(tr,x,y);
-    if(tr.pos<tr.path.length-1) continue;
-    tr.done=true; tr.from.busy=false; const a=players[tr.owner], b=players[tr.to.owner];
-    if(!b.alive||tr.to.owner!==b.id||!structures.includes(tr.to)) continue;
-    if(tr.prize){ const g=Math.round((TRADE_GOLD+tr.path.length*TRADE_PER_TILE)*2); a.gold+=g; a.tradeIncome=(a.tradeIncome||0)+g; if(a===me){ cashFloat(tr.to.t%W,(tr.to.t-tr.to.t%W)/W,g); snd('cash'); log(`Prize cargo landed: +${g} gold.`,true); } continue; }
-    const g=Math.round(TRADE_GOLD+tr.path.length*TRADE_PER_TILE); a.gold+=g; b.gold+=g; a.tradeIncome=(a.tradeIncome||0)+g; b.tradeIncome=(b.tradeIncome||0)+g;
-    if(a===me||b===me){ floaters.push({x:tr.to.t%W,y:(tr.to.t-tr.to.t%W)/W,txt:'+$'+g,age:0,col:'#ffd27a'}); snd('coin'); }
-  }
-  traders=traders.filter(t=>{ if(t.done||!players[t.owner].alive){ t.from.busy=false; return false; } return true; });
-}
-function subSeenBy(w,viewer){ if(!SHIPS[w.cls].sub) return true; if(w.owner===viewer||atPeace(w.owner,viewer)&&relation(players[w.owner],players[viewer])?.type==='ally') return true;
-  for(const e of warships){ if(e.owner!==viewer&&!(relation(players[e.owner],players[viewer])?.type==='ally')) continue; if(!(e.cls==='warship'||e.cls==='hunter'||e.cls==='rship')||e.x==null) continue; const R=e.cls==='hunter'?20:8; if((e.x-w.x)**2+(e.y-w.y)**2<=R*R) return true; } return false; }
-function stepNaval(){
-  // transports move; land when they arrive
-  for(const tr of transports){
-    tr.pos+=SHIP_SPEED*(tr.heavy?HEAVY.speedMul:1); const [tx,ty]=shipXY(tr); steer(tr,tx,ty);
-    if(tr.pos<tr.path.length-1) continue;
-    tr.done=true; const p=players[tr.owner]; if(!p.alive) continue;
-    const o=owner[tr.seed];
-    if(tr.gift){ const ally=players[tr.target]; if(ally.alive&&o===ally.id){ if(gOn(ally)) addTroopsAt(ally,tr.seed,tr.troops); else ally.troops+=tr.troops; log(`${tr.troops|0} ${p.name} troops reinforced ${ally.name}.`, p===me||ally===me); if(ally===me) snd('foghorn'); } else p.troops+=tr.troops; continue; }
-    if(p===me&&!tr.gift) sInc('landings'); if(o===p.id){ addTroopsAt(p,tr.seed,tr.troops); continue; } // coast already ours: troops disembark into that area
-    attacks.push({owner:p.id,target:o,troops:tr.troops,front:new Set([tr.seed]),naval:true,age:0,origin:null,landAt:tr.seed,startTiles:o>=0?players[o].tiles:0});
-    if(o===me.id) invasionNotice(p,tr.seed,true); if(o>=0) noteThreat(o,tr.seed,'landing',p.id);
-    if(p===me){ log(`Landing force ashore on ${o>=0?players[o].name:'unclaimed coast'}.`,true); snd('foghorn'); }
-  }
-  transports=transports.filter(t=>!t.done);
-  // heavy transports return fire at whatever hit them last
-  for(const tr of transports){ if(!tr.heavy||tr.done||!tr.attacker||tr.x==null) continue; if(tickN-(tr.attackedAt||0)>100||tr.cool>tickN) continue; const a=tr.attacker; const ax=a.t!=null?a.t%W+.5:a.x, ay=a.t!=null?(a.t-a.t%W)/W+.5:a.y; if(ax==null||(a.t==null&&(a.hp<=0||a.done||(a.cls&&SHIPS[a.cls]&&SHIPS[a.cls].sub)))||(a.t!=null&&!structures.includes(a))) { tr.attacker=null; continue; } if((ax-tr.x)**2+(ay-tr.y)**2>HEAVY.gun*HEAVY.gun) continue; tr.cool=tickN+HEAVY.cd;
-    if(a.t!=null) shells.push({owner:tr.owner,cls:'warship',x:tr.x,y:tr.y,kind:'gun',target:a,tx:ax,ty:ay,trail:[],dmg:HEAVY.dmg,speed:7}); else shells.push({owner:tr.owner,cls:'warship',x:tr.x,y:tr.y,target:a,kind:'warship',trail:[],dmg:HEAVY.dmg,speed:7}); if(tr.owner===me.id) snd('shell',tr.x,tr.y); }
-  // warships move / patrol / fire
-  for(const w of warships){
-    if(w.refit){ /* at anchor for the refit */ }
-    else if(w.boarding){ /* chasing a merchant: movement handled in shipPiracy */ }
-    else if(w.pos<w.path.length-1){ w.pos+=SHIPS[w.cls].speed; const [nx,ny]=shipXY(w); steer(w,nx,ny); }
-    else if(!w.boarding){ w.ang+=0.025; const dx=w.dest%W+.5, dy=(w.dest-w.dest%W)/W+.5; let placed=false;
-      for(const rad of [5,3,1.5]){ const nx=dx+Math.cos(w.ang)*rad, ny=dy+Math.sin(w.ang)*rad; const tx=Math.floor(nx),ty=Math.floor(ny); if(inb(tx,ty)&&!land[idx(tx,ty)]){ steer(w,nx,ny); placed=true; break; } }
-      if(!placed) steer(w,dx,dy); }
-    if(w.refit&&w.refit<=tickN){ w.refit=0; w.cruise=true; w.cruiseCool=0; if(w.owner===me.id) log('Battleship refit complete: cruise missiles online.',true); }
-    if(!w.refit) shipCruise(w);
-    shipBarrage(w); shipPiracy(w);
-    if(SHIPS[w.cls].torpedo){ const T=SHIPS[w.cls].torpedo; if(w.cool>0){ w.cool--; continue; } const R2=T.range*T.range; let tg=null,td=R2,kind=null;
-      if(SHIPS[w.cls].hunter){ for(const e of warships){ if(e===w||e.owner===w.owner||e.hp<=0||!SHIPS[e.cls].sub||atPeace(w.owner,e.owner)||!inConflict(w.owner,e.owner)&&!e.subHostile) continue; const d=(e.x-w.x)**2+(e.y-w.y)**2; if(d<=400&&d<td){ td=d; tg=e; kind='warship'; } } }
-      else { for(const tr of transports){ if(tr.done||tr.x==null||tr.owner===w.owner||atPeace(w.owner,tr.owner)||!(tr.target===w.owner||inConflict(w.owner,tr.owner))) continue; const d=(tr.x-w.x)**2+(tr.y-w.y)**2; if(d<td){ td=d; tg=tr; kind='transport'; } }
-        if(!tg) for(const e of warships){ if(e===w||e.owner===w.owner||e.hp<=0||SHIPS[e.cls].sub||atPeace(w.owner,e.owner)||!inConflict(w.owner,e.owner)&&!(e.cls==='cruiser'||e.cls==='battleship')) continue; const d=(e.x-w.x)**2+(e.y-w.y)**2; if(d<td){ td=d; tg=e; kind='warship'; } } }
-      if(tg){ w.cool=T.cd; w.subHostile=true; shells.push({owner:w.owner,cls:w.cls,x:w.x,y:w.y,target:tg,kind,trail:[],dmg:T.dmg,speed:3,torpedo:true,from:w}); if(w.owner===me.id||tg.owner===me.id) snd('torpedo',w.x,w.y); }
-      continue; }
-    if(!SHIPS[w.cls].gun) continue;
-    if(w.cool>0){ w.cool--; continue; }
-    const R2=SHIPS[w.cls].gun**2;
-    let hit=null,hd=R2;
-    for(const tr of traders){ if(tr.done||tr.owner===w.owner||!inConflict(w.owner,tr.owner)||tr.x==null) continue; const d=(tr.x-w.x)**2+(tr.y-w.y)**2; if(d<hd){hd=d;hit=tr;} }
-    if(hit){ shells.push({owner:w.owner,cls:w.cls,x:w.x,y:w.y,target:hit,kind:'trader',trail:[],dmg:1}); w.cool=6; if(w.owner===me.id||hit.owner===me.id) snd('shell',w.x,w.y); continue; }
-    hit=null;hd=R2;
-    for(const tr of transports){ if(tr.done||tr.owner===w.owner||atPeace(w.owner,tr.owner)) continue; const [x,y]=shipXY(tr); const d=(x-w.x)**2+(y-w.y)**2; if(d<hd){hd=d;hit=tr;} }
-    if(hit){ w.fireAt=tickN; w.fireAng=Math.atan2(hit.y-w.y,hit.x-w.x); shells.push({owner:w.owner,cls:w.cls,x:w.x,y:w.y,target:hit,kind:'transport',trail:[],dmg:SHIPS[w.cls].dmg,from:w}); w.cool=6; if(w.owner===me.id||hit.owner===me.id) snd('shell',w.x,w.y); continue; }
-    // return fire at coastal guns of nations we're fighting (or that are shooting at us)
-    { let g=null,gd=R2; for(const st of structures){ if(!gunTarget(st)||st.building||st.owner===w.owner||atPeace(w.owner,st.owner)) continue; if(!(inConflict(w.owner,st.owner)||st.lastShotAt===w.owner)) continue; const sx=st.t%W+.5,sy=(st.t-st.t%W)/W+.5; const d=(sx-w.x)**2+(sy-w.y)**2; if(d<gd){gd=d;g=st;} }
-      if(g){ shells.push({owner:w.owner,cls:w.cls,x:w.x,y:w.y,kind:'gun',target:g,tx:g.t%W+.5,ty:(g.t-g.t%W)/W+.5,trail:[],dmg:SHIPS[w.cls].dmg}); w.cool=10; if(w.owner===me.id||g.owner===me.id) snd('shell',w.x,w.y); continue; } }
-    hd=R2; let tgt=null;
-    for(const e of warships){ if(e===w||e.owner===w.owner||e.hp<=0||atPeace(w.owner,e.owner)) continue; if(SHIPS[e.cls].sub&&!subSeenBy(e,w.owner)) continue; const d=(e.x-w.x)**2+(e.y-w.y)**2; if(d<hd){hd=d;tgt=e;} }
-    if(tgt){ w.fireAt=tickN; w.fireAng=Math.atan2(tgt.y-w.y,tgt.x-w.x); shells.push({owner:w.owner,cls:w.cls,x:w.x,y:w.y,target:tgt,kind:'warship',trail:[],dmg:SHIPS[w.cls].dmg*(w.cls==='warship'&&tgt.cls==='cruiser'?2:1)}); w.cool=10; if(w.owner===me.id||tgt.owner===me.id) snd('shell',w.x,w.y); }
-  }
-  // shells fly to their target and resolve on arrival
-  for(const sh of shells){
-    if(sh.delay>0){ sh.delay--; continue; }
-    const spd=sh.speed||SHELL_SPEED;
-    if(sh.kind==='aam'){ const tg=sh.target; const tx=tg.x, ty=tg.y; const dx=tx-sh.x, dy=ty-sh.y, d=Math.hypot(dx,dy); sh.trail.push([sh.x,sh.y]); if(sh.trail.length>8) sh.trail.shift();
-      if(d<=spd||tg.dead){ sh.done=true; flashes.push({x:tx,y:ty,r:1.2,age:0,col:'#ffd27a'}); continue; } sh.x+=dx/d*spd; sh.y+=dy/d*spd; continue; }
-    if(sh.kind==='gun'){ const g=sh.target; if(!structures.includes(g)){ sh.done=true; continue; } const dx=sh.tx-sh.x, dy=sh.ty-sh.y, d=Math.hypot(dx,dy); sh.trail.push([sh.x,sh.y]); if(sh.trail.length>6) sh.trail.shift();
-      if(d<=spd){ sh.done=true; flashes.push({x:sh.tx,y:sh.ty,r:1.5,age:0,col:'#ffd27a'}); markHostile(sh.owner,g.owner); if(sh.owner===me.id||g.owner===me.id) snd('shellhit',sh.tx,sh.ty);
-        if(g.type==='port'){ g.gunHp=(g.gunHp||0)-sh.dmg; if(g.gunHp<=0){ g.level=1; g.gunHp=0; log(`${players[sh.owner].name} shot out the guns of ${players[g.owner].name}'s port — it is level I again.`, sh.owner===me.id||g.owner===me.id); } continue; }
-        g.hp-=sh.dmg;
-        if(g.hp<=0){ const own=players[g.owner]; destroyStructure(g.t); structCounts(own); flashes.push({x:sh.tx,y:sh.ty,r:3,age:0,col:'#ffb347'}); log(`${players[sh.owner].name}'s ${SHIPS[sh.cls].label.toLowerCase()} destroyed ${own.name}'s ${STRUCT[g.type].label.toLowerCase()}.`, sh.owner===me.id||own===me); } continue; }
-      sh.x+=dx/d*spd; sh.y+=dy/d*spd; continue; }
-    if(sh.kind==='land'){
-      const dx=sh.tx-sh.x, dy=sh.ty-sh.y, d=Math.hypot(dx,dy); { const tot=sh.tot||(sh.tot=Math.max(1,d)); const k=1-Math.min(1,d/tot); sh.trail.push([sh.x,sh.y,Math.sin(k*Math.PI)*(sh.rise||14)*0.6]); } if(sh.trail.length>(sh.missile?10:6)) sh.trail.shift();
-      if(d<=spd){ sh.done=true; fxTracer(sh.ox??sh.trail[0]?.[0]??sh.x,sh.oy??sh.trail[0]?.[1]??sh.y,sh.tx,sh.ty); fxPuff(sh.tx-.5,sh.ty-.5,3,'110,100,90'); const c=crater(Math.floor(sh.tx),Math.floor(sh.ty),sh.radius,sh.owner);
-        const v=sh.volley; if(v){ v.cas+=c; if(--v.left<=0&&(v.owner===me.id||v.victim===me.id)&&v.victim>=0) if(v.victim===me.id&&v.cas>STATS.bigLoss.n){ STATS.bigLoss={n:Math.round(v.cas),by:`${players[v.owner].name}'s ${(SHIPS[v.cls]||STRUCT[v.cls]).label.toLowerCase()}`}; } log(`${players[v.owner].name}'s ${(SHIPS[v.cls]||STRUCT[v.cls]).label.toLowerCase()} ${v.cls==='bertha'?'shell':'barrage'} killed ${Math.round(v.cas)} ${players[v.victim].name} troops.`,true); }
-        continue; }
-      sh.x+=dx/d*spd; sh.y+=dy/d*spd; continue;
-    }
-    const tg=sh.target; if(tg.done||tg.hp<=0){ sh.done=true; continue; }
-    const dx=tg.x-sh.x, dy=tg.y-sh.y, d=Math.hypot(dx,dy); sh.trail.push([sh.x,sh.y]); if(sh.trail.length>(sh.torpedo?22:6)) sh.trail.shift();
-    if(d<=spd){ sh.done=true; const mine=sh.owner===me.id||tg.owner===me.id;
-      markHostile(sh.owner,tg.owner);
-      if(sh.kind==='trader'){ tg.done=true; tg.from.busy=false; noteThreat(tg.owner,idx(Math.floor(tg.x),Math.floor(tg.y)),'blockade',sh.owner); flashes.push({x:tg.x,y:tg.y,r:2.5,age:0,col:'#ffb347'}); fxWreck('ship',tg.x,tg.y,tg.hdg,players[tg.owner].color,'trader'); players[sh.owner].gold+=60; if(mine) snd('sunk',tg.x,tg.y); if(sh.owner===me.id){ if(onScreen(tg.x,tg.y)) snd('coin',tg.x,tg.y); cashFloat(tg.x,tg.y,60); } log(`${players[sh.owner].name} sank a ${players[tg.owner].name} merchant ship (+60 gold).`, mine); continue; }
-      if(sh.kind==='transport'&&tg.heavy){ tg.hp-=sh.dmg||1; tg.attacker=sh.from||null; tg.attackedAt=tickN; flashes.push({x:tg.x,y:tg.y,r:1.5,age:0,col:'#ffd27a'}); if(mine) snd('shellhit',tg.x,tg.y); if(tg.hp>0) continue; }
-      if(sh.kind==='transport'){ tg.done=true; flashes.push({x:tg.x,y:tg.y,r:3,age:0,col:'#ffb347'}); fxWreck('ship',tg.x,tg.y,tg.hdg,players[tg.owner].color,'transport'); if(mine) snd('sunk',tg.x,tg.y);
-        const bounty=Math.max(20,Math.round(tg.troops*SINK_BOUNTY)); players[sh.owner].gold+=bounty; if(sh.owner===me.id){ if(onScreen(tg.x,tg.y)) snd('coin',tg.x,tg.y); cashFloat(tg.x,tg.y,bounty); }
-        log(`${players[sh.owner].name}'s ${(SHIPS[sh.cls]||STRUCT[sh.cls]||SHIPS.warship).label.toLowerCase()} sank a transport carrying ${Math.round(tg.troops)} ${players[tg.owner].name} troops${sh.owner===me.id?` (+${bounty} gold salvage)`:''}.`, mine); }
-      else { tg.hp-=sh.dmg||1; flashes.push({x:tg.x,y:tg.y,r:1.5,age:0,col:'#ffd27a'}); if(mine) snd('shellhit',tg.x,tg.y);
-        if(tg.hp<=0){ if(sh.owner===me.id) sInc('shipsSunk'); if(tg.owner===me.id) sInc('shipsLost'); flashes.push({x:tg.x,y:tg.y,r:4,age:0,col:'#ffb347'}); fxWreck('ship',tg.x,tg.y,tg.hdg,players[tg.owner].color,tg.cls); if(sh.torpedo){ players[tg.owner].subLoss=(players[tg.owner].subLoss||0)+1; noteThreat(tg.owner,idx(Math.floor(tg.x),Math.floor(tg.y)),'torpedo',sh.owner); } fxPuff(tg.x-.5,tg.y-.5,5,'60,60,60'); if(mine) snd('sunk',tg.x,tg.y); log(`${players[sh.owner].name}'s ${(SHIPS[sh.cls]||STRUCT[sh.cls]||SHIPS.warship).label.toLowerCase()} sank a ${players[tg.owner].name} ${SHIPS[tg.cls]?SHIPS[tg.cls].label.toLowerCase():'ship'}.`, mine); } }
-      continue; }
-    sh.x+=dx/d*spd; sh.y+=dy/d*spd;
-  }
-  shells=shells.filter(sh=>!sh.done);
-  transports=transports.filter(t=>!t.done);
-  warships=warships.filter(w=>w.hp>0&&players[w.owner].alive); for(const w of selected) if(!warships.includes(w)) selected.delete(w);
-}
-
-// ---------------------------------------------------------------- bots
-function borderOwners(p){ // sample border to learn who we touch, and where
-  const r={}; const unclaimed=[];
-  for(let y=0;y<H;y+=1)for(let x=0;x<W;x+=1){
-    const t=idx(x,y); if(owner[t]!==p.id) continue;
-    for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(!land[n]) continue;
-      const o=owner[n]; if(o===p.id) continue; if(o<0) unclaimed.push(n); else r[o]=(r[o]||0)+1; }
-  }
-  return {r,unclaimed};
-}
-function neutralShare(){ let n=0,a=0; for(const q of players){ if(q.kind==='neutral'){ a++; if(q.alive) n++; } } return a?n/a:0; }
-function botThink(p,now){
-  if(now<p.nextThink) return;
-  p.nextThink=now+rnd(1200,3000);
-  const cap=maxTroops(p);
-  const busy=attacks.some(a=>a.owner===p.id);
-  botEconomy(p); botAttacks(p); botFocus(p); botCoalition(p); botAir(p,now);
-  if(botReact(p)) p.nextThink=now+rnd(800,1500);
-  if(!busy&&p.troops>cap*rnd(0.3,0.5)/bd(p).aggr*Math.max(0.5,1-(now)/1500000)){
-    const {r,unclaimed}=borderOwners(p);
-    const send=p.troops*rnd(0.3,0.5);
-    if(unclaimed.length>0&&srand()<0.8) launchAttack(p,-1,send);
-    else{
-      const opts=Object.keys(r).map(Number).filter(o=>players[o].alive&&!atPeace(p.id,o))
-        .map(o=>({o,d:density(players[o]),w:players[o].tiles,n:players[o].kind==='neutral'}));
-      const neut=opts.filter(x=>x.n).sort((a,b)=>a.d-b.d);
-      const lead=p.focusTarget!=null?opts.find(x=>x.o===p.focusTarget):null;
-      if(lead&&botLevel(p)>=4&&srand()<(botLevel(p)>=5?0.75:0.25)){ launchAttack(p,lead.o,p.troops*rnd(0.45,0.65)); }
-      else if(neut.length){ launchAttack(p,neut[0].o,send); }
-      else if(srand()<0.5){ // no neutral neighbours: ship troops to a weak neutral somewhere
-        const ns=players.filter(q=>q.alive&&q.kind==='neutral'&&q.tiles>=80); if(ns.length){ const v=pick(ns); const coast=coastTilesOf(v.id); if(coast.length) launchAttack(p,v.id,send,pick(coast)); }
-      }
-      else if(opts.length){ opts.sort((a,b)=>a.d-b.d); const foc=p.cmdFocus!=null?opts.find(x=>x.o===p.cmdFocus):(p.focusTarget!=null?opts.find(x=>x.o===p.focusTarget):null); const tgt=(foc&&botLevel(p)>=3)?foc:opts[0];
-        // while most neutral countries still stand, bots keep the peace with players unless one is a soft target
-        const ns=neutralShare(); const restraint=(p.focusTarget===tgt.o)?1:ns>0.35?(players[tgt.o].kind==='human'?0.15:0.4):ns>0.15?0.7:1;
-        const agg=(1+Math.min(1.6,(now)/500000))*bd(p).aggr*restraint;
-        if(tgt.d<density(p)*0.5*agg||srand()<0.25*agg) launchAttack(p,tgt.o,send);
-      } else if(srand()<0.5){ // naval strike at weakest coastal enemy
-        const victims=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&density(q)<density(p)&&!atPeace(p.id,q.id));
-        if(victims.length){ const v=pick(victims); let coast=coastTilesOf(v.id); if(coast.length&&botLevel(p)>=4){ const guns=structures.filter(st=>st.owner===v.id&&!st.building&&(st.type==='shore'||st.type==='battery')); if(guns.length){ const safe=coast.filter(t=>{ const x=t%W,y=(t-x)/W; return !guns.some(g=>{ const gx=g.t%W,gy=(g.t-gx)/W; const r=STRUCT[g.type].range; return (gx-x)*(gx-x)+(gy-y)*(gy-y)<=r*r; }); }); if(safe.length) coast=safe; } } if(coast.length) launchAttack(p,v.id,send,pick(coast)); }
-      }
-    }
-  }
-  if(gOn(p)&&p.areas&&p.areas.length>1&&srand()<0.3){ const home=p.areas[0]; const thin=p.areas.filter(a=>a!==home&&a.coast&&a.tiles>=60&&a.troops/a.tiles<home.troops/Math.max(1,home.tiles)*0.4).sort((a,b)=>b.tiles-a.tiles)[0]; if(thin&&home.coast&&home.troops>400) reinforceArea(p,thin,home,home.troops*0.15); }
-  // building — paced by difficulty so a human can keep up at Normal and below
-  const own=ownTilesOf(p.id);
-  if(botLevel(p)>=4&&botElite(p,own,now)) { /* elite manager acted this turn */ }
-  else if(own.length&&p.gold>=110&&!(p.nextBuildAt>now)){
-    const roll=srand();
-    let type= roll<0.32?'city':roll<0.54?'factory':roll<0.65?'port':roll<0.74?'sam':roll<0.84?'fort':roll<0.9?'shore':roll<0.91?'battery':roll<0.93?'shield':roll<0.94?'airfield':roll<0.95?'subbase':roll<0.96?'troopcmd':roll<0.97?'engcmd':roll<0.98?'silo':'bertha';
-    if(type==='silo'&&p.silos>0) type='city';
-    if(!ALLOWED.has(type)){ const alt=['city','factory','port','sam','fort','silo','shore','battery'].filter(k=>ALLOWED.has(k)); if(!alt.length) return; type=pick(alt); }
-    if(p.gold>=STRUCT[type].cost){
-      const smart=botPlaceSmart(p,type,own); if(smart>=0){ placeStructure(p,type,smart); }
-      else { const cands= STRUCT[type].coast?own.filter(t=>isCoast(t)&&!struct[t]):own.filter(t=>!struct[t]);
-      for(let k=0;k<6&&cands.length;k++){ const t=pick(cands); if(!crowded(t)){ placeStructure(p,type,t); break; } } }
-    }
-  }
-  if(p.ports>0&&p.gold>=WARSHIP_COST+120&&srand()<0.15&&warships.filter(w=>w.owner===p.id).length<Math.min(6,p.ports)){
-    const port=pick(structures.filter(st=>st.type==='port'&&st.owner===p.id)); if(port){ const px=port.t%W,py=(port.t-px)/W;
-      let cls=p.gold>1400&&srand()<0.25?'battleship':p.gold>700&&srand()<0.4?'cruiser':srand()<0.12?'privateer':srand()<0.15?'scout':'warship'; { const pens=structures.filter(st=>st.type==='subbase'&&!st.building&&st.owner===p.id).length; if(pens&&srand()<0.35){ const nSub=warships.filter(w=>w.owner===p.id&&w.cls==='sub').length, nHun=warships.filter(w=>w.owner===p.id&&w.cls==='hunter').length; const wantHun=(p.subLoss||0)>0||srand()<0.35; if(wantHun&&nHun<2*pens) cls='hunter'; else if(nSub<3*pens) cls='sub'; } } if(!ALLOWED.has(cls)){ const alt=['scout','warship','cruiser','battleship','privateer'].filter(k=>ALLOWED.has(k)); if(!alt.length) return; cls=pick(alt); }
-      for(let k=0;k<6;k++){ const x=Math.floor(px+rnd(-40,40)),y=Math.floor(py+rnd(-40,40)); if(inb(x,y)&&!land[idx(x,y)]){ orderWarship(p,idx(x,y),cls); break; } } }
-  }
-  if(p.gold>1200&&srand()<0.08){ const bb=warships.find(w=>w.owner===p.id&&w.cls==='battleship'&&!w.cruise&&!w.refit&&structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===p.id&&((st.t%W+.5-w.x)**2+((st.t-st.t%W)/W+.5-w.y)**2)<=LINK_RANGE*LINK_RANGE)); if(bb){ p.gold-=CRUISE.cost; bb.refit=tickN+CRUISE.ticks; } }
-  // deliberate naval tech path: a port II by mid-game, then a sub base near it
-  if(tickN>2400&&p.gold>1100&&srand()<0.25&&!structures.some(st=>st.owner===p.id&&st.type==='port'&&(st.level||1)>=2)){ const up=structures.find(st=>st.owner===p.id&&st.type==='port'&&!st.building&&!st.upgrading); if(up) upgradeStructure(p,up); }
-  else if(p.gold>900&&srand()<0.06&&structures.filter(st=>st.owner===p.id&&(st.level||1)>=2).length<3){ const up=structures.find(st=>st.owner===p.id&&(st.type==='port'||st.type==='airfield')&&!st.building&&!st.upgrading&&(st.level||1)<2); if(up) upgradeStructure(p,up); }
-  { const pens=structures.filter(st=>st.type==='subbase'&&!st.building&&st.owner===p.id); if(pens.length&&p.gold>=650&&srand()<0.3){ const nSub=warships.filter(w=>w.owner===p.id&&w.cls==='sub').length, nHun=warships.filter(w=>w.owner===p.id&&w.cls==='hunter').length; let cls=null; if(((p.subLoss||0)>0||srand()<0.35)&&nHun<2*pens.length) cls='hunter'; else if(nSub<3*pens.length) cls='sub'; if(cls&&ALLOWED.has(cls)){ const base=pick(pens); const wn=waterNeighbor(base.t); if(wn>=0){ let dest=wn; for(let k=0;k<12;k++){ const c=wn+Math.round((srand()-.5)*30)+Math.round((srand()-.5)*30)*W; if(c>=0&&c<W*H&&!land[c]){ dest=c; break; } } orderWarship(p,dest,cls); } } } }
-  { const p2=structures.find(st=>st.owner===p.id&&st.type==='port'&&(st.level||1)>=2&&!st.building); if(p2&&p.gold>700&&srand()<0.25&&ALLOWED.has('subbase')&&!structures.some(st=>st.owner===p.id&&st.type==='subbase')){ const cands=coastTilesOf(p.id).filter(t=>!struct[t]&&!crowded(t)&&((t%W-p2.t%W)**2+((t-t%W)/W-(p2.t-p2.t%W)/W)**2)<=LINK_RANGE*LINK_RANGE); if(cands.length) placeStructure(p,'subbase',pick(cands)); } }
-  if(p.silos>0&&p.gold>=NUKE_COST+60&&srand()<0.35){
-    const victims=players.filter(q=>q.alive&&q!==p&&q.kind!=='neutral'&&!atPeace(p.id,q.id)).sort((a,b)=>b.tiles-a.tiles);
-    if(victims.length){ const v=victims[0]; const cands=structures.filter(s=>s.owner===v.id);
-      const t=cands.length?pick(cands).t:pick(ownTilesOf(v.id)); if(t!=null) launchMissile(p,t); }
-  }
-}
-function isProvokedBy(p,id,margin){ return p.grudge[id]!=null&&tickN-p.grudge[id]<PROVOKE_TICKS-margin; }
-function isProvoked(p){ for(const k in p.grudge) if(tickN-p.grudge[k]<PROVOKE_TICKS) return true; return false; }
-function neutralThink(p,now){
-  if(now<p.nextThink) return; p.nextThink=now+rnd(2500,5000);
-  // neutrals never start a war; once attacked they push back at whoever hit them most recently
-  let tgt=-1,last=-1;
-  for(const k in p.grudge){ const o=+k; if(tickN-p.grudge[k]>=PROVOKE_TICKS){ delete p.grudge[k]; continue; } if(players[o].alive&&p.grudge[k]>last){ last=p.grudge[k]; tgt=o; } }
-  if(tgt<0||attacks.some(a=>a.owner===p.id)) return;
-  if(p.troops<100||density(p)<density(players[tgt])*1.3) return; // only punish an attacker spread thinner than we are
-  if(launchAttack(p,tgt,p.troops*0.35)&&!p.warned){ p.warned=true; if(tgt===me.id) snd('pushback'); log(`${p.name} is pushing back${tgt===me.id?' against you':' against '+players[tgt].name}!`, tgt===me.id); }
-}
-function ownTilesOf(id){const a=[];for(let t=0;t<W*H;t++)if(owner[t]===id)a.push(t);return a;}
-function coastTilesOf(id){return ownTilesOf(id).filter(isCoast);}
-
 // ---------------------------------------------------------------- simulation
-function tick(){
-  resolveReplayCommands();
-  if(draft){ draftTicks++; if(draftTicks%6===0) draftStep(); }
-  if(over||paused) return;
-  tickN++; simMs=tickN*TICK;
-  if(tickN%100===0){ const h=stateHash(); if(REPLAY.on){ const ref=REPLAY.hashes&&REPLAY.hashes.find(x=>x[0]===tickN); if(ref&&ref[1]!==h&&!REPLAY.mismatch){ REPLAY.mismatch=true; const why=stateDiff(ref[2],stateDetail()); console.warn('[statefall] replay diverged at tick',tickN,ref[1],h,why); REPLAY.why=why; REPLAY.divTick=tickN; REPLAY.divRec=ref; REPLAY.divNow=stateDetail(); if(REPLAY.otherVersion){ showNotice({kind:'gold',title:'Replay drifted from the recording',text:`Recorded on game ${(REPLAY.fileGame||'an earlier version')}; the rules have changed since. Nothing to report.`,ttl:9000}); } else { log('Replay diverged from the recording at '+Math.floor(tickN*TICK/60000)+':'+String(Math.floor(tickN*TICK/1000%60)).padStart(2,'0')+(why?' — '+why:'')+'.',true); setTimeout(divergenceCard,0); } } } else CMD.hashes.push([tickN,h,stateDetail()]); }
-  const now=simMs;
-  for(const p of players){
-    if(!p.alive) continue;
-    if(gOn(p)&&p.areas&&p.areas.length){ const g=troopGrowth(p)*TICK/1000, cap=maxTroops(p); for(const a of p.areas){ const share=a.tiles/Math.max(1,p.tiles); const acap=cap*share; const ga=g*share; if(START.noCap||a.troops<acap) a.troops=START.noCap?a.troops+ga:Math.min(acap,a.troops+ga); } syncTroops(p); }
-    else if(START.noCap&&p.kind!=='neutral') p.troops+=troopGrowth(p)*TICK/1000;
-    else { const cap=maxTroops(p); if(p.troops<cap) p.troops=Math.min(cap,p.troops+troopGrowth(p)*TICK/1000); } // cap limits growth, never trims a bonus
-    p.gold+=goldGrowth(p)*TICK/1000*(p.kind==='neutral'?0:1);
-    if(p.kind==='bot') botThink(p,now); else if(p.kind==='neutral') neutralThink(p,now);
-    if(p.kind!=='neutral'&&p.troops>(p.peakTroops||0)) p.peakTroops=p.troops;
-    if(p===me){ const gg=goldGrowth(p)*TICK/1000; p.goldEarned=(p.goldEarned||0)+gg; STATS.c.peak=Math.round(p.peakTroops||0); STATS.c.gold=Math.round(p.goldEarned||0); const sh=p.tiles/landCount; if(sh>=0.5&&!STATS.c.half){ STATS.c.half=1; sEvent('Crossed half the world','milestone'); } if(sh>=0.25&&!STATS.c.quarter){ STATS.c.quarter=1; sEvent('A quarter of the world'); } }
-  }
-  if(tickN%10===0) rebuildLinks();
-  stepDiplomacy(); reclaimLand(); stepBuild(); missileCommand(); stepTrade(); stepGuns(); stepPlanes(); stepAir(); flightOps(); troopLogistics(); engineering(); stepTrucks(); if(tickN%5===0){ computeVision(); if(START.fog&&tickN%20===0){ myBorders=new Set(Object.keys(borderOwners(me).r).map(Number)); } } stepAttacks(); stepInterceptors(); stepShields(); stepMissiles(); stepNaval(); if(tickN%5===0) checkRegions(); drawMap();
-  if(!me.alive&&!spectating){ end('Overrun','Your nation has been erased from the map.'); }
-  const teamTiles=t=>players.filter(q=>q.alive&&q.team===t).reduce((a,q)=>a+q.tiles,0);
-  const share=(me.team!=null?teamTiles(me.team):me.tiles)/landCount;
-  const rivalsLeft=players.some(q=>q.alive&&q.kind!=='neutral'&&q!==me&&!(me.team!=null&&q.team===me.team));
-  if(me.alive&&(share>=0.999||(!rivalsLeft&&!players.some(q=>q.alive&&q.kind==='neutral')))) end('Total victory',me.team!=null?`Team ${TEAM_NAMES[me.team]} holds the entire world.`:'The whole world is yours.');
-  if(share>=WIN_SHARE) end(me.team!=null?'Team victory':'Victory',(me.team!=null?`Team ${TEAM_NAMES[me.team]} controls `:'You control ')+Math.round(share*100)+'% of the land.');
-  if(me.team!=null){ for(let t=0;t<START.teams;t++){ if(t===me.team) continue; const tt=teamTiles(t); if(tt/landCount>=WIN_SHARE) end('Defeat',`Team ${TEAM_NAMES[t]} now controls ${Math.round(tt/landCount*100)}% of the land.`); } }
-  else { const leader=players.filter(p=>p.alive&&p!==me&&p.kind!=='neutral').find(p=>p.tiles/landCount>=WIN_SHARE);
-  if(leader) end('Defeat',leader.name+' now controls '+Math.round(leader.tiles/landCount*100)+'% of the land.'); }
-  if(tickN%30===0) computeLabelPos();
-  if(START.garrison&&tickN%10===5) rebuildAreas();
-  if(tickN%20===0) checkAlliedEndgame();
-  if(tickN%5===0) updateUI();
-}
-function checkRegions(){
-  const np=NP;
-  for(const r of regions){ if(r.size<REGION_MIN) continue;
-    for(const p of players){ if(!p.alive) continue;
-      const full=regCount[r.id*np+p.id]===r.size;
-      if(full&&!p.held.has(r.id)){ p.held.add(r.id);
-        if(!p.claimed.has(r.id)){ p.claimed.add(r.id); const bonus=Math.round(r.size*CAPTURE_BONUS); if(gOn(p)&&p.areas){ addTroopsAt(p,idx(Math.round(r.cx),Math.round(r.cy)),bonus); } else p.troops+=bonus;
-          log(`${p.name} unified ${r.cont?'the continent of ':''}${r.name} and raised ${bonus} troops.`, p===me||r.cont); if(p===me){ snd('unified'); sInc(r.cont?'continents':'islands'); sEvent(`Unified ${r.cont?'the continent of ':''}${r.name} (+${bonus} troops)`,'unify'); }
-          if(r.cont||p===me){ badges.push({kind:'unify',text:r.name,sub:`unified by ${p.name} — +${bonus} troops now, +${(r.size*HOLD_BONUS).toFixed(1)} troops/s while held`,flag:p.flag,col:p.color,age:0,life:p===me?130:90,snd:p===me?'fanfare':'fanfareq'}); } }
-        else if(p===me) log(`You hold all of ${r.name} again.`,true);
-      } else if(!full&&p.held.has(r.id)){ p.held.delete(r.id); if(p===me) log(`You no longer hold all of ${r.name}.`,true); }
-    }
-  }
-}
-function startDraft(){
-  const ps=players.filter(p=>p.kind!=='neutral'); for(let i=ps.length-1;i>0;i--){ const j=Math.floor(srand()*(i+1)); [ps[i],ps[j]]=[ps[j],ps[i]]; }
-  const per=Math.max(2,Math.min(8,Math.round(landCount/12000)));
-  draft={order:ps,idx:0,per,round:0,timer:0}; paused=true;
-  log(`Risky start: ${per} picks each, round robin. ${ps[0]===me?'You pick first.':ps[0].name+' picks first.'}`,true);
-  draft.iv=null; draftTicks=0; // stepped from tick()
-}
-function draftPick(p,c){ let sx=0,sy=0,n=0; for(let t=0;t<W*H;t++) if(owner[t]===c.id){ if(struct[t]) captureStructure(t,p); setOwner(t,c===p?owner[t]:p.id); sx+=t%W; sy+=(t-t%W)/W; n++; } c.alive=false; c.tiles=0; const ce=centroid(p); p.sx=ce[0]; p.sy=ce[1];
-  if(n){ draftPicks.push({owner:p.id,x:sx/n+.5,y:sy/n+.5,name:c.name,n:draftPicks.filter(d=>d.owner===p.id).length+1,at:tickN}); }
-  log(`${p===me?'You':p.name} picked ${c.name}.`,p===me); if(p===me) snd('conquered'); }
-function draftAdvance(){ draft.idx++; if(draft.idx>=draft.order.length){ draft.idx=0; draft.round++; }
-  if(draft.round>=draft.per){ draft=null; draftDoneAt=performance.now(); paused=userPaused; log('Draft complete — the war begins.',true); snd('unified'); for(const p of players) if(p.kind==='neutral'&&p.tiles<=0) p.alive=false; updateUI(); } }
-function draftStep(){ if(!draft) return; const p=draft.order[draft.idx]; if(p===me) return; // waiting on the human
-  const free=players.filter(q=>q.kind==='neutral'&&q.alive&&q.tiles>=120); if(!free.length){ draftAdvance(); return; }
-  let c=null; if(p.tiles>0){ const {r}=borderOwners(p); const adj=Object.keys(r).map(Number).map(id=>players[id]).filter(q=>q.kind==='neutral'&&q.alive&&q.tiles>=120).sort((a,b)=>b.tiles-a.tiles); if(adj.length) c=adj[0]; }
-  if(!c){ const big=free.sort((a,b)=>b.tiles-a.tiles).slice(0,6); c=pick(big); }
-  draftPick(p,c); draftAdvance(); }
-function togglePause(){ if(over||!me||draft) return; userPaused=!userPaused; if(userPaused){ paused=true; pausedAt=performance.now(); } else { startTime+=performance.now()-pausedAt; paused=false; } $('pauseBtn').textContent=userPaused?'\u25B6':'\u275A\u275A'; }
-function checkAlliedEndgame(){
-  if(decided||over||paused||!me.alive) return;
-  const rivals=players.filter(q=>q.alive&&q!==me&&q.kind!=='neutral');
-  if(!rivals.length||!rivals.every(q=>relation(me,q)?.type==='ally')) return;
-  if(rivals.every(q=>q.team!=null&&q.team===me.team)){ decided=true; end('Team victory',`Team ${TEAM_NAMES[me.team]} is the last one standing.`); return; }
-  if(players.some(q=>q.alive&&q.kind==='neutral'&&q.tiles>200)) return; // neutrals still standing: not yet
-  decided=true; if(!REPLAY.on) paused=true;
-  const names=rivals.map(q=>q.name).join(', ');
-  $('decideText').textContent=`${names} ${rivals.length>1?'are':'is'} the last nation${rivals.length>1?'s':''} standing beside you. Share the victory, or break the alliance and finish the war.`;
-  $('decide').style.display='flex';
-  DECIDE.share=()=>{ $('decide').style.display='none'; paused=userPaused;
-    const refuse=rivals.filter(q=>{ const ratio=me.tiles/Math.max(1,q.tiles); const pr=ratio>=1.2?0.9:ratio>=0.8?0.6:0.3; return srand()>pr*Math.min(1,me.rep+0.3); });
-    if(!refuse.length){ over=false; freeplay=false; end('Shared victory',`You and ${names} end the war as allies, holding ${Math.round(players.filter(q=>q.alive&&q.kind!=='neutral').reduce((a,q)=>a+q.tiles,0)/landCount*100)}% of the land together.`); }
-    else { for(const q of refuse){ log(`${q.name} refuses to share the world.`,true); breakRelation(q,me); q.nextThink=0; q.focus=0.85; } snd('pushback'); }
-  };
-  DECIDE.war=()=>{ $('decide').style.display='none'; paused=userPaused; for(const q of rivals) breakRelation(me,q); };
-  $('decShare').onclick=()=>issue('decShare'); $('decWar').onclick=()=>issue('decWar');
-}
+function tick(){ const advanced=runEngineOperation(()=>engine.tick()); if(advanced) lastSuccessfulTickAt=performance.now(); return advanced; }
+function togglePause(){ const wasPaused=lifecycleState.userPaused; if(!engine.togglePause()) return; if(!wasPaused) pausedAt=performance.now(); else startTime+=performance.now()-pausedAt; $('pauseBtn').textContent=lifecycleState.userPaused?'\u25B6':'\u275A\u275A'; }
+function showAlliedDecision(decision){ const rivals=decision.rivalIds.map(id=>players[id]).filter(Boolean),names=rivals.map(player=>player.name).join(', '); $('decideText').textContent=`${names} ${rivals.length>1?'are':'is'} the last nation${rivals.length>1?'s':''} standing beside you. Share the victory, or break the alliance and finish the war.`; $('decide').style.display='flex'; $('decShare').onclick=()=>issue('decShare'); $('decWar').onclick=()=>issue('decWar'); }
+function closeAlliedDecision(){ $('decide').style.display='none'; }
 const LB_KEY='statefall-board';
 function loadBoard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY)||'[]'); }catch(e){ return []; } }
 function saveBoard(b){ try{ localStorage.setItem(LB_KEY,JSON.stringify(b.slice(-300))); }catch(e){} }
 function matchClass(){ const c=[]; if(START.billionaire) c.push('Billionaire'); if(START.endgame) c.push('End game'); if(START.quick) c.push('Quick start'); if(START.risky) c.push('Risky start'); if(START.instant) c.push('Instant build'); if(START.noCap) c.push('No cap'); if(START.troops!==120||START.gold!==100||START.bots) c.push('Custom start'); if(START.teams>0) c.push(START.teams+' teams'); if(START.garrison) c.push('Garrisons'); if(START.pauseBuild) c.push('Paused orders'); return c.length?c.join(' + '):'Standard'; }
 function matchScore(rec){ const dm={supereasy:0.4,easy:0.7,normal:1,hard:1.4,superhard:1.9,impossible:2.6}[rec.diff]||1; const mode=(rec.fog?1.25:1)*(rec.risky?1.15:1); const res={'Total victory':1.3,'Victory':1,'Team victory':1,'Shared victory':0.7,'Abandoned':0}[rec.result]??0.25; return Math.round(rec.land*dm*mode*res/Math.max(1,rec.minutes)*100); }
-function recordMatch(title){ if(me.recorded) return; me.recorded=true; const minutes=REPLAY.on?tickN*TICK/60000:((userPaused?pausedAt:performance.now())-startTime)/60000;
-  const rec={when:Date.now(),result:title,country:me.name,map:START.map,diff:chosen,fog:!!START.fog,risky:!!START.risky,cls:matchClass(),land:Math.round(me.tiles/landCount*1000)/10,minutes:Math.round(minutes*10)/10,kills:me.kills||0,peak:Math.round(me.peakTroops||me.troops),gold:Math.round(me.goldEarned||0),seed:START.seed};
-  rec.botNations=players.filter(p=>p.customNation).map(p=>({userId:p.customNation.userId,name:p.customNation.name,alive:!!p.alive,land:Math.round(p.tiles/landCount*1000)/10,killedBy:p.killedBy!=null?players[p.killedBy].name:null,kills:players.filter(q=>q.kind!=='neutral'&&q.killedBy===p.id).length,killedPlayer:me.killedBy===p.id,peak:Math.round(p.peakTroops||0)}));
+function recordMatch(title){ if(presentationState.matchRecorded) return; presentationState.matchRecorded=true; const minutes=REPLAY.on?clockState.tickN*TICK/60000:((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/60000;
+  const rec={when:Date.now(),result:title,country:me().name,map:START.map,diff:matchState.difficulty,fog:!!START.fog,risky:!!START.risky,cls:matchClass(),land:Math.round(me().tiles/mapState.landCount*1000)/10,minutes:Math.round(minutes*10)/10,kills:me().kills||0,peak:Math.round(me().peakTroops||me().troops),gold:Math.round(me().goldEarned||0),seed:START.seed};
+  rec.botNations=players.filter(p=>p.customNation).map(p=>({userId:p.customNation.userId,name:p.customNation.name,alive:!!p.alive,land:Math.round(p.tiles/mapState.landCount*1000)/10,killedBy:p.killedBy!=null?players[p.killedBy].name:null,kills:players.filter(q=>q.kind!=='neutral'&&q.killedBy===p.id).length,killedPlayer:me().killedBy===p.id,peak:Math.round(p.peakTroops||0)}));
   rec.stats=statsSnapshot(title); { let n=JSON.stringify(rec.stats).length; while(n>60000&&rec.stats.tl.length>40){ rec.stats.tl=rec.stats.tl.filter((e,i)=>i%2===0||e.k!=='note'); n=JSON.stringify(rec.stats).length; } console.info('[statefall] stats blob',n,'bytes,',rec.stats.tl.length,'timeline entries'); } rec.score=matchScore(rec); const b=loadBoard(); b.push(rec); saveBoard(b); lastStats=rec.stats;
   if(REPLAY.on){ lastStats=rec.stats; return; }
-  if(WP&&WP.user&&title!=='Abandoned'){ siteSave('replay',`${title} as ${me.name} · ${matchClass()} · ${new Date().toLocaleDateString()}`,{result:title}).catch(e=>console.warn('[statefall] replay save',e)); }
+  if(WP&&WP.user&&title!=='Abandoned'){ siteSave('replay',`${title} as ${me().name} · ${matchClass()} · ${new Date().toLocaleDateString()}`,{result:title}).catch(e=>console.warn('[statefall] replay save',e)); }
   if(WP&&WP.user&&title!=='Abandoned'){ sfPost(rec).then(res=>{ if(res.skipped) return; try{ localStorage.setItem('statefall-lastpost',JSON.stringify({at:Date.now(),ok:!res.error,msg:res.error?(res.message||res.error)+(res.status?' ('+res.status+')':''):`#${res.rank} overall, #${res.classRank} in ${rec.cls}`})); }catch(e){} if(res.error){ if(res.status!==422&&res.status!==403){ const box=sfOutbox(); box.push(rec); sfSaveOutbox(box); } log(`Score not posted (${res.message||res.error}).`,true); const el=document.getElementById('ovPost'); if(el) el.textContent=res.status===403?'Not posted — the page login has expired; refresh and it will retry.':'Not posted: '+(res.message||res.error); }
       else { lastPostId=res.id||null; const el=document.getElementById('ovPost'); if(el) el.textContent=res.duplicate?'Community score already posted.':`Community score posted — #${res.rank} overall, #${res.classRank} in ${rec.cls}. Scores are player-submitted and not independently verified.${res.stats===false?' (credits not saved — site plugin needs updating)':''}`; log(`Community score posted: #${res.rank} overall (unverified).`,true); if(res.id&&!res.duplicate&&rec.stats){ creditsCardPNG(rec.stats).then(blob=>{ if(!blob) return; const fd=new FormData(); fd.append('card',blob,'card.png'); fetch(WP.rest+'scores/'+res.id+'/card',{method:'POST',credentials:'same-origin',headers:{'X-WP-Nonce':WP.nonce},body:fd}).catch(()=>{}); }); const sh=document.getElementById('ovShare'); const row=document.getElementById('ovShareRow'); if(sh&&row){ const url=(WP.creditsUrl||WP.base)+res.id+'/'; row.style.display='flex'; sh.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); const cp=document.getElementById('ovCopy'); cp.onclick=()=>{ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ cp.textContent='Copied'; setTimeout(()=>{ cp.textContent='Copy link'; },1800); }).catch(()=>{ prompt('Copy this link:',url); }); }; } } if(res.rank===1&&!res.duplicate&&JUKE.loaded&&JUKE.stings.top1) ROLL.top1Pending=true; } }); } }
 function playClass(cls){ const parts=cls.split(' + ');
@@ -2099,8 +759,8 @@ function playClass(cls){ const parts=cls.split(' + ');
   if(!parts.includes('Custom start')){ $('stTroops').value=120; $('stGold').value=100; set('stBots',false); }
   document.querySelectorAll('#modes input[data-group=layout]').forEach(c=>c.onchange&&c.onchange());
   const maps=[...document.querySelectorAll('#maps button')].map(x=>x.dataset.m); START.map=maps[Math.floor(Math.random()*maps.length)]; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map));
-  const diffs=Object.keys(DIFFS); chosen=diffs[Math.floor(Math.random()*diffs.length)]; $('diffSel').value=chosen;
-  const ci=Math.floor(Math.random()*COUNTRIES.length); chosenFlag=countryByIdx(ci); $('countrySel').value=ci; nationOption(); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===chosenFlag.name));
+  const diffs=Object.keys(DIFFS); engine.configure({difficulty:diffs[Math.floor(Math.random()*diffs.length)]}); $('diffSel').value=matchState.difficulty;
+  const ci=Math.floor(Math.random()*COUNTRIES.length); engine.configure({chosenFlag:countryByIdx(ci)}); $('countrySel').value=ci; nationOption(); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===setupState.chosenFlag.name));
   $('seedIn').value=newSeed(); $('lb').style.display='none'; $('startBtn').click(); }
 let lbScopeSel='local';
 async function showGlobal(scope){ const sel=$('lbClass'); const cls=sel.value||'__all'; const mapName=k=>({random:'Continents',land:'Land',islands_l:'Large islands',islands_m:'Medium islands',islands_s:'Small islands',atoll:'Atoll',world:'World',europe:'Europe',americas:'Americas',africa:'Africa',asia:'Asia',mideast:'Middle East'})[k]||k;
@@ -2128,55 +788,90 @@ function showBoard(){ if(WP){ const sc=$('lbScope'); sc.innerHTML=['local','glob
   $('lbBody').innerHTML=rows.length?`<table class="lbt"><tr><th>#</th><th>Score</th><th>Result</th><th>Country</th><th>Map</th><th>Difficulty</th><th>Modes</th><th>Time</th><th>Land</th><th>Kills</th><th>Peak troops</th><th>Date</th><th>Seed</th></tr>${rows.map((r,i)=>`<tr class="${Object.values(bestBy).includes(r)?'best':''}"><td>${i+1}</td><td>${r.score}</td><td>${r.result}</td><td>${r.country}</td><td>${mapName(r.map)}</td><td>${(DIFFS[r.diff]||{}).label||r.diff}</td><td>${[r.fog?'fog':'',r.risky?'risky':''].filter(Boolean).join(', ')||'—'}</td><td>${r.minutes} min</td><td>${r.land}%</td><td>${r.kills}</td><td>${r.peak}</td><td>${new Date(r.when).toLocaleDateString()}</td><td><button data-seed="${r.seed}" style="padding:1px 6px;font-size:11px">${r.seed}</button></td></tr>`).join('')}</table>`  :'<p class="muted">No matches in this class yet.</p>';
   $('lbBody').querySelectorAll('button[data-seed]').forEach(x=>x.onclick=()=>{ $('seedIn').value=x.dataset.seed; $('lb').style.display='none'; log?.('Seed loaded.',true); });
   $('lb').style.display='flex'; }
-function end(title,text){ if(REPLAY.creditsMode){ over=true; return; } if(over||freeplay&&title!=='Overrun'&&title!=='Total victory') return; over=true; try{ recordMatch(title); }catch(e){ console.error('[statefall] record failed',e); } snd(title.includes('ictory')?'victory':'defeat'); if(title==='Victory'&&me.team!=null) title='Team victory'; ovTitle.textContent=title; ovText.textContent=text;
-  overlay.classList.toggle('replay',REPLAY.on); if(REPLAY.on){ ovTitle.textContent='Replay finished — '+title; const d=lastStats||{}; ovText.textContent=`${d.name||me.name}: ${d.result||title} in ${Math.round(tickN*TICK/6000)/10} min · ${Math.round(me.tiles/landCount*1000)/10}% of the land · ${(d.c&&d.c.kills)||me.kills||0} nations eliminated. ${REPLAY.mismatch?'This replay diverged from the recording along the way.':'The replay matched the recording throughout.'}`; const el=document.getElementById('ovPost'); if(el) el.textContent=''; $('replayBar').style.display='none'; }
-  { const b=loadBoard(); const r=b[b.length-1]; if(r&&!freeplay&&!REPLAY.on) ovText.textContent+=` Score ${r.score} — ${r.minutes} min, ${r.land}% of the land, ${r.kills} nations eliminated. Board: ${r.cls}.`; const el=document.getElementById('ovPost'); if(el) el.textContent=!WP?'':!WP.user?'Log in on the site to post scores.':freeplay?'Already recorded when the match first ended.':'Posting to the site…'; }
+function end(title,text){ return engine.endMatch(title,text); }
+function presentEnd(title,text){ try{ recordMatch(title); }catch(e){ console.error('[statefall] record failed',e); } snd(title.includes('ictory')?'victory':'defeat'); if(title==='Victory'&&me().team!=null) title='Team victory'; ovTitle.textContent=title; ovText.textContent=text;
+  overlay.classList.toggle('replay',REPLAY.on); if(REPLAY.on){ ovTitle.textContent='Replay finished — '+title; const d=lastStats||{},verification=REPLAY.mismatch?'This replay diverged from the recording along the way.':REPLAY.verifiedEvidence?'The replay matched the recording throughout.':'The replay completed without strong verification evidence.'; ovText.textContent=`${d.name||me().name}: ${d.result||title} in ${Math.round(clockState.tickN*TICK/6000)/10} min · ${Math.round(me().tiles/mapState.landCount*1000)/10}% of the land · ${(d.c&&d.c.kills)||me().kills||0} nations eliminated. ${verification}`; const el=document.getElementById('ovPost'); if(el) el.textContent=''; $('replayBar').style.display='none'; }
+  { const b=loadBoard(); const r=b[b.length-1]; if(r&&!lifecycleState.freeplay&&!REPLAY.on) ovText.textContent+=` Score ${r.score} — ${r.minutes} min, ${r.land}% of the land, ${r.kills} nations eliminated. Board: ${r.cls}.`; const el=document.getElementById('ovPost'); if(el) el.textContent=!WP?'':!WP.user?'Log in on the site to post scores.':lifecycleState.freeplay?'Already recorded when the match first ended.':'Posting to the site…'; }
   { const sel=document.getElementById('ovSong'); if(sel){ const opts=(JUKE.loaded&&(JUKE.list.game.length||JUKE.list.menu.length))?[]:['<option value="builtin">Built-in score</option>']; if(JUKE.loaded){ const seen=new Set(); const all=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].filter(t=>t&&!seen.has(t.id)&&seen.add(t.id)); for(const t of all) opts.push(`<option value="${t.id}">${t.title}${t.seconds?' ('+Math.floor(t.seconds/60)+':'+String(Math.floor(t.seconds%60)).padStart(2,'0')+')':''}</option>`); } sel.innerHTML=opts.join(''); if(ROLL.autoSong&&[...sel.options].some(o=>o.value===ROLL.autoSong)) sel.value=ROLL.autoSong; } const cb=document.getElementById('ovCredits'); if(cb){ cb.textContent=ROLL.rolled?'Watch credits again':'Roll credits'; cb.onclick=()=>{ if(lastStats){ ROLL.rolled=true; CUSTOM.previewing=false; beginCredits(CUSTOM.approved&&CUSTOM.data?Object.assign({},lastStats,{custom:CUSTOM.data}):lastStats,(CUSTOM.approved&&CUSTOM.data&&CUSTOM.data.song)||ROLL.autoSong||'builtin',false); } }; } const cu=document.getElementById('ovCustom'); if(cu) cu.onclick=()=>{ if(lastStats) openBuilder(lastStats); }; }
   const c=document.getElementById('ovCont'); c.textContent=title.includes('ictory')?'Keep playing':'Spectate'; c.style.display=title==='Total victory'?'none':''; overlay.style.display='flex';
-  if(!freeplay&&lastStats&&!ROLL.on){ try{ MUS.stop(); jukeStopSrc(0.8); const won=title.includes('ictory'); const st=jukeStingPick(won?'victory':'defeat')||jukeStingPick('credits'); ROLL.autoSong=st?st.id:(JUKE.loaded&&JUKE.list.game.length?upick(JUKE.list.game).id:'builtin'); ROLL.rolled=false; }catch(e){ console.error('[statefall] end music',e); } }
-  c.onclick=()=>{ overlay.style.display='none'; over=false; freeplay=true; if(!title.includes('ictory')) spectating=true; log(title.includes('ictory')?'Victory declared — the war goes on.':'Spectating.',true); }; }
+  if(!lifecycleState.freeplay&&lastStats&&!ROLL.on){ try{ MUS.stop(); jukeStopSrc(0.8); const won=title.includes('ictory'); const st=jukeStingPick(won?'victory':'defeat')||jukeStingPick('credits'); ROLL.autoSong=st?st.id:(JUKE.loaded&&JUKE.list.game.length?upick(JUKE.list.game).id:'builtin'); ROLL.rolled=false; }catch(e){ console.error('[statefall] end music',e); } }
+  c.onclick=()=>{ overlay.style.display='none'; engine.continueAfterEnd(title.includes('ictory')); }; }
 
 // ---------------------------------------------------------------- rendering
 const cv=document.getElementById('map'), ctx=cv.getContext('2d');
 const off=document.createElement('canvas'); off.width=W; off.height=H; const octx=off.getContext('2d');
 const img=octx.createImageData(W,H);
 const cam={x:0,y:0,s:4};
+let interpolationCache=null,interpolationPrevious={},interpolationAlpha=1,renderedInterpolatedActors=0;
+function prepareInterpolation(now){
+  const frame=engine.interpolationFrame();
+  if(frame!==interpolationCache){ interpolationCache=frame; interpolationPrevious=Object.fromEntries(Object.entries(frame.previous.actors).map(([name,actors])=>[name,new Map(actors.map(actor=>[actor.id,actor]))])); }
+  interpolationAlpha=lifecycleState.paused||!lastSuccessfulTickAt?1:Math.max(0,Math.min(1,(now-lastSuccessfulTickAt)/frame.tickIntervalMs));
+}
+function interpolatedPosition(name,actor,index){
+  const previous=interpolationPrevious[name]?.get(Number.isInteger(actor.id)?actor.id:index);
+  if(!previous) return [actor.x,actor.y];
+  renderedInterpolatedActors++;
+  return [previous.x+(actor.x-previous.x)*interpolationAlpha,previous.y+(actor.y-previous.y)*interpolationAlpha];
+}
+let labelLayoutTick=-1,presentationLabelPositions=[];
+function syncLabelPositions(force=false){ if(clockState.tickN>=30&&(force||clockState.tickN%30===0&&labelLayoutTick!==clockState.tickN)){ presentationLabelPositions=Q.playerLabelPositions(); labelLayoutTick=clockState.tickN; } return presentationLabelPositions; }
 if(__STATEFALL_TEST_BRIDGE__){
 function installBrowserTestBridge(){
   const enabled=window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('browserTest')==='1';
   if(!enabled) return;
   let deterministicScene=false;
-  const lastCommand=()=>{ const c=CMD.log[CMD.log.length-1]; return c?{t:c.t,k:c.k,a:structuredClone(c.a)}:null; };
-  const replayStatus=()=>({on:REPLAY.on,commands:REPLAY.cmds.length,applied:REPLAY.i,targetTick:REPLAY.toTick,mismatch:!!REPLAY.mismatch,speed:REPLAY.speed});
-  const status=()=>({ready:!!me,tick:tickN,paused,lastCommand:lastCommand(),replay:replayStatus()});
+  const lastCommand=()=>{ const c=CMD.log[CMD.log.length-1]; return c?{t:c.t,k:c.k,a:JSON.parse(JSON.stringify(c.a))}:null; };
+  const replayStatus=()=>({on:REPLAY.on,commands:REPLAY.cmds.length,applied:REPLAY.i,targetTick:REPLAY.toTick,mismatch:!!REPLAY.mismatch,why:REPLAY.why||null,divTick:REPLAY.divTick??null,speed:REPLAY.speed,finalVerified:!!REPLAY.finalVerified,verifiedEvidence:!!REPLAY.verifiedEvidence,finished:REPLAY.on&&clockState.tickN===REPLAY.toTick&&lifecycleState.paused});
+   const status=()=>({ready:!!me(),tick:clockState.tickN,paused:lifecycleState.paused,lastCommand:lastCommand(),replay:replayStatus(),catchup:{status:CATCHUP.status,target:CATCHUP.target,framePending:!!CATCHUP.frame,framesScheduled:CATCHUP.framesScheduled,framesRun:CATCHUP.framesRun}});
   const snapshot=()=>({
-    ready:!!me, seed:START.seed, map:START.map, tick:tickN, paused,
-    players:players.length, landCount,
+    ready:!!me(), seed:START.seed, map:START.map, difficulty:matchState.difficulty, tick:clockState.tickN, paused:lifecycleState.paused,
+    players:players.length, landCount:mapState.landCount,
     modes:{quick:START.quick,risky:START.risky,endgame:START.endgame,fog:START.fog,instant:START.instant,billionaire:START.billionaire,garrison:START.garrison,noCap:START.noCap,pauseBuild:START.pauseBuild},
-    matchClass:me?matchClass():null,
-    player:me?{id:me.id,tiles:me.tiles,troops:me.troops,gold:me.gold,areas:me.areas?me.areas.length:0}:null,
-    mapState:me?{neutralLand:Array.from(owner).reduce((n,o,t)=>n+(land[t]&&o<0?1:0),0),hiddenTiles:vis?Array.from(vis).reduce((n,v)=>n+(v?0:1),0):0,draft:!!draft}:null,
+    matchClass:me()?matchClass():null,
+    player:me()?{id:me().id,tiles:me().tiles,troops:me().troops,gold:me().gold,areas:me().areas?me().areas.length:0}:null,
+    mapState:me()?{neutralLand:Array.from(owner).reduce((n,o,t)=>n+(land[t]&&o<0?1:0),0),hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).reduce((n,v)=>n+(v?0:1),0):0,draft:!!draftState.draft}:null,
      input:{hover,commands:CMD.log.length,lastCommand:lastCommand()},
      replay:replayStatus(),
      camera:{x:cam.x,y:cam.y,scale:cam.s},
      canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight}
    });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
+    get me(){ return me(); },
+    get difficulty(){ return matchState.difficulty; },
+    set difficulty(value){ engine.configure({difficulty:value}); },
     snapshot,
     status,
-    prepareControlledStart(){ if(me) throw new Error('match already started'); window.__STATEFALL_TEST_PAUSE_ON_START__=true; },
-    pause(){ if(me&&!paused) togglePause(); return status(); },
-    advance(ticks){ const count=Math.max(0,Math.floor(ticks)); if(!me||!paused) throw new Error('advance requires a paused match'); paused=false; try{ for(let i=0;i<count;i++) tick(); } finally { paused=true; } return status(); },
-    canonicalState,
-    exerciseCruiseTargetOrder(candidates){ let draws=0; const picks=cruiseTargets(candidates,()=>{ draws++; return .5; }); return {draws,order:picks.map(x=>x.name)}; },
-    async canonicalDigest(){ const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalState())); return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join(''); },
+    prepareControlledStart(){ if(me()) throw new Error('match already started'); window.__STATEFALL_TEST_PAUSE_ON_START__=true; },
+    pause(){ if(me()&&!lifecycleState.paused) togglePause(); return status(); },
+    advance(ticks){ const count=Math.max(0,Math.floor(ticks)); if(!me()||!lifecycleState.paused) throw new Error('advance requires a paused match'); engine.setLifecycleForDiagnostics('paused',false); try{ for(let i=0;i<count;i++) tick(); } finally { engine.setLifecycleForDiagnostics('paused',true); } return status(); },
+     canonicalState,
+     stateHash:()=>engine.stateHash(),
+     replayPayload:()=>JSON.parse(JSON.stringify(replayFile('test'))),
+    applySettings(settings){ applySettings(structuredClone(settings)); return snapshot(); },
+    exerciseCruiseTargetOrder(candidates){ const before=deterministicRuntime.rngDraws,picks=cruiseTargets(candidates); return {draws:deterministicRuntime.rngDraws-before,order:picks.map(x=>x.name)}; },
+     async canonicalDigest(){ const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalState())); return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join(''); },
+     async canonicalCheckpoint(){ const state=canonicalState(),bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(state)); return {state,hash:engine.stateHash(),digest:Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join(''),rng:structuredClone(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; },
+      creditsReplayResetContract(){
+        if(!me()) throw new Error('match not started');
+        const saved={cmds:JSON.parse(JSON.stringify(CMD.log)),hashes:JSON.parse(JSON.stringify(CMD.hashes)),tick:clockState.tickN};
+        engine.configureReplay({on:true,creditsMode:true,cmds:saved.cmds,i:0,hashes:saved.hashes,hashv:2,mismatch:false,toTick:saved.tick,resume:false});
+        resetWorld();
+        const scratchCleared=setupState.PRESET===null&&setupState.cid===null&&setupState.countryPool.length===0&&setupState.chosenFlag===null;
+        $('startBtn').click();
+        return {scratchCleared,status:status(),setupInstalled:mapState.landCount>0};
+      },
+     renderRepeatedly(count=1){ const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; window.__STATEFALL_TEST_FREEZE__=true; for(let i=0;i<Math.max(0,Math.floor(count));i++) render(); const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`render purity violation: ${key} changed`); return {hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}; },
+      interpolationFrame:()=>engine.interpolationFrame(),
+      interpolationCanvasStatus:()=>({alpha:interpolationAlpha,renderedActors:renderedInterpolatedActors}),
+     advanceWithRenderCadence(ticks,cadence=[1,2,5,9]){ const count=Math.max(0,Math.floor(ticks)),steps=new Set(cadence.map(value=>Math.max(0,Math.floor(value)))); if(!me()||!lifecycleState.paused) throw new Error('advanceWithRenderCadence requires a paused match'); window.__STATEFALL_TEST_FREEZE__=true; engine.setLifecycleForDiagnostics('paused',false); try{ for(let i=0;i<count;i++){ tick(); if(steps.has(i%10)) render(); } } finally { engine.setLifecycleForDiagnostics('paused',true); } return status(); },
     focusTarget(kind='owned',scale=4){
-      if(!me) throw new Error('match not started');
+      if(!me()) throw new Error('match not started');
       let target=-1,best=Infinity;
       for(let t=0;t<W*H;t++){
-        const matches=kind==='owned'?land[t]&&owner[t]===me.id:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me.id:kind==='water'?!land[t]:false;
+        const matches=kind==='owned'?land[t]&&owner[t]===me().id:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me().id:kind==='water'?!land[t]:false;
         if(!matches) continue;
-        const x=t%W,y=(t-x)/W,d=(x-me.sx)**2+(y-me.sy)**2;
+        const x=t%W,y=(t-x)/W,d=(x-me().sx)**2+(y-me().sy)**2;
         if(d<best){ best=d; target=t; }
       }
       if(target<0) throw new Error('target not found: '+kind);
@@ -2185,87 +880,60 @@ function installBrowserTestBridge(){
       return {tile:target,owner:owner[target],land:!!land[target],x:cv.width/2,y:cv.height/2};
     },
      setCamera(scale,target='player'){
-       if(!me) throw new Error('match not started');
-       const x=target==='world'?W/2:me.sx+.5,y=target==='world'?H/2:me.sy+.5;
+       if(!me()) throw new Error('match not started');
+       const x=target==='world'?W/2:me().sx+.5,y=target==='world'?H/2:me().sy+.5;
        cam.s=Math.min(12,Math.max(.35,+scale||1)); cam.x=cv.width/2-x*cam.s; cam.y=cv.height/2-y*cam.s; render(); return status();
      },
-     loadReplay(file,mode='watch'){ if(me) throw new Error('loadReplay requires the start screen'); loadReplayFile(structuredClone(file),mode); return status(); },
-     installLateGameScene(){
-       if(!me||!paused) throw new Error('late-game scene requires a paused match');
-       const rivals=players.filter(p=>p!==me&&p.kind!=='neutral').slice(0,2); if(rivals.length<2) throw new Error('late-game scene requires two rivals');
-       let cx=Math.round(me.sx),cy=Math.round(me.sy),best=-1;
-       for(let y=35;y<H-35;y+=8) for(let x=35;x<W-35;x+=8){ let la=0,wa=0; for(let yy=y-18;yy<=y+18;yy+=3) for(let xx=x-18;xx<=x+18;xx+=3) land[idx(xx,yy)]?la++:wa++; const score=Math.min(la,wa); if(score>best){ best=score; cx=x; cy=y; } }
-       const ids=[me.id,rivals[0].id,rivals[1].id];
-       for(let y=Math.max(0,cy-48);y<Math.min(H,cy+49);y++) for(let x=Math.max(0,cx-56);x<Math.min(W,cx+57);x++){ const t=idx(x,y); if(!land[t]) continue; owner[t]=ids[x<cx-5?0:x>cx+9?1:2]; }
-       const used=new Set(), near=(x,y,wantLand,own)=>{ let found=-1,dist=Infinity; for(let yy=Math.max(0,y-28);yy<Math.min(H,y+29);yy++) for(let xx=Math.max(0,x-28);xx<Math.min(W,x+29);xx++){ const t=idx(xx,yy); if(!!land[t]!==wantLand||used.has(t)||(own!=null&&owner[t]!==own)) continue; const d=(xx-x)**2+(yy-y)**2; if(d<dist){ dist=d; found=t; } } if(found<0&&wantLand&&own!=null){ for(let yy=Math.max(0,cy-48);yy<Math.min(H,cy+49);yy++) for(let xx=Math.max(0,cx-56);xx<Math.min(W,cx+57);xx++){ const t=idx(xx,yy); if(!land[t]||used.has(t)) continue; const d=(xx-x)**2+(yy-y)**2; if(d<dist){ dist=d; found=t; } } if(found>=0) owner[found]=own; } if(found<0) throw new Error('late-game fixture tile not found'); used.add(found); return found; };
-       structures=[]; struct.fill(0); structOwner.fill(-1);
-       const addStructure=(type,x,y,own,extra={})=>{ const t=near(x,y,true,own),st={type,owner:own,t,cost:0,building:false,...extra}; structures.push(st); struct[t]=1; structOwner[t]=own; return st; };
-       const city=addStructure('city',cx-30,cy-13,me.id,{level:2,links:1});
-       const factory=addStructure('factory',cx-22,cy-5,me.id,{links:1});
-       const port=addStructure('port',cx-12,cy+5,me.id,{level:2,gunHp:3,queue:[{cls:'cruiser',done:tickN+80,total:120}]});
-       addStructure('fort',cx-8,cy-15,me.id,{level:3});
-       addStructure('sam',cx-19,cy+15,me.id,{cool:tickN+12,hp:3});
-       const silo=addStructure('silo',cx-29,cy+13,me.id,{cool:tickN+70});
-       addStructure('command',cx-24,cy+4,me.id);
-       const airfield=addStructure('airfield',cx-35,cy+3,me.id,{level:2,lshield:3,aq:[]});
-       const enemyShield=addStructure('shield',cx+24,cy-10,rivals[0].id,{hp:4});
-       const enemySam=addStructure('sam',cx+31,cy+8,rivals[0].id,{cool:0,hp:3});
-       addStructure('bertha',cx+2,cy+17,rivals[1].id,{hp:4});
-       links=[{a:factory,b:city,owner:me.id},{a:factory,b:port,owner:me.id}];
-       const waters=[near(cx-8,cy+15,false),near(cx+2,cy+13,false),near(cx+13,cy+15,false),near(cx+22,cy+19,false)];
-       const point=t=>[t%W+.5,(t-t%W)/W+.5], makeShip=(cls,own,t,path=[t],extra={})=>{ const [x,y]=point(t),w={id:++uidSeq,owner:own,cls,path,pos:0,dest:path[path.length-1],x,y,hp:SHIPS[cls].hp,cool:0,ang:0,hdg:-.2,wake:[[x-4,y+1],[x-2,y+.5],[x,y]],barCool:0,...extra}; warships.push(w); return w; };
-       warships=[]; selected.clear(); const flagship=makeShip('battleship',me.id,waters[0],waters,{cruise:true,fireAt:tickN,fireAng:-.3}); selected.add(flagship); makeShip('cruiser',me.id,waters[1],waters.slice(1),{barCool:tickN+80}); makeShip('warship',rivals[0].id,waters[2]); makeShip('scout',rivals[1].id,waters[3]);
-       const [ax,ay]=point(airfield.t), [tx,ty]=point(enemyShield.t);
-       aircraft=[{id:++uidSeq,owner:me.id,type:'fighter',home:airfield,state:'patrol',x:ax+10,y:ay-9,tx:cx,ty:cy,hp:3,hdg:.2,until:tickN+300},{id:++uidSeq,owner:me.id,type:'bomber',home:airfield,state:'run',x:cx-3,y:cy-18,tx,ty,bombs:5,hdg:.1},{id:++uidSeq,owner:rivals[0].id,type:'fighter',home:enemySam,state:'out',x:cx+15,y:cy-17,tx:cx,ty:cy,hp:2,hdg:2.8,until:tickN+200}];
-       missiles=[{owner:me.id,t:enemyShield.t,from:silo.t,age:24,flight:55},{owner:rivals[0].id,t:city.t,from:enemySam.t,age:16,flight:55}];
-       shells=[{owner:rivals[1].id,x:cx+12,y:cy+11,kind:'land',tx:cx-7,ty:cy-8,radius:3,trail:[[cx+18,cy+15,0],[cx+15,cy+13,4]],delay:0,arc:true,missile:true,speed:3.2,rise:17,ox:cx+18,oy:cy+15}];
-       attacks=[{owner:me.id,target:rivals[1].id,front:[near(cx-4,cy-3,true,rivals[1].id)]}]; shelled[enemySam.t]=tickN+180;
-       me.cmdFocus=rivals[0].id; me.cmdFocusT=enemyShield.t; highlightId=rivals[0].id;
-       if(START.fog){ if(!vis) vis=new Uint8Array(W*H); vis.fill(1); for(let y=Math.max(0,cy-44);y<Math.min(H,cy+45);y++) for(let x=cx+38;x<Math.min(W,cx+64);x++) vis[idx(x,y)]=0; }
-       nukeAlerts=[{from:point(enemySam.t),at:point(city.t),owner:rivals[0].id,age:18,life:88}];
-       document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
-       for(const p of players) if(!ids.includes(p.id)) p.tiles=0;
-       for(const [p,x,y] of [[me,cx-28,cy-28],[rivals[0],cx+30,cy-27],[rivals[1],cx+2,cy+27]]){ p.labelPos=[x+.5,y+.5]; p.labelDraw=[x+.5,y+.5]; p.tiles=Math.max(1200,p.tiles); }
+      loadReplay(file,mode='watch'){ if(me()) throw new Error('loadReplay requires the start screen'); loadReplayFile(structuredClone(file),mode); return status(); },
+      installLateGameScene(){
+        const scene=engine.installTestFixture('dense-late-game'),[cx,cy]=scene.center;
+        engine.renderBuffers();
+        selected.clear(); selected.add(warships.find(ship=>ship.id===scene.flagshipId)); highlightId=me().cmdFocus;
+        nukeAlerts=[{...scene.alert,age:18,life:88}];
+        document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
+         presentationLabelPositions=[]; for(const [id,position] of scene.labelPositions){ presentationLabelPositions[id]=position; labelRenderState.set(id,position.slice()); }
        deterministicScene=true;
        cam.s=5; cam.x=cv.width/2-cx*cam.s; cam.y=cv.height/2-cy*cam.s; drawMap(); updateUI(); updateHint(); render();
-       return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!vis,hiddenTiles:vis?Array.from(vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
+       return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!renderState.fog.vis,hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
      },
      screenToTile(x,y){ return tileAt(x,y); },
-     freezePresentation(){ if(me&&!paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const p of players) if(p.labelPos) p.labelDraw=p.labelPos.slice(); } render(); return status(); }
+      freezePresentation(){ if(me()&&!lifecycleState.paused) togglePause(); window.__STATEFALL_TEST_FREEZE__=true; if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const [id,position] of presentationLabelPositions.entries()) if(position) labelRenderState.set(id,position.slice()); } render(); return status(); }
   })});
 }
 installBrowserTestBridge();
 }
 const hex=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
-const pcol=[]; const seaC=hex('#1c3a52'), landC=hex('#b9ad84'), riverC=hex('#2f6389');
-function colorCache(){ pcol.length=0; for(const p of players){ let c=hex(p.color);
+const pcol=[],pteam=[]; const seaC=hex('#1c3a52'), landC=hex('#b9ad84'), riverC=hex('#2f6389');
+function colorCache(){ pcol.length=0; pteam.length=0; for(const p of players){ let c=hex(p.color);
   if(p.team!=null){ const t=hex(TEAM_COLS[p.team]); c=[c[0]*0.35+t[0]*0.65,c[1]*0.35+t[1]*0.65,c[2]*0.35+t[2]*0.65]; // teammates share a hue family
     const k=0.82+0.18*((p.id*7)%5)/4; c=c.map(v=>Math.min(255,v*k)); } // slight brightness offsets keep members distinguishable
-  pcol.push(c); } }
+  pcol.push(c); pteam.push(p.team); } }
 function drawMap(){
-  const d=img.data;
+  const d=img.data,tickN=clockState.tickN,myId=matchState.playerId,fogVis=renderState.fog.vis,areaOf=engineState.garrison.areaOf;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
     const t=idx(x,y); let c;
     if(!land[t]) c=river[t]?riverC:seaC;
     else{ const o=owner[t];
       if(o<0) c=shelled[t]>tickN?[landC[0]*0.6,landC[1]*0.6,landC[2]*0.6]:landC;
-      else{ c=pcol[o]; let border=0; const po=players[o];
-        for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); const on=owner[n]; if(land[n]&&on!==o){ const same=on>=0&&po.team!=null&&players[on].team===po.team; border=Math.max(border,same?1:2); } }
-        if(border===2) c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; else if(border===1) c=[c[0]*0.85,c[1]*0.85,c[2]*0.85]; else if(o===me.id) c=[Math.min(255,c[0]*1.1),Math.min(255,c[1]*1.1),Math.min(255,c[2]*1.1)];
+      else{ c=pcol[o]; let border=0;
+        for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); const on=owner[n]; if(land[n]&&on!==o){ const same=on>=0&&pteam[o]!=null&&pteam[on]===pteam[o]; border=Math.max(border,same?1:2); } }
+        if(border===2) c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; else if(border===1) c=[c[0]*0.85,c[1]*0.85,c[2]*0.85]; else if(o===myId) c=[Math.min(255,c[0]*1.1),Math.min(255,c[1]*1.1),Math.min(255,c[2]*1.1)];
         if(shelled[t]>tickN){ const k=0.55+0.25*(1-(shelled[t]-tickN)/SUPPRESS_TICKS); c=[c[0]*k,c[1]*k,c[2]*k]; }
         if(pickMode&&areaOf&&hoverPickArea>=0&&areaOf[t]===hoverPickArea){ c=[Math.min(255,c[0]*1.25+30),Math.min(255,c[1]*1.25+30),Math.min(255,c[2]*1.25+30)]; }
         if(highlightId>=0){ if(o===highlightId){ const pulse=0.75+0.35*Math.sin(performance.now()/150); c=[Math.min(255,c[0]*pulse+40),Math.min(255,c[1]*pulse+40),Math.min(255,c[2]*pulse+40)]; } else c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; }
       }
     }
-    if(vis&&!vis[t]){ const g=(c[0]*0.3+c[1]*0.59+c[2]*0.11); c=[(c[0]*0.35+g*0.65)*0.62,(c[1]*0.35+g*0.65)*0.62,(c[2]*0.35+g*0.65)*0.66]; }
+    if(fogVis&&!fogVis[t]){ const g=(c[0]*0.3+c[1]*0.59+c[2]*0.11); c=[(c[0]*0.35+g*0.65)*0.62,(c[1]*0.35+g*0.65)*0.62,(c[2]*0.35+g*0.65)*0.66]; }
     const i=t*4; d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2]; d[i+3]=255;
   }
   octx.putImageData(img,0,0);
 }
 function render(){
   const cw=cv.width, ch=cv.height;
+  renderedInterpolatedActors=0; prepareInterpolation(performance.now());
   ctx.fillStyle='#132a3d'; ctx.fillRect(0,0,cw,ch);
-  if(highlightId>=0||pickMode) { hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me.id&&areaOf)?areaOf[hover]:-1; drawMap(); }
+  if(!me()){ if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render); return; }
+  if(highlightId>=0||pickMode) { hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf)?engineState.garrison.areaOf[hover]:-1; drawMap(); }
   ctx.imageSmoothingEnabled=false;
   ctx.drawImage(off,cam.x,cam.y,W*cam.s,H*cam.s);
   const s=cam.s;
@@ -2275,51 +943,51 @@ function render(){
   ctx.globalAlpha=1;
   // supply lines between factories and cities
   { const ph=(performance.now()/60)%16; const lowZoom=s<0.6;
-    for(const l of links){ if(vis&&!vis[l.a.t]&&!vis[l.b.t]) continue; const ax=cam.x+(l.a.t%W+.5)*s, ay=cam.y+((l.a.t-l.a.t%W)/W+.5)*s, bx=cam.x+(l.b.t%W+.5)*s, by=cam.y+((l.b.t-l.b.t%W)/W+.5)*s;
+    for(const l of links){ if(renderState.fog.vis&&!renderState.fog.vis[l.a.t]&&!renderState.fog.vis[l.b.t]) continue; const ax=cam.x+(l.a.t%W+.5)*s, ay=cam.y+((l.a.t-l.a.t%W)/W+.5)*s, bx=cam.x+(l.b.t%W+.5)*s, by=cam.y+((l.b.t-l.b.t%W)/W+.5)*s;
       if(!lowZoom){ ctx.strokeStyle='rgba(15,26,38,.7)'; ctx.lineWidth=Math.max(2,s*1.4); ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
       ctx.strokeStyle=players[l.owner].color; ctx.lineWidth=Math.max(1,s*0.6); ctx.setLineDash([6,10]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]); }
       const k=((performance.now()/1400)+(l.a.t%7)/7)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle='#ffd27a'; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.5,s*0.9),0,Math.PI*2); ctx.fill();
     }
   }
-  if(me.cmdFocusT!=null&&me.cmdFocus!=null&&players[me.cmdFocus].alive){ const fx=cam.x+(me.cmdFocusT%W+.5)*s, fy=cam.y+((me.cmdFocusT-me.cmdFocusT%W)/W+.5)*s; ctx.strokeStyle='rgba(255,170,80,.5)'; ctx.lineWidth=1.5; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.arc(fx,fy,60*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
+  if(me().cmdFocusT!=null&&me().cmdFocus!=null&&players[me().cmdFocus].alive){ const fx=cam.x+(me().cmdFocusT%W+.5)*s, fy=cam.y+((me().cmdFocusT-me().cmdFocusT%W)/W+.5)*s; ctx.strokeStyle='rgba(255,170,80,.5)'; ctx.lineWidth=1.5; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.arc(fx,fy,60*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
   // command links: each missile command to the silos it controls (orange), flight ops to airfields (cyan), troop command to cities and ports (green)
   if(s>=0.6){ const ph=(performance.now()/60)%16;
-    for(const c of structures){ if(!(c.type==='command'||c.type==='flightops'||c.type==='troopcmd')||c.building) continue; if(vis&&!vis[c.t]) continue;
+    for(const c of structures){ if(!(c.type==='command'||c.type==='flightops'||c.type==='troopcmd')||c.building) continue; if(renderState.fog.vis&&!renderState.fog.vis[c.t]) continue;
       const col=c.type==='command'?'255,170,80':c.type==='flightops'?'120,220,255':'190,230,150';
       const targets=structures.filter(q=>q.owner===c.owner&&!q.building&&q!==c&&(c.type==='command'?q.type==='silo':c.type==='flightops'?q.type==='airfield':(q.type==='city'||q.type==='port'))&&((q.t%W-c.t%W)**2+((q.t-q.t%W)/W-(c.t-c.t%W)/W)**2)<=(c.type==='command'?CMD_RANGE:LINK_RANGE)**2);
-      for(const q of targets){ if(vis&&!vis[q.t]) continue; const ax=cam.x+(c.t%W+.5)*s, ay=cam.y+((c.t-c.t%W)/W+.5)*s, bx=cam.x+(q.t%W+.5)*s, by=cam.y+((q.t-q.t%W)/W+.5)*s;
+      for(const q of targets){ if(renderState.fog.vis&&!renderState.fog.vis[q.t]) continue; const ax=cam.x+(c.t%W+.5)*s, ay=cam.y+((c.t-c.t%W)/W+.5)*s, bx=cam.x+(q.t%W+.5)*s, by=cam.y+((q.t-q.t%W)/W+.5)*s;
         ctx.strokeStyle=`rgba(${col},.55)`; ctx.lineWidth=Math.max(1,s*0.5); ctx.setLineDash([3,7]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]);
         const k=((performance.now()/1100)+(q.t%5)/5)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle=`rgba(${col},.9)`; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.2,s*0.7),0,Math.PI*2); ctx.fill(); } } }
   // structures
   if(s>=0.9){
     for(const st of structures){
-      if(vis&&!vis[st.t]) continue;
+      if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue;
       const x=cam.x+(st.t%W+0.5)*s, y=cam.y+((st.t-st.t%W)/W+0.5)*s, r=Math.max(6,s*2.4);
-      if(st.type==='airfield'&&(st.level||1)>=2&&!st.building){ const hp=st.lshield||0; if(hp>0){ const low=hp<=2; const a=st.flash>tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,LSHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.fillStyle=hp>0?'#9df':'#ff9a9a'; const pw=2*r/LSHIELD.hp; for(let i=0;i<hp;i++) ctx.fillRect(x-r+i*pw,y+r+22,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
-      if(st.type==='shield'&&!st.building){ const low=st.hp<=3; const a=st.flash>tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,SHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      if(st.type==='airfield'&&(st.level||1)>=2&&!st.building){ const hp=st.lshield||0; if(hp>0){ const low=hp<=2; const a=st.flash>clockState.tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,LSHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.fillStyle=hp>0?'#9df':'#ff9a9a'; const pw=2*r/LSHIELD.hp; for(let i=0;i<hp;i++) ctx.fillRect(x-r+i*pw,y+r+22,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
+      if(st.type==='shield'&&!st.building){ const low=st.hp<=3; const a=st.flash>clockState.tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,SHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke();
         ctx.fillStyle='#fff'; const pw=2*r/SHIELD.hp; for(let i=0;i<st.hp;i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2);
-        if(st.repairing){ const f=1-Math.max(0,(st.repairAt-tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
-      if(st.type==='port'&&(st.level||1)>=2&&!st.building){ const gh=st.gunHp||0; ctx.fillStyle=gh<=1?'#ff9a9a':'#fff'; const pw=2*r/4; for(let i=0;i<Math.ceil(gh);i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); ctx.fillStyle='rgba(255,255,255,.25)'; for(let i=Math.ceil(gh);i<4;i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
+        if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
+      if(st.type==='port'&&(st.level||1)>=2&&!st.building){ const gh=st.gunHp||0; ctx.fillStyle=gh<=1?'#ff9a9a':'#fff'; const pw=2*r/4; for(let i=0;i<Math.ceil(gh);i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); ctx.fillStyle='rgba(255,255,255,.25)'; for(let i=Math.ceil(gh);i<4;i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
       if(GUNS[st.type]&&!st.building&&st.hp!=null&&st.hp<GUNS[st.type].hp){ const mh=GUNS[st.type].hp; ctx.fillStyle='#fff'; const pw=2*r/mh; for(let i=0;i<Math.ceil(st.hp);i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); }
-      if(st.type==='jammer'&&!st.building&&st.owner===me.id){ ctx.strokeStyle='rgba(255,180,80,.35)'; ctx.fillStyle='rgba(255,180,80,.05)'; ctx.lineWidth=1; ctx.setLineDash([2,6]); ctx.beginPath(); ctx.arc(x,y,FOG.jam*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]); }
-      if(GUNS[st.type]&&st.owner===me.id&&!st.building){ ctx.strokeStyle=st.type==='bertha'?'rgba(255,180,80,.16)':'rgba(255,220,150,.14)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,GUNS[st.type].range*s,0,Math.PI*2); ctx.stroke(); }
-      if(st.type==='command'&&st.owner===me.id&&!st.building){ ctx.strokeStyle='rgba(255,180,80,.18)'; ctx.lineWidth=1; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.arc(x,y,CMD_RANGE*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
-      if(st.type==='sam'&&st.owner===me.id){ ctx.strokeStyle='rgba(150,220,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,SAM_RANGE*s,0,Math.PI*2); ctx.stroke(); }
-      if(st.type==='fort'&&st.owner===me.id){ ctx.strokeStyle=(st.level||1)>=3?'rgba(255,210,122,.35)':(st.level||1)>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)'; ctx.lineWidth=(st.level||1); ctx.beginPath(); ctx.arc(x,y,fortRange(st)*s,0,Math.PI*2); ctx.stroke(); }
-      if(st.building){ ctx.globalAlpha=0.45; drawIcon(st.type,x,y,r,players[st.owner].color); ctx.globalAlpha=1; const f=1-(st.done-tickN)/st.total; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=Math.ceil((st.done-tickN)/10)+'s'; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } continue; }
-      { const pop=st.popAt!=null&&tickN-st.popAt<10?1+0.35*(1-(tickN-st.popAt)/10):1; drawIcon(st.type,x,y,r*pop,players[st.owner].color); if(pop>1){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r*pop*1.3,0,Math.PI*2); ctx.stroke(); } }
+      if(st.type==='jammer'&&!st.building&&st.owner===me().id){ ctx.strokeStyle='rgba(255,180,80,.35)'; ctx.fillStyle='rgba(255,180,80,.05)'; ctx.lineWidth=1; ctx.setLineDash([2,6]); ctx.beginPath(); ctx.arc(x,y,FOG.jam*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]); }
+      if(GUNS[st.type]&&st.owner===me().id&&!st.building){ ctx.strokeStyle=st.type==='bertha'?'rgba(255,180,80,.16)':'rgba(255,220,150,.14)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,GUNS[st.type].range*s,0,Math.PI*2); ctx.stroke(); }
+      if(st.type==='command'&&st.owner===me().id&&!st.building){ ctx.strokeStyle='rgba(255,180,80,.18)'; ctx.lineWidth=1; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.arc(x,y,CMD_RANGE*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
+      if(st.type==='sam'&&st.owner===me().id){ ctx.strokeStyle='rgba(150,220,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,SAM_RANGE*s,0,Math.PI*2); ctx.stroke(); }
+      if(st.type==='fort'&&st.owner===me().id){ ctx.strokeStyle=(st.level||1)>=3?'rgba(255,210,122,.35)':(st.level||1)>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)'; ctx.lineWidth=(st.level||1); ctx.beginPath(); ctx.arc(x,y,fortRange(st.t)*s,0,Math.PI*2); ctx.stroke(); }
+      if(st.building){ ctx.globalAlpha=0.45; drawIcon(st.type,x,y,r,players[st.owner].color); ctx.globalAlpha=1; const f=1-(st.done-clockState.tickN)/st.total; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=Math.ceil((st.done-clockState.tickN)/10)+'s'; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } continue; }
+      { const pop=st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1; drawIcon(st.type,x,y,r*pop,players[st.owner].color); if(pop>1){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r*pop*1.3,0,Math.PI*2); ctx.stroke(); } }
       if((st.level||1)>=2){ ctx.font='bold 9px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffd27a'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=2.5; ctx.strokeText('II',x+r*0.9,y-r*0.8); ctx.fillText((st.level||1)>=3?'III':'II',x+r*0.9,y-r*0.8); }
-      if(st.upgrading){ const f=1-(st.upDone-tickN)/Math.max(1,st.upTotal); ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
-      if(st.type==='airfield'&&s>=1.2){ const n=aircraft.filter(a=>a.home===st).length; const q=st.aq&&st.aq.length?st.aq[0]:null; ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx2=`${n}/${AIR.hangar}${q?' · '+(q.type==='fighter'?'F':q.type==='carrier'?'T':'B')+' '+Math.ceil(Math.max(0,q.done-tickN)/10)+'s':''}`; ctx.strokeText(tx2,x,y+r+11); ctx.fillText(tx2,x,y+r+11); if(q){ const f=1-(q.done-tickN)/Math.max(1,q.total); ctx.strokeStyle='#bfe6ff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
-      if((st.type==='port'||st.type==='subbase')&&st.queue&&st.queue.length){ const job=st.queue[0]; const f=job.done?1-(job.done-tickN)/job.total:0; ctx.strokeStyle='#bfe6ff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=`${SHIPS[job.cls].label} ${job.done?Math.ceil((job.done-tickN)/10)+'s':''}${st.queue.length>1?' +'+(st.queue.length-1):''}`; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } }
-      if(st.type==='sam'&&shelled[st.t]>tickN){ ctx.strokeStyle='rgba(255,120,120,.9)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-r,y-r); ctx.lineTo(x+r,y+r); ctx.moveTo(x+r,y-r); ctx.lineTo(x-r,y+r); ctx.stroke(); }
+      if(st.upgrading){ const f=1-(st.upDone-clockState.tickN)/Math.max(1,st.upTotal); ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
+      if(st.type==='airfield'&&s>=1.2){ const n=aircraft.filter(a=>a.home===st).length; const q=st.aq&&st.aq.length?st.aq[0]:null; ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx2=`${n}/${AIR.hangar}${q?' · '+(q.type==='fighter'?'F':q.type==='carrier'?'T':'B')+' '+Math.ceil(Math.max(0,q.done-clockState.tickN)/10)+'s':''}`; ctx.strokeText(tx2,x,y+r+11); ctx.fillText(tx2,x,y+r+11); if(q){ const f=1-(q.done-clockState.tickN)/Math.max(1,q.total); ctx.strokeStyle='#bfe6ff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
+      if((st.type==='port'||st.type==='subbase')&&st.queue&&st.queue.length){ const job=st.queue[0]; const f=job.done?1-(job.done-clockState.tickN)/job.total:0; ctx.strokeStyle='#bfe6ff'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=`${SHIPS[job.cls].label} ${job.done?Math.ceil((job.done-clockState.tickN)/10)+'s':''}${st.queue.length>1?' +'+(st.queue.length-1):''}`; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } }
+      if(st.type==='sam'&&shelled[st.t]>clockState.tickN){ ctx.strokeStyle='rgba(255,120,120,.9)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-r,y-r); ctx.lineTo(x+r,y+r); ctx.moveTo(x+r,y-r); ctx.lineTo(x-r,y+r); ctx.stroke(); }
       if(st.linked){ ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,r+2,0,Math.PI*2); ctx.stroke(); }
-      if(st.cool>tickN&&(st.type==='sam'||st.type==='silo'||st.type==='battery'||st.type==='bertha')){ const f=(st.cool-tickN)/(st.type==='sam'?SAM_COOLDOWN:st.type==='silo'?SILO_COOLDOWN:GUNS[st.type].cd); ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
+      if(st.cool>clockState.tickN&&(st.type==='sam'||st.type==='silo'||st.type==='battery'||st.type==='bertha')){ const f=(st.cool-clockState.tickN)/(st.type==='sam'?SAM_COOLDOWN:st.type==='silo'?SILO_COOLDOWN:GUNS[st.type].cd); ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
     }
   }
   // transports with tracer
-  for(const tr of transports){
-    const [x,y]=shipXY(tr); const col=players[tr.owner].color; if(!visAt(x,y)) continue;
+  for(const [transportIndex,tr] of transports.entries()){
+    const [x,y]=shipXY(transportIndex); const col=players[tr.owner].color; if(!visAt(x,y)) continue;
     ctx.strokeStyle=col; ctx.globalAlpha=0.55; ctx.lineWidth=1.5; ctx.setLineDash([3,5]); ctx.beginPath();
     const start=tr.path[0]; ctx.moveTo(cam.x+(start%W+.5)*s,cam.y+((start-start%W)/W+.5)*s);
     for(let i=8;i<tr.pos;i+=8){ const t=tr.path[i]; ctx.lineTo(cam.x+(t%W+.5)*s,cam.y+((t-t%W)/W+.5)*s); }
@@ -2334,42 +1002,42 @@ function render(){
   // boarding lines
   for(const w of warships){ if(w.boarding&&!w.boarding.done&&visAt(w.x,w.y)){ ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(cam.x+w.x*s,cam.y+w.y*s); ctx.lineTo(cam.x+w.boarding.x*s,cam.y+w.boarding.y*s); ctx.stroke(); ctx.setLineDash([]); } }
   // warships
-  for(const w of warships){
-    if(!visAt(w.x,w.y)) continue; if(SHIPS[w.cls].sub&&!subSeenBy(w,me.id)) continue;
-    const S=SHIPS[w.cls]; const px=cam.x+w.x*s,py=cam.y+w.y*s,r=Math.max(5,s*(w.cls==='battleship'?4:w.cls==='cruiser'?3.3:w.cls==='scout'?2.1:w.cls==='rship'?2.4:w.cls==='privateer'?2.5:SHIPS[w.cls].sub?2.3:2.8)); const col=players[w.owner].color;
-    if(w.owner===me.id){ ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(px,py,S.gun*s,0,Math.PI*2); ctx.stroke();
+  for(const [warshipIndex,w] of warships.entries()){
+    const [wx,wy]=interpolatedPosition('warships',w,warshipIndex); if(!visAt(wx,wy)) continue; if(SHIPS[w.cls].sub&&!subSeenBy(w.id,me().id)) continue;
+    const S=SHIPS[w.cls]; const px=cam.x+wx*s,py=cam.y+wy*s,r=Math.max(5,s*(w.cls==='battleship'?4:w.cls==='cruiser'?3.3:w.cls==='scout'?2.1:w.cls==='rship'?2.4:w.cls==='privateer'?2.5:SHIPS[w.cls].sub?2.3:2.8)); const col=players[w.owner].color;
+    if(w.owner===me().id){ ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(px,py,S.gun*s,0,Math.PI*2); ctx.stroke();
       if(S.barrage){ ctx.strokeStyle='rgba(255,180,80,.15)'; ctx.setLineDash([4,6]); ctx.beginPath(); ctx.arc(px,py,S.barrage.range*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); } }
     if(selected.has(w)){ ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.arc(px,py,r*1.9,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); if(w.pos<w.path.length-1){ const d=w.path[w.path.length-1]; ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(cam.x+(d%W+.5)*s,cam.y+((d-d%W)/W+.5)*s); ctx.stroke(); } }
     if(!S.sub) drawWake(w,s); else { ctx.globalAlpha=0.7; }
-    { const turn=w.prevHdg!=null?Math.atan2(Math.sin(w.hdg-w.prevHdg),Math.cos(w.hdg-w.prevHdg)):0; w.prevHdg=w.hdg; const lean=Math.max(-0.25,Math.min(0.25,turn*6)); const rec=(w.fireAt!=null&&tickN-w.fireAt<3)?1:0; const rx=px-(rec?Math.cos(w.fireAng)*r*0.25:0), ry=py-(rec?Math.sin(w.fireAng)*r*0.25:0);
+    { let state=shipRenderState.get(w.id); if(!state) state={hdg:w.hdg,tick:clockState.tickN,turn:0}; else if(state.tick!==clockState.tickN) state={hdg:w.hdg,tick:clockState.tickN,turn:Math.atan2(Math.sin(w.hdg-state.hdg),Math.cos(w.hdg-state.hdg))}; shipRenderState.set(w.id,state); const lean=Math.max(-0.25,Math.min(0.25,state.turn*6)); const rec=(w.fireAt!=null&&clockState.tickN-w.fireAt<3)?1:0; const rx=px-(rec?Math.cos(w.fireAng)*r*0.25:0), ry=py-(rec?Math.sin(w.fireAng)*r*0.25:0);
       ctx.save(); ctx.translate(rx,ry); ctx.transform(1,0,lean*0.6,1-Math.abs(lean)*0.3,0,0); ctx.translate(-rx,-ry); drawShip(w.cls,rx,ry,w.hdg,r,col,w.hp,S.hp); ctx.restore();
       if(rec){ ctx.fillStyle='rgba(255,230,150,.9)'; ctx.beginPath(); ctx.arc(px+Math.cos(w.fireAng)*r*1.3,py+Math.sin(w.fireAng)*r*1.3,Math.max(2,r*0.35),0,Math.PI*2); ctx.fill(); } }
     ctx.globalAlpha=1;
-    if(w.refit){ const f=1-(w.refit-tickN)/CRUISE.ticks; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(px,py,r*1.9,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } if(w.cruise){ ctx.font='bold 9px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffd27a'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=2.5; ctx.strokeText('CM',px+r*1.3,py-r*1.2); ctx.fillText('CM',px+r*1.3,py-r*1.2); }
-    if(S.barrage&&w.barCool>tickN){ const f=(w.barCool-tickN)/S.barrage.cd; ctx.strokeStyle='rgba(255,200,120,.8)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px,py,r*1.7,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
+    if(w.refit){ const f=1-(w.refit-clockState.tickN)/CRUISE.ticks; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(px,py,r*1.9,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } if(w.cruise){ ctx.font='bold 9px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffd27a'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=2.5; ctx.strokeText('CM',px+r*1.3,py-r*1.2); ctx.fillText('CM',px+r*1.3,py-r*1.2); }
+    if(S.barrage&&w.barCool>clockState.tickN){ const f=(w.barCool-clockState.tickN)/S.barrage.cd; ctx.strokeStyle='rgba(255,200,120,.8)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px,py,r*1.7,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
   }
   for(const sh of shells){ if(!visAt(sh.x,sh.y)) continue;
     if(sh.torpedo){ ctx.lineCap='round'; for(let i=1;i<sh.trail.length;i++){ const a=i/sh.trail.length; ctx.strokeStyle=`rgba(225,240,255,${0.08+a*0.55})`; ctx.lineWidth=Math.max(1,s*0.6)*(1-a*0.4)+a*Math.max(1.5,s*1.4); ctx.beginPath(); ctx.moveTo(cam.x+sh.trail[i-1][0]*s,cam.y+sh.trail[i-1][1]*s); ctx.lineTo(cam.x+sh.trail[i][0]*s,cam.y+sh.trail[i][1]*s); ctx.stroke(); }
       if(sh.trail.length>2&&s>=1.2){ for(let i=2;i<sh.trail.length;i+=4){ const a=i/sh.trail.length; ctx.fillStyle=`rgba(255,255,255,${a*0.5})`; ctx.beginPath(); ctx.arc(cam.x+sh.trail[i][0]*s+(i%3-1)*s*0.5,cam.y+sh.trail[i][1]*s+(i%2)*s*0.4,Math.max(0.8,s*0.35),0,Math.PI*2); ctx.fill(); } } const last=sh.trail[sh.trail.length-1]||[sh.x,sh.y]; const ang=Math.atan2(sh.y-last[1],sh.x-last[0]); ctx.save(); ctx.translate(cam.x+sh.x*s,cam.y+sh.y*s); ctx.rotate(ang); ctx.fillStyle='#233'; ctx.strokeStyle='#9df'; ctx.lineWidth=1; ctx.beginPath(); ctx.rect(-4,-1.2,8,2.4); ctx.fill(); ctx.stroke(); ctx.restore(); continue; }
     if(sh.kind==='aam'){ for(let i=1;i<sh.trail.length;i++){ const a=i/sh.trail.length; ctx.strokeStyle=`rgba(230,240,255,${a*0.7})`; ctx.lineWidth=1+a*2; ctx.beginPath(); ctx.moveTo(cam.x+sh.trail[i-1][0]*s,cam.y+sh.trail[i-1][1]*s); ctx.lineTo(cam.x+sh.trail[i][0]*s,cam.y+sh.trail[i][1]*s); ctx.stroke(); }
       const last=sh.trail[sh.trail.length-1]||[sh.x,sh.y]; const ang=Math.atan2(sh.y-last[1],sh.x-last[0]); ctx.save(); ctx.translate(cam.x+sh.x*s,cam.y+sh.y*s); ctx.rotate(ang); ctx.fillStyle='#e8ecef'; ctx.beginPath(); ctx.moveTo(5,0); ctx.lineTo(-3,-1.3); ctx.lineTo(-3,1.3); ctx.closePath(); ctx.fill(); ctx.fillStyle='#ffb347'; ctx.fillRect(-5,-0.8,2,1.6); ctx.restore(); continue; }
-    if(sh.arc&&sh.missile){ const dd=Math.hypot(sh.tx-sh.x,sh.ty-sh.y); const tot=sh.tot||(sh.tot=Math.max(1,dd)); const k=1-Math.min(1,dd/tot); const h=Math.sin(k*Math.PI)*(sh.rise||14)*0.6; const px=cam.x+sh.x*s, py=cam.y+sh.y*s-h*s;
+    if(sh.arc&&sh.missile){ const dd=Math.hypot(sh.tx-sh.x,sh.ty-sh.y); let tot=sh.tot||shellRenderState.get(sh); if(!tot){ tot=Math.max(1,dd); shellRenderState.set(sh,tot); } const k=1-Math.min(1,dd/tot); const h=Math.sin(k*Math.PI)*(sh.rise||14)*0.6; const px=cam.x+sh.x*s, py=cam.y+sh.y*s-h*s;
       for(let i=1;i<sh.trail.length;i++){ const a=i/sh.trail.length; ctx.strokeStyle=`rgba(230,225,215,${a*0.55})`; ctx.lineWidth=1+a*2.5; ctx.beginPath(); ctx.moveTo(cam.x+sh.trail[i-1][0]*s,cam.y+sh.trail[i-1][1]*s-(sh.trail[i-1][2]||0)*s); ctx.lineTo(cam.x+sh.trail[i][0]*s,cam.y+sh.trail[i][1]*s-(sh.trail[i][2]||0)*s); ctx.stroke(); }
       const last=sh.trail[sh.trail.length-1]; const ang=last?Math.atan2(py-(cam.y+last[1]*s-(last[2]||0)*s),px-(cam.x+last[0]*s)):0;
       ctx.save(); ctx.translate(px,py); ctx.rotate(ang); ctx.fillStyle='rgba(255,170,70,.7)'; ctx.beginPath(); ctx.moveTo(-4,0); ctx.lineTo(-12,-2); ctx.lineTo(-9,0); ctx.lineTo(-12,2); ctx.closePath(); ctx.fill(); ctx.fillStyle='#e8ecef'; ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(2,-1.8); ctx.lineTo(-4,-1.8); ctx.lineTo(-4,1.8); ctx.lineTo(2,1.8); ctx.closePath(); ctx.fill(); ctx.fillStyle='#e35d5d'; ctx.beginPath(); ctx.moveTo(-4,-1.8); ctx.lineTo(-6,-3.5); ctx.lineTo(-4,0); ctx.lineTo(-6,3.5); ctx.lineTo(-4,1.8); ctx.fill(); ctx.restore(); continue; }
-    if(sh.arc){ const dd=Math.hypot(sh.tx-sh.x,sh.ty-sh.y); const tot=sh.tot||(sh.tot=Math.max(1,dd)); const k=1-Math.min(1,dd/tot); const px=cam.x+sh.x*s, py=cam.y+sh.y*s-Math.sin(k*Math.PI)*(sh.rise||14)*s*0.6; ctx.fillStyle='#e8ecef'; ctx.beginPath(); ctx.arc(px,py,Math.max(2.5,s*1.2),0,Math.PI*2); ctx.fill(); ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(cam.x+sh.x*s,cam.y+sh.y*s); ctx.stroke(); ctx.setLineDash([]); continue; }
+    if(sh.arc){ const dd=Math.hypot(sh.tx-sh.x,sh.ty-sh.y); let tot=sh.tot||shellRenderState.get(sh); if(!tot){ tot=Math.max(1,dd); shellRenderState.set(sh,tot); } const k=1-Math.min(1,dd/tot); const px=cam.x+sh.x*s, py=cam.y+sh.y*s-Math.sin(k*Math.PI)*(sh.rise||14)*s*0.6; ctx.fillStyle='#e8ecef'; ctx.beginPath(); ctx.arc(px,py,Math.max(2.5,s*1.2),0,Math.PI*2); ctx.fill(); ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(cam.x+sh.x*s,cam.y+sh.y*s); ctx.stroke(); ctx.setLineDash([]); continue; }
     for(let i=1;i<sh.trail.length;i++){ const a=i/sh.trail.length; ctx.strokeStyle=`rgba(255,220,150,${a*0.6})`; ctx.lineWidth=1+a; ctx.beginPath(); ctx.moveTo(cam.x+sh.trail[i-1][0]*s,cam.y+sh.trail[i-1][1]*s); ctx.lineTo(cam.x+sh.trail[i][0]*s,cam.y+sh.trail[i][1]*s); ctx.stroke(); }
     const last=sh.trail[sh.trail.length-1]||[sh.x,sh.y]; const ang=Math.atan2(sh.y-last[1],sh.x-last[0]);
     ctx.save(); ctx.translate(cam.x+sh.x*s,cam.y+sh.y*s); ctx.rotate(ang); ctx.fillStyle='#ffe0a8'; ctx.beginPath(); ctx.moveTo(4,0); ctx.lineTo(-2.5,-1.4); ctx.lineTo(-2.5,1.4); ctx.closePath(); ctx.fill(); ctx.restore();
   }
-  for(const sh of shots){ sh.age++; ctx.globalAlpha=1-sh.age/6; ctx.strokeStyle=sh.col; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cam.x+sh.x0*s,cam.y+sh.y0*s); ctx.lineTo(cam.x+sh.x1*s,cam.y+sh.y1*s); ctx.stroke(); ctx.globalAlpha=1; }
-  shots=shots.filter(sh=>sh.age<6);
+  for(const sh of visualShots){ sh.age++; ctx.globalAlpha=1-sh.age/6; ctx.strokeStyle=sh.col; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(cam.x+sh.x0*s,cam.y+sh.y0*s); ctx.lineTo(cam.x+sh.x1*s,cam.y+sh.y1*s); ctx.stroke(); ctx.globalAlpha=1; }
+  visualShots=visualShots.filter(sh=>sh.age<6);
   // missiles
-  for(const m of missiles){
-    const [mx,my]=missilePos(m,m.age), [nx2,ny2]=missilePos(m,m.age+1); if(!visAt(mx,my)&&m.owner!==me.id) continue; const x=cam.x+mx*s,y=cam.y+my*s, ang=Math.atan2(ny2-my,nx2-mx);
+  for(const [missileIndex,m] of missiles.entries()){
+    const [mx,my]=missilePos(missileIndex,m.age), [nx2,ny2]=missilePos(missileIndex,m.age+1); if(!visAt(mx,my)&&m.owner!==me().id) continue; const x=cam.x+mx*s,y=cam.y+my*s, ang=Math.atan2(ny2-my,nx2-mx);
     const x1=cam.x+(m.t%W+.5)*s, y1=cam.y+((m.t-m.t%W)/W+.5)*s;
     ctx.lineCap='round'; const N=Math.max(2,Math.floor(m.age/2));
-    for(let i=1;i<=N;i++){ const a=i/N; const [ax,ay]=missilePos(m,m.age*(i-1)/N), [bx,by]=missilePos(m,m.age*i/N);
+    for(let i=1;i<=N;i++){ const a=i/N; const [ax,ay]=missilePos(missileIndex,m.age*(i-1)/N), [bx,by]=missilePos(missileIndex,m.age*i/N);
       ctx.strokeStyle=`rgba(255,200,120,${0.05+a*0.6})`; ctx.lineWidth=1+a*3; ctx.beginPath(); ctx.moveTo(cam.x+ax*s,cam.y+ay*s); ctx.lineTo(cam.x+bx*s,cam.y+by*s); ctx.stroke(); }
     ctx.save(); ctx.translate(x,y); ctx.rotate(m.cruise?Math.atan2(cam.y+((m.t-m.t%W)/W+.5)*s-y,cam.x+(m.t%W+.5)*s-x):ang); if(m.cruise) ctx.scale(0.65,0.65);
     ctx.fillStyle='rgba(255,180,80,.55)'; ctx.beginPath(); ctx.moveTo(-6,0); ctx.lineTo(-18,-3); ctx.lineTo(-14,0); ctx.lineTo(-18,3); ctx.closePath(); ctx.fill();
@@ -2379,10 +1047,10 @@ function render(){
     ctx.strokeStyle=`rgba(255,107,107,${0.35+0.35*Math.sin(performance.now()/150)})`; ctx.lineWidth=1.5; ctx.setLineDash([6,6]); ctx.beginPath(); ctx.arc(x1,y1,(m.cruise?CRUISE.radius:NUKE_RADIUS)*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
   }
   // aircraft: patrol circles and sprites
-  for(const a of aircraft){ const mine=a.owner===me.id; if(!mine&&!visAt(a.x,a.y)) continue; const px=cam.x+a.x*s,py=cam.y+a.y*s;
+  for(const [aircraftIndex,a] of aircraft.entries()){ const [ax,ay]=interpolatedPosition('aircraft',a,aircraftIndex),mine=a.owner===me().id; if(!mine&&!visAt(ax,ay)) continue; const px=cam.x+ax*s,py=cam.y+ay*s;
     if(a.type==='fighter'&&['out','patrol'].includes(a.state)&&mine){ const hl=hoverAir===a; ctx.strokeStyle=hl?'rgba(191,230,255,.95)':'rgba(191,230,255,.35)'; ctx.lineWidth=hl?2:1; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.arc(cam.x+a.tx*s,cam.y+a.ty*s,AIR.fighter.patrol*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
     if(a.state==='hangar'||a.state==='refuel'||a.state==='heal') continue;
-    ctx.save(); ctx.translate(px,py); ctx.rotate(a.hdg); const u=Math.max(4,s*2.2)/10*(a.type==='bomber'&&a.pull?1+a.pull*0.25:1); ctx.scale(u,u); ctx.fillStyle=players[a.owner].color; ctx.strokeStyle='#fff'; ctx.lineWidth=1.1; if(a.state==='hangar'||a.state==='refuel') a.pull=0;
+    ctx.save(); ctx.translate(px,py); ctx.rotate(a.hdg); const u=Math.max(4,s*2.2)/10*(a.type==='bomber'&&a.pull?1+a.pull*0.25:1); ctx.scale(u,u); ctx.fillStyle=players[a.owner].color; ctx.strokeStyle='#fff'; ctx.lineWidth=1.1;
     if(a.type==='carrier'){ ctx.beginPath(); ctx.moveTo(11,0); ctx.lineTo(6,-3); ctx.lineTo(-8,-3); ctx.lineTo(-11,-1); ctx.lineTo(-11,1); ctx.lineTo(-8,3); ctx.lineTo(6,3); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(1,-3); ctx.lineTo(-3,-11); ctx.lineTo(-7,-11); ctx.lineTo(-4,-3); ctx.moveTo(1,3); ctx.lineTo(-3,11); ctx.lineTo(-7,11); ctx.lineTo(-4,3); ctx.closePath(); }
     else if(a.type==='fighter'){ ctx.beginPath(); ctx.moveTo(10,0); ctx.lineTo(1,-2); ctx.lineTo(-5,-8); ctx.lineTo(-7,-8); ctx.lineTo(-5,-2); ctx.lineTo(-9,-2); ctx.lineTo(-10,-4); ctx.lineTo(-10,4); ctx.lineTo(-9,2); ctx.lineTo(-5,2); ctx.lineTo(-7,8); ctx.lineTo(-5,8); ctx.lineTo(1,2); ctx.closePath(); }
     else { ctx.beginPath(); ctx.moveTo(8,0); ctx.lineTo(-2,-3); ctx.lineTo(-10,-9); ctx.lineTo(-6,-2); ctx.lineTo(-7,0); ctx.lineTo(-6,2); ctx.lineTo(-10,9); ctx.lineTo(-2,3); ctx.closePath(); }
@@ -2391,11 +1059,11 @@ function render(){
   }
 
   // draft picks: mini flag and pick number on every claimed province, through the draft and 25 s after
-  if(draftPicks.length&&(draft||performance.now()-draftDoneAt<25000)){ const fadeA=draft?1:Math.max(0,1-(performance.now()-draftDoneAt-18000)/7000); ctx.globalAlpha=fadeA; for(const d of draftPicks){ const p=players[d.owner]; if(!p) continue; const px=cam.x+d.x*s, py=cam.y+d.y*s; const fw=Math.max(22,Math.min(40,s*6)), fh=fw*2/3; drawFlag(ctx,p.flag,px-fw/2,py-fh/2,fw,fh); ctx.strokeStyle=d.owner===me.id?'#ffd27a':'rgba(255,255,255,.7)'; ctx.lineWidth=d.owner===me.id?2.5:1.5; ctx.strokeRect(px-fw/2,py-fh/2,fw,fh);
+  if(draftState.draftPicks.length&&(draftState.draft||performance.now()-draftDoneAt<25000)){ const fadeA=draftState.draft?1:Math.max(0,1-(performance.now()-draftDoneAt-18000)/7000); ctx.globalAlpha=fadeA; for(const d of draftState.draftPicks){ const p=players[d.owner]; if(!p) continue; const px=cam.x+d.x*s, py=cam.y+d.y*s; const fw=Math.max(22,Math.min(40,s*6)), fh=fw*2/3; drawFlag(ctx,p.flag,px-fw/2,py-fh/2,fw,fh); ctx.strokeStyle=d.owner===me().id?'#ffd27a':'rgba(255,255,255,.7)'; ctx.lineWidth=d.owner===me().id?2.5:1.5; ctx.strokeRect(px-fw/2,py-fh/2,fw,fh);
       ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(px+fw/2,py-fh/2,Math.max(8,fw*0.32),0,Math.PI*2); ctx.fill(); ctx.strokeStyle='#0f1a26'; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle='#fff'; ctx.font=`bold ${Math.max(10,fw*0.36)}px "Segoe UI",system-ui,sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(d.n),px+fw/2,py-fh/2+0.5); ctx.textBaseline='alphabetic';
-      if(s>=0.9){ ctx.font=`bold ${Math.max(10,Math.min(14,s*2.6))}px "Segoe UI",system-ui,sans-serif`; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=3; ctx.strokeText(d.owner===me.id?'You':p.name,px,py+fh/2+13); ctx.fillText(d.owner===me.id?'You':p.name,px,py+fh/2+13); } } ctx.globalAlpha=1; }
+      if(s>=0.9){ ctx.font=`bold ${Math.max(10,Math.min(14,s*2.6))}px "Segoe UI",system-ui,sans-serif`; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=3; ctx.strokeText(d.owner===me().id?'You':p.name,px,py+fh/2+13); ctx.fillText(d.owner===me().id?'You':p.name,px,py+fh/2+13); } } ctx.globalAlpha=1; }
   // garrison counts per area
-  if(START.garrison&&me.areas&&me.areas.length>1&&s>=0.9){ ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; for(const a of me.areas){ if(a.tiles<20&&a!==me.areas[0]) continue; const px=cam.x+a.cx*s, py=cam.y+a.cy*s+16; ctx.strokeStyle=hoverArea===a.id?'rgba(255,210,122,.9)':'rgba(0,0,0,.6)'; ctx.fillStyle='#fff'; ctx.strokeText(fmtN(a.troops)+' ⚑',px,py); ctx.fillText(fmtN(a.troops)+' ⚑',px,py); } }
+  if(START.garrison&&me().areas&&me().areas.length>1&&s>=0.9){ ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; for(const a of me().areas){ if(a.tiles<20&&a!==me().areas[0]) continue; const px=cam.x+a.cx*s, py=cam.y+a.cy*s+16; ctx.strokeStyle=hoverArea===a.id?'rgba(255,210,122,.9)':'rgba(0,0,0,.6)'; ctx.fillStyle='#fff'; ctx.strokeText(fmtN(a.troops)+' ⚑',px,py); ctx.fillText(fmtN(a.troops)+' ⚑',px,py); } }
   // repair trucks
   for(const tr of trucks){ if(!visAt(tr.x,tr.y)) continue; const px=cam.x+tr.x*s,py=cam.y+tr.y*s; ctx.save(); ctx.translate(px,py); ctx.rotate(tr.hdg); const u=Math.max(3.5,s*1.9)/10; ctx.scale(u,u);
     ctx.fillStyle='#0f1a26'; ctx.beginPath(); ctx.rect(-9,-4,18,8); ctx.fill(); // chassis
@@ -2404,9 +1072,9 @@ function render(){
     ctx.fillStyle='#e8ecef'; ctx.beginPath(); ctx.rect(3.2,-3,5,6); ctx.fill(); ctx.stroke(); ctx.fillStyle='#7fb3ff'; ctx.fillRect(6.6,-2.2,1.2,4.4); // cab and windscreen
     ctx.strokeStyle='#0f1a26'; ctx.lineWidth=0.7; ctx.beginPath(); ctx.moveTo(-6.5,-1.8); ctx.lineTo(-2.5,-1.8); ctx.moveTo(-6.5,0); ctx.lineTo(-2.5,0); ctx.moveTo(-6.5,1.8); ctx.lineTo(-2.5,1.8); ctx.stroke(); // slats
     ctx.lineWidth=1.1; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(-1,-2); ctx.lineTo(2,2); ctx.moveTo(-1,2); ctx.lineTo(2,-2); ctx.stroke(); // tools
-    ctx.restore(); if(tr.state==='work'){ ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px,py,Math.max(5,s*3),-Math.PI/2,-Math.PI/2+Math.PI*2*(1-Math.max(0,tr.workAt-tickN)/TRUCK.repairTicks)); ctx.stroke(); } }
+    ctx.restore(); if(tr.state==='work'){ ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(px,py,Math.max(5,s*3),-Math.PI/2,-Math.PI/2+Math.PI*2*(1-Math.max(0,tr.workAt-clockState.tickN)/TRUCK.repairTicks)); ctx.stroke(); } }
   // spy planes
-  for(const pl of planes){ if(pl.owner!==me.id&&!visAt(pl.x,pl.y)) continue; const px=cam.x+pl.x*s,py=cam.y+pl.y*s; if(pl.owner===me.id&&pl.phase==='orbit'){ ctx.strokeStyle='rgba(191,230,255,.5)'; ctx.setLineDash([6,6]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cam.x+pl.tx*s,cam.y+pl.ty*s,FOG.plane.r*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
+  for(const pl of planes){ if(pl.owner!==me().id&&!visAt(pl.x,pl.y)) continue; const px=cam.x+pl.x*s,py=cam.y+pl.y*s; if(pl.owner===me().id&&pl.phase==='orbit'){ ctx.strokeStyle='rgba(191,230,255,.5)'; ctx.setLineDash([6,6]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cam.x+pl.tx*s,cam.y+pl.ty*s,FOG.plane.r*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
     ctx.save(); ctx.translate(px,py); ctx.rotate(pl.hdg); const u=Math.max(4,s*2)/10; ctx.scale(u,u); ctx.fillStyle=players[pl.owner].color; ctx.strokeStyle='#fff'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(2,-2); ctx.lineTo(-2,-9); ctx.lineTo(-5,-9); ctx.lineTo(-4,-2); ctx.lineTo(-8,-2); ctx.lineTo(-9,-4); ctx.lineTo(-10,-4); ctx.lineTo(-10,4); ctx.lineTo(-9,4); ctx.lineTo(-8,2); ctx.lineTo(-4,2); ctx.lineTo(-5,9); ctx.lineTo(-2,9); ctx.lineTo(2,2); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); }
   // interceptors
   for(const it of interceptors){ if(!visAt(it.x,it.y)) continue;
@@ -2437,7 +1105,8 @@ function render(){
   // nation labels
   if(s>=1){
     ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.fillStyle='#fff';
-    for(const p of players){ if(!p.alive||p.tiles<200||draft) continue; const c0=p.labelPos||centroid(p); if(!p.labelDraw) p.labelDraw=[c0[0],c0[1]]; p.labelDraw[0]+=(c0[0]-p.labelDraw[0])*0.08; p.labelDraw[1]+=(c0[1]-p.labelDraw[1])*0.08; const c=p.labelDraw; const x=cam.x+c[0]*s,y=cam.y+c[1]*s;
+    const labelPositions=syncLabelPositions();
+    for(const p of players){ if(!p.alive||p.tiles<200||draftState.draft) continue; const c0=labelPositions[p.id]||centroid(p); let c=labelRenderState.get(p.id); if(!c){ c=[c0[0],c0[1]]; labelRenderState.set(p.id,c); } c[0]+=(c0[0]-c[0])*0.08; c[1]+=(c0[1]-c[1])*0.08; const x=cam.x+c[0]*s,y=cam.y+c[1]*s;
       const fs=Math.min(46,Math.max(12,12+Math.sqrt(p.tiles)/6)); // label grows with territory
       const big=fs>22; ctx.globalAlpha=big?Math.max(0.45,1-(fs-22)/40):1;
       ctx.font=`bold ${fs}px "Segoe UI",system-ui,sans-serif`;
@@ -2445,15 +1114,15 @@ function render(){
       ctx.lineWidth=Math.max(3,fs/4); ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.strokeText(p.name,x,y); ctx.lineWidth=Math.max(1.5,fs/9); ctx.strokeStyle=p.color; ctx.strokeText(p.name,x,y); ctx.fillStyle='#fff'; ctx.fillText(p.name,x,y); ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3;
       { const tw=ctx.measureText(p.name).width; const ch=Math.max(6,fs*0.45); ctx.fillStyle=p.color; ctx.fillRect(x-tw/2-ch-6,y-ch*0.9,ch,ch); ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=1; ctx.strokeRect(x-tw/2-ch-6,y-ch*0.9,ch,ch); ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; } ctx.font=`${Math.round(fs*0.85)}px "Segoe UI",system-ui,sans-serif`; const tv=knownTroops(p); ctx.strokeText(tv,x,y+fs*1.05); ctx.fillText(tv,x,y+fs*1.05); ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; ctx.lineWidth=3;
       const fw=Math.max(14,Math.min(90,fs*2.4)), fh=fw*2/3; drawFlag(ctx,p.flag,x-fw/2,y-fh-fs*0.9-4,fw,fh);
-      { const rl2=relation(me,p); const top=y-fh-fs*0.9-4; const br=Math.max(9,Math.min(22,fs*0.55));
-        if(p!==me&&rl2&&rl2.type==='ally'){ const fresh=p.handshake&&p.handshake>tickN; const k=fresh?1+0.35*Math.abs(Math.sin(performance.now()/180)):1; ctx.globalAlpha=1; drawHandshake(ctx,x+fw/2+br*0.9,top+br*0.2,br*k); }
-        if(p.heartbreak&&p.heartbreak>tickN){ const f=(p.heartbreak-tickN)/150; ctx.globalAlpha=Math.min(1,f*1.6); drawBrokenHeart(ctx,x,top-br*1.4-(1-f)*18,br*1.15); ctx.globalAlpha=big?Math.max(0.45,1-(fs-22)/40):1; } } const rl=relation(me,p); if(p.team!=null){ ctx.strokeStyle=TEAM_COLS[p.team]; ctx.lineWidth=2; ctx.strokeRect(x-fw/2-2,y-fh-fs*0.9-6,fw+4,fh+4); }
-      if(rl&&p!==me&&!rl.team){ ctx.fillStyle=rl.type==='ally'?'#7fd0ff':'#bde5b8'; ctx.font='bold 10px "Segoe UI",system-ui,sans-serif'; ctx.strokeText(rl.type==='ally'?'ALLY':'PACT',x,y+fs*1.05+13); ctx.fillText(rl.type==='ally'?'ALLY':'PACT',x,y+fs*1.05+13); ctx.fillStyle='#fff'; ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; }
+      { const rl2=relation(me().id,p.id); const top=y-fh-fs*0.9-4; const br=Math.max(9,Math.min(22,fs*0.55));
+        if(p!==me()&&rl2&&rl2.type==='ally'){ const fresh=p.handshake&&p.handshake>clockState.tickN; const k=fresh?1+0.35*Math.abs(Math.sin(performance.now()/180)):1; ctx.globalAlpha=1; drawHandshake(ctx,x+fw/2+br*0.9,top+br*0.2,br*k); }
+        if(p.heartbreak&&p.heartbreak>clockState.tickN){ const f=(p.heartbreak-clockState.tickN)/150; ctx.globalAlpha=Math.min(1,f*1.6); drawBrokenHeart(ctx,x,top-br*1.4-(1-f)*18,br*1.15); ctx.globalAlpha=big?Math.max(0.45,1-(fs-22)/40):1; } } const rl=relation(me().id,p.id); if(p.team!=null){ ctx.strokeStyle=TEAM_COLS[p.team]; ctx.lineWidth=2; ctx.strokeRect(x-fw/2-2,y-fh-fs*0.9-6,fw+4,fh+4); }
+      if(rl&&p!==me()&&!rl.team){ ctx.fillStyle=rl.type==='ally'?'#7fd0ff':'#bde5b8'; ctx.font='bold 10px "Segoe UI",system-ui,sans-serif'; ctx.strokeText(rl.type==='ally'?'ALLY':'PACT',x,y+fs*1.05+13); ctx.fillText(rl.type==='ally'?'ALLY':'PACT',x,y+fs*1.05+13); ctx.fillStyle='#fff'; ctx.font='bold 12px "Segoe UI",system-ui,sans-serif'; }
       ctx.globalAlpha=1; }
   }
   // "you are here" ring for the opening seconds
   const age=(performance.now()-startTime)/1000;
-  if(age<12&&me.alive){ const c=centroid(me); const x=cam.x+c[0]*s,y=cam.y+c[1]*s; const r=(22+6*Math.sin(performance.now()/200))*s;
+  if(age<12&&me().alive){ const c=centroid(me()); const x=cam.x+c[0]*s,y=cam.y+c[1]*s; const r=(22+6*Math.sin(performance.now()/200))*s;
     ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.setLineDash([10,6]); ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
     ctx.font='bold 16px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.fillStyle='#fff';
     ctx.strokeText('You start here',x,y-r-10); ctx.fillText('You start here',x,y-r-10); }
@@ -2463,16 +1132,16 @@ function render(){
   // hovering any SAM (site or ship) lights up that nation's whole air-defense network
   { const st=hoverStruct&&hoverStruct.type==='sam'?hoverStruct:null; const hw=hoverShip&&SHIPS[hoverShip.cls].sam?hoverShip:null;
     const own=st?st.owner:hw?hw.owner:-1;
-    if(own>=0&&(own===me.id||relation(me,players[own])?.type==='ally')){ const mine=own===me.id; const col=mine?'150,220,255':'190,229,184';
+    if(own>=0&&(own===me().id||relation(me().id,players[own].id)?.type==='ally')){ const mine=own===me().id; const col=mine?'150,220,255':'190,229,184';
       const disc=(x,y,R,dead,strong)=>{ ctx.fillStyle=`rgba(${dead?'255,120,120':col},${strong?.14:.07})`; ctx.strokeStyle=`rgba(${dead?'255,120,120':col},${strong?.9:.5})`; ctx.lineWidth=strong?1.5:1; ctx.beginPath(); ctx.arc(x,y,R*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); };
-      for(const q of structures){ if(q.type!=='sam'||q.owner!==own||(!mine&&vis&&!vis[q.t])) continue; disc(cam.x+(q.t%W+.5)*s,cam.y+((q.t-q.t%W)/W+.5)*s,SAM_RANGE,shelled[q.t]>tickN,q===st); }
+      for(const q of structures){ if(q.type!=='sam'||q.owner!==own||(!mine&&renderState.fog.vis&&!renderState.fog.vis[q.t])) continue; disc(cam.x+(q.t%W+.5)*s,cam.y+((q.t-q.t%W)/W+.5)*s,SAM_RANGE,shelled[q.t]>clockState.tickN,q===st); }
       for(const w of warships){ const S=SHIPS[w.cls]; if(!S.sam||w.owner!==own||w.x==null||(!mine&&!visAt(w.x,w.y))) continue; disc(cam.x+w.x*s,cam.y+w.y*s,S.sam,false,w===hw); }
       const lx=st?cam.x+(st.t%W+.5)*s:cam.x+hw.x*s, ly=st?cam.y+((st.t-st.t%W)/W+.5)*s:cam.y+hw.y*s, R=st?SAM_RANGE:SHIPS[hw.cls].sam;
-      const sites=structures.filter(q=>q.type==='sam'&&q.owner===own&&(mine||!vis||vis[q.t])).length, ships=warships.filter(w=>SHIPS[w.cls].sam&&w.owner===own&&(mine||visAt(w.x,w.y))).length;
+      const sites=structures.filter(q=>q.type==='sam'&&q.owner===own&&(mine||!renderState.fog.vis||renderState.fog.vis[q.t])).length, ships=warships.filter(w=>SHIPS[w.cls].sam&&w.owner===own&&(mine||visAt(w.x,w.y))).length;
       ctx.font='11px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3;
-      const lbl=`${players[own].name} air defense · ${sites} ${mine||!vis?'':'known '}site${sites!==1?'s':''}, ${ships} ship${ships!==1?'s':''}${st&&shelled[st.t]>tickN?' · this one knocked out':st&&st.cool>tickN?' · reloading':''}`;
+      const lbl=`${players[own].name} air defense · ${sites} ${mine||!renderState.fog.vis?'':'known '}site${sites!==1?'s':''}, ${ships} ship${ships!==1?'s':''}${st&&shelled[st.t]>clockState.tickN?' · this one knocked out':st&&st.cool>clockState.tickN?' · reloading':''}`;
       ctx.strokeText(lbl,lx,ly-R*s-6); ctx.fillText(lbl,lx,ly-R*s-6); } }
-  if(ROLL.on){ drawCredits(); if(!window.__STATEFALL_TEST_FREEZE__) requestAnimationFrame(render); return; }
+  if(ROLL.on){ drawCredits(); if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render); return; }
   for(const na of nukeAlerts){ na.age++; const al=Math.min(1,(na.life-na.age)/20); const blink=0.5+0.5*Math.sin(na.age*0.5); const p=players[na.owner];
     const fx=cam.x+na.from[0]*s, fy=cam.y+na.from[1]*s; const onS=fx>=0&&fy>=0&&fx<=cv.width&&fy<=cv.height;
     ctx.save(); ctx.globalAlpha=al;
@@ -2499,30 +1168,19 @@ function render(){
     ctx.textAlign='left'; ctx.fillStyle='#fff'; ctx.font='bold 30px \"Segoe UI\",system-ui,sans-serif'; const top=-H2/2+42; ctx.fillText(b.text.toUpperCase(),textX,top); ctx.font='500 17px \"Segoe UI\",system-ui,sans-serif'; ctx.fillStyle=unify?'#ffd27a':'#bfd0e2'; lines.forEach((ln,i)=>ctx.fillText(ln,textX,top+30+i*22));
     if(b.kflag){ drawFlag(ctx,b.kflag,W2/2-22-42,-14,42,28); ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=1; ctx.strokeRect(W2/2-22-42,-14,42,28); } ctx.restore(); }
   badges=badges.filter(b=>b.age<b.life);
-  if(pickMode&&hover>=0&&owner[hover]===me.id&&areaOf){ const a=areaAt(hover); if(a){ ctx.font='bold 14px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.fillStyle='#ffd27a'; const px=cam.x+a.cx*s, py=cam.y+a.cy*s-10; const txt=`send ${fmtN(a.troops*ratio.value/100)} of ${fmtN(a.troops)}`; ctx.strokeText(txt,px,py); ctx.fillText(txt,px,py); } }
+  if(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf){ const a=areaAt(hover); if(a){ ctx.font='bold 14px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.fillStyle='#ffd27a'; const px=cam.x+a.cx*s, py=cam.y+a.cy*s-10; const txt=`send ${fmtN(a.troops*ratio.value/100)} of ${fmtN(a.troops)}`; ctx.strokeText(txt,px,py); ctx.fillText(txt,px,py); } }
   if(box){ ctx.strokeStyle='#fff'; ctx.fillStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; const bx=Math.min(box.x0,box.x1),by=Math.min(box.y0,box.y1),bw=Math.abs(box.x1-box.x0),bh=Math.abs(box.y1-box.y0); ctx.fillRect(bx,by,bw,bh); ctx.strokeRect(bx,by,bw,bh); }
-  if(draft){ const p=draft.order[draft.idx]; ctx.fillStyle='rgba(10,20,30,.55)'; ctx.fillRect(0,0,cw,44); ctx.font='bold 16px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(p===me?`Your pick — click a neutral country (flags mark what's taken) (round ${draft.round+1} of ${draft.per})`:`${p.name} is picking… (round ${draft.round+1} of ${draft.per})`,cw/2,28); }
-  if(userPaused){ ctx.fillStyle='rgba(10,20,30,.35)'; ctx.fillRect(0,0,cw,ch); ctx.font='bold 28px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Paused',cw/2,ch/2); ctx.font='13px "Segoe UI",system-ui,sans-serif'; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillText('Space to resume',cw/2,ch/2+24); }
+  if(draftState.draft){ const p=draftState.draft.order[draftState.draft.idx]; ctx.fillStyle='rgba(10,20,30,.55)'; ctx.fillRect(0,0,cw,44); ctx.font='bold 16px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(p===me()?`Your pick — click a neutral country (flags mark what's taken) (round ${draftState.draft.round+1} of ${draftState.draft.per})`:`${p.name} is picking… (round ${draftState.draft.round+1} of ${draftState.draft.per})`,cw/2,28); }
+  if(lifecycleState.userPaused){ ctx.fillStyle='rgba(10,20,30,.35)'; ctx.fillRect(0,0,cw,ch); ctx.font='bold 28px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Paused',cw/2,ch/2); ctx.font='13px "Segoe UI",system-ui,sans-serif'; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillText('Space to resume',cw/2,ch/2+24); }
   // build cursor
-  if(buildMode&&hover>=0){ const ht=buildMode!=='nuke'?(snapBuild(me,hover,buildMode)>=0?snapBuild(me,hover,buildMode):hover):hover; const x=ht%W,y=(ht-x)/W; ctx.strokeStyle=canBuildAt(hover)?'#7fffa0':'#ff6b6b'; ctx.lineWidth=2; ctx.strokeRect(cam.x+x*s-2,cam.y+y*s-2,s+4,s+4); }
-  if(!window.__STATEFALL_TEST_FREEZE__) requestAnimationFrame(render);
+  if(buildMode&&hover>=0){ const ht=buildMode!=='nuke'?(snapBuild(me().id,hover,buildMode)>=0?snapBuild(me().id,hover,buildMode):hover):hover; const x=ht%W,y=(ht-x)/W; ctx.strokeStyle=canBuildAt(hover)?'#7fffa0':'#ff6b6b'; ctx.lineWidth=2; ctx.strokeRect(cam.x+x*s-2,cam.y+y*s-2,s+4,s+4); }
+  if(!(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_FREEZE__)) requestAnimationFrame(render);
 }
 const centCache={}; let highlightId=-1;
-function computeLabelPos(){ // largest connected chunk of each nation; label goes on its own land there
-  const seen=new Uint8Array(W*H), q=new Int32Array(W*H); const best={};
-  for(let t0=0;t0<W*H;t0++){ const o=owner[t0]; if(o<0||seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; let n=0,sx=0,sy=0;
-    while(h<tl){ const c=q[h++]; n++; sx+=c%W; sy+=(c-c%W)/W; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const m=idx(x+dx,y+dy); if(!seen[m]&&owner[m]===o){ seen[m]=1; q[tl++]=m; } } }
-    if(!best[o]||n>best[o].n) best[o]={n,x:sx/n,y:sy/n}; }
-  for(const p of players){ const b=best[p.id]; if(!b){ delete p.labelPos; continue; } let lx=Math.round(b.x), ly=Math.round(b.y);
-    if(!inb(lx,ly)||owner[idx(lx,ly)]!==p.id){ let found=false; for(let r=1;r<=60&&!found;r++){ for(let dy=-r;dy<=r&&!found;dy++)for(let dx=-r;dx<=r;dx++){ if(Math.abs(dx)!==r&&Math.abs(dy)!==r) continue; const X=lx+dx,Y=ly+dy; if(inb(X,Y)&&owner[idx(X,Y)]===p.id){ lx=X; ly=Y; found=true; break; } } } }
-    p.labelPos=[lx+.5,ly+.5]; }
-}
 function centroid(p){
-  if(tickN%20!==0&&centCache[p.id]) return centCache[p.id];
-  let sx=0,sy=0,n=0; for(let t=0;t<W*H;t+=7) if(owner[t]===p.id){sx+=t%W;sy+=(t-t%W)/W;n++;}
-  const c=n?[sx/n+.5,sy/n+.5]:[p.sx,p.sy]; centCache[p.id]=c; return c;
+  if(clockState.tickN%20!==0&&centCache[p.id]) return centCache[p.id];
+  const c=calculateCentroid(p.id); centCache[p.id]=c; return c;
 }
-
 function drawIcon(type,x,y,r,col,c=ctx){
   c.save(); c.translate(x,y);
   c.fillStyle='#0f1a26'; c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.fill();
@@ -2635,90 +1293,55 @@ window.addEventListener('resize',resize);
 function tileAt(px,py){ const x=Math.floor((px-cam.x)/cam.s), y=Math.floor((py-cam.y)/cam.s); return inb(x,y)?idx(x,y):-1; }
 function hideCtx(){ ctx_.style.display='none'; }
 const ctx_=document.getElementById('ctx');
-function menuAction(d,t,sel,site,ratioV,aidGold,aidTroops){
-    if(d.act==='plane'){ callPlane(me,t); }
-    else if(d.act==='fpatrol'){ launchFighter(me,t); }
-    else if(d.act==='bstrike'){ const o2=owner[t]; if(o2>=0&&atPeace(me.id,o2)) fail(`You're at peace with ${players[o2].name}.`); else launchBomber(me,t); }
-    else if(d.act==='recallnear'){ aircraft.filter(a=>a.owner===me.id&&a.type==='fighter'&&['out','patrol'].includes(a.state)&&Math.hypot(a.tx-(t%W+.5),a.ty-((t-t%W)/W+.5))<=AIR.fighter.patrol+6).forEach(recallAircraft); }
-    else if(d.act==='upgrade'){ upgradeStructure(me,site); }
-    else if(d.act==='buyf'){ buyAircraft(me,site,'fighter'); }
-    else if(d.act==='buyb'){ buyAircraft(me,site,'bomber'); }
-    else if(d.act==='buyc'){ buyAircraft(me,site,'carrier'); }
-    else if(d.act==='paradrop'){ const src=gOn(me)&&idleAircraft(me,'carrier',t)?(areaAt(idleAircraft(me,'carrier',t).home.t)||me.areas[0]):null; launchParadrop(me,t,(src?src.troops:me.troops)*ratioV/100); }
-    else if(d.act==='sat'){ launchSatellite(); }
-    else if(d.act==='refit'){ let n=0; for(const w of sel){ if(w.cls!=='battleship'||w.cruise||w.refit) continue; const ok=structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===me.id&&((st.t%W+.5-w.x)**2+((st.t-st.t%W)/W+.5-w.y)**2)<=LINK_RANGE*LINK_RANGE); if(!ok||me.gold<CRUISE.cost) continue; me.gold-=CRUISE.cost; w.refit=tickN+(START.instant?0:CRUISE.ticks); n++; } if(n){ log(`${n} battleship${n>1?'s':''} refitting with cruise missiles — ${CRUISE.ticks/10} s.`,true); snd('build'); } else fail('No battleship in range of a level II port, or not enough gold.'); }
-    else if(d.act==='move'){ const n=moveSelected(t,sel); if(n) log(`${n} ship${n>1?'s':''} under way.`,true); else fail('No sea route to that spot.'); }
-    else if(d.act==='blockade'){ const wn=waterNeighbor(t); const n=wn>=0?moveSelected(wn,sel):0; if(n) log(`Blockading ${players[owner[t]].name}'s port.`,true); else fail('No sea route to that port.'); }
-    else if(d.act==='warship'){ const c=d.cls||'warship'; if(orderWarship(me,t,c)) log(`${SHIPS[c].label} leaving port.`,true); else fail('No sea route from your ports to that spot.'); }
-    else if(d.act==='build'){ const k=d.type; if(placeStructure(me,k,t)) log(`Built a ${STRUCT[k].label.toLowerCase()}.`,true); else fail('Could not build there.'); }
-    else if(d.act==='focus'){ me.cmdFocus=owner[t]; me.cmdFocusT=t; me.cmdTarget=null; log(`Missile command: concentrating on ${players[owner[t]].name} around here.`,true); }
-    else if(d.act==='unfocus'){ me.cmdFocus=null; me.cmdFocusT=null; me.cmdTarget=null; log('Missile command: back to automatic targeting.',true); }
-    else if(d.act==='repair'){ const st=site; if(st&&structures.includes(st)){ const need=st.type==='airfield'?LSHIELD.hp-(st.lshield||0):st.type==='port'?4-(st.gunHp||0):SHIELD.hp-st.hp; if(need>0&&me.gold>=SHIELD.repairCost*need){ me.gold-=SHIELD.repairCost*need; st.repairing=true; st.repairAt=tickN+SHIELD.repairTicks; log(`Repairing shield: ${need} pip${need>1?'s':''}, ${SHIELD.repairCost*need} gold.`,true); snd('build'); } else fail('Not enough gold for that repair.'); } }
-    else if(d.act==='repairstop'){ const st=site; if(st){ const left=st.type==='airfield'?LSHIELD.hp-(st.lshield||0):st.type==='port'?4-(st.gunHp||0):SHIELD.hp-st.hp; st.repairing=false; me.gold+=SHIELD.repairCost*left; log('Repair stopped, remaining gold refunded.',true); } }
-    else if(d.act==='cancelship'){ const st=site; if(st&&st.queue&&st.queue.length){ const job=st.queue.shift(); me.gold+=Math.round(SHIPS[job.cls].cost*CANCEL_REFUND); if(st.queue.length) st.queue[0].done=tickN+st.queue[0].total; log(`${SHIPS[job.cls].label} cancelled.`,true); } }
-    else if(d.act==='cancel'){ const st=site; if(st&&structures.includes(st)&&st.building&&st.owner===me.id){ me.gold+=Math.round(st.cost*CANCEL_REFUND); destroyStructure(st.t); structCounts(me); log(`Construction cancelled, ${Math.round(st.cost*CANCEL_REFUND)} gold refunded.`,true); snd('error'); } else fail('Nothing to cancel there.'); }
-    else if(d.act==='nuke'){ launchMissile(me,t); }
-    else if(d.act==='nap'||d.act==='ally'){ propose(me,players[owner[t]],d.act); }
-    else if(d.act==='war'){ breakRelation(me,players[owner[t]]); }
-    else if(d.act==='giveTroops'){ const q=players[owner[t]]; if(!sendTroops(me,q,aidTroops)) fail('Could not send those troops.'); }
-    else if(d.act==='giveGold'){ const q=players[owner[t]]; if(!sendGold(me,q,aidGold)) fail('Not enough gold.'); }
-    else if(d.act==='askTroops'){ const q=players[owner[t]]; if(botAnswerRequest(q,me,'troops',Math.round(maxTroops(me)*0.3))) snd('unified'); else fail(`${q.name} has nothing to spare right now.`); }
-    else if(d.act==='askGold'){ const q=players[owner[t]]; if(botAnswerRequest(q,me,'gold',300)) snd('unified'); else fail(`${q.name} has no gold to spare right now.`); }
-    else if(d.act==='pickreinf'){ pickMode={kind:'reinforce',t}; updateHint(); }
-    else if(d.act==='pickattack'){ pickMode={kind:'attack',t}; updateHint(); }
-    else if(d.act==='attackfrom'){ const o=owner[t]; launchAttack(me,o,areaById(+d.area).troops*ratioV/100,undefined,areaById(+d.area)); }
-    else if(d.act==='transportfrom'){ const o=owner[t]; const ar=areaById(+d.area); if(launchAttack(me,o,ar.troops*ratioV/100,t,ar)) log(`Transport embarking from ${areaName(me,ar)} for ${o>=0?players[o].name:'unclaimed coast'}.`,true); }
-    else if(d.act==='transport'){ const o=owner[t]; if(o>=0&&atPeace(me.id,o)) fail(`You're at peace with ${players[o].name}.`); else if(launchAttack(me,o,me.troops*ratioV/100,t)) log(`Transport embarking for ${o>=0?players[o].name:'unclaimed coast'}.`,true); }
-}
 cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on) return; const r=cv.getBoundingClientRect(); const t=tileAt(e.clientX-r.left,e.clientY-r.top);
-  hideCtx(); if(buildMode){ setBuild(null); return; } if(over||t<0) return;
+  hideCtx(); if(buildMode){ setBuild(null); return; } if(lifecycleState.over||t<0) return;
   const items=[];
-  if(START.fog){ const ready=planeCool<=tickN; items.push(`<div class="h">Intel</div><button class="act" ${!ready||me.gold<FOG.plane.cost?'disabled':''} data-act="plane"><span>Call spy plane here<b>${!airfieldsOf(me).length?'Needs an airfield':ready?FOG.plane.cost+' gold — reveals '+FOG.plane.r+' tiles for '+Math.round(FOG.plane.dur/10)+' s':'Ready in '+Math.ceil((planeCool-tickN)/10)+' s'}</b></span></button>`);
-    const site=structures.some(st=>st.owner===me.id&&st.type==='satellite'&&!st.building); items.push(`<button class="act" ${!site||satCool>tickN||me.gold<FOG.sat.cost?'disabled':''} data-act="sat"><span>Launch spy satellite<b>${!site?'Needs a finished satellite launch site (Intel group)':satCool>tickN?'Next window in '+Math.ceil((satCool-tickN)/10)+' s':FOG.sat.cost+' gold — whole map for '+Math.round(FOG.sat.dur/10)+' s'}</b></span></button>`); }
-  const friendlyTile=land[t]&&owner[t]>=0&&owner[t]!==me.id&&atPeace(me.id,owner[t]);
-  if(airfieldsOf(me).length&&!friendlyTile){ const nearPatrol=aircraft.filter(a=>a.owner===me.id&&a.type==='fighter'&&['out','patrol'].includes(a.state)&&Math.hypot(a.tx-(t%W+.5),a.ty-((t-t%W)/W+.5))<=AIR.fighter.patrol+6);
-    items.push(`<div class="h">Air</div><button data-act="fpatrol" ${idleAircraft(me,'fighter',t)?'':'disabled'}>Fighter patrol here<b>25-tile circle, 10 min endurance. Kills bombers and spy planes, dogfights enemy patrols</b></button><button data-act="bstrike" ${idleAircraft(me,'bomber',t)?'':'disabled'}>Bomber strike here<b>30-tile run of 8 bombs, each 1/8 of a nuke. Ignores SAMs; stopped by fighters and domes</b></button>${land[t]&&idleAircraft(me,'carrier',t)?`<button data-act="paradrop">Paradrop troops here<b>Up to ${AIR.carrier.capacity} troops (slider share of the field's area), lands as an attack or reinforcement. Fighters can shoot it down</b></button>`:''}${nearPatrol.length?`<button data-act="recallnear">Recall ${nearPatrol.length>1?'these patrols':'this patrol'}</button>`:''}`); }
-  if(hoverStruct&&hoverStruct.owner===me.id&&UPGRADE[hoverStruct.type]&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const U=UPGRADE[st.type]; if((st.level||1)<(U.max||2)&&!st.upgrading){ const lv=(st.level||1); const uc=lv>=2?(U.cost3||U.cost):U.cost, ut=lv>=2?(U.ticks3||U.ticks):U.ticks; items.push(`<button data-act="upgrade" ${me.gold<uc?'disabled':''}>Upgrade ${STRUCT[st.type].label.toLowerCase()} to level ${lv>=2?'III':'II'}<b>${uc} gold · ${START.instant?'instant':ut/10+' s'} — ${st.type==='port'?'built-in shore guns, heavy transports, unlocks submarine bases':st.type==='airfield'?'6 hangar slots, light shield dome, stealth troop transports':lv>=2?'range 32 tiles':'range 24 tiles'}</b></button>`); } else if(st.upgrading) items.push(`<div class="h">Upgrading — ${Math.ceil((st.upDone-tickN)/10)} s</div>`); }
-  if(hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.type==='port'&&(hoverStruct.level||1)>=2&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const need=4-(st.gunHp||0); if(need>0&&!st.repairing) items.push(`<button data-act="repair" ${me.gold<SHIELD.repairCost*need?'disabled':''}>Repair port guns (${need} pip${need>1?'s':''})<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s</b></button>`); else if(st.repairing) items.push(`<button data-act="repairstop">Stop gun repair</button>`); }
-  if(hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.type==='airfield'&&(hoverStruct.level||1)>=2&&!hoverStruct.building){ const st=hoverStruct; const need=LSHIELD.hp-(st.lshield||0); if(need>0&&!st.repairing) items.push(`<button data-act="repair" ${me.gold<SHIELD.repairCost*need?'disabled':''}>Repair airfield shield (${need} pip${need>1?'s':''})<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s</b></button>`); else if(st.repairing) items.push(`<button data-act="repairstop">Stop shield repair</button>`); }
-  if(hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.type==='airfield'&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const n=hangarCount(st); items.push(`<div class="h">Airfield${(st.level||1)>=3?' III':(st.level||1)>=2?' II':''} — ${n}/${hangarMax(st)} hangar slots</div><div class="grid"><button data-act="buyf" ${n>=hangarMax(st)||me.gold<AIR.fighter.cost?'disabled':''}><span><span class="n">Stealth fighter</span><b>${AIR.fighter.cost}g · ${START.instant?'instant':AIR.fighter.build/10+'s'}</b></span></button><button data-act="buyb" ${n>=hangarMax(st)||me.gold<AIR.bomber.cost?'disabled':''}><span><span class="n">Stealth bomber</span><b>${AIR.bomber.cost}g · ${START.instant?'instant':AIR.bomber.build/10+'s'}</b></span></button>${(st.level||1)>=2?`<button data-act="buyc" ${n>=hangarMax(st)||me.gold<AIR.carrier.cost?'disabled':''}><span><span class="n">Troop transport</span><b>${AIR.carrier.cost}g · ${START.instant?'instant':AIR.carrier.build/10+'s'}</b></span></button>`:''}</div>`); }
+  if(START.fog){ const ready=fogState.planeCool<=clockState.tickN; items.push(`<div class="h">Intel</div><button class="act" ${!ready||me().gold<FOG.plane.cost?'disabled':''} data-act="plane"><span>Call spy plane here<b>${!airfieldsOf(me().id).length?'Needs an airfield':ready?FOG.plane.cost+' gold — reveals '+FOG.plane.r+' tiles for '+Math.round(FOG.plane.dur/10)+' s':'Ready in '+Math.ceil((fogState.planeCool-clockState.tickN)/10)+' s'}</b></span></button>`);
+    const site=structures.some(st=>st.owner===me().id&&st.type==='satellite'&&!st.building); items.push(`<button class="act" ${!site||fogState.satCool>clockState.tickN||me().gold<FOG.sat.cost?'disabled':''} data-act="sat"><span>Launch spy satellite<b>${!site?'Needs a finished satellite launch site (Intel group)':fogState.satCool>clockState.tickN?'Next window in '+Math.ceil((fogState.satCool-clockState.tickN)/10)+' s':FOG.sat.cost+' gold — whole map for '+Math.round(FOG.sat.dur/10)+' s'}</b></span></button>`); }
+  const friendlyTile=land[t]&&owner[t]>=0&&owner[t]!==me().id&&atPeace(me().id,owner[t]);
+  if(airfieldsOf(me().id).length&&!friendlyTile){ const nearPatrol=aircraft.filter(a=>a.owner===me().id&&a.type==='fighter'&&['out','patrol'].includes(a.state)&&Math.hypot(a.tx-(t%W+.5),a.ty-((t-t%W)/W+.5))<=AIR.fighter.patrol+6);
+    items.push(`<div class="h">Air</div><button data-act="fpatrol" ${idleAircraft(me(),'fighter',t)?'':'disabled'}>Fighter patrol here<b>25-tile circle, 10 min endurance. Kills bombers and spy planes, dogfights enemy patrols</b></button><button data-act="bstrike" ${idleAircraft(me(),'bomber',t)?'':'disabled'}>Bomber strike here<b>30-tile run of 8 bombs, each 1/8 of a nuke. Ignores SAMs; stopped by fighters and domes</b></button>${land[t]&&idleAircraft(me(),'carrier',t)?`<button data-act="paradrop">Paradrop troops here<b>Up to ${AIR.carrier.capacity} troops (slider share of the field's area), lands as an attack or reinforcement. Fighters can shoot it down</b></button>`:''}${nearPatrol.length?`<button data-act="recallnear">Recall ${nearPatrol.length>1?'these patrols':'this patrol'}</button>`:''}`); }
+  if(hoverStruct&&hoverStruct.owner===me().id&&UPGRADE[hoverStruct.type]&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const U=UPGRADE[st.type]; if((st.level||1)<(U.max||2)&&!st.upgrading){ const lv=(st.level||1); const uc=lv>=2?(U.cost3||U.cost):U.cost, ut=lv>=2?(U.ticks3||U.ticks):U.ticks; items.push(`<button data-act="upgrade" ${me().gold<uc?'disabled':''}>Upgrade ${STRUCT[st.type].label.toLowerCase()} to level ${lv>=2?'III':'II'}<b>${uc} gold · ${START.instant?'instant':ut/10+' s'} — ${st.type==='port'?'built-in shore guns, heavy transports, unlocks submarine bases':st.type==='airfield'?'6 hangar slots, light shield dome, stealth troop transports':lv>=2?'range 32 tiles':'range 24 tiles'}</b></button>`); } else if(st.upgrading) items.push(`<div class="h">Upgrading — ${Math.ceil((st.upDone-clockState.tickN)/10)} s</div>`); }
+  if(hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.type==='port'&&(hoverStruct.level||1)>=2&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const need=4-(st.gunHp||0); if(need>0&&!st.repairing) items.push(`<button data-act="repair" ${me().gold<SHIELD.repairCost*need?'disabled':''}>Repair port guns (${need} pip${need>1?'s':''})<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s</b></button>`); else if(st.repairing) items.push(`<button data-act="repairstop">Stop gun repair</button>`); }
+  if(hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.type==='airfield'&&(hoverStruct.level||1)>=2&&!hoverStruct.building){ const st=hoverStruct; const need=LSHIELD.hp-(st.lshield||0); if(need>0&&!st.repairing) items.push(`<button data-act="repair" ${me().gold<SHIELD.repairCost*need?'disabled':''}>Repair airfield shield (${need} pip${need>1?'s':''})<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s</b></button>`); else if(st.repairing) items.push(`<button data-act="repairstop">Stop shield repair</button>`); }
+  if(hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.type==='airfield'&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const n=hangarCount(st.t); items.push(`<div class="h">Airfield${(st.level||1)>=3?' III':(st.level||1)>=2?' II':''} — ${n}/${hangarMax(st.t)} hangar slots</div><div class="grid"><button data-act="buyf" ${n>=hangarMax(st.t)||me().gold<AIR.fighter.cost?'disabled':''}><span><span class="n">Stealth fighter</span><b>${AIR.fighter.cost}g · ${START.instant?'instant':AIR.fighter.build/10+'s'}</b></span></button><button data-act="buyb" ${n>=hangarMax(st.t)||me().gold<AIR.bomber.cost?'disabled':''}><span><span class="n">Stealth bomber</span><b>${AIR.bomber.cost}g · ${START.instant?'instant':AIR.bomber.build/10+'s'}</b></span></button>${(st.level||1)>=2?`<button data-act="buyc" ${n>=hangarMax(st.t)||me().gold<AIR.carrier.cost?'disabled':''}><span><span class="n">Troop transport</span><b>${AIR.carrier.cost}g · ${START.instant?'instant':AIR.carrier.build/10+'s'}</b></span></button>`:''}</div>`); }
 
   const sel=[...selected].filter(w=>warships.includes(w));
-  if(sel.length&&(!land[t]||(struct[t]&&structures.find(q=>q.t===t)?.type==='port'&&owner[t]!==me.id))){
+  if(sel.length&&(!land[t]||(struct[t]&&structures.find(q=>q.t===t)?.type==='port'&&owner[t]!==me().id))){
     items.push(`<div class="h">Fleet orders</div>`);
     if(!land[t]) items.push(`<button data-act="move">Move ${sel.length} ship${sel.length>1?'s':''} here and patrol<b>They pathfind through water at their own speed</b></button>`);
     else items.push(`<button data-act="blockade">Blockade this port<b>Patrol just offshore; merchants and transports leaving it come first</b></button>`);
-    { const bbs=sel.filter(w=>w.cls==='battleship'&&!w.cruise&&!w.refit); if(bbs.length){ const near=bbs.filter(w=>structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===me.id&&((st.t%W+.5-w.x)**2+((st.t-st.t%W)/W+.5-w.y)**2)<=LINK_RANGE*LINK_RANGE)); items.push(`<button data-act="refit" ${!near.length||me.gold<CRUISE.cost*near.length?'disabled':''}>Refit ${near.length||bbs.length} battleship${(near.length||bbs.length)>1?'s':''} with cruise missiles<b>${CRUISE.cost} gold each, ${CRUISE.ticks/10} s, must be within 34 tiles of your level II port${near.length?'':' — none in range'}. Then fires 2 cruise missiles every 40 s up to 120 tiles inland: shields first, then SAM sites, then anything</b></button>`); } }
+    { const bbs=sel.filter(w=>w.cls==='battleship'&&!w.cruise&&!w.refit); if(bbs.length){ const near=bbs.filter(w=>structures.some(st=>st.type==='port'&&(st.level||1)>=2&&!st.building&&st.owner===me().id&&((st.t%W+.5-w.x)**2+((st.t-st.t%W)/W+.5-w.y)**2)<=LINK_RANGE*LINK_RANGE)); items.push(`<button data-act="refit" ${!near.length||me().gold<CRUISE.cost*near.length?'disabled':''}>Refit ${near.length||bbs.length} battleship${(near.length||bbs.length)>1?'s':''} with cruise missiles<b>${CRUISE.cost} gold each, ${CRUISE.ticks/10} s, must be within 34 tiles of your level II port${near.length?'':' — none in range'}. Then fires 2 cruise missiles every 40 s up to 120 tiles inland: shields first, then SAM sites, then anything</b></button>`); } }
   }
   if(!land[t]){
-    { const c=ALLOWED.has('port')?snapBuild(me,t,'port',4):-1; if(c>=0) items.push(`<button ${me.gold<STRUCT.port.cost?'disabled':''} data-act="build" data-type="port">Build port on this coast<b>${STRUCT.port.cost} gold</b></button>`); }
-    items.push(`<div class="h">Ships${me.ports<1?' — need a port':''}</div>`);
-    const np_=me.ports>0?nearestPort(me,t):null; const disc=np_&&np_.linked?1-LINK_SHIP_DISCOUNT:1;
-    const hasPens=structures.some(st=>st.type==='subbase'&&!st.building&&st.owner===me.id);
-    items.push('<div class="grid">'+Object.keys(SHIPS).filter(k=>ALLOWED.has(k)&&(k!=='rship'||START.fog)&&(!SHIPS[k].sub||hasPens)).map(k=>{ const S=SHIPS[k]; const c=Math.round(S.cost*disc); const tm=SHIP_BUILD[k]&&!START.instant?' · '+Math.round(SHIP_BUILD[k]/10)+'s':''; return `<button ${me.ports<1||me.gold<c?'disabled':''} data-act="warship" data-cls="${k}" title="${S.desc}"><img src="${shipURL(k,me.color)}" width="40" height="22" alt=""><span><span class="n">${S.label}</span><b>${c}g${tm}${disc<1?' · supplied':''}</b></span></button>`; }).join('')+'</div>');
-  } else if(owner[t]===me.id&&hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.type==='shield'&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const need=SHIELD.hp-st.hp; items.push(`<div class="h">Shield generator — ${st.hp}/${SHIELD.hp} hit points</div>`); if(st.repairing) items.push(`<button data-act="repairstop">Stop repair<b>${need} pips left</b></button>`); else items.push(`<button ${need<=0||me.gold<SHIELD.repairCost*need?'disabled':''} data-act="repair">Repair${need>0?' ('+need+' pip'+(need>1?'s':'')+')':' — at full strength'}<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s${START.instant?' (instant)':''}</b></button>`);
-  } else if(owner[t]===me.id&&hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.building){ const st=hoverStruct; ctx_.site=st; items.push(`<div class="h">${STRUCT[st.type].label} under construction — ${Math.ceil((st.done-tickN)/10)} s</div>`); items.push(`<button data-act="cancel">Cancel construction<b>Refunds ${Math.round(st.cost*CANCEL_REFUND)} gold</b></button>`);
-  } else if(owner[t]===me.id&&hoverStruct&&hoverStruct.owner===me.id&&hoverStruct.type==='port'&&hoverStruct.queue&&hoverStruct.queue.length){ const st=hoverStruct; ctx_.site=st; const job=st.queue[0]; items.push(`<div class="h">${SHIPS[job.cls].label} on the slipway — ${Math.ceil(Math.max(0,job.done-tickN)/10)} s${st.queue.length>1?', '+(st.queue.length-1)+' queued':''}</div>`); items.push(`<button data-act="cancelship">Cancel this ship<b>Refunds ${Math.round(SHIPS[job.cls].cost*CANCEL_REFUND)} gold</b></button>`);
-  } else if(owner[t]===me.id){
-    if(gOn(me)&&me.areas&&me.areas.length>1){ const here=areaAt(t); if(here) items.push(`<button data-act="pickreinf">Reinforce this area from an area you click<b>${ratio.value}% of the clicked area's garrison, by transport</b></button>`); }
+    { const c=ALLOWED.has('port')?snapBuild(me().id,t,'port',4):-1; if(c>=0) items.push(`<button ${me().gold<STRUCT.port.cost?'disabled':''} data-act="build" data-type="port">Build port on this coast<b>${STRUCT.port.cost} gold</b></button>`); }
+    items.push(`<div class="h">Ships${me().ports<1?' — need a port':''}</div>`);
+    const np_=me().ports>0?nearestPort(me(),t):null; const disc=np_&&np_.linked?1-LINK_SHIP_DISCOUNT:1;
+    const hasPens=structures.some(st=>st.type==='subbase'&&!st.building&&st.owner===me().id);
+    items.push('<div class="grid">'+Object.keys(SHIPS).filter(k=>ALLOWED.has(k)&&(k!=='rship'||START.fog)&&(!SHIPS[k].sub||hasPens)).map(k=>{ const S=SHIPS[k]; const c=Math.round(S.cost*disc); const tm=SHIP_BUILD[k]&&!START.instant?' · '+Math.round(SHIP_BUILD[k]/10)+'s':''; return `<button ${me().ports<1||me().gold<c?'disabled':''} data-act="warship" data-cls="${k}" title="${S.desc}"><img src="${shipURL(k,me().color)}" width="40" height="22" alt=""><span><span class="n">${S.label}</span><b>${c}g${tm}${disc<1?' · supplied':''}</b></span></button>`; }).join('')+'</div>');
+  } else if(owner[t]===me().id&&hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.type==='shield'&&!hoverStruct.building){ const st=hoverStruct; ctx_.site=st; const need=SHIELD.hp-st.hp; items.push(`<div class="h">Shield generator — ${st.hp}/${SHIELD.hp} hit points</div>`); if(st.repairing) items.push(`<button data-act="repairstop">Stop repair<b>${need} pips left</b></button>`); else items.push(`<button ${need<=0||me().gold<SHIELD.repairCost*need?'disabled':''} data-act="repair">Repair${need>0?' ('+need+' pip'+(need>1?'s':'')+')':' — at full strength'}<b>${SHIELD.repairCost} gold per pip, one pip every ${SHIELD.repairTicks/10} s${START.instant?' (instant)':''}</b></button>`);
+  } else if(owner[t]===me().id&&hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.building){ const st=hoverStruct; ctx_.site=st; items.push(`<div class="h">${STRUCT[st.type].label} under construction — ${Math.ceil((st.done-clockState.tickN)/10)} s</div>`); items.push(`<button data-act="cancel">Cancel construction<b>Refunds ${Math.round(st.cost*CANCEL_REFUND)} gold</b></button>`);
+  } else if(owner[t]===me().id&&hoverStruct&&hoverStruct.owner===me().id&&hoverStruct.type==='port'&&hoverStruct.queue&&hoverStruct.queue.length){ const st=hoverStruct; ctx_.site=st; const job=st.queue[0]; items.push(`<div class="h">${SHIPS[job.cls].label} on the slipway — ${Math.ceil(Math.max(0,job.done-clockState.tickN)/10)} s${st.queue.length>1?', '+(st.queue.length-1)+' queued':''}</div>`); items.push(`<button data-act="cancelship">Cancel this ship<b>Refunds ${Math.round(SHIPS[job.cls].cost*CANCEL_REFUND)} gold</b></button>`);
+  } else if(owner[t]===me().id){
+    if(gOn(me().id)&&me().areas&&me().areas.length>1){ const here=areaAt(t); if(here) items.push(`<button data-act="pickreinf">Reinforce this area from an area you click<b>${ratio.value}% of the clicked area's garrison, by transport</b></button>`); }
     const blocked=struct[t]||crowded(t);
     const GROUPS=[['Economy',['city','factory','port']],['Defense',['fort','sam','shield']],['Coast & artillery',['shore','battery','bertha']],['Strike',['silo','command']],['Command',['troopcmd','engcmd']],['Air',['airfield','flightops']],['Navy',['subbase']],['Intel',['radar','lradar','jammer','satellite']]];
     for(const [gname,keys] of GROUPS){ const ks=keys.filter(k=>ALLOWED.has(k)&&(!STRUCT[k].fog||START.fog)); if(!ks.length) continue;
-      items.push(`<div class="h">${gname}</div><div class="grid">`+ks.map(k=>{ const S=STRUCT[k]; const spot=snapBuild(me,t,k); const cost=structCost(me,k); const off=spot<0||me.gold<cost; const tm=BUILD_TICKS[k]&&!START.instant?' · '+Math.round(BUILD_TICKS[k]/10)+'s':'';
-        return `<button ${off?'disabled':''} data-act="build" data-type="${k}" title="${S.desc}"><img src="${iconURL(k,me.color)}" width="30" height="30" alt=""><span><span class="n">${S.label}${KEY_OF[k]?' <kbd>'+KEY_OF[k]+'</kbd>':''}</span><b>${cost}g${tm}${spot<0?(S.coast?' · no coast nearby':' · no room nearby'):''}</b></span></button>`; }).join('')+`</div>`); }
+      items.push(`<div class="h">${gname}</div><div class="grid">`+ks.map(k=>{ const S=STRUCT[k]; const spot=snapBuild(me().id,t,k); const cost=structCost(me().id,k); const off=spot<0||me().gold<cost; const tm=BUILD_TICKS[k]&&!START.instant?' · '+Math.round(BUILD_TICKS[k]/10)+'s':'';
+        return `<button ${off?'disabled':''} data-act="build" data-type="${k}" title="${S.desc}"><img src="${iconURL(k,me().color)}" width="30" height="30" alt=""><span><span class="n">${S.label}${KEY_OF[k]?' <kbd>'+KEY_OF[k]+'</kbd>':''}</span><b>${cost}g${tm}${spot<0?(S.coast?' · no coast nearby':' · no room nearby'):''}</b></span></button>`; }).join('')+`</div>`); }
   } else {
     const o=owner[t];
-    const troops=Math.round(me.troops*ratio.value/100);
-    if(!(o>=0&&atPeace(me.id,o))){ items.push(`<div class="h">${o>=0?players[o].name:'Unclaimed land'} — military</div>`);
-      if(gOn(me)&&me.areas&&me.areas.length>1){ const adj=areaTouching(me,o); if(adj) items.push(`<button data-act="attackfrom" data-area="${adj.id}">Attack from the bordering area<b>${fmtN(adj.troops*ratio.value/100)} of its ${fmtN(adj.troops)} troops along the shared border</b></button>`); items.push(`<button data-act="pickattack">Send troops here from an area you click<b>${ratio.value}% of the clicked area's garrison — by land if it borders, else by transport</b></button>`); }
+    const troops=Math.round(me().troops*ratio.value/100);
+    if(!(o>=0&&atPeace(me().id,o))){ items.push(`<div class="h">${o>=0?players[o].name:'Unclaimed land'} — military</div>`);
+      if(gOn(me().id)&&me().areas&&me().areas.length>1){ const adj=areaTouching(me().id,o); if(adj) items.push(`<button data-act="attackfrom" data-area="${adj.id}">Attack from the bordering area<b>${fmtN(adj.troops*ratio.value/100)} of its ${fmtN(adj.troops)} troops along the shared border</b></button>`); items.push(`<button data-act="pickattack">Send troops here from an area you click<b>${ratio.value}% of the clicked area's garrison — by land if it borders, else by transport</b></button>`); }
     items.push(`<button ${troops<5?'disabled':''} data-act="transport">Send transport (${troops} troops)<b>Embarks from your nearest coast, lands on theirs</b></button>`);
-    if(me.silos>0&&ALLOWED.has('missile')){ const rs=structures.filter(q=>q.owner===me.id&&q.type==='silo'&&!q.building&&!(q.cool>tickN)).sort((a,b)=>missileCost(me,a)-missileCost(me,b)); const c=rs.length?missileCost(me,rs[0]):NUKE_COST; items.push(`<button ${me.gold<c||!rs.length?'disabled':''} data-act="nuke">Launch missile here <kbd>N</kbd><b>${!rs.length?'Reloading — '+Math.ceil(siloReadyIn(me)/10)+'s':c+' gold'+(c<NUKE_COST?' (command discount)':'')}</b></button>`); } }
-    if(o>=0&&me.commands>0&&players[o].kind!=='neutral'&&!atPeace(me.id,o)){ items.push(me.cmdFocus===o?`<button data-act="unfocus">Stop auto-fire on ${players[o].name}<b>Missile command returns to picking targets among nations you fight</b></button>`:`<button data-act="focus">Auto-fire missiles at this nation, here<b>Missile command concentrates on ${players[o].name}'s buildings within 60 tiles of this spot, then the rest of the nation</b></button>`); }
-    if(o>=0&&players[o].kind!=='neutral'){ const r=relation(me,players[o]); items.push(`<div class="h">Diplomacy</div>`);
+    if(me().silos>0&&ALLOWED.has('missile')){ const rs=structures.filter(q=>q.owner===me().id&&q.type==='silo'&&!q.building&&!(q.cool>clockState.tickN)).sort((a,b)=>missileCost(me().id,a.t)-missileCost(me().id,b.t)); const c=rs.length?missileCost(me().id,rs[0].t):NUKE_COST; items.push(`<button ${me().gold<c||!rs.length?'disabled':''} data-act="nuke">Launch missile here <kbd>N</kbd><b>${!rs.length?'Reloading — '+Math.ceil(siloReadyIn(me().id)/10)+'s':c+' gold'+(c<NUKE_COST?' (command discount)':'')}</b></button>`); } }
+    if(o>=0&&me().commands>0&&players[o].kind!=='neutral'&&!atPeace(me().id,o)){ items.push(me().cmdFocus===o?`<button data-act="unfocus">Stop auto-fire on ${players[o].name}<b>Missile command returns to picking targets among nations you fight</b></button>`:`<button data-act="focus">Auto-fire missiles at this nation, here<b>Missile command concentrates on ${players[o].name}'s buildings within 60 tiles of this spot, then the rest of the nation</b></button>`); }
+    if(o>=0&&players[o].kind!=='neutral'){ const r=relation(me().id,players[o].id); items.push(`<div class="h">Diplomacy</div>`);
       if(!r){ items.push(`<button data-act="nap">Propose non-aggression pact<b>3 minutes, neither side may attack</b></button>`); items.push(`<button data-act="ally">Propose alliance<b>Lasting peace; your SAMs and ships defend each other</b></button>`); }
       else { if(r.type==='ally'){ items.push(`<div class="h">Aid for ${players[o].name}</div>`);
-          items.push(`<div class="aid"><span>Troops</span><input type="number" id="aidTroops" value="${Math.round(me.troops*0.25)}" min="10" step="10"><button data-act="giveTroops">Send</button></div>`);
-          items.push(`<div class="aid"><span>Gold</span><input type="number" id="aidGold" value="${Math.round(me.gold*0.25)}" min="1" step="10"><button data-act="giveGold">Send</button></div>`);
+          items.push(`<div class="aid"><span>Troops</span><input type="number" id="aidTroops" value="${Math.round(me().troops*0.25)}" min="10" step="10"><button data-act="giveTroops">Send</button></div>`);
+          items.push(`<div class="aid"><span>Gold</span><input type="number" id="aidGold" value="${Math.round(me().gold*0.25)}" min="1" step="10"><button data-act="giveGold">Send</button></div>`);
           items.push(`<button data-act="askTroops">Request troops<b>They send from their surplus, if they have one</b></button>`); items.push(`<button data-act="askGold">Request gold</button>`); }
         if(!r.team) items.push(`<button data-act="war">Declare war<b>Breaks the ${r.type==='ally'?'alliance':'pact'}: half growth for ${r.type==='ally'?2:1} min and a reputation hit</b></button>`); } }
   }
@@ -2737,60 +1360,36 @@ window.addEventListener('mousemove',e=>{ if(ROLL.on){ const r=cv.getBoundingClie
 window.addEventListener('mouseup',e=>{ if(ROLL.on){ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; const b=ROLL.skipBox; if(e.button===0&&b&&mx>=b[0]&&mx<=b[0]+b[2]&&my>=b[1]&&my<=b[1]+b[3]){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); }
     if(e.button===0&&ROLL.tBoxes){ const tb=ROLL.tBoxes.find(b=>mx>=b[0]&&mx<=b[0]+b[2]&&my>=b[1]&&my<=b[1]+b[3]); if(tb){ tb[4](); drag=null; return; } }
     if(CUSTOM.previewing&&e.button===0){ const eb=ROLL.editBox, ab=ROLL.approveBox; const hit=(bb)=>bb&&mx>=bb[0]&&mx<=bb[0]+bb[2]&&my>=bb[1]&&my<=bb[1]+bb[3]; if(hit(eb)){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); ROLL.on=false; JUKE.hold=false; jukeStopSrc(0.3); MUS.stop(); CUSTOM.previewing=false; openBuilder(ROLL.data,CUSTOM.data); drag=null; return; } if(hit(ab)){ if(CUSTOM.approved){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); postedModal(); } else approveCustom().then(ok=>{ if(ok){ ROLL.rolled=true; if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); postedModal(); } }); drag=null; return; } } const pb=ROLL.playBox; if(pb&&e.button===0&&mx>=pb[0]&&mx<=pb[0]+pb[2]&&my>=pb[1]&&my<=pb[1]+pb[3]){ location.href=(WP?WP.base:'?')+'?seed='+encodeURIComponent(ROLL.data.seed)+'&cls='+encodeURIComponent(ROLL.data.cls||'Standard'); } drag=null; return; }
-  if(box){ const x0=Math.min(box.x0,box.x1),x1=Math.max(box.x0,box.x1),y0=Math.min(box.y0,box.y1),y1=Math.max(box.y0,box.y1); if(!e.shiftKey||true){ if(x1-x0<4&&y1-y0<4){ const w=shipAt(e.clientX,e.clientY); if(w){ if(selected.has(w)) selected.delete(w); else selected.add(w); } } else { for(const w of warships){ if(w.owner!==me.id||w.x==null) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; if(sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) selected.add(w); } } } box=null; updateHint(); return; }
+  if(box){ const x0=Math.min(box.x0,box.x1),x1=Math.max(box.x0,box.x1),y0=Math.min(box.y0,box.y1),y1=Math.max(box.y0,box.y1); if(!e.shiftKey||true){ if(x1-x0<4&&y1-y0<4){ const w=shipAt(e.clientX,e.clientY); if(w){ if(selected.has(w)) selected.delete(w); else selected.add(w); } } else { for(const w of warships){ if(w.owner!==me().id||w.x==null) continue; const sx=cam.x+w.x*cam.s, sy=cam.y+w.y*cam.s; if(sx>=x0&&sx<=x1&&sy>=y0&&sy<=y1) selected.add(w); } } } box=null; updateHint(); return; }
   if(drag&&!drag.moved){ const w=shipAt(e.clientX,e.clientY); if(w){ selected.clear(); selected.add(w); updateHint(); } else { if(selected.size){ selected.clear(); updateHint(); } issueClick(hover); } }
   drag=null; });
 cv.addEventListener('wheel',e=>{ e.preventDefault(); if(ROLL.on){ rollSeek(e.deltaY>0?2:-2); return; } const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
   const ns=Math.min(12,Math.max(0.35,cam.s*(e.deltaY<0?1.15:1/1.15))); cam.x=mx-(mx-cam.x)*ns/cam.s; cam.y=my-(my-cam.y)*ns/cam.s; cam.s=ns; },{passive:false});
 window.addEventListener('keydown',e=>{ const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='SELECT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return; if(ROLL.on&&!(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'))){ if(e.key===' '){ e.preventDefault(); rollTogglePause(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); rollSeek(-5); } else if(e.key==='ArrowRight'){ e.preventDefault(); rollSeek(5); } else if(e.key==='Escape'){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); } return; }
-  if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'){ if(closePauseModal()) return; return; } if(me&&!over&&!REPLAY.on&&!userPaused) openPauseModal(); else togglePause(); return; }
+  if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'){ if(closePauseModal()) return; return; } if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); return; }
   if(e.key==='Escape'&&$('modal').style.display!=='none'){ if(!closePauseModal()) closeModal(); return; }
   if(e.key==='['&&JUKE.loaded){ jukeNext(-1); return; } if(e.key===']'&&JUKE.loaded){ jukeNext(1); return; }
   if(e.key==='Escape'){setBuild(null);hideCtx(); pickMode=null; updateHint(); if(selected.size){ selected.clear(); updateHint(); } } const k=HOTKEYS[e.key.toLowerCase()]; if(k){ if(k==='nuke'){ if(ALLOWED.has('missile')) setBuild(buildMode===k?null:k); } else if(ALLOWED.has(k)&&!(STRUCT[k]&&STRUCT[k].fog&&!START.fog)) setBuild(buildMode===k?null:k); } });
 
 function fail(msg){ log(msg,true); snd('error'); }
-function myBorderTouches(t){ const x=t%W,y=(t-x)/W; return N4.some(([dx,dy])=>inb(x+dx,y+dy)&&owner[idx(x+dx,y+dy)]===me.id); }
-function canBuildAt(t){ if(!land[t]) return false; if(buildMode==='nuke') return owner[t]!==me.id; return snapBuild(me,t,buildMode)>=0; }
-function clickTile(t,env){ env=env||{ratio:+ratio.value,pick:pickMode?{kind:pickMode.kind,t:pickMode.t}:null,build:buildMode}; const ratioV=env.ratio;
-  if(env.pick){ const pm=env.pick; if(t<0||!land[t]) return; if(owner[t]!==me.id) return fail('Click one of your own areas to send from.'); const src=areaAt(t); if(!src) return; if(!CMD.replaying){ pickMode=null; updateHint(); }
-    if(pm.kind==='reinforce'){ const dest=areaAt(pm.t); if(dest===src) return fail('That is the same area.'); reinforceArea(me,dest,src,src.troops*ratioV/100); return; }
-    const o=owner[pm.t]; const adj=areaTouching(me,o); if(adj===src) launchAttack(me,o,src.troops*ratioV/100,undefined,src); else if(launchAttack(me,o,src.troops*ratioV/100,pm.t,src)) log(`Transport embarking for ${o>=0?players[o].name:'unclaimed coast'}.`,true); return; }
-  if(draft){ if(t<0||!land[t]) return; const p=draft.order[draft.idx]; if(p!==me) return fail('Not your pick yet.'); const o=owner[t]; if(o<0||players[o].kind!=='neutral'||!players[o].alive) return fail('Pick a neutral country.'); draftPick(me,players[o]); draftAdvance(); return; }
-  if(over||t<0||!land[t]) return;
-  if(env.build){ const buildK=env.build;
-    if(buildK==='nuke'){ if(canBuildAt(t)&&launchMissile(me,t)) setBuild(null); else if(me.silos<1) log('Build a missile silo first.',true); else if(me.gold<NUKE_COST) log('Not enough gold for a missile.',true); return; }
-    if(owner[t]===me.id){
-      if(placeStructure(me,buildK,t)){ log(`Built a ${STRUCT[buildK].label.toLowerCase()}.`,true); setBuild(null); }
-      else if(STRUCT[buildK].coast) fail('No free coastline within 5 tiles of there.');
-      else if(snapBuild(me,t,buildK)<0) fail('No room within 5 tiles — buildings need 6 tiles of clearance.');
-      else fail('Not enough gold.');
-      return;
-    }
-    setBuild(null); // clicked outside your land: drop build mode and treat it as an attack
-  }
-  const o=owner[t]; if(o===me.id) return;
-  let troops=me.troops*ratioV/100; if(gOn(me)&&me.areas&&me.areas.length){ const adj=areaTouching(me,o); if(adj) troops=adj.troops*ratioV/100; }
-  const shared=attacks.some(a=>a.owner===me.id&&a.target===o)||frontierOf(me.id,o).size>0;
-  if(shared){ launchAttack(me,o,troops); }
-  else fail(`You don't border ${o>=0?players[o].name:'that land'}. Right-click it to send a transport by sea.`);
-}
-function showTip(e){ if(!land||!owner||!me||ROLL.on){ tip.style.display='none'; return; }
-  if(hoverShip){ const w=hoverShip, S=SHIPS[w.cls]; tip.innerHTML=`<b style="color:${players[w.owner].color}">${players[w.owner].name}</b> ${S.label}${w.cruise?' · cruise missiles':w.refit?' · refitting '+Math.ceil((w.refit-tickN)/10)+' s':''}<br>${Math.ceil(w.hp*10)/10}/${S.hp} hit points · gun ${S.gun}${S.sam?' · SAM '+S.sam:''}${S.barrage?' · barrage '+S.barrage.range:''}`; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; return; }
+function canBuildAt(t){ if(!land[t]) return false; if(buildMode==='nuke') return owner[t]!==me().id; return snapBuild(me().id,t,buildMode)>=0; }
+function showTip(e){ if(!land||!owner||!me()||ROLL.on){ tip.style.display='none'; return; }
+  if(hoverShip){ const w=hoverShip, S=SHIPS[w.cls]; tip.innerHTML=`<b style="color:${players[w.owner].color}">${players[w.owner].name}</b> ${S.label}${w.cruise?' · cruise missiles':w.refit?' · refitting '+Math.ceil((w.refit-clockState.tickN)/10)+' s':''}<br>${Math.ceil(w.hp*10)/10}/${S.hp} hit points · gun ${S.gun}${S.sam?' · SAM '+S.sam:''}${S.barrage?' · barrage '+S.barrage.range:''}`; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; return; }
   if(hover<0||!land[hover]){tip.style.display='none';return;}
   const o=owner[hover]; let s;
   if(o<0) s='Unclaimed land';
-  else if(vis&&!vis[hover]&&o!==me.id&&!myBorders.has(o)&&relation(me,players[o])?.type!=='ally'){ const p=players[o]; s=`<img src="${flagURL(p.flag)}" width="27" height="18" style="vertical-align:-4px;margin-right:6px" alt=""><b style="color:${p.color}">${p.name}</b>${relText(p)}<br><span class="muted">${p.tiles} tiles · troops unknown (fog)</span>`; tip.innerHTML=s; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; return; }
-  else { const p=players[o]; s=`<img src="${flagURL(p.flag)}" width="27" height="18" style="vertical-align:-4px;margin-right:6px" alt=""><b style="color:${p.color}">${p.name}</b>${relText(p)}<br>${Math.round(p.troops)} troops · ${p.tiles} tiles<br>density ${density(p).toFixed(2)}`; }
+  else if(renderState.fog.vis&&!renderState.fog.vis[hover]&&o!==me().id&&!fogState.myBorders.has(o)&&relation(me().id,players[o].id)?.type!=='ally'){ const p=players[o]; s=`<img src="${flagURL(p.flag)}" width="27" height="18" style="vertical-align:-4px;margin-right:6px" alt=""><b style="color:${p.color}">${p.name}</b>${relText(p)}<br><span class="muted">${p.tiles} tiles · troops unknown (fog)</span>`; tip.innerHTML=s; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px'; return; }
+  else { const p=players[o]; s=`<img src="${flagURL(p.flag)}" width="27" height="18" style="vertical-align:-4px;margin-right:6px" alt=""><b style="color:${p.color}">${p.name}</b>${relText(p)}<br>${Math.round(p.troops)} troops · ${p.tiles} tiles<br>density ${density(p.id).toFixed(2)}`; }
   { const o=owner[hover]; if(o>=0&&land[hover]&&players[o]&&players[o].kind!=='neutral'){ const fm=fortMult(hover,o); if(fm>1) s+=`<br><span style="color:var(--gold)">Fortified ×${fm}</span> — ${fm>=64?'a fortress':fm>=8?'a strong point':'bastion cover'}`; } }
-  const st=hoverStruct||structures.find(x=>x.t===hover); if(st){ s+=`<br>${STRUCT[st.type].label}${(st.level||1)>=3?' III':(st.level||1)>=2?' II':''}${st.upgrading?' (upgrading '+Math.ceil((st.upDone-tickN)/10)+' s)':''}${st.building?' — under construction, '+Math.ceil((st.done-tickN)/10)+' s':''}`; const n=st.links||0;
+  const st=hoverStruct||structures.find(x=>x.t===hover); if(st){ s+=`<br>${STRUCT[st.type].label}${(st.level||1)>=3?' III':(st.level||1)>=2?' II':''}${st.upgrading?' (upgrading '+Math.ceil((st.upDone-clockState.tickN)/10)+' s)':''}${st.building?' — under construction, '+Math.ceil((st.done-clockState.tickN)/10)+' s':''}`; const n=st.links||0;
     if(st.type==='factory') s+=n?` — ${n} supply line${n>1?'s':''} (gold ×${(1+n*LINK_GOLD_PER).toFixed(1)})`:' — no supply lines';
     else if(st.type==='city') s+=n?` — supplied by ${n} factor${n>1?'ies':'y'} (+${(n*LINK_TROOPS).toFixed(1)} troops/s)`:' — no factories linked';
     else if(st.type==='shield'&&!st.building) s+=` — ${st.hp}/${SHIELD.hp} hit points${st.repairing?', repairing':''}`;
     else if(GUNS[st.type]&&st.hp!=null) s+=` — ${Math.ceil(st.hp*10)/10}/${GUNS[st.type].hp} hit points`;
-    else if(st.type==='silo'&&!st.building){ const cc=commandCover(st.t); s+=cc?` — under ${cc} command center${cc>1?'s':''}, missiles ${missileCost(players[st.owner],st)} gold`:' — no command center in range'; }
+    else if(st.type==='silo'&&!st.building){ const cc=commandCover(st.t); s+=cc?` — under ${cc} command center${cc>1?'s':''}, missiles ${missileCost(players[st.owner].id,st.t)} gold`:' — no command center in range'; }
     else if(st.type==='port') s+=n?` — ${n} factor${n>1?'ies':'y'} (+${(n*LINK_PORT_GOLD).toFixed(1)} gold/s, ships ${Math.round(LINK_SHIP_DISCOUNT*100)}% cheaper)`:' — no factories linked'; }
-  if(shelled[hover]>tickN) s+=`<br><span style="color:#ff9a9a">Under bombardment — half cost to take, ${Math.ceil((shelled[hover]-tickN)/10)}s</span>`;
-  const r=regions[region[hover]]; if(r&&r.size>=REGION_MIN){ const mine=regCount[r.id*NP+me.id]; s+=`<br><span class="muted">${r.cont?'Continent of ':''}${r.name} — ${r.size} tiles, you hold ${Math.round(mine/r.size*100)}%</span>`; }
+  if(shelled[hover]>clockState.tickN) s+=`<br><span style="color:#ff9a9a">Under bombardment — half cost to take, ${Math.ceil((shelled[hover]-clockState.tickN)/10)}s</span>`;
+  const r=regions[region[hover]]; if(r&&r.size>=REGION_MIN){ const mine=renderState.map.regCount[r.id*mapState.NP+me().id]; s+=`<br><span class="muted">${r.cont?'Continent of ':''}${r.name} — ${r.size} tiles, you hold ${Math.round(mine/r.size*100)}%</span>`; }
   tip.innerHTML=s; tip.style.display='block'; tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';
 }
 
@@ -2800,54 +1399,54 @@ const HINT_DEFAULT='Left-click a bordering country to invade. Right-click: build
 function updateHint(){ if(pickMode){ $('hint').textContent=pickMode.kind==='reinforce'?`Click one of your areas to send ${ratio.value}% of its garrison here by transport. Esc cancels.`:`Click one of your areas to send ${ratio.value}% of its garrison at the target — by land if it borders, otherwise by transport. Esc cancels.`; cv.style.cursor='copy'; return; } cv.style.cursor=buildMode?'cell':'crosshair'; if(buildMode) return; const live=[...selected].filter(w=>warships.includes(w)); if(live.length){ const cls={}; for(const w of live) cls[w.cls]=(cls[w.cls]||0)+1; $('hint').textContent=`${live.length} ship${live.length>1?'s':''} selected (${Object.keys(cls).map(k=>cls[k]+' '+SHIPS[k].label.toLowerCase()).join(', ')}) — right-click water to move and patrol there, or an enemy port to blockade it. Esc to deselect.`; } else $('hint').textContent=HINT_DEFAULT; }
 function setBuild(k){ buildMode=k; cv.style.cursor=k?'cell':'crosshair'; $('hint').textContent=k?`${k==='nuke'?'Missile':STRUCT[k].label} mode — click a tile. Esc cancels.`:HINT_DEFAULT; }
 function updateUI(){
-  const cap=maxTroops(me);
-  if(gOn(me)&&me.areas&&me.areas.length>1){ $('areaList').style.display=''; const bigA=me.areas.filter((a,i)=>i===0||a.tiles>=20), smallN=me.areas.length-bigA.length, smallT=me.areas.filter(a=>!bigA.includes(a)).reduce((s,a)=>s+a.troops,0); $('areaList').innerHTML=bigA.map((a,i)=>`<div data-area="${a.id}" style="display:flex;justify-content:space-between;cursor:pointer;padding:1px 0"><span>${areaLabel(me,a)}</span><span>${fmtN(a.troops)} <span class="muted">· ${a.tiles} tiles</span></span></div>`).join('')+(smallN?`<div class="muted">+${smallN} small island${smallN>1?'s':''} · ${Math.round(smallT)}</div>`:''); $('areaList').querySelectorAll('[data-area]').forEach(r=>{ r.onmouseover=()=>{ hoverArea=+r.dataset.area; }; r.onmouseleave=()=>{ hoverArea=-1; }; }); } else $('areaList').style.display='none';
-  $('troops').textContent=START.noCap?Math.round(me.troops)+' (no cap)':Math.round(me.troops)+' / '+Math.round(cap);
-  $('troopBar').style.width=Math.min(100,me.troops/cap*100)+'%'; $('troopBar').style.background=me.troops>cap?'#ffd27a':'#7fb3ff';
-  $('gold').textContent=Math.floor(me.gold);
-  $('land').textContent=(me.tiles/landCount*100).toFixed(1)+'% of '+landCount+' tiles';
-  $('income').textContent='+'+troopGrowth(me).toFixed(1)+' troops/s · +'+goldGrowth(me).toFixed(1)+' gold/s'+(me.tradeIncome?' · trade '+me.tradeIncome:'');
-  $('income').title=`${me.factoryLinks||0} supply lines (${me.cityLinks||0} to cities, ${me.portLinks||0} to ports)`;
-  { const names=[...me.held].map(id=>regions[id]).sort((a,b)=>b.size-a.size).map(r=>r.name); $('held').textContent=names.length?`Holding ${names.length} landmass${names.length>1?'es':''}: ${names.slice(0,3).join(', ')}${names.length>3?' +'+(names.length-3)+' more':''}`:'Unify a whole island or continent for a windfall and faster growth.'; }
+  const cap=maxTroops(me().id);
+  if(gOn(me().id)&&me().areas&&me().areas.length>1){ $('areaList').style.display=''; const bigA=me().areas.filter((a,i)=>i===0||a.tiles>=20), smallN=me().areas.length-bigA.length, smallT=me().areas.filter(a=>!bigA.includes(a)).reduce((s,a)=>s+a.troops,0); $('areaList').innerHTML=bigA.map((a,i)=>`<div data-area="${a.id}" style="display:flex;justify-content:space-between;cursor:pointer;padding:1px 0"><span>${areaLabel(me(),a)}</span><span>${fmtN(a.troops)} <span class="muted">· ${a.tiles} tiles</span></span></div>`).join('')+(smallN?`<div class="muted">+${smallN} small island${smallN>1?'s':''} · ${Math.round(smallT)}</div>`:''); $('areaList').querySelectorAll('[data-area]').forEach(r=>{ r.onmouseover=()=>{ hoverArea=+r.dataset.area; }; r.onmouseleave=()=>{ hoverArea=-1; }; }); } else $('areaList').style.display='none';
+  $('troops').textContent=START.noCap?Math.round(me().troops)+' (no cap)':Math.round(me().troops)+' / '+Math.round(cap);
+  $('troopBar').style.width=Math.min(100,me().troops/cap*100)+'%'; $('troopBar').style.background=me().troops>cap?'#ffd27a':'#7fb3ff';
+  $('gold').textContent=Math.floor(me().gold);
+  $('land').textContent=(me().tiles/mapState.landCount*100).toFixed(1)+'% of '+mapState.landCount+' tiles';
+  $('income').textContent='+'+troopGrowth(me().id).toFixed(1)+' troops/s · +'+goldGrowth(me().id).toFixed(1)+' gold/s'+(me().tradeIncome?' · trade '+me().tradeIncome:'');
+  $('income').title=`${me().factoryLinks||0} supply lines (${me().cityLinks||0} to cities, ${me().portLinks||0} to ports)`;
+  { const names=[...me().held].map(id=>regions[id]).sort((a,b)=>b.size-a.size).map(r=>r.name); $('held').textContent=names.length?`Holding ${names.length} landmass${names.length>1?'es':''}: ${names.slice(0,3).join(', ')}${names.length>3?' +'+(names.length-3)+' more':''}`:'Unify a whole island or continent for a windfall and faster growth.'; }
   $('seedLbl').textContent=START.seed?'seed '+START.seed+' · ':'';
-  const el=Math.floor(((userPaused?pausedAt:performance.now())-startTime)/1000); $('timer').textContent=String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');
-  { const mine=aircraft.filter(a=>a.owner===me.id); const has=airfieldsOf(me).length>0; $('airPanel').style.display=has?'':'none'; $('airAutoRow').style.display=structures.some(st=>st.type==='flightops'&&!st.building&&st.owner===me.id)?'':'none';
-    if(has){ const stateTxt=a=>({hangar:'ready',out:'en route',patrol:a.type==='fighter'?'patrolling'+(a.until?' · '+Math.ceil((a.until-tickN)/600)+' min':''):'',run:'bombing',return:'returning',refuel:a.type==='fighter'?'refueling':'rearming',heal:'repairing'})[a.state]||a.state;
+  const el=Math.floor(((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/1000); $('timer').textContent=String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');
+  { const mine=aircraft.filter(a=>a.owner===me().id); const has=airfieldsOf(me().id).length>0; $('airPanel').style.display=has?'':'none'; $('airAutoRow').style.display=structures.some(st=>st.type==='flightops'&&!st.building&&st.owner===me().id)?'':'none';
+    if(has){ const stateTxt=a=>({hangar:'ready',out:'en route',patrol:a.type==='fighter'?'patrolling'+(a.until?' · '+Math.ceil((a.until-clockState.tickN)/600)+' min':''):'',run:'bombing',return:'returning',refuel:a.type==='fighter'?'refueling':'rearming',heal:'repairing'})[a.state]||a.state;
       $('airList').innerHTML=mine.length?mine.map((a,i)=>`<div data-air="${i}" style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;cursor:pointer"><span>${a.type==='fighter'?'✈ Fighter':a.type==='carrier'?'⬒ Transport':'▲ Bomber'} <span class="muted">${stateTxt(a)}${a.type==='carrier'&&a.troops?' · '+Math.round(a.troops)+' aboard':''}</span>${a.type==='fighter'?' <span style="color:'+(a.hp<=2?'#ff9a9a':'#bde5b8')+'">'+'▮'.repeat(a.hp)+'<span style="opacity:.3">'+'▮'.repeat(AIR.fighter.hp-a.hp)+'</span></span>':''}</span>${['out','patrol','run'].includes(a.state)?`<button data-recall="${i}" style="padding:1px 6px;font-size:11px">Recall</button>`:''}</div>`).join(''):'<span class="muted">Hangar empty — right-click an airfield to buy aircraft.</span>';
       $('airList').querySelectorAll('button[data-recall]').forEach(b=>b.onclick=()=>issue('recall',mine[+b.dataset.recall].id));
       $('airList').onmouseover=e=>{ const r=e.target.closest('[data-air]'); hoverAir=r?mine[+r.dataset.air]:null; }; $('airList').onmouseleave=()=>{ hoverAir=null; }; } }
 
-  $('intelRow').style.display=START.fog?'':'none'; if(START.fog){ const site=structures.some(st=>st.owner===me.id&&st.type==='satellite'&&!st.building); $('satBtn').disabled=!site||satCool>tickN||me.gold<FOG.sat.cost; $('intelInfo').textContent=(satUntil>tickN?'satellite up '+Math.ceil((satUntil-tickN)/10)+'s · ':satCool>tickN?'launch in '+Math.ceil((satCool-tickN)/10)+'s · ':site?FOG.sat.cost+' gold · ':'needs launch site · ')+'plane '+(planeCool>tickN?Math.ceil((planeCool-tickN)/10)+'s':'ready'); }
-  $('logRow').style.display=(me.troopcmds>0)?'':'none'; if(me.troopcmds>0) $('logInfo').textContent=`+${Math.min(4,me.troopcmds)*10}% growth${START.garrison?'':' · logistics need Garrisons'}`;
-  $('autoRow').style.display=me.commands>0?'':'none'; if(me.commands>0){ const ctrl=structures.filter(q=>q.owner===me.id&&q.type==='silo'&&!q.building&&commandCover(q.t)>0).length; $('autoInfo').textContent=`${silosReady(me,true)}/${ctrl} controlled silos ready${ctrl<me.silos?' ('+(me.silos-ctrl)+' out of range)':''}${me.cmdFocus!=null&&players[me.cmdFocus].alive?' · focus: '+players[me.cmdFocus].name+(me.cmdFocusT!=null?' (near here)':''):''}`; }
-  $('repLbl').textContent='reputation '+Math.round(me.rep*100)+'%'+(me.penaltyUntil>tickN?' · penalty '+Math.ceil((me.penaltyUntil-tickN)/10)+'s':'');
-  let dh=''; for(const q of proposals){ const f=players[q.from]; const what=q.type==='ally'?'proposes an alliance':q.type==='nap'?'proposes a pact':q.type==='reqTroops'?`asks for ${q.amt} troops`:`asks for ${q.amt} gold`; dh+=`<div style="margin:4px 0;padding:6px;background:var(--panel2);border-radius:6px"><img src="${flagURL(f.flag)}" width="18" height="12" alt=""> <b>${f.name}</b> ${what} (${Math.ceil((q.until-tickN)/10)}s)<br><button data-acc="${q.from}" data-type="${q.type}" data-amt="${q.amt||0}" style="padding:3px 8px;margin-top:4px">${q.type.startsWith('req')?'Send':'Accept'}</button> <button data-dec="${q.from}" style="padding:3px 8px;margin-top:4px">Decline</button></div>`; }
-  const rels=players.filter(q=>q!==me&&q.alive&&relation(me,q)); if(rels.length) dh+=rels.map(q=>{ const r=relation(me,q); return `<div><i class="sw" style="background:${q.color}"></i> <img src="${flagURL(q.flag)}" width="18" height="12" alt=""> ${q.name}: ${r.type==='ally'?'alliance':'pact, '+Math.ceil((r.until-tickN)/10)+'s'}</div>`; }).join('');
+  $('intelRow').style.display=START.fog?'':'none'; if(START.fog){ const site=structures.some(st=>st.owner===me().id&&st.type==='satellite'&&!st.building); $('satBtn').disabled=!site||fogState.satCool>clockState.tickN||me().gold<FOG.sat.cost; $('intelInfo').textContent=(fogState.satUntil>clockState.tickN?'satellite up '+Math.ceil((fogState.satUntil-clockState.tickN)/10)+'s · ':fogState.satCool>clockState.tickN?'launch in '+Math.ceil((fogState.satCool-clockState.tickN)/10)+'s · ':site?FOG.sat.cost+' gold · ':'needs launch site · ')+'plane '+(fogState.planeCool>clockState.tickN?Math.ceil((fogState.planeCool-clockState.tickN)/10)+'s':'ready'); }
+  $('logRow').style.display=(me().troopcmds>0)?'':'none'; if(me().troopcmds>0) $('logInfo').textContent=`+${Math.min(4,me().troopcmds)*10}% growth${START.garrison?'':' · logistics need Garrisons'}`;
+  $('autoRow').style.display=me().commands>0?'':'none'; if(me().commands>0){ const ctrl=structures.filter(q=>q.owner===me().id&&q.type==='silo'&&!q.building&&commandCover(q.t)>0).length; $('autoInfo').textContent=`${silosReady(me().id,true)}/${ctrl} controlled silos ready${ctrl<me().silos?' ('+(me().silos-ctrl)+' out of range)':''}${me().cmdFocus!=null&&players[me().cmdFocus].alive?' · focus: '+players[me().cmdFocus].name+(me().cmdFocusT!=null?' (near here)':''):''}`; }
+  $('repLbl').textContent='reputation '+Math.round(me().rep*100)+'%'+(me().penaltyUntil>clockState.tickN?' · penalty '+Math.ceil((me().penaltyUntil-clockState.tickN)/10)+'s':'');
+  let dh=''; for(const q of proposals){ const f=players[q.from]; const what=q.type==='ally'?'proposes an alliance':q.type==='nap'?'proposes a pact':q.type==='reqTroops'?`asks for ${q.amt} troops`:`asks for ${q.amt} gold`; dh+=`<div style="margin:4px 0;padding:6px;background:var(--panel2);border-radius:6px"><img src="${flagURL(f.flag)}" width="18" height="12" alt=""> <b>${f.name}</b> ${what} (${Math.ceil((q.until-clockState.tickN)/10)}s)<br><button data-acc="${q.from}" data-type="${q.type}" data-amt="${q.amt||0}" style="padding:3px 8px;margin-top:4px">${q.type.startsWith('req')?'Send':'Accept'}</button> <button data-dec="${q.from}" style="padding:3px 8px;margin-top:4px">Decline</button></div>`; }
+  const rels=players.filter(q=>q!==me()&&q.alive&&relation(me().id,q.id)); if(rels.length) dh+=rels.map(q=>{ const r=relation(me().id,q.id); return `<div><i class="sw" style="background:${q.color}"></i> <img src="${flagURL(q.flag)}" width="18" height="12" alt=""> ${q.name}: ${r.type==='ally'?'alliance':'pact, '+Math.ceil((r.until-clockState.tickN)/10)+'s'}</div>`; }).join('');
   if(!dh) dh='<span class="muted">No pacts. Right-click a nation to propose one.</span>';
-  if(me.team!=null){ let th=''; for(let t=0;t<START.teams;t++){ const tt=players.filter(q=>q.alive&&q.team===t).reduce((a,q)=>a+q.tiles,0); th+=`<span style="margin-right:10px"><i class="sw" style="background:${TEAM_COLS[t]}"></i> ${TEAM_NAMES[t]}${t===me.team?' (you)':''} ${(tt/landCount*100).toFixed(1)}%</span>`; } dh=`<div style="margin-bottom:6px">${th}</div>`+dh; }
+  if(me().team!=null){ let th=''; for(let t=0;t<START.teams;t++){ const tt=players.filter(q=>q.alive&&q.team===t).reduce((a,q)=>a+q.tiles,0); th+=`<span style="margin-right:10px"><i class="sw" style="background:${TEAM_COLS[t]}"></i> ${TEAM_NAMES[t]}${t===me().team?' (you)':''} ${(tt/mapState.landCount*100).toFixed(1)}%</span>`; } dh=`<div style="margin-bottom:6px">${th}</div>`+dh; }
   $('diplo').innerHTML=dh;
   $('diplo').querySelectorAll('button[data-acc]').forEach(b=>b.onclick=()=>{ issue('accept',+b.dataset.acc,b.dataset.type,+b.dataset.amt||0); });
   $('diplo').querySelectorAll('button[data-dec]').forEach(b=>b.onclick=()=>issue('decline',+b.dataset.dec));
-  $('board').onclick=e=>{ const r=e.target.closest('[data-pid]'); if(!r) return; const p=players[+r.dataset.pid]; const c=p.labelPos||centroid(p); cam.x=cv.width/2-c[0]*cam.s; cam.y=cv.height/2-c[1]*cam.s; };
+  $('board').onclick=e=>{ const r=e.target.closest('[data-pid]'); if(!r) return; const p=players[+r.dataset.pid]; const c=syncLabelPositions()[p.id]||centroid(p); cam.x=cv.width/2-c[0]*cam.s; cam.y=cv.height/2-c[1]*cam.s; };
   $('board').onmouseover=e=>{ const r=e.target.closest('[data-pid]'); highlightId=r?+r.dataset.pid:-1; }; $('board').onmouseleave=()=>{ highlightId=-1; drawMap(); };
   const dead=players.filter(p=>!p.alive&&p.kind!=='neutral'&&p.killedBy!=null).sort((a,b)=>(b.diedAt||0)-(a.diedAt||0));
   const sorted=players.filter(p=>p.alive&&p.kind!=='neutral').sort((a,b)=>b.tiles-a.tiles).slice(0,8);
-  $('board').innerHTML=sorted.map(p=>`<div data-pid="${p.id}" style="cursor:pointer"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px" alt="">${p.team!=null?`<span style="font-size:10px;color:${TEAM_COLS[p.team]};margin-right:4px">${TEAM_NAMES[p.team][0]}</span>`:''}${p===me?'<b>You</b> <span class="muted">('+me.name+')</span>':p.name}${relBadge(p)}</span><span>${(p.tiles/landCount*100).toFixed(1)}% · ${knownTroops(p)}</span></div>`).join('')+dead.map(p=>`<div style="opacity:.55"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px;filter:grayscale(1)" alt=""> <s>${p.name}</s></span><span class="muted">✕ by ${players[p.killedBy].name}</span></div>`).join('');
+  $('board').innerHTML=sorted.map(p=>`<div data-pid="${p.id}" style="cursor:pointer"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px" alt="">${p.team!=null?`<span style="font-size:10px;color:${TEAM_COLS[p.team]};margin-right:4px">${TEAM_NAMES[p.team][0]}</span>`:''}${p===me()?'<b>You</b> <span class="muted">('+me().name+')</span>':p.name}${relBadge(p)}</span><span>${(p.tiles/mapState.landCount*100).toFixed(1)}% · ${knownTroops(p)}</span></div>`).join('')+dead.map(p=>`<div style="opacity:.55"><span><i class="sw" style="background:${p.color}"></i><img src="${flagURL(p.flag)}" width="18" height="12" style="border-radius:1px;filter:grayscale(1)" alt=""> <s>${p.name}</s></span><span class="muted">✕ by ${players[p.killedBy].name}</span></div>`).join('');
 }
 function log(msg,mine){ if(SAVES.catchup||REPLAY.creditsMode) return; const p=document.createElement('p'); p.textContent=msg; if(mine) p.className='me'; const l=$('log'); l.prepend(p); while(l.children.length>40) l.lastChild.remove(); }
 $('ratio').oninput=e=>$('ratioLbl').textContent=e.target.value+'%';
-window.addEventListener('beforeunload',()=>{ if(me&&!over&&!me.recorded) recordMatch('Abandoned'); });
-$('pauseBtn').onclick=()=>{ if(closePauseModal()) return; if(me&&!over&&!REPLAY.on&&!userPaused) openPauseModal(); else togglePause(); };
-$('restartBtn').onclick=()=>{ if(!me) return; const wasPaused=userPaused; if(!userPaused) togglePause(); $('restart').style.display='flex'; $('restart').dataset.wasPaused=wasPaused?'1':'0'; };
-$('restartNo').onclick=()=>{ $('restart').style.display='none'; if($('restart').dataset.wasPaused!=='1'&&userPaused) togglePause(); };
-$('restartYes').onclick=()=>{ if(me&&!over) recordMatch('Abandoned'); // remember the start-card choices, then reload the page
-  try{ sessionStorage.setItem('statefall-restart',JSON.stringify({seed:START.seed,diff:chosen,map:START.map,teams:START.teams,country:chosenFlag?chosenFlag.idx:null,quick:$('quickStart').checked,fog:$('fogOn').checked,instant:$('instantOn').checked,risky:$('riskyOn').checked,endgame:$('endgameOn').checked,billionaire:$('billionaireOn').checked,garrison:$('garrisonOn').checked,troops:$('stTroops').value,gold:$('stGold').value,bots:$('stBots').checked,noCap:$('stNoCap').checked,pauseBuild:$('stPauseBuild').checked})); }catch(e){}
+window.addEventListener('beforeunload',()=>{ if(me()&&!lifecycleState.over&&!presentationState.matchRecorded) recordMatch('Abandoned'); });
+$('pauseBtn').onclick=()=>{ if(closePauseModal()) return; if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); };
+$('restartBtn').onclick=()=>{ if(!me()) return; const wasPaused=lifecycleState.userPaused; if(!lifecycleState.userPaused) togglePause(); $('restart').style.display='flex'; $('restart').dataset.wasPaused=wasPaused?'1':'0'; };
+$('restartNo').onclick=()=>{ $('restart').style.display='none'; if($('restart').dataset.wasPaused!=='1'&&lifecycleState.userPaused) togglePause(); };
+$('restartYes').onclick=()=>{ if(me()&&!lifecycleState.over) recordMatch('Abandoned'); // remember the start-card choices, then reload the page
+  try{ sessionStorage.setItem('statefall-restart',JSON.stringify({seed:START.seed,diff:matchState.difficulty,map:START.map,teams:START.teams,country:setupState.chosenFlag?setupState.chosenFlag.idx:null,quick:$('quickStart').checked,fog:$('fogOn').checked,instant:$('instantOn').checked,risky:$('riskyOn').checked,endgame:$('endgameOn').checked,billionaire:$('billionaireOn').checked,garrison:$('garrisonOn').checked,troops:$('stTroops').value,gold:$('stGold').value,bots:$('stBots').checked,noCap:$('stNoCap').checked,pauseBuild:$('stPauseBuild').checked})); }catch(e){}
   location.reload(); };
 $('satBtn').onclick=()=>issue('sat');
-$('saveBtn').onclick=()=>{ if(!me) return; if(over){ openModal(canSave()?'<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">This match is finished</h2><p class="muted" style="font-size:13px;margin:0 0 12px">Its replay is already in your account. Find it under Games &amp; replays on the start card.</p><button data-close style="padding:7px 14px">OK</button></div>':loginPitch('Keep a replay of this match')); return; } openSaveModal(); };
+$('saveBtn').onclick=()=>{ if(!me()) return; if(lifecycleState.over){ openModal(canSave()?'<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">This match is finished</h2><p class="muted" style="font-size:13px;margin:0 0 12px">Its replay is already in your account. Find it under Games &amp; replays on the start card.</p><button data-close style="padding:7px 14px">OK</button></div>':loginPitch('Keep a replay of this match')); return; } openSaveModal(); };
 $('restartSave').onclick=()=>{ $('restart').style.display='none'; saveAndQuit(); }; const ovS=$('ovSave'); if(ovS) ovS.onclick=()=>{ if(!canSave()){ openModal(loginPitch('Keep a replay of this match')); return; } openModal('<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">Replay saved</h2><p class="muted" style="font-size:13px;margin:0 0 12px">Every finished match is kept in your account automatically. Open Games &amp; replays on the start card to watch it, share it, or download a copy.</p><button data-close style="padding:7px 14px">OK</button></div>'); };
 $('gamesBtn').onclick=()=>openGamesModal(); $('ovExit').onclick=()=>PLATFORM.navigate(WP&&WP.homeUrl?WP.homeUrl:'/');
-$('rpSpeed').querySelectorAll('button').forEach(b=>b.onclick=()=>{ REPLAY.speed=+b.dataset.sp; $('rpSpeed').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }); $('rpTake').onclick=()=>{ replayTakeOver(); log('You have taken control.',true); }; $('rpExit').onclick=()=>PLATFORM.reload();
+$('rpSpeed').querySelectorAll('button').forEach(b=>b.onclick=()=>{ engine.configureReplay({speed:+b.dataset.sp}); $('rpSpeed').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }); $('rpTake').onclick=()=>{ replayTakeOver(); log('You have taken control.',true); }; $('rpExit').onclick=()=>PLATFORM.reload();
 $('jukePrev').onclick=()=>{ audioInit(); jukeNext(-1); }; $('jukeNext').onclick=()=>{ audioInit(); jukeNext(1); }; $('jukePause').onclick=()=>{ audioInit(); jukePause(); }; $('jukeMode').querySelectorAll('button').forEach(b=>b.onclick=()=>{ JUKE.mode=b.dataset.mode; jukeSave(); if(JUKE.src) JUKE.src.loop=JUKE.mode==='one'; jukeRender(); });
 if(WP) jukeLoad(); setInterval(()=>{ if(JUKE.loaded&&(JUKE.src||(JUKE.cur&&JUKE.cur.id==='builtin'))) jukeRender(); },1000);
 $('recallDmg').onclick=()=>issue('recallAll','dmg');
@@ -2914,6 +1513,8 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+ <tr><td>1.10.11</td><td>Fresh candidate identity with trailer capture output isolated from production builds.</td></tr>
+ <tr><td>1.10.10</td><td>Phase D1 deterministic runtime seam: counted RNG, command/replay bookkeeping, canonical v1 serialization, and tick ordering are importable without browser APIs while simulation behavior remains unchanged.</td></tr>
  <tr><td>1.10.9</td><td>Vite and ES modules, with the legacy Canvas renderer and simulation behavior preserved.</td></tr>
  <tr><td>1.10.8</td><td>Seeded target selection is deterministic across JavaScript engines, with one random key generated per candidate before sorting.</td></tr>
  <tr><td>1.10.7</td><td>Site rankings are now explicitly labeled as community-submitted and not independently verified.</td></tr>
@@ -2980,19 +1581,18 @@ $('boardBtn').onclick=()=>{ if(WP&&WP.boardUrl) PLATFORM.navigate(WP.boardUrl); 
 function syncMixer(){ document.querySelectorAll('.vol').forEach(r=>{ r.value=Math.round(AUD.vol[r.dataset.k]*100); $('v_'+r.dataset.k).textContent=r.value+'%'; }); $('ambOn').checked=AUD.vol.ambOn; $('musicOn').checked=AUD.vol.musicOn; $('muteAll').checked=AUD.vol.mute; }
 document.querySelectorAll('.vol').forEach(r=>r.oninput=e=>{ AUD.vol[r.dataset.k]=r.value/100; $('v_'+r.dataset.k).textContent=r.value+'%'; applyVolumes(); });
 $('ambOn').onchange=e=>{ AUD.vol.ambOn=e.target.checked; applyVolumes(); };
-$('musicOn').onchange=e=>{ AUD.vol.musicOn=e.target.checked; applyVolumes(); if(AUD.vol.musicOn){ if(!MUS.mode&&!JUKE.src) MUS.start(me?'game':'menu'); } else { jukeStopSrc(0.3); MUS.stop(); } };
+$('musicOn').onchange=e=>{ AUD.vol.musicOn=e.target.checked; applyVolumes(); if(AUD.vol.musicOn){ if(!MUS.mode&&!JUKE.src) MUS.start(me()?'game':'menu'); } else { jukeStopSrc(0.3); MUS.stop(); } };
 $('muteAll').onchange=e=>{ AUD.vol.mute=e.target.checked; applyVolumes(); };
 $('sndTest').onclick=()=>{ audioInit(); snd('missile'); setTimeout(()=>snd('impact'),900); setTimeout(()=>snd('cash'),2400); };
 syncMixer();
 $('focus').oninput=e=>{ issue('focus',e.target.value/100); $('focusLbl').textContent=`${e.target.value}% troops · ${100-e.target.value}% gold`; updateUI(); };
 
 // ---------------------------------------------------------------- go
-let chosen='normal';
 for(const k in DIFFS){ const o=document.createElement('option'); o.value=k; o.textContent=DIFFS[k].label+' — '+DIFFS[k].desc; $('diffSel').appendChild(o); }
-$('diffSel').value='normal'; $('diffSel').onchange=e=>{ chosen=e.target.value; };
+$('diffSel').value=matchState.difficulty; $('diffSel').onchange=e=>{ engine.configure({difficulty:e.target.value}); };
 $('teamSel').onchange=e=>{ START.teams=+e.target.value; };
 COUNTRIES.map((c,i)=>i).sort((a,b)=>COUNTRIES[a][0].localeCompare(COUNTRIES[b][0])).forEach(i=>{ const o=document.createElement('option'); o.value=i; o.textContent=COUNTRIES[i][0]; $('countrySel').appendChild(o); });
-$('countrySel').onchange=e=>{ if(+e.target.value===-1){ const n=myNation(); if(n){ chosenFlag=n; document.querySelectorAll('.flagbtn').forEach(b=>b.classList.remove('on')); return; } } chosenFlag=countryByIdx(+e.target.value); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===chosenFlag.name)); };
+$('countrySel').onchange=e=>{ if(+e.target.value===-1){ const n=myNation(); if(n){ engine.configure({chosenFlag:n}); document.querySelectorAll('.flagbtn').forEach(b=>b.classList.remove('on')); return; } } engine.configure({chosenFlag:countryByIdx(+e.target.value)}); document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===setupState.chosenFlag.name)); };
 renderFlagPicker(); $('shuffleFlags').onclick=renderFlagPicker;
 document.querySelectorAll('#maps button').forEach(b=>b.onclick=()=>{ START.map=b.dataset.m; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x===b)); });
 
@@ -3013,16 +1613,19 @@ try{ const qs=new URLSearchParams(location.search); const qcred=qs.get('credits'
     document.querySelectorAll('#modes input[data-group=layout]').forEach(c=>c.onchange&&c.onchange()); } }catch(e){}
 PLATFORM.onLifecycle(state=>{ if(state==='pause'&&AUD.ctx?.state==='running') AUD.ctx.suspend().catch(()=>{}); });
 if(!$('seedIn').value) $('seedIn').value=newSeed();
-$('startBtn').onclick=()=>{ DIFF=DIFFS[chosen]; $('start').style.display='none';
-  if(!REPLAY.on){ START.customBots=null; const pool=(WP&&Array.isArray(WP.nationPool))?WP.nationPool.filter(n=>n&&n.flag&&Array.isArray(n.flag.layers)&&n.name&&!(WP.user&&n.userId===WP.user.id)):[]; if(pool.length&&Math.random()<0.6){ const n=pool[Math.floor(Math.random()*pool.length)]; START.customBots=[{userId:n.userId,name:n.name,layers:n.flag.layers,slot:Math.floor(Math.random()*BOTS)}]; } }
-  START.seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed(); $('seedIn').value=START.seed; { const gen=mulberry32(seedFrom(START.seed)); srandN=0; srand=()=>{ srandN++; return gen(); }; } /* everything from here on is reproducible from the seed */ AUD.menuMute=false; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on) MUS.start('game');
-  START.troops=Math.max(0,+$('stTroops').value||0); START.gold=Math.max(0,+$('stGold').value||0); START.bots=$('stBots').checked; START.noCap=$('stNoCap').checked; START.quick=$('quickStart').checked; START.fog=$('fogOn').checked; START.instant=$('instantOn').checked; START.risky=$('riskyOn').checked&&!$('endgameOn').checked; START.endgame=$('endgameOn').checked; START.billionaire=$('billionaireOn').checked; START.garrison=$('garrisonOn').checked; START.pauseBuild=$('stPauseBuild').checked;
-  setup(); exposeStateOracle(); if(window.__STATEFALL_TEST_PAUSE_ON_START__===true) paused=true; colorCache(); resize();
-  cam.s=2.2; cam.x=cv.width/2-(me.sx+.5)*cam.s; cam.y=cv.height/2-(me.sy+.5)*cam.s; $('mySw').style.background=me.color; $('myFlag').src=flagURL(me.flag,36,24); $('myName').textContent=me.name;
-  drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); window.__tickTimer=setInterval(()=>{ tick(); if(tickN%300===0&&!paused) autoSave(); if(REPLAY.on){ for(let i=1;i<REPLAY.speed;i++){ if(REPLAY.creditsMode&&tickN>=REPLAY.toTick) break; tick(); } if(REPLAY.creditsMode&&tickN>=REPLAY.toTick) paused=true; if(tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },TICK); if(!window.__renderLoop){ window.__renderLoop=true; requestAnimationFrame(render); } log(`Seed ${START.seed}. Difficulty: ${DIFF.label}${START.quick?', quick start':''}. Starting with ${Math.round(me.troops)} troops and ${Math.round(me.gold)} gold.`,true); };
+$('startBtn').onclick=()=>{
+  replayCatchUpCancel();
+  const seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed(),settings={...START,seed,troops:+$('stTroops').value,gold:+$('stGold').value,bots:$('stBots').checked,noCap:$('stNoCap').checked,quick:$('quickStart').checked,fog:$('fogOn').checked,instant:$('instantOn').checked,risky:$('riskyOn').checked&&!$('endgameOn').checked,endgame:$('endgameOn').checked,billionaire:$('billionaireOn').checked,garrison:$('garrisonOn').checked,pauseBuild:$('stPauseBuild').checked};
+  if(!REPLAY.on){ settings.customBots=null; const pool=(WP&&Array.isArray(WP.nationPool))?WP.nationPool.filter(n=>n&&n.flag&&Array.isArray(n.flag.layers)&&n.name&&!(WP.user&&n.userId===WP.user.id)):[]; if(pool.length&&Math.random()<0.6){ const n=pool[Math.floor(Math.random()*pool.length)]; settings.customBots=[{userId:n.userId,name:n.name,layers:n.flag.layers,slot:Math.floor(Math.random()*BOTS)}]; } }
+  try{ setup({settings,allowed:[...ALLOWED]}); }catch(error){ fail(`Could not start match: ${error.message}`); $('start').style.display='flex'; $('startBtn').disabled=false; return; }
+  Object.assign(START,engineState.rules.settings);
+  $('seedIn').value=START.seed; $('start').style.display='none'; AUD.menuMute=false; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on) MUS.start('game');
+  exposeStateOracle(); if(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_PAUSE_ON_START__===true) engine.setLifecycleForDiagnostics('paused',true); colorCache(); resize();
+  cam.s=2.2; cam.x=cv.width/2-(me().sx+.5)*cam.s; cam.y=cv.height/2-(me().sy+.5)*cam.s; $('mySw').style.background=me().color; $('myFlag').src=flagURL(me().flag,36,24); $('myName').textContent=me().name;
+  drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); window.__tickTimer=setInterval(()=>{ if(!REPLAY.on||clockState.tickN<REPLAY.toTick) tick(); if(clockState.tickN%300===0&&!lifecycleState.paused) autoSave(); if(REPLAY.on){ for(let i=1;i<REPLAY.speed&&clockState.tickN<REPLAY.toTick;i++) tick(); if(clockState.tickN===REPLAY.toTick&&!lifecycleState.paused){ if(REPLAY.creditsMode) runEngineOperation(()=>engine.pauseCreditsAtTarget()); else runEngineOperation(()=>engine.finishReplayWatch()); } if(clockState.tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },TICK); if(!window.__renderLoop){ window.__renderLoop=true; requestAnimationFrame(render); } log(`Seed ${START.seed}. Difficulty: ${DIFF().label}${START.quick?', quick start':''}. Starting with ${Math.round(me().troops)} troops and ${Math.round(me().gold)} gold.`,true); };
 // restore start-card choices after a restart (runs last, once everything is built)
 { let saved=null; try{ saved=JSON.parse(sessionStorage.getItem('statefall-restart')||'null'); sessionStorage.removeItem('statefall-restart'); }catch(e){}
-  if(saved){ if(saved.seed) $('seedIn').value=saved.seed; chosen=saved.diff||'normal'; $('diffSel').value=chosen; START.map=saved.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); START.teams=saved.teams||0; $('teamSel').value=String(START.teams);
-    if(saved.country!=null){ chosenFlag=countryByIdx(saved.country); $('countrySel').value=saved.country; document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===chosenFlag.name)); }
+  if(saved){ if(saved.seed) $('seedIn').value=saved.seed; engine.configure({difficulty:saved.diff||'normal'}); $('diffSel').value=matchState.difficulty; START.map=saved.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); START.teams=saved.teams||0; $('teamSel').value=String(START.teams);
+    if(saved.country!=null){ engine.configure({chosenFlag:countryByIdx(saved.country)}); $('countrySel').value=saved.country; document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===setupState.chosenFlag.name)); }
     for(const [id,v] of [['quickStart',saved.quick],['fogOn',saved.fog],['instantOn',saved.instant],['riskyOn',saved.risky],['endgameOn',saved.endgame],['billionaireOn',saved.billionaire],['garrisonOn',saved.garrison],['stBots',saved.bots],['stNoCap',saved.noCap],['stPauseBuild',saved.pauseBuild]]) $(id).checked=!!v;
     $('stTroops').value=saved.troops||120; $('stGold').value=saved.gold||100; document.querySelectorAll('#modes input[data-group=layout]').forEach(c=>c.onchange&&c.onchange()); } }

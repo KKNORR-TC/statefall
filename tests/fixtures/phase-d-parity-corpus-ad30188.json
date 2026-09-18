@@ -1,0 +1,1744 @@
+{
+  "schema": "statefall-phase-d-parity-corpus/v1",
+  "provenance": {
+    "commit": "ad301888827571e57514766c9892f12943197d05",
+    "short": "ad30188",
+    "role": "trusted pre-extraction old-engine oracle",
+    "materialization": "git archive; legacy-game.js CRLF normalized to LF for its historical LF-only harness boundary; harness-only draft and paused accessors added for deterministic controls"
+  },
+  "checkpointTiming": {
+    "legacyHash": "historical checkpoint before systems at each 100th tick",
+    "canonicalAndRng": "end of the same numbered tick"
+  },
+  "requiresCanonicalCheckpoints": true,
+  "scenarios": [
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "standard-random",
+      "seed": "PARITYSTD",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": false,
+        "instant": false,
+        "risky": false,
+        "endgame": false,
+        "billionaire": false,
+        "garrison": false,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "random",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYSTD",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "standard",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [],
+        "maxWarships": 0,
+        "maxTransports": 5,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 8
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            6061,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            7320,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            7855,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "52957562",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "73641b2a5a4af9aaadf4b018f5cf0c8b334556b5fd70c2175316e159e7ed340d"
+            },
+            "rngDraws": 34413,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "301189df",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "ead5d4e020c3933048c57779f679a74cbf8d1ebd643a99a58326650e0980bf7d"
+            },
+            "rngDraws": 40245,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "41638aea",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "5946fda82044a7d452dcbacd7f3b9dd01246d537596e02e5dcb9f505ae484b3c"
+            },
+            "rngDraws": 49021,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "660a178f",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "4a559a11fc572764cddfdf2b8236169b6bcc85d876d767c583cfa8febcc55dd6"
+            },
+            "rngDraws": 55498,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "52957562",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "73641b2a5a4af9aaadf4b018f5cf0c8b334556b5fd70c2175316e159e7ed340d"
+          },
+          "rngDraws": 34413,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "301189df",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "ead5d4e020c3933048c57779f679a74cbf8d1ebd643a99a58326650e0980bf7d"
+          },
+          "rngDraws": 40245,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "41638aea",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "5946fda82044a7d452dcbacd7f3b9dd01246d537596e02e5dcb9f505ae484b3c"
+          },
+          "rngDraws": 49021,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "660a178f",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "4a559a11fc572764cddfdf2b8236169b6bcc85d876d767c583cfa8febcc55dd6"
+          },
+          "rngDraws": 55498,
+          "commandCount": 4,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "3fe9e126",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "4a559a11fc572764cddfdf2b8236169b6bcc85d876d767c583cfa8febcc55dd6"
+        },
+        "rngDraws": 55498,
+        "commandCount": 4,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "fog-world",
+      "seed": "PARITYFOG",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": true,
+        "instant": false,
+        "risky": false,
+        "endgame": false,
+        "billionaire": false,
+        "garrison": false,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "world",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYFOG",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "fog",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [],
+        "maxWarships": 0,
+        "maxTransports": 1,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 2
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            14795,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            8822,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            10290,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "6977e11d",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "ce9285178bf845e97db28c6e1cbe89a93a288ec5d745661265cf2a5cc0387425"
+            },
+            "rngDraws": 20216,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "d2057394",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "af444afa5068cf3e9c205447b69bebecf34d0cf8c1cd64cc890db64d0f909702"
+            },
+            "rngDraws": 20667,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "28966081",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "7a19c686fe98a21eff8c904430d89ada0e009b145a82a85c38f681c7540aa393"
+            },
+            "rngDraws": 21184,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "156a44fb",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "f302ebf1a87d1b46f4c4734ad7c35e2516d8d995b1e81d1061e82c1ec35f8337"
+            },
+            "rngDraws": 21602,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "6977e11d",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "ce9285178bf845e97db28c6e1cbe89a93a288ec5d745661265cf2a5cc0387425"
+          },
+          "rngDraws": 20216,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "d2057394",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "af444afa5068cf3e9c205447b69bebecf34d0cf8c1cd64cc890db64d0f909702"
+          },
+          "rngDraws": 20667,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "28966081",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "7a19c686fe98a21eff8c904430d89ada0e009b145a82a85c38f681c7540aa393"
+          },
+          "rngDraws": 21184,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "156a44fb",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "f302ebf1a87d1b46f4c4734ad7c35e2516d8d995b1e81d1061e82c1ec35f8337"
+          },
+          "rngDraws": 21602,
+          "commandCount": 4,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "a0b8763a",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "f302ebf1a87d1b46f4c4734ad7c35e2516d8d995b1e81d1061e82c1ec35f8337"
+        },
+        "rngDraws": 21602,
+        "commandCount": 4,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "garrisons-land",
+      "seed": "PARITYGAR",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": false,
+        "instant": false,
+        "risky": false,
+        "endgame": false,
+        "billionaire": false,
+        "garrison": true,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "land",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYGAR",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "garrisons",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [],
+        "maxWarships": 0,
+        "maxTransports": 4,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 6
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            1346,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            2606,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            3138,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "c1edc9e6",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "d1fd3cad6e5350d30914318792ea48551d6b62d30fe3f683cf0ccefbee2e9aaf"
+            },
+            "rngDraws": 28586,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "1aecd3a0",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "f6fc0429a55920a6188918f37b4d7d50af6b48caca52ef9a6e9fd0e1283e3bb4"
+            },
+            "rngDraws": 34932,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "9e2cc920",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "2537bf730202d8ff79d8fffddd3d037a22a6eeaeed596cde9c2b1fcd7cbf6ae9"
+            },
+            "rngDraws": 44710,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "864e5d64",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "7402870b5d0707d566551b81abac6967e88ea24d5d42f5ae953b2058d58bad07"
+            },
+            "rngDraws": 51660,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "c1edc9e6",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "d1fd3cad6e5350d30914318792ea48551d6b62d30fe3f683cf0ccefbee2e9aaf"
+          },
+          "rngDraws": 28586,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "1aecd3a0",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "f6fc0429a55920a6188918f37b4d7d50af6b48caca52ef9a6e9fd0e1283e3bb4"
+          },
+          "rngDraws": 34932,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "9e2cc920",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "2537bf730202d8ff79d8fffddd3d037a22a6eeaeed596cde9c2b1fcd7cbf6ae9"
+          },
+          "rngDraws": 44710,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "864e5d64",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "7402870b5d0707d566551b81abac6967e88ea24d5d42f5ae953b2058d58bad07"
+          },
+          "rngDraws": 51660,
+          "commandCount": 4,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "94c4e860",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "7402870b5d0707d566551b81abac6967e88ea24d5d42f5ae953b2058d58bad07"
+        },
+        "rngDraws": 51660,
+        "commandCount": 4,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "quick-europe",
+      "seed": "PARITYQUICK",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": true,
+        "fog": false,
+        "instant": false,
+        "risky": false,
+        "endgame": false,
+        "billionaire": false,
+        "garrison": false,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "europe",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYQUICK",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "quick",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [
+          "city",
+          "factory"
+        ],
+        "maxWarships": 0,
+        "maxTransports": 0,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 2
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            500,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            7043,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            10184,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "600f1829",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "77117c9465ca5cff203dba4e7c4cbac00b9d2633a0386e65908f7f0846e172a6"
+            },
+            "rngDraws": 22798,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "734fdc2c",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "0a4694c12981c00024b3f0a9131ebc77c671b8493f66b922e78e050ba2ec27c7"
+            },
+            "rngDraws": 27709,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "3d1948b6",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "047f46f4d1e69421f6ad8962a77adc3c998d1687ae8be4f1789f1daa0fc207ea"
+            },
+            "rngDraws": 32172,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "bb43fe48",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "dbab8e35e823a697958d1d1f75031eb2ad7534691295874d4c5d9cb0ef0a0616"
+            },
+            "rngDraws": 32577,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "600f1829",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "77117c9465ca5cff203dba4e7c4cbac00b9d2633a0386e65908f7f0846e172a6"
+          },
+          "rngDraws": 22798,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "734fdc2c",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "0a4694c12981c00024b3f0a9131ebc77c671b8493f66b922e78e050ba2ec27c7"
+          },
+          "rngDraws": 27709,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "3d1948b6",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "047f46f4d1e69421f6ad8962a77adc3c998d1687ae8be4f1789f1daa0fc207ea"
+          },
+          "rngDraws": 32172,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "bb43fe48",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "dbab8e35e823a697958d1d1f75031eb2ad7534691295874d4c5d9cb0ef0a0616"
+          },
+          "rngDraws": 32577,
+          "commandCount": 4,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "d8ceb5df",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "dbab8e35e823a697958d1d1f75031eb2ad7534691295874d4c5d9cb0ef0a0616"
+        },
+        "rngDraws": 32577,
+        "commandCount": 4,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "endgame-asia",
+      "seed": "PARITYEND",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": false,
+        "instant": false,
+        "risky": false,
+        "endgame": true,
+        "billionaire": false,
+        "garrison": false,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "asia",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYEND",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "endgame",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [
+          "city",
+          "factory"
+        ],
+        "maxWarships": 0,
+        "maxTransports": 0,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 8
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            48,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            3499,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            4966,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "a9962b68",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "38f6f5c3fa6a54c4c3e02177763af074800087ba185d83ddb619e8b67192d35a"
+            },
+            "rngDraws": 44429,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "a2dbb80a",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "7fabd449b6740ac39fb772aa6c38ddcd1e575e9a5ee048b200d0e318191b00c6"
+            },
+            "rngDraws": 64798,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "c06aa337",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "160d2da389c983594a3fd5cb8bf6a4a8e05650ad338c6a520afbe5e49b7d5c36"
+            },
+            "rngDraws": 90110,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "3764f13d",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "4d79214fd333ae14c018596453ce6a41a7a5967f4c72c9cac3e28bfe926afd67"
+            },
+            "rngDraws": 105988,
+            "commandCount": 4,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "a9962b68",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "38f6f5c3fa6a54c4c3e02177763af074800087ba185d83ddb619e8b67192d35a"
+          },
+          "rngDraws": 44429,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "a2dbb80a",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "7fabd449b6740ac39fb772aa6c38ddcd1e575e9a5ee048b200d0e318191b00c6"
+          },
+          "rngDraws": 64798,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "c06aa337",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "160d2da389c983594a3fd5cb8bf6a4a8e05650ad338c6a520afbe5e49b7d5c36"
+          },
+          "rngDraws": 90110,
+          "commandCount": 4,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "3764f13d",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "4d79214fd333ae14c018596453ce6a41a7a5967f4c72c9cac3e28bfe926afd67"
+          },
+          "rngDraws": 105988,
+          "commandCount": 4,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "45767b79",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "4d79214fd333ae14c018596453ce6a41a7a5967f4c72c9cac3e28bfe926afd67"
+        },
+        "rngDraws": 105988,
+        "commandCount": 4,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "risky-draft-random",
+      "seed": "PARITYRISK",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": false,
+        "instant": false,
+        "risky": true,
+        "endgame": false,
+        "billionaire": false,
+        "garrison": false,
+        "pauseBuild": false,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "random",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYRISK",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 720,
+        "height": 414
+      },
+      "controls": {
+        "pauseAtTick": null,
+        "takeoverAtTick": null
+      },
+      "coverage": [
+        "risky draft",
+        "focus",
+        "land attack",
+        "structures"
+      ],
+      "observations": {
+        "structures": [
+          "city"
+        ],
+        "maxWarships": 0,
+        "maxTransports": 2,
+        "maxMissiles": 0,
+        "maxAircraft": 0,
+        "maxAttacks": 1
+      },
+      "cmds": [
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            84089,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            14488,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            64352,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            98895,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            219970,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 0,
+          "k": "click",
+          "a": [
+            192215,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            63632,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            81641,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            97746,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "17212110",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "d57baa8bee762eb5be2ebe3340bb1e34db4c60bcdfd62b2391ec7190d78b0dac"
+            },
+            "rngDraws": 27693,
+            "commandCount": 10,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "17212110",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "d57baa8bee762eb5be2ebe3340bb1e34db4c60bcdfd62b2391ec7190d78b0dac"
+          },
+          "rngDraws": 27693,
+          "commandCount": 10,
+          "replayCursor": null
+        }
+      ],
+      "tick": 100,
+      "final": {
+        "tick": 100,
+        "legacyHash": "b76753eb",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "d57baa8bee762eb5be2ebe3340bb1e34db4c60bcdfd62b2391ec7190d78b0dac"
+        },
+        "rngDraws": 27693,
+        "commandCount": 10,
+        "replayCursor": null
+      }
+    },
+    {
+      "schema": "statefall-replay-fixture/v1",
+      "v": 1,
+      "hashv": 2,
+      "game": "1.10.9",
+      "name": "combined-arms-islands",
+      "seed": "PARITYARMS",
+      "requiresCanonicalCheckpoints": true,
+      "settings": {
+        "bots": false,
+        "noCap": false,
+        "quick": false,
+        "fog": false,
+        "instant": true,
+        "risky": false,
+        "endgame": false,
+        "billionaire": true,
+        "garrison": false,
+        "pauseBuild": true,
+        "troops": 120,
+        "gold": 100,
+        "teams": 0,
+        "map": "islands_l",
+        "diff": "hard",
+        "country": 35,
+        "seed": "PARITYARMS",
+        "customBots": null,
+        "customFlag": null,
+        "allowed": null
+      },
+      "grid": {
+        "width": 180,
+        "height": 104
+      },
+      "controls": {
+        "pauseAtTick": 220,
+        "takeoverAtTick": 320
+      },
+      "coverage": [
+        "advanced",
+        "structures/upgrades",
+        "naval/transport",
+        "missiles",
+        "diplomacy/aid",
+        "air",
+        "pause",
+        "replay takeover"
+      ],
+      "observations": {
+        "structures": [
+          "airfield",
+          "city",
+          "factory",
+          "port",
+          "silo"
+        ],
+        "maxWarships": 1,
+        "maxTransports": 2,
+        "maxMissiles": 1,
+        "maxAircraft": 1,
+        "maxAttacks": 7
+      },
+      "cmds": [
+        {
+          "t": 5,
+          "k": "focus",
+          "a": [
+            0.37
+          ]
+        },
+        {
+          "t": 15,
+          "k": "click",
+          "a": [
+            6950,
+            {
+              "ratio": 34,
+              "pick": null,
+              "build": null
+            }
+          ]
+        },
+        {
+          "t": 25,
+          "k": "click",
+          "a": [
+            8027,
+            {
+              "ratio": 50,
+              "pick": null,
+              "build": "city"
+            }
+          ]
+        },
+        {
+          "t": 35,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "factory"
+            },
+            9099,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 45,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "port"
+            },
+            4600,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 55,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "silo"
+            },
+            9848,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 65,
+          "k": "menu",
+          "a": [
+            {
+              "act": "build",
+              "type": "airfield"
+            },
+            10552,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 75,
+          "k": "menu",
+          "a": [
+            {
+              "act": "upgrade"
+            },
+            4600,
+            [],
+            4600,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 85,
+          "k": "menu",
+          "a": [
+            {
+              "act": "warship",
+              "cls": "warship"
+            },
+            4419,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 105,
+          "k": "menu",
+          "a": [
+            {
+              "act": "transport"
+            },
+            10832,
+            [],
+            -1,
+            20,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 125,
+          "k": "menu",
+          "a": [
+            {
+              "act": "nuke"
+            },
+            4216,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 145,
+          "k": "menu",
+          "a": [
+            {
+              "act": "buyf"
+            },
+            10552,
+            [],
+            10552,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 165,
+          "k": "menu",
+          "a": [
+            {
+              "act": "plane"
+            },
+            12242,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 185,
+          "k": "menu",
+          "a": [
+            {
+              "act": "nap"
+            },
+            4776,
+            [],
+            -1,
+            50,
+            0,
+            0
+          ]
+        },
+        {
+          "t": 205,
+          "k": "menu",
+          "a": [
+            {
+              "act": "giveGold"
+            },
+            4775,
+            [],
+            -1,
+            50,
+            75,
+            0
+          ]
+        },
+        {
+          "t": 220,
+          "k": "focus",
+          "a": [
+            0.62
+          ]
+        },
+        {
+          "t": 225,
+          "k": "menu",
+          "a": [
+            {
+              "act": "giveTroops"
+            },
+            4775,
+            [],
+            -1,
+            50,
+            0,
+            12
+          ]
+        },
+        {
+          "t": 245,
+          "k": "airAuto",
+          "a": [
+            false
+          ]
+        },
+        {
+          "t": 265,
+          "k": "logAuto",
+          "a": [
+            false
+          ]
+        },
+        {
+          "t": 285,
+          "k": "autoFire",
+          "a": [
+            false
+          ]
+        }
+      ],
+      "hashes": [
+        [
+          100,
+          "585a9702",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "b7f6e446e7efda0062dca169517c3594964581f67bd22755ccdeb5808980c766"
+            },
+            "rngDraws": 23842,
+            "commandCount": 9,
+            "replayCursor": null
+          }
+        ],
+        [
+          200,
+          "5a254082",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "bc7ca76e3eec485932153d552a2bf8ed891cee7966f1236121614bd4873bfa04"
+            },
+            "rngDraws": 25412,
+            "commandCount": 14,
+            "replayCursor": null
+          }
+        ],
+        [
+          300,
+          "31e4c846",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "a720c19a6ed150c805c08c571a3e044b7b57e1e626721aa15de66b381ffc9eca"
+            },
+            "rngDraws": 27900,
+            "commandCount": 20,
+            "replayCursor": null
+          }
+        ],
+        [
+          400,
+          "dfa5a85b",
+          {
+            "canonical": {
+              "version": "statefall-authoritative-state/v1",
+              "sha256": "ce2d0e639917f0cc49f347be4b5186723779dcec8535517fcf42f99a22fc0533"
+            },
+            "rngDraws": 28832,
+            "commandCount": 20,
+            "replayCursor": null
+          }
+        ]
+      ],
+      "checkpoints": [
+        {
+          "tick": 100,
+          "legacyHash": "585a9702",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "b7f6e446e7efda0062dca169517c3594964581f67bd22755ccdeb5808980c766"
+          },
+          "rngDraws": 23842,
+          "commandCount": 9,
+          "replayCursor": null
+        },
+        {
+          "tick": 200,
+          "legacyHash": "5a254082",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "bc7ca76e3eec485932153d552a2bf8ed891cee7966f1236121614bd4873bfa04"
+          },
+          "rngDraws": 25412,
+          "commandCount": 14,
+          "replayCursor": null
+        },
+        {
+          "tick": 300,
+          "legacyHash": "31e4c846",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "a720c19a6ed150c805c08c571a3e044b7b57e1e626721aa15de66b381ffc9eca"
+          },
+          "rngDraws": 27900,
+          "commandCount": 20,
+          "replayCursor": null
+        },
+        {
+          "tick": 400,
+          "legacyHash": "dfa5a85b",
+          "canonical": {
+            "version": "statefall-authoritative-state/v1",
+            "sha256": "ce2d0e639917f0cc49f347be4b5186723779dcec8535517fcf42f99a22fc0533"
+          },
+          "rngDraws": 28832,
+          "commandCount": 20,
+          "replayCursor": null
+        }
+      ],
+      "tick": 400,
+      "final": {
+        "tick": 400,
+        "legacyHash": "76964ee7",
+        "canonical": {
+          "version": "statefall-authoritative-state/v1",
+          "sha256": "ce2d0e639917f0cc49f347be4b5186723779dcec8535517fcf42f99a22fc0533"
+        },
+        "rngDraws": 28832,
+        "commandCount": 20,
+        "replayCursor": null
+      }
+    }
+  ]
+}

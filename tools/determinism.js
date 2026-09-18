@@ -55,7 +55,7 @@ function replay(transferFile,resultFile,stateFile,firstStateFile){
   const {log,hashes}=JSON.parse(fs.readFileSync(transferFile,'utf8'));
   const B=boot({seed:SEED,diff:DIFF,countryIdx:35,garrison:GAR,quick:!!process.env.QUICK,render:false});
   const S=B.S;
-  S.REPLAY.on=true; S.REPLAY.hashv=2; S.REPLAY.cmds=log; S.REPLAY.i=0; S.REPLAY.hashes=hashes; S.REPLAY.speed=1;
+  S.REPLAY.on=true; S.REPLAY.hashv=2; S.REPLAY.cmds=log; S.REPLAY.i=0; S.REPLAY.hashes=hashes; S.REPLAY.speed=1; S.REPLAY.toTick=TICKS;
   fs.writeFileSync(resultFile,JSON.stringify({phase:'ticks',tick:0}));
   for(let k=0;k<TICKS;k++){ B.tick(1); if(k%100===99) fs.writeFileSync(resultFile,JSON.stringify({phase:'ticks',tick:k+1})); }
   fs.writeFileSync(resultFile,JSON.stringify({phase:'oracle'}));

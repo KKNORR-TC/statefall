@@ -67,6 +67,26 @@ async function startFixedMatch(page, {map = 'random', seed = 'PHASE0CANVAS', mod
   await page.evaluate(() => window.__STATEFALL_TEST__.pause());
 }
 
+async function createCanonicalResumeReplay(page, seed) {
+  await startFixedMatch(page, {seed, controlled: true});
+  await page.evaluate(() => window.__STATEFALL_TEST__.advance(200));
+  const replay = await page.evaluate(() => window.__STATEFALL_TEST__.replayPayload());
+  expect(replay.requiresCanonicalCheckpoints).toBe(true);
+  expect(replay.hashes[0][2].canonical.sha256).toMatch(/^[0-9a-f]{64}$/);
+  delete replay.finalHash;
+  delete replay.finalDigest;
+  delete replay.final;
+  await page.goto(`${GAME_URL}&case=${encodeURIComponent(seed)}-resume`, {waitUntil: 'load'});
+  return replay;
+}
+
+function tamperFirstCheckpoint(replay) {
+  const tampered = structuredClone(replay);
+  tampered.hashes[0][1] = tampered.hashes[0][1] === '00000000' ? 'ffffffff' : '00000000';
+  tampered.hashes[0][2].canonical.sha256 = '0'.repeat(64);
+  return tampered;
+}
+
 test('launches a fixed-seed match, renders the map, and supports camera zoom', async ({page}, testInfo) => {
   await startFixedMatch(page);
 
@@ -247,6 +267,149 @@ test('loads and plays the historical replay fixture in the browser', async ({pag
   await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.status().tick)).toBeGreaterThanOrEqual(30);
   const playing=await page.evaluate(() => window.__STATEFALL_TEST__.status());
   expect(playing.replay).toMatchObject({on:true,commands:1,applied:1,mismatch:false,speed:8});
+  await page.locator('#rpTake').click();
+  const takenOver=await page.evaluate(() => window.__STATEFALL_TEST__.snapshot());
+  expect(takenOver.replay.on).toBe(false);
+  expect(takenOver.input.commands).toBe(1);
+  expect(takenOver.input.lastCommand).toMatchObject({k:'focus',a:[0.35]});
+  await expect(page.locator('#replayBar')).toBeHidden();
+});
+
+test('8x watch stops and finalizes exactly at the replay target', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'exact accelerated watch coverage runs in primary Chromium');
+  await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file),replayFixture);
+  await page.locator('#rpPlay').click();
+  await page.locator('#rpSpeed button[data-sp="8"]').click();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status()),{timeout:15_000}).toMatchObject({tick:200,paused:true,replay:{on:true,targetTick:200,speed:8,mismatch:false,finalVerified:true,verifiedEvidence:true,finished:true}});
+  await page.waitForTimeout(500);
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status())).toMatchObject({tick:200,paused:true,replay:{finished:true,finalVerified:true,mismatch:false}});
+});
+
+test('resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'resume controller coverage runs in primary Chromium');
+  test.setTimeout(60_000);
+  const replay=await createCanonicalResumeReplay(page,'RESUMEDIVERGE');
+  await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file,'resume'),tamperFirstCheckpoint(replay));
+  await expect(page.locator('#modal')).toContainText('This replay has diverged');
+  const paused=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(paused).toMatchObject({tick:100,paused:true,replay:{on:true,mismatch:true,divTick:100},catchup:{status:'suspended',target:200,framePending:false}});
+  expect(paused.replay.why).toBeTruthy();
+  await page.waitForTimeout(400);
+  const stillPaused=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(stillPaused.tick).toBe(100);
+  expect(stillPaused.catchup.framesScheduled).toBe(paused.catchup.framesScheduled);
+  expect(stillPaused.catchup.framesRun).toBe(paused.catchup.framesRun);
+  await page.locator('#dvCont').click();
+  await expect(page.locator('#cuPlay')).toBeVisible();
+  const ready=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(ready).toMatchObject({tick:200,paused:true,replay:{on:true,mismatch:true,finalVerified:true},catchup:{status:'ready',target:200,framePending:false}});
+  await page.locator('#cuPlay').click();
+  const resumed=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(resumed).toMatchObject({ready:true,tick:200,paused:false,replay:{on:false},catchup:{status:'idle',framePending:false}});
+  await page.waitForTimeout(150);
+  expect((await page.evaluate(()=>window.__STATEFALL_TEST__.status())).tick).toBeGreaterThan(200);
+});
+
+test('Stop replay resets a diverged resume and a subsequent ordinary resume succeeds', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'sequential resume coverage runs in primary Chromium');
+  test.setTimeout(60_000);
+  const replay=await createCanonicalResumeReplay(page,'RESUMESTOP');
+  await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file,'resume'),tamperFirstCheckpoint(replay));
+  await expect(page.locator('#dvStop')).toBeVisible();
+  await page.locator('#dvStop').click();
+  await expect(page.locator('#start')).toBeVisible();
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status())).toMatchObject({ready:false,tick:0,replay:{on:false,mismatch:false,why:null,divTick:null,finalVerified:false,verifiedEvidence:false},catchup:{status:'idle',framePending:false}});
+  await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file,'resume'),replay);
+  await expect(page.locator('#cuPlay')).toBeVisible();
+  const ready=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(ready).toMatchObject({tick:200,paused:true,replay:{on:true,mismatch:false,why:null,divTick:null,finalVerified:true,verifiedEvidence:true},catchup:{status:'ready',target:200}});
+  await page.locator('#cuPlay').click();
+  const resumed=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
+  expect(resumed).toMatchObject({paused:false,replay:{on:false},catchup:{status:'idle'}});
+  expect(resumed.tick).toBeGreaterThanOrEqual(200);
+});
+
+test('browser replay payload includes strong final evidence for a short save', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'save payload authority coverage runs in primary Chromium');
+  await startFixedMatch(page,{seed:'SHORTSAVE',controlled:true});
+  await page.evaluate(()=>window.__STATEFALL_TEST__.advance(25));
+  const payload=await page.evaluate(()=>window.__STATEFALL_TEST__.replayPayload());
+  expect(payload.tick).toBe(25);
+  expect(payload.hashes).toEqual([]);
+  expect(payload.requiresCanonicalCheckpoints).toBe(true);
+  expect(payload.finalHash).toMatch(/^[0-9a-f]{8}$/);
+  expect(payload.finalDigest).toEqual(payload.final.canonical);
+  expect(payload.final).toMatchObject({tick:25,legacyHash:payload.finalHash,canonical:{version:'statefall-authoritative-state/v1'},commandCount:0,replayCursor:null});
+  expect(payload.final.canonical.sha256).toMatch(/^[0-9a-f]{64}$/);
+  expect(payload.final.rngDraws).toBeGreaterThan(0);
+});
+
+test('credits replay reset clears setup scratch before rebuilding the match', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name.includes('mobile'), 'credits replay reset coverage follows the desktop-first policy');
+  await startFixedMatch(page,{seed:'CREDITSRESET',mode:MODES[0],controlled:true});
+  const result=await page.evaluate(()=>window.__STATEFALL_TEST__.creditsReplayResetContract());
+  expect(result.scratchCleared).toBe(true);
+  expect(result.setupInstalled).toBe(true);
+  expect(result.status).toMatchObject({ready:true,tick:0,replay:{on:true,applied:0,targetTick:0}});
+});
+
+test('rejects malformed and unsupported replay commands before configuration', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name.includes('mobile'), 'full-game replay coverage follows the desktop-first policy');
+  await page.goto(GAME_URL,{waitUntil:'load'});
+  const result=await page.evaluate(file=>{
+    const before=window.__STATEFALL_TEST__.status();
+    const messages=[];
+    for(const mutate of ['malformed','unsupported']){
+      const replay=structuredClone(file);
+      if(mutate==='malformed') replay.cmds[0].a=[2];
+      else replay.cmds[0].k='futureCommand';
+      try{ window.__STATEFALL_TEST__.loadReplay(replay); messages.push('accepted'); }
+      catch(error){ messages.push(error.message); }
+    }
+    return {before,after:window.__STATEFALL_TEST__.status(),messages};
+  },replayFixture);
+  expect(result.messages[0]).toContain('cmds[0].a');
+  expect(result.messages[1]).toContain('cmds[0].k');
+  expect(result.after.ready).toBe(result.before.ready);
+  expect(result.after.replay).toEqual(result.before.replay);
+});
+
+test('invalid replay settings leave start state usable and allow a successful retry', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name.includes('mobile'), 'replay boundary coverage runs on desktop');
+  await page.goto(GAME_URL,{waitUntil:'load'});
+  const result=await page.evaluate(file=>{
+    const before=window.__STATEFALL_TEST__.status(),messages=[];
+    for(const mutate of [replay=>{ replay.settings.troops=0; },replay=>{ replay.settings.troops=1_000_000_001; },replay=>{ replay.settings=[]; }]){
+      const candidate=structuredClone(file); mutate(candidate);
+      try{ window.__STATEFALL_TEST__.loadReplay(candidate); messages.push('accepted'); }catch(error){ messages.push(error.message); }
+    }
+    return {before,after:window.__STATEFALL_TEST__.status(),messages};
+  },replayFixture);
+  expect(result.messages).toHaveLength(3);
+  expect(result.messages.every(message=>message!=='accepted')).toBe(true);
+  expect(result.after).toEqual(result.before);
+  await expect(page.locator('#start')).toBeVisible();
+  await expect(page.locator('#startBtn')).toBeEnabled();
+  const loaded=await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file),replayFixture);
+  expect(loaded.ready).toBe(true);
+  await expect(page.locator('#modal')).toContainText('Replay loaded');
+});
+
+test('invalid start configuration reports the error without hiding the start card', async ({page}) => {
+  await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.locator('#settingsBtn').click();
+  await page.locator('#stTroops').fill('0');
+  await page.locator('#settingsClose').click();
+  await page.locator('#startBtn').click();
+  await expect(page.locator('#start')).toBeVisible();
+  await expect(page.locator('#startBtn')).toBeEnabled();
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status().ready)).toBe(false);
+  await page.locator('#settingsBtn').click();
+  await page.locator('#stTroops').fill('120');
+  await page.locator('#settingsClose').click();
+  await page.locator('#startBtn').click();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().ready)).toBe(true);
 });
 
 test('start and settings cards avoid horizontal overflow on desktop and mobile', async ({page}) => {
@@ -333,10 +496,40 @@ test('fixed-seed simulation has the same canonical digest in Chromium, Firefox, 
   }
   const detail=Object.keys(states).slice(1).map(name=>`${name}: ${firstDifference(states.chromium,states[name])}`).join('\n');
   for(const [name,result] of Object.entries(cruise)){
-    expect(result.draws,`${name} cruise RNG draws`).toBe(5);
+    expect(result.draws,`${name} cruise RNG draws`).toBe(0);
     expect(result.order,`${name} cruise target order`).toEqual(['shield-a','shield-b']);
   }
   expect(new Set(Object.values(cruise).map(JSON.stringify)).size,JSON.stringify(cruise,null,2)).toBe(1);
   expect(new Set(Object.values(digests)).size,`${JSON.stringify(digests,null,2)}\n${detail}`).toBe(1);
   for(const [name,digest] of Object.entries(digests)) assertCanonicalBaseline('browser','fixed-seed-cross-engine',digest,`${name}\n${detail}`);
+});
+
+test('real Canvas rendering is pure and irregular render cadence cannot change simulation', async ({page}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'renderer-purity contract runs in primary Chromium');
+  await startFixedMatch(page, {seed: 'PHASEDRENDER', controlled: true});
+  const before=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
+  const rendered=await page.evaluate(() => window.__STATEFALL_TEST__.renderRepeatedly(17));
+  const after=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
+  expect(rendered).toEqual({hash:before.hash,rng:before.rng,tick:before.tick});
+  expect(after).toEqual(before);
+
+  await page.evaluate(() => window.__STATEFALL_TEST__.advance(120));
+  const controlled=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
+  await startFixedMatch(page, {seed: 'PHASEDRENDER', controlled: true});
+  await page.evaluate(() => window.__STATEFALL_TEST__.advanceWithRenderCadence(120, [0, 1, 4, 7, 8]));
+  const irregular=await page.evaluate(() => window.__STATEFALL_TEST__.canonicalCheckpoint());
+  expect(irregular).toEqual(controlled);
+
+  await startFixedMatch(page, {seed: 'PHASEDINTERPOLATION', controlled: true});
+  await page.evaluate(() => window.__STATEFALL_TEST__.installLateGameScene());
+  const interpolation=await page.evaluate(() => {
+    const before=window.__STATEFALL_TEST__.interpolationFrame();
+    window.__STATEFALL_TEST__.advance(1);
+    window.__STATEFALL_TEST__.renderRepeatedly(1);
+    const after=window.__STATEFALL_TEST__.interpolationFrame();
+    return {beforeTick:before.current.tickId,previousTick:after.previous.tickId,currentTick:after.current.tickId,canvas:window.__STATEFALL_TEST__.interpolationCanvasStatus()};
+  });
+  expect(interpolation.previousTick).toBe(interpolation.beforeTick);
+  expect(interpolation.currentTick).toBe(interpolation.beforeTick+1);
+  expect(interpolation.canvas.renderedActors).toBeGreaterThan(0);
 });

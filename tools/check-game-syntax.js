@@ -5,6 +5,9 @@ const file=path.join(root,'game','index.html');
 const html=fs.readFileSync(file,'utf8');
 if(!/<script type="module" src="\.\/src\/main\.js"><\/script>/.test(html))throw new Error('Game module entry is missing.');
 for(const marker of ['GAME_VERSION','GAME_BUILD','REQUIRES_PLUGIN','__STATEFALL_ASSET_BASE__'])if(!html.includes(marker))throw new Error(`Game HTML is missing ${marker}.`);
+const metadata=require('./release-metadata.js');
+const packageMarker=`GAME_VERSION='${metadata.version}', GAME_BUILD='${metadata.build}', REQUIRES_PLUGIN='${metadata.minimumPluginVersion}'`;
+if(!html.includes(packageMarker))throw new Error('Game HTML package markers do not match build metadata.');
 
 function jsFiles(dir){
   const files=[];

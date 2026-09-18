@@ -1,23 +1,29 @@
+'use strict';
+
 const assert=require('node:assert/strict');
-const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const boot=require('../tools/harness.js');
+const {STRUCT,SHIPS,AIR}=require('../game/src/sim/rules.mjs');
 
-const gameFile=path.resolve(__dirname,'..','game','src','legacy-game.js');
-const source=fs.readFileSync(gameFile,'utf8');
-const dir=fs.mkdtempSync(path.join(os.tmpdir(),'statefall-harness-'));
+const before=new Set(Reflect.ownKeys(globalThis));
+const first=boot({seed:'BOUNDARYA',diff:'normal',countryIdx:35,render:false,gridW:120,gridH:69});
+const second=boot({seed:'BOUNDARYB',diff:'hard',countryIdx:12,render:false,gridW:120,gridH:69});
 
-function rejects(name,source,pattern){
-  const file=path.join(dir,name+'.js');
-  fs.writeFileSync(file,source);
-  assert.throws(()=>boot({file,render:false}),pattern);
-}
+assert.equal(first.S.difficulty,'normal');
+assert.equal(first.S.STRUCT,STRUCT);
+assert.equal(first.S.SHIPS,SHIPS);
+assert.equal(first.S.AIR,AIR);
+assert.notEqual(first.S.players,second.S.players,'booted engines share actor collections');
+assert.notEqual(first.S.owner,second.S.owner,'booted engines share map storage');
+assert.notEqual(first.S.REPLAY,second.S.REPLAY,'booted engines share replay state');
+const secondHash=second.S.stateHash(),secondTick=second.S.tickN;
+first.tick(5);
+first.S.REPLAY.on=true;
+assert.equal(second.S.tickN,secondTick,'ticking one engine advanced another');
+assert.equal(second.S.stateHash(),secondHash,'ticking one engine mutated another');
+assert.equal(second.S.REPLAY.on,false,'replay configuration leaked between engines');
+assert.deepEqual(Reflect.ownKeys(globalThis).filter(key=>!before.has(key)),[],'harness created process globals');
 
-try{
-  rejects('missing-anchor',source.replace("START.quick=$('quickStart').checked;",''),/Harness quick-start replacement: expected 1 occurrence, found 0/);
-  rejects('duplicate-anchor',source.replace("function drawMap(){","function drawMap(){}\nfunction drawMap(){"),/Harness draw-map guard replacement: expected 1 occurrence, found 2/);
-  rejects('missing-platform',source.replace('const PLATFORM=createPlatform();',''),/Legacy platform boundary changed/);
-  assert.throws(()=>boot({file:gameFile,frenzy:true,render:false}),/Harness frenzy structure timing replacement: expected 2 occurrences, found 0/);
-  console.log('Harness hardening checks PASS');
-}finally{
-  fs.rmSync(dir,{recursive:true,force:true});
-}
+assert.throws(()=>boot({file:'alternate.js',render:false}),/Custom simulation source files are unsupported/);
+assert.throws(()=>boot({render:true}),/browser\/Playwright renderer capture path/);
+
+console.log('Harness direct-import boundary and isolation checks PASS');

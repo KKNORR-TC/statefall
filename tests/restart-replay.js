@@ -24,10 +24,12 @@ function run(name,options={}){
   assert.match(oracle.serialization,/"fog":/,name+': canonical oracle omitted fog state');
   assert.ok(commands.length>0,name+': first run recorded no commands');
   assertSimulationBaseline('restartReplay',name,{legacyHash:hash,sha256:oracle.digest});
-  S.REPLAY.on=true; S.REPLAY.creditsMode=true; S.REPLAY.cmds=commands; S.REPLAY.i=0; S.REPLAY.hashes=hashes; S.REPLAY.hashv=2; S.REPLAY.mismatch=false; S.REPLAY.speed=1;
+  S.REPLAY.on=true; S.REPLAY.creditsMode=true; S.REPLAY.cmds=commands; S.REPLAY.i=0; S.REPLAY.hashes=hashes; S.REPLAY.hashv=2; S.REPLAY.mismatch=false; S.REPLAY.speed=1; S.REPLAY.toTick=ticks;
   S.dirtyTransientState();
+  S.dirtyDiplomacyState();
   S.resetWorld();
   assert.deepEqual(S.transientState,{planes:0,satUntil:0,satCool:0,planeCool:0,vis:null,radarLayer:null,myBorders:[]},name+': reset retained transient fog/air state');
+  assert.deepEqual(S.diplomacyState,{hostile:{},proposals:[]},name+': reset retained diplomacy state');
   S.restart();
   for(let tick=0;tick<ticks;tick++) game.tick();
   assert.equal(S.REPLAY.i,commands.length,name+': replay did not apply every command');

@@ -1,6 +1,6 @@
 # Statefall - Multiplayer Project Plan
 
-_Status reconciled 17 September 2026. Local recovered repository game 1.10.9/plugin 1.10.7 is preserved at `97dcc76`; production remains game 1.10.7/plugin 1.10.6. Graphics modernization Phase C is complete; engine extraction has not started. A minimal two-client proof is scheduled after engine extraction and before the full graphics migration._
+_Status updated 18 September 2026. Local candidate game 1.10.11/plugin 1.10.7 has completed the Phase D engine implementation and technical gate; its source remains uncommitted and not handed off. Production remains game 1.10.7/plugin 1.10.6. The minimal two-client proof is the next multiplayer architecture step._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -10,20 +10,19 @@ Deterministic lockstep with a thin relay. Every client runs the identical simula
 
 ## 2. What is already done (Phase 0 — shipped in game 1.5.0–1.6.2)
 
-Everything below remains in `game/src/legacy-game.js`, loaded by the Vite entry at `game/index.html`, and is covered to the extent described by the repository's headless tests.
+The historical behaviors below remain supported, but simulation authority now lives behind `game/src/sim/engine.mjs`; `game/src/legacy-game.js` is the Canvas/UI/controller adapter. Coverage is described by the direct-engine, compatibility, replay, browser, and parity suites.
 
 **Determinism**
 - The simulation runs on the tick clock only (`tickN`, `simMs = tickN × TICK`, TICK = 100 ms). No `performance.now()` / `Date.now()` inside anything that affects state. Bot build cooldowns, bot think cadence and the Risky-start draft timer all moved to ticks.
-- Two random generators: `srand` (mulberry32, seeded from the match seed) for everything in the sim; the browser's `Math.random` for audio, effects, notices, the jukebox, credit quotes. Helpers: `rnd/pick` = sim, `urnd/upick` = UI. Map noise is seeded (`Float32Array.from(…, () => srand())`).
+- The counted Mulberry32 simulation RNG is per engine; browser-only audio/UI randomness is separate. Compatibility visual descriptors still consume historical deterministic draws inside the engine to preserve approved replay counts, but renderer/event cadence never consumes them. Changing those draws requires a future versioned behavior change.
 - Ships and aircraft carry stable ids (`id: ++uidSeq`); structures are addressed by tile; areas by id; players by id.
 
-**Command layer** (search `// command layer` in `game/src/legacy-game.js`)
-- `CMD.log` — every player action as `{t: tick, k: kind, a: args}`.
-- Entry points: `issueClick(t, env)` (map clicks, with `env = {ratio, pick, build}` captured at issue time), `issueMenu(d, t, selIds, siteT, ratioV, aidGold, aidTroops)` (all right-click menu actions via `menuAction()`), `issue(kind, …args)` (focus slider, airAuto/logAuto/autoFire toggles, recall/recallAll, sat, accept/decline proposals, decShare/decWar).
-- `applySimple`, `replayApply`, `menuAction(d,t,sel,site,ratioV,aidGold,aidTroops)` and `clickTile(t, env)` are the deterministic executors. Bots never log.
+**Command layer** (`game/src/sim/command-router.mjs` and `deterministic-runtime.mjs`)
+- The command log records every player action as `{t, k, a}` with optional acting seat `p`.
+- Engine entry points accept click, menu, and simple commands with all issue-time context and optional actor identity; deterministic executors resolve the actor rather than relying on browser UI state. Bots do not enter the human command log.
 - `stateHash()` every 100 ticks (owner grid sample + troops/gold/tiles per player + ships + attacks + counts). Recorded in `CMD.hashes`; a replay compares and reports the first divergence.
-- `replayFile()` → `{v, game, seed, settings, cmds, hashes, result, tick, when}`. `applySettings()` restores the start card from it; `loadReplayFile(f, 'watch' | 'resume')`.
-- Replay driver in `tick()`: applies commands whose `t <= tickN` before advancing. `REPLAY = {on, cmds, i, speed, resume, toTick, hashes, mismatch}`.
+- `replayFile()` records settings and commands plus periodic and final legacy hash, canonical digest, RNG draw count, command count, and replay cursor evidence. `applySettings()` restores the start card from it; `loadReplayFile(f, 'watch' | 'resume')`.
+- Replay driver in `tick()`: applies commands whose `t <= tickN` before advancing. Watch and resume both require the exact recorded target tick and verify final evidence before completion/takeover; post-end continuation is a serialized command.
 - `replayCatchUp(target, label, onDone)` runs the sim silently in animation-frame slices behind a progress bar (sounds, notices, log, banners suppressed by `SAVES.catchup`), then waits for Play now / Watch.
 
 **Saves and replays on the site** (plugin ≥ 1.6.0)
@@ -32,9 +31,17 @@ Everything below remains in `game/src/legacy-game.js`, loaded by the Vite entry 
 - Game: autosave every 30 s (logged in), Save & quit on the pause modal, automatic replay of every finished match, Games & replays modal, `/play/?load=<id>&mode=resume|watch`. Logged-out users get a register/login card. No browser storage.
 
 **Proof harness** (repository `tools/` and `tests/`)
-- `tools/harness.js` temporarily rewrites/evaluates the legacy module for node-canvas and exposes `S` (simulation internals); it is also used for trailers. This test-only bridge remains until Phase D extracts an importable engine and is not used by release builds.
+- `tools/harness.js` directly imports `createEngine()` and exposes a synchronous compatibility facade for existing Node tools. It does not rewrite/evaluate application source or render. Trailer capture uses the browser/Playwright path against an isolated capture build.
 - `tools/determinism.js` plays a scripted match through the command layer, replays it cold, and compares hashes. Run `npm run determinism`; set `SEED`, `DIFF`, `GAR`, `QUICK`, and `TICKS` as environment variables when needed.
 - `tools/replaycheck.js <file.state>` replays a real player's file and reports the first diverging tick. This is how the `click env` bug fixed in 1.6.1 was found.
+
+**Phase D prerequisites now available**
+- Independent browser-free engine instances with isolated setup, state, RNG, commands/replay, and all world systems.
+- Seat-tagged command issue and replay application, detached/frozen replay API results, read-only snapshots/presentation views, canonical hash/checkpoint exchange data, and strict full-state checkpoint/restore; the final audit found no production authority return leaks.
+- Immutable ordered event queues and presentation ports so UI/audio/controller failures or delivery cadence do not mutate simulation authority.
+- Interleaved-engine isolation and old-versus-extracted parity evidence across 7 scenarios, plus the 85/85-command production determinism run.
+- Full checkpoints use `statefall-engine-checkpoint/v2` with canonical-compatibility label metadata. V1 is rejected because it cannot reconstruct exact canonical bytes between label-refresh cadences.
+- Post-end continuation serialization and resume divergence are closed in candidate 1.10.11; they are not current high findings.
 
 **Known limitation:** a replay is tied to the game version it was recorded on. A balance change can make an old save diverge; the loader warns. The site keeps the previous five game packages (Game package → Previous versions), so a save could be resumed on the build it was made with if that ever matters.
 
@@ -52,11 +59,13 @@ Every divergence so far was found by replaying the player's `.state` file with `
 | Fleet Move/Blockade used the live ship selection, not the recorded ids | replays diverge right after fleet orders | 1.10.4 |
 | Open: one random draw differs late (6CHYVM at 18:10), unexplained | landing force ends a tick early | 1.10.5 adds random-draw counts + full-tile hash to checkpoints |
 
-Rules that came out of it: the sim reads only `tickN/simMs` and `srand`; UI/audio/effects use `Math.random`/`urnd`/`upick`; every player action goes through `issue*` and carries ids, never live UI state; anything that runs only when a human is present must not touch sim state or `srand`.
+Rules that came out of it: simulation reads only deterministic tick time and engine RNG; renderer/audio/UI cadence must not consume engine RNG; every player action goes through the command router with captured context and acting identity rather than live UI state. Historical compatibility descriptor draws are the explicit exception inside the engine and remain fixed until a versioned behavior change.
 
 ## 3. Phase 1 — Relay and lobby (next)
 
 Sequencing note: first implement only the relay/lockstep/reconnect architecture proof defined as Phase D2 in `docs/graphics-modernization-plan.md`, using the extracted engine and legacy renderer. Complete lobby, chat, public rooms, and production hosting after that proof; they are not prerequisites for beginning the visual migration.
+
+Remaining proof work is network/product work rather than engine extraction: implement the relay and room log, assign/authenticate seats, define turn buffering and stall policy, exchange canonical checkpoint digests, surface a deliberate desync, reconnect by replaying the retained log or a validated checkpoint plus suffix, complete a two-human match, and emit one valid multi-seat replay. Pause voting, disconnect-to-bot policy, lobby/chat/public rooms, hosting, abuse controls, and ranked results remain subsequent work.
 
 **Relay** (Node, ~300 lines, separate host — WP Engine cannot run sockets)
 - Rooms: create/join/leave, up to N human seats + bots filling the rest, host controls.
@@ -95,7 +104,7 @@ Sequencing note: first implement only the relay/lockstep/reconnect architecture 
 
 ## 8. Where the files are
 
-- Game source: Vite application under `game/` (repository: 1.10.9; production: 1.10.7).
+- Game source: Vite application under `game/` (local candidate: 1.10.11; production: 1.10.7).
 - Plugin source: `plugin/statefall-scores/` (current: 1.10.7).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.

@@ -7,7 +7,7 @@ const boot=require('./harness.js');
 const FIXTURE_SCHEMA='statefall-replay-fixture/v1';
 const DIFFICULTIES=new Set(['supereasy','easy','normal','hard','superhard','impossible']);
 const MAPS=new Set(['random','land','islands_l','islands_m','islands_s','atoll','world','europe','americas','africa','asia','mideast']);
-const COMMANDS=new Set(['menu','click','focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar']);
+const COMMANDS=new Set(['menu','click','focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd']);
 const BOOLEAN_SETTINGS=['bots','noCap','quick','fog','instant','risky','endgame','billionaire','garrison','pauseBuild'];
 const LIMITS={fileBytes:1024*1024,tick:10_000_000,commands:100_000,hashes:100_000,commandArgs:7,string:200};
 
@@ -33,15 +33,18 @@ function validCommandArgs(command){
     case 'recall': case 'decline': return a.length===1&&id(a[0]);
     case 'recallAll': return a.length===1&&(a[0]==='all'||a[0]==='dmg');
     case 'sat': case 'decShare': case 'decWar': return a.length===0;
+    case 'continueAfterEnd': return a.length===1&&typeof a[0]==='boolean';
     case 'accept': return a.length===3&&id(a[0])&&['ally','nap','reqTroops','reqGold'].includes(a[1])&&finite(a[2],0,1_000_000_000);
     default: return false;
   }
 }
 
-function validateReplay(value){
+function validateReplay(value,{requireCanonicalCheckpoints=false}={}){
   const errors=[];
   requireValue(isObject(value),'replay','must be an object',errors);
   if(!isObject(value)) return errors;
+  const canonicalCheckpointsRequired=requireCanonicalCheckpoints||value.requiresCanonicalCheckpoints===true;
+  requireValue(value.requiresCanonicalCheckpoints==null||typeof value.requiresCanonicalCheckpoints==='boolean','requiresCanonicalCheckpoints','must be boolean when provided',errors);
   requireValue(value.schema==null||value.schema===FIXTURE_SCHEMA,'schema',`must be ${FIXTURE_SCHEMA}`,errors);
   requireValue(value.v===1,'v','must be 1',errors);
   requireValue(typeof value.seed==='string'&&/^[A-Za-z0-9]{1,16}$/.test(value.seed),'seed','must be 1-16 ASCII letters or digits',errors);
@@ -66,18 +69,22 @@ function validateReplay(value){
   requireValue(Array.isArray(value.cmds),'cmds','must be an array',errors);
   if(Array.isArray(value.cmds)){
     requireValue(value.cmds.length<=LIMITS.commands,'cmds',`must contain at most ${LIMITS.commands} commands`,errors);
-    let previous=-1;
+    let previous=-1,previousPhase=-1;
     if(value.cmds.length<=LIMITS.commands) value.cmds.forEach((command,index)=>{
       const path=`cmds[${index}]`;
       requireValue(isObject(command),path,'must be an object',errors);
       if(!isObject(command)) return;
       requireValue(Number.isSafeInteger(command.t)&&command.t>=0,path+'.t','must be a non-negative safe integer',errors);
+      requireValue(!Number.isSafeInteger(value.tick)||!Number.isSafeInteger(command.t)||command.t<=value.tick,path+'.t','must not exceed the replay target',errors);
       if(Number.isSafeInteger(command.t)){
-        requireValue(command.t>=previous,path+'.t','must be in nondecreasing order',errors);
-        previous=command.t;
+        const phase=command.phase==='post-systems'?1:0;
+        requireValue(command.t>previous||command.t===previous&&phase>=previousPhase,path+'.t','must be in nondecreasing tick/phase order',errors);
+        previous=command.t; previousPhase=phase;
       }
       requireValue(COMMANDS.has(command.k),path+'.k','is not a supported command',errors);
+      requireValue(command.p==null||(Number.isSafeInteger(command.p)&&command.p>=0&&command.p<=1_000_000),path+'.p','must be a non-negative actor ID when provided',errors);
       requireValue(Array.isArray(command.a),path+'.a','must be an array',errors);
+      requireValue((command.k==='continueAfterEnd')===(command.phase==='post-systems'),path+'.phase','must be post-systems only for continueAfterEnd',errors);
       if(COMMANDS.has(command.k)&&Array.isArray(command.a)) requireValue(validCommandArgs(command),path+'.a','has invalid arguments for '+command.k,errors);
     });
   }
@@ -88,7 +95,7 @@ function validateReplay(value){
     const seen=new Set();
     if(value.hashes.length<=LIMITS.hashes) value.hashes.forEach((checkpoint,index)=>{
       const path=`hashes[${index}]`;
-      requireValue(Array.isArray(checkpoint)&&checkpoint.length>=2,path,'must be [tick, hash, optional detail]',errors);
+      requireValue(Array.isArray(checkpoint)&&checkpoint.length>=2&&checkpoint.length<=3,path,'must be [tick, hash, optional detail]',errors);
       if(!Array.isArray(checkpoint)||checkpoint.length<2) return;
       const tick=checkpoint[0];
       requireValue(Number.isSafeInteger(tick)&&tick>0&&tick%100===0&&tick<=value.tick,path+'[0]','must be a 100-tick checkpoint at or before the target',errors);
@@ -96,6 +103,17 @@ function validateReplay(value){
       seen.add(tick);
       requireValue(typeof checkpoint[1]==='string'&&/^[0-9a-f]{8}$/.test(checkpoint[1]),path+'[1]','must be an 8-character lowercase hex hash',errors);
       requireValue(checkpoint[2]==null||isObject(checkpoint[2]),path+'[2]','must be an object when provided',errors);
+      const detail=checkpoint[2],canonical=detail&&detail.canonical;
+      if(canonicalCheckpointsRequired||canonical!=null||detail&&['rngDraws','commandCount','replayCursor'].some(key=>Object.hasOwn(detail,key))){
+        requireValue(isObject(canonical),path+'[2].canonical','must be an object',errors);
+        if(isObject(canonical)){
+          requireValue(canonical.version==='statefall-authoritative-state/v1',path+'[2].canonical.version','must be statefall-authoritative-state/v1',errors);
+          requireValue(typeof canonical.sha256==='string'&&/^[0-9a-f]{64}$/.test(canonical.sha256),path+'[2].canonical.sha256','must be a 64-character lowercase hex digest',errors);
+        }
+        requireValue(Number.isSafeInteger(detail&&detail.rngDraws)&&detail.rngDraws>=0,path+'[2].rngDraws','must be a non-negative safe integer',errors);
+        requireValue(Number.isSafeInteger(detail&&detail.commandCount)&&detail.commandCount>=0,path+'[2].commandCount','must be a non-negative safe integer',errors);
+        requireValue((detail&&detail.replayCursor===null)||(Number.isSafeInteger(detail&&detail.replayCursor)&&detail.replayCursor>=0),path+'[2].replayCursor','must be null or a non-negative safe integer',errors);
+      }
     });
     if(value.tick<=LIMITS.tick&&value.hashes.length<=LIMITS.hashes) for(let tick=100;tick<=value.tick;tick+=100) requireValue(seen.has(tick),'hashes',`is missing checkpoint ${tick}`,errors);
   }
@@ -104,6 +122,20 @@ function validateReplay(value){
   if(isObject(value.finalDigest)){
     requireValue(value.finalDigest.version==='statefall-authoritative-state/v1','finalDigest.version','must be statefall-authoritative-state/v1',errors);
     requireValue(typeof value.finalDigest.sha256==='string'&&/^[0-9a-f]{64}$/.test(value.finalDigest.sha256),'finalDigest.sha256','must be a 64-character lowercase hex digest',errors);
+  }
+  if(value.final!=null){
+    requireValue(isObject(value.final),'final','must be an object when provided',errors);
+    if(isObject(value.final)){
+      requireValue(value.final.tick===value.tick,'final.tick','must equal tick',errors);
+      requireValue(typeof value.final.legacyHash==='string'&&/^[0-9a-f]{8}$/.test(value.final.legacyHash),'final.legacyHash','must be an 8-character lowercase hex hash',errors);
+      requireValue(isObject(value.final.canonical)&&value.final.canonical.version==='statefall-authoritative-state/v1','final.canonical','must use statefall-authoritative-state/v1',errors);
+      requireValue(isObject(value.final.canonical)&&typeof value.final.canonical.sha256==='string'&&/^[0-9a-f]{64}$/.test(value.final.canonical.sha256),'final.canonical.sha256','must be a 64-character lowercase hex digest',errors);
+      requireValue(Number.isSafeInteger(value.final.rngDraws)&&value.final.rngDraws>=0,'final.rngDraws','must be a non-negative safe integer',errors);
+      requireValue(Number.isSafeInteger(value.final.commandCount)&&value.final.commandCount>=0,'final.commandCount','must be a non-negative safe integer',errors);
+      requireValue(value.final.replayCursor===null||Number.isSafeInteger(value.final.replayCursor)&&value.final.replayCursor>=0,'final.replayCursor','must be null or a non-negative safe integer',errors);
+      requireValue(!Array.isArray(value.cmds)||value.final.commandCount===value.cmds.length,'final.commandCount','must equal the command count',errors);
+      requireValue(value.final.replayCursor===null||!Array.isArray(value.cmds)||value.final.replayCursor<=value.cmds.length,'final.replayCursor','must not exceed the command count',errors);
+    }
   }
   return errors;
 }
@@ -121,7 +153,7 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
   };
 
   try{
-    const game=boot({seed:replay.seed,diff:st.diff,country:null,quick:st.quick,instant:st.instant,noCap:st.noCap,garrison:st.garrison,map:st.map,countryIdx:st.country,customFlag:st.customFlag||null,customBots:st.customBots||null,allowed:st.allowed||null,troops:st.troops,gold:st.gold,teams:st.teams,bots:st.bots,fog:st.fog,risky:st.risky,endgame:st.endgame,billionaire:st.billionaire,pauseBuild:st.pauseBuild,render:false,...bootOptions});
+    const game=boot({seed:replay.seed,diff:st.diff,country:null,quick:st.quick,instant:st.instant,noCap:st.noCap,garrison:st.garrison,map:st.map,countryIdx:st.country,customFlag:st.customFlag||null,customBots:st.customBots||null,allowed:st.allowed||null,troops:st.troops,gold:st.gold,teams:st.teams,bots:st.bots,fog:st.fog,risky:st.risky,endgame:st.endgame,billionaire:st.billionaire,pauseBuild:st.pauseBuild,allowEnd:true,render:false,...bootOptions});
     const S=game.S;
     S.REPLAY.on=true;
     S.REPLAY.hashv=replay.hashv;
@@ -130,6 +162,7 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
     S.REPLAY.hashes=replay.hashes;
     S.REPLAY.mismatch=false;
     S.REPLAY.speed=1;
+    S.REPLAY.toTick=replay.tick;
 
     const expected=new Map(replay.hashes.map(checkpoint=>[checkpoint[0],checkpoint]));
     const visited=new Set();
@@ -144,6 +177,17 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
       const checkpoint=expected.get(S.tickN);
       if(checkpoint){
         visited.add(S.tickN);
+        const detail=checkpoint[2];
+        if(detail&&detail.canonical){
+          if(S.stateOracleVersion!==detail.canonical.version||typeof S.serializeCanonicalState!=='function') errors.push(`checkpoint ${S.tickN} canonical state oracle ${detail.canonical.version} is unavailable`);
+          else {
+            const digest=createHash('sha256').update(S.serializeCanonicalState()).digest('hex');
+            if(digest!==detail.canonical.sha256) errors.push(`checkpoint ${S.tickN} canonical digest mismatch: recorded ${detail.canonical.sha256}, replay ${digest}`);
+          }
+          if(S.srandN!==detail.rngDraws) errors.push(`checkpoint ${S.tickN} RNG count mismatch: recorded ${detail.rngDraws}, replay ${S.srandN}`);
+          if(S.REPLAY.i!==detail.commandCount) errors.push(`checkpoint ${S.tickN} command count mismatch: recorded ${detail.commandCount}, replay ${S.REPLAY.i}`);
+          if(detail.replayCursor!=null&&S.REPLAY.i!==detail.replayCursor) errors.push(`checkpoint ${S.tickN} replay cursor mismatch: recorded ${detail.replayCursor}, replay ${S.REPLAY.i}`);
+        }
       }
     }
     S.resolveReplayCommands();
@@ -151,6 +195,7 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
     if(S.tickN!==replay.tick&&!errors.some(error=>error.startsWith('failed to reach target tick'))) errors.push(`failed to reach target tick ${replay.tick}; stopped at tick ${S.tickN}`);
     for(const tick of expected.keys()) if(!visited.has(tick)) errors.push(`checkpoint ${tick} was not reached`);
     if(commandException) errors.push(`replay command failed at tick ${commandException.command&&commandException.command.t}: ${commandException.error&&commandException.error.message||commandException.error}`);
+    else if(!S.REPLAY.on&&S.REPLAY.i<replay.cmds.length) errors.push(`replay command failed at tick ${replay.cmds[S.REPLAY.i].t}`);
     if(S.REPLAY.i!==replay.cmds.length) errors.push(`unapplied commands: applied ${S.REPLAY.i} of ${replay.cmds.length}`);
     if(S.REPLAY.mismatch){
       let message=divergence?`checkpoint ${divergence.tick} diverged: recorded ${divergence.recorded}, replay ${divergence.actual}`:`engine reported replay divergence${S.REPLAY.divTick!=null?' at tick '+S.REPLAY.divTick:''}`;
@@ -166,8 +211,21 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
         if(digest!==replay.finalDigest.sha256) errors.push(`final canonical digest mismatch: recorded ${replay.finalDigest.sha256}, replay ${digest}`);
       }
     }
+    if(replay.final!=null){
+      if(finalHash!==replay.final.legacyHash) errors.push(`final state mismatch: recorded ${replay.final.legacyHash}, replay ${finalHash}`);
+      if(S.stateOracleVersion!==replay.final.canonical.version||typeof S.serializeCanonicalState!=='function') errors.push(`canonical state oracle ${replay.final.canonical.version} is unavailable`);
+      else {
+        const digest=createHash('sha256').update(S.serializeCanonicalState()).digest('hex');
+        if(digest!==replay.final.canonical.sha256) errors.push(`final canonical digest mismatch: recorded ${replay.final.canonical.sha256}, replay ${digest}`);
+      }
+      if(S.srandN!==replay.final.rngDraws) errors.push(`final RNG count mismatch: recorded ${replay.final.rngDraws}, replay ${S.srandN}`);
+      if(replay.cmds.length!==replay.final.commandCount) errors.push(`final command count mismatch: recorded ${replay.final.commandCount}, replay ${replay.cmds.length}`);
+      const expectedCursor=replay.final.replayCursor==null?replay.final.commandCount:replay.final.replayCursor;
+      if(S.REPLAY.i!==expectedCursor) errors.push(`final replay cursor mismatch: recorded ${expectedCursor}, replay ${S.REPLAY.i}`);
+    }
     if(!errors.length) logger.log(`REPLAY MATCH ${replay.seed} ${S.tickN} ticks ${replay.cmds.length} commands ${replay.hashes.length} checkpoints final ${finalHash}`);
-    return {ok:errors.length===0,errors,finalHash,tick:S.tickN,commandsApplied:S.REPLAY.i};
+    const finalDigest=S.stateOracleVersion&&typeof S.serializeCanonicalState==='function'?{version:S.stateOracleVersion,sha256:createHash('sha256').update(S.serializeCanonicalState()).digest('hex')}:null;
+    return {ok:errors.length===0,errors,finalHash,finalDigest,rngDraws:S.srandN,tick:S.tickN,commandsApplied:S.REPLAY.i};
   }finally{
     console.warn=originalWarn;
   }
