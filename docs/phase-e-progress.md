@@ -1,6 +1,19 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.25, build `2026-09-18-phase-e13-pixi-global-effects`, on 19 September 2026. E12 is `058051f`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.26, build `2026-09-18-phase-e14-pixi-nation-overlays`, on 19 September 2026. E13 is `a1b1c39`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E14 Implemented Slice
+
+- Migrated exactly the contiguous block after global effects and before the opening marker: neutral and nation names, nation color marks, troop counts, procedural flags, alliance handshakes, heartbreak marks, team outlines, and `ALLY`/`PACT` glyphs. Player order, zoom/draft/alive/tile conditions, smoothed positions, formatting, fonts, strokes, fills, alignment, alphabetic baseline, alpha chronology, icon pulse/fade formulas, and inherited E13 Canvas state are retained.
+- One pure renderer-neutral model uses stable `player:<id>` keys and rejects duplicates. Current-browser `measureText` metrics define full group bounds and culling. One bounded Canvas-raster sprite per visible player group preserves procedural flags, text, glyph, and browser font-baseline behavior; the exported handshake and broken-heart painters are the unchanged legacy geometry rather than redesigned art.
+- Hard reject-not-truncate limits cover 4,096 entries/containers/sprites/textures, 16,384 labels, 262,144 characters, 65,536 logical primitives, 131,072 segments, and 64 MiB source pixels. Idle pools are bounded at 512 containers and sprites. Texture identity includes every dynamic visual input, the complete inherited pixel-affecting Canvas state, measured bounds, and DPR. Zero-reference textures are evicted before allocation, so predecessor/team/eligibility, troop/name/relation/icon/zoom/DPR churn cannot retain stale cache variants.
+- Ownership requires every layer through global effects. Any E14 model, cap, source, sprite, container, append, prerequisite, or context failure withdraws all nation overlays in the same frame and runs the direct uncapped Canvas painter after valid Pixi effects. Fatal update/final-submit failure retains the existing single nonadvancing full-Canvas replay. Opening, region, and SAM-network markers remain Canvas above either path.
+
+## E14 Evidence
+
+- Pure contracts independently pin player and child order, predecessor removal, team/ordinary/neutral state transitions, zoom/draft/alive/tile/neutral conditions, exact painted relation inventory, style/formula outputs, stable-key rejection, measured culling, immutability, all model caps, direct uncapped Canvas behavior, transformed icon stroke bounds, and final opening-marker state handoff. Canvas raster output retains the documented current-browser font-metric/baseline caveat.
+- Dedicated actual Pixi-versus-direct-Canvas extraction covers an independently constructed neutral/nation/mine/team/ally/pact/fresh-handshake/fading-heart/font-size/flag/color-mark/troop/team-outline inventory over an opaque background at DPR 1, 1.5, and 2. Logical icon bounds include the transformed radius-11 outer circle, its 0.8 unit half-stroke, and one CSS AA pixel; raster sources add a separate transparent safety pixel and assert no material source-edge alpha. Production failure probes cover recoverable final append, fatal update, and fatal final submit with framebuffer omission-sensitive label masks, a real effect below, the real opening marker above, one replay, and unchanged tick/RNG/RAF callback state. The 1,800-frame churn changes names, troops, relations, icons, zoom, culling, eligibility, order, and cache keys; source bytes and pools remain bounded. Timing is local synchronous CPU submission only and advisory, excluding GPU, compositor, display presentation, input, and browser-stall guarantees. Raster labels remain a current-browser/current-font result, not a cross-host deterministic font claim.
+- Current verification passes syntax, all renderer-neutral contracts, `npm test`, 17/17 focused E14 Chromium cases, 3/3 dedicated DPR cases, 18/18 Canvas cases, 6/6 lifecycle/context/fallback cases, 2/2 source-built contracts, and 24-file reproducibility. The source-built manifest SHA-256 is `c7a038a85895a98838b7f4c01f292dce6a4e148fdd729954367e039d03507d46`. The six-project broad run completed all 838 configured cases with 234 passes, 603 intentional project-selection skips, and one unchanged E5 naval advisory timing outlier (`p99 33.1 ms` against `33.0 ms`) that passed in isolation at `31.9 ms`. E14 changing churn in the broad run measured local advisory CPU submission `p95 4.3 ms` and `p99 6.8 ms`; its one-time maximum is not a product latency claim.
 
 ## E13 Implemented Slice
 
@@ -150,6 +163,6 @@ E8 was committed as `db6ab09` and is the clean base for E9.
 
 ## Remaining Phase E Work
 
-- Continue after the deliberate E13 boundary with nation/global labels, markers/network, UI overlays, and subsequent layers in bounded ordered slices.
+- Continue after the deliberate E14 boundary with opening/region/SAM-network markers, alerts/UI overlays, and subsequent layers in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.

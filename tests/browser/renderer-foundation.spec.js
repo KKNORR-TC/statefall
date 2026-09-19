@@ -64,7 +64,8 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
       expect(initial.rendering.cssWidth).toBe(initial.canvas.clientWidth);
       expect(initial.rendering.pixelWidth).toBe(initial.canvas.width);
       if(renderer==='pixi'){
-        expect(initial.rendering).toMatchObject({textureCount:1,spriteCount:1,containerCount:15,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true,projectiles:true,missiles:true,aircraft:true,mapLabels:true,supportActors:true,floatingText:true,globalEffects:true}});
+        expect(initial.rendering).toMatchObject({contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true,projectiles:true,missiles:true,aircraft:true,mapLabels:true,supportActors:true,floatingText:true,globalEffects:true,nationOverlays:true},layers:{nationOverlays:{owned:true}}});
+        expect(initial.rendering.textureCount).toBeGreaterThan(1); expect(initial.rendering.spriteCount).toBeGreaterThan(1); expect(initial.rendering.containerCount).toBeGreaterThanOrEqual(16);
         const layers=await page.evaluate(()=>{
           const map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
           return {map:map.toJSON(),world:world.toJSON(),mapPointer:getComputedStyle(document.querySelector('#map')).pointerEvents,worldPointer:getComputedStyle(document.querySelector('.pixi-world')).pointerEvents};
@@ -204,14 +205,14 @@ for(const renderer of ['canvas','pixi']) test(`${renderer} survives repeated per
     await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
     await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.renderingLifecycle().suspended)).toBe(false);
     await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.renderingLifecycle().rafPending)).toBe(1);
-    if(renderer==='pixi'&&cycle===0) await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().textureCount)).toBe(1);
+    if(renderer==='pixi'&&cycle===0) await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().layers.nationOverlays.owned)).toBe(true);
     const after=await page.evaluate(async()=>({checkpoint:await window.__STATEFALL_TEST__.canonicalCheckpoint(),camera:window.__STATEFALL_TEST__.snapshot().camera,input:window.__STATEFALL_TEST__.snapshot().input,lifecycle:window.__STATEFALL_TEST__.renderingLifecycle(),focus:document.activeElement?.id,rendering:window.__STATEFALL_TEST__.rendererDiagnostics()}));
     expect(after.checkpoint).toEqual(before.checkpoint); expect(after.input).toEqual(before.input); expect(after.focus).toBe('pauseBtn');
     expect(after.lifecycle).toMatchObject({rafPending:1,frozen:false,listening:true,observerCount:1,resizeListenerCount:1,restoreFailure:null});
     expect((after.camera.visibleBounds.left+after.camera.visibleBounds.right)/2).toBeCloseTo((before.camera.visibleBounds.left+before.camera.visibleBounds.right)/2,8);
     expect((after.camera.visibleBounds.top+after.camera.visibleBounds.bottom)/2).toBeCloseTo((before.camera.visibleBounds.top+before.camera.visibleBounds.bottom)/2,8);
     if(renderer==='pixi'&&cycle===0){
-      expect(after.rendering).toMatchObject({active:'pixi-hybrid',containerCount:15,canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true,projectiles:true,missiles:true,aircraft:true,mapLabels:true,supportActors:true,floatingText:true,globalEffects:true},layers:{terrain:{textureCount:1}}});
+      expect(after.rendering).toMatchObject({active:'pixi-hybrid',canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true,projectiles:true,missiles:true,aircraft:true,mapLabels:true,supportActors:true,floatingText:true,globalEffects:true,nationOverlays:true},layers:{terrain:{textureCount:1},nationOverlays:{owned:true}}}); expect(after.rendering.containerCount).toBeGreaterThanOrEqual(16);
       expect(after.rendering.applicationAllocations).toBeLessThanOrEqual(2); expect(after.rendering.textureAllocations).toBeLessThanOrEqual(2);
     }
     if(renderer==='pixi'&&cycle>=1){

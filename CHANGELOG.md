@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.26 - 2026-09-18
+
+- Added bounded Phase E14 development-only Pixi ownership of the exact contiguous nation-overlay block after E13 `a1b1c39`: nation and neutral names, color marks, troop counts, procedural flags, fresh-alliance handshakes, heartbreak marks, team outlines, and painted `ALLY`/`PACT` glyphs retain exact cross-player Canvas chronology, conditions, formulas, transformed geometry, and final marker handoff.
+- A pure renderer-neutral model uses stable player keys, measured full-group bounds, hard reject-not-truncate entry/label/character/primitive/segment/container/sprite/texture/source-byte caps, and bounded zero-reference texture eviction. Canvas-raster player groups preserve current-browser font-baseline behavior and exact procedural flag/text pixels; the extracted handshake and broken-heart painters retain their original geometry. Any E14-only failure withdraws every nation overlay and invokes the direct uncapped Canvas block after valid Pixi effects; fatal replay remains one nonadvancing frame.
+- This remains migration art, not final art. Phase E remains open for opening/region/SAM-network markers, alerts/UI overlays, atlases/loading, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.25 - 2026-09-18
 
 - Added bounded Phase E13 development-only Pixi ownership of the exact contiguous global-effects block after E12 `058051f`: scorches, sparks, smoke/puffs, fragments/bombs, tracers, wrecks, and flashes retain category/array/primitive order, formulas, styles, trajectories, rotation, fog rules, age/lifetime/pruning, and Canvas state handoff. Nation/global labels remain Canvas-owned above it.
