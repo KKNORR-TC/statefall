@@ -1,6 +1,23 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.28, build `2026-09-18-phase-e16-pixi-notifications`, on 19 September 2026. E15 is `ef5633e`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.29, build `2026-09-18-phase-e17-pixi-interaction-overlays`, on 19 September 2026. E16 is `49967b0`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E17 Implemented Slice
+
+- Migrated the exact final Canvas rendering block after notifications through end-of-frame: the owned-area pick label, drag-selection box, draft banner, paused scrim/title/subtitle, and valid/invalid build cursor. Source order, conditions, camera/world and screen coordinate formulas, build snapping and validity, responsive viewport geometry, strings, fonts, strokes, fills, alpha, inherited dash/composite state, and final Canvas state are retained. Input, hit testing, cursor changes, mouse/touch/keyboard events, and simulation authority remain outside Pixi; `.pixi-world` remains `pointer-events:none` and the aligned Canvas remains mounted and pointer-capable.
+- One frozen descriptor captures every input-facing presentation value once per top-level frame and is reused by recoverable fallback and fatal nonadvancing replay. The pure renderer-neutral model uses stable semantic keys, full stroke/text/viewport bounds, complete culling, emitted dashed-segment accounting, vector Graphics, and cached current-browser Canvas-raster labels. Hard entry, primitive, segment, label, character, container, Graphics, sprite, texture, and source-byte caps reject the complete layer without truncation.
+- Ownership requires every prior layer through E16 notifications. Any E17 model, cap, composite, source, texture, sprite, Graphics, container, paint, append, prerequisite, or context failure withdraws the complete E17 slice in the same frame and runs the direct uncapped Canvas painter over retained Pixi notifications. Credits remain exclusive and explicitly clear stale interaction resources. Fatal update/final-submit failure retains the single synchronous nonadvancing full-Canvas replay.
+
+## E17 Status
+
+- The legacy visual-layer migration is complete through end-of-frame. Phase E remains open for atlas/loading policy and final physical-GPU/hardware qualification. E17 is migration art, not final art; plugin 1.10.7 and simulation baseline 1.10.8 remain unchanged.
+
+## E17 Evidence
+
+- Syntax, every renderer-neutral contract, `npm test`, restart replay, old-engine parity, all map/mode smoke scenarios, renderer independence, and production-grid determinism pass without changing the approved 1.10.8 hashes. Focused primary-Chromium E17 coverage passes 24 applicable cases with two project-selection skips; E16 prerequisite coverage passes 28 applicable cases with three project-selection skips.
+- Actual Pixi-versus-direct-Canvas evidence passes at DPR 1, 1.5, and 2 over an opaque destination. Chromium/WebKit mobile and reduced-motion checks, unchanged Canvas goldens and real pointer targeting, renderer lifecycle/context loss, and source/built production Canvas-only contracts pass in the targeted 75-test cross-project run, with 195 intentional project-selection skips.
+- The 1,800-frame synthetic interaction run preserves canonical state, legacy hash, RNG, and tick; remains below the 16.7 ms p95 and 33 ms p99 local synchronous CPU/render-submission ceilings; keeps every pool, texture, reference, and source-byte count bounded; and records zero texture allocations or destructions during the final stable window. This does not measure GPU execution, compositor/display presentation, or input latency. GPU allocation bytes remain unknown and current-font rasterization remains host-specific.
+- Reproducibility passes across 24 files. `release.json` covers 23 payload files at SHA-256 `fc3e0a839df403b78d4aa1081b8040e3ee52142ca9b9cc2d751a0c0ea9deb650`. A broader 1,150-case browser invocation reached case 589 with no assertion failure but exceeded its 15-minute command limit during WebKit; it is incomplete evidence, not a matrix pass.
 
 ## E16 Implemented Slice
 

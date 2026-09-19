@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.29 - 2026-09-18
+
+- Added bounded Phase E17 development-only Pixi ownership of the exact final Canvas rendering block after E16 `49967b0`: the garrison pick label, drag-selection box, draft banner, paused scrim and labels, and build cursor retain source order, conditions, screen/world coordinate formulas, snap/validity decisions, strings, fonts, strokes, fills, alpha, inherited dash/composite state, and final frame state.
+- One immutable presentation descriptor captures pointer/input-derived values once per top-level frame. A pure renderer-neutral model provides full bounds/culling, stable semantic keys, emitted-dash accounting, hard reject-not-truncate entry/primitive/segment/label/character/container/Graphics/sprite/texture/source-byte caps, vector Graphics, and cached current-browser Canvas-raster labels. Any E17-only failure withdraws the complete slice and directly paints the uncapped Canvas block over retained Pixi notifications; fatal submission remains one synchronous nonadvancing full-Canvas replay. Pixi remains noninteractive and the aligned Canvas stays mounted for input.
+- The visual-layer migration is complete through the end of the legacy frame. Phase E remains open for atlas/loading policy and final physical-GPU/hardware qualification. This is not final art; plugin 1.10.7 and simulation baseline 1.10.8 are unchanged.
+
 ## 1.10.28 - 2026-09-18
 
 - Added bounded Phase E16 development-only Pixi ownership of the exact notification-overlay block after E15 `ef5633e`: credits, nuclear alerts, the song banner, and badges/notices retain source order, viewport anchoring, timing, fades, pulses, controls, styles, and Canvas state handoff. Pick, selection, draft, pause, and build-cursor overlays remain Canvas-owned above it.

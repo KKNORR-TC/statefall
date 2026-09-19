@@ -17,6 +17,7 @@ import {advanceFloatingTextPresentation,paintFloatingTextCanvas} from './renderi
 import {advanceGlobalEffectsPresentation,paintGlobalEffectsCanvas} from './rendering/global-effects-layer-model.mjs';
 import {drawNationBrokenHeart as drawBrokenHeart,drawNationHandshake as drawHandshake,paintNationOverlaysCanvas} from './rendering/nation-overlay-layer-model.mjs';
 import {paintWorldAnnotationsCanvas} from './rendering/world-annotation-layer-model.mjs';
+import {paintInteractionOverlaysCanvas} from './rendering/interaction-overlay-layer-model.mjs';
 import {
   WIN_SHARE,BOTS,TILES_PER_NEUTRAL,QUICK_TILES,DIFFS,FOG,STRUCT,CMD_RANGE,CMD_DISCOUNT,CMD_DISCOUNT_MAX,
   BUILD_TICKS,SHIELD,UPGRADE,LSHIELD,HEAVY,CRUISE,AIR,GUNS,ARMOR,CMD_RESERVE,SHIP_BUILD,CANCEL_REFUND,TRUCK,
@@ -1305,6 +1306,16 @@ function installBrowserTestBridge(){
                   finally{ nukeAlerts=previous.nukeAlerts; badges=previous.badges; songBanner=previous.songBanner; }
                 },
                 notificationRasterEvidence(){ return renderer.notificationRasterEvidence(); },
+                renderInteractionInventory(variant='all',failure=null){
+                  const snapshot=()=>({hover,box:box?{...box}:null,buildMode,pickMode:pickMode?{...pickMode}:null,paused:lifecycleState.userPaused,selected:Array.from(selected,value=>value.id).sort((a,b)=>a-b),tick:clockState.tickN,rng:JSON.stringify(engine.runtimeCheckpoint().rng)}),before=snapshot(),presentation=Object.freeze({pick:['all','pick'].includes(variant)?Object.freeze({cx:100,cy:80,text:'send 25 of 100'}):null,box:['all','box','dashed'].includes(variant)?Object.freeze({x0:18,y0:22,x1:116,y1:84}):null,draft:['all','draft'].includes(variant)?Object.freeze({text:'Your pick — click a neutral country (flags mark what\'s taken) (round 2 of 4)'}):null,paused:['all','paused'].includes(variant),build:['all','valid','invalid'].includes(variant)?Object.freeze({tile:Math.floor(H/2)*W+Math.floor(W/2),valid:variant!=='invalid'}):null}),frame={now:345678,advance:false,visualShotFrame:null,labelPositions:null,interactionPresentation:presentation,presentationChronology:[]};
+                  notificationCanvasStateOverride={globalCompositeOperation:'source-over',lineCap:'round',lineJoin:'bevel',lineWidth:5,lineDash:variant==='dashed'?[7,4]:[],lineDashOffset:variant==='dashed'?2:0}; try{ if(failure) renderer.injectFailure(failure); let submitted=renderPass(frame),replayed=false; if(submitted?.replay){ replayed=true; submitted=renderPass(frame); } const rendering_=renderer.diagnostics(),pixels=ctx.getImageData(0,0,cv.width,cv.height).data,pixiCanvas=document.querySelector('.pixi-world'); let canvasPixels=0; for(let index=3;index<pixels.length;index+=4) if(pixels[index]) canvasPixels++; return {before,after:snapshot(),replayed,chronology:frame.presentationChronology.slice(),rendering:rendering_.layers.interactionOverlays,notifications:rendering_.layers.notificationOverlays,active:rendering_.active,canvasPixels,canvas:{mounted:cv.isConnected,pointerEvents:getComputedStyle(cv).pointerEvents,cursor:getComputedStyle(cv).cursor},pixi:{pointerEvents:pixiCanvas?getComputedStyle(pixiCanvas).pointerEvents:null}}; }finally{ notificationCanvasStateOverride=null; }
+                },
+                interactionRasterEvidence(){ return renderer.interactionRasterEvidence(); },
+                renderInteractionChurnFrames(count=1800){
+                  const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},samples=[],resources=[],total=Math.max(0,Math.floor(count));
+                  for(let index=0;index<total;index++){ const stable=index<300||index>=1500,n=index%31,presentation=Object.freeze({pick:index%4?Object.freeze({cx:80+(stable?0:n),cy:70,text:stable?'send 25 of 100':`send ${n} of 100`}):null,box:index%3?Object.freeze({x0:20,y0:20,x1:90+(stable?0:n),y1:70}):null,draft:index%5?null:Object.freeze({text:stable?'Your pick':`Nation ${n} is picking… (round 2 of 4)`}),paused:index%7===0,build:index%2?Object.freeze({tile:Math.floor(H/2)*W+Math.floor(W/2)+(stable?0:n),valid:index%4!==1}):null}),frame={now:400000+index*17,advance:false,visualShotFrame:null,labelPositions:null,interactionPresentation:presentation},started=performance.now(); renderPass(frame); samples.push(performance.now()-started); if(index%150===149){ const value=renderer.diagnostics().layers.interactionOverlays; resources.push({frame:index+1,entries:value.entries,containersLive:value.containersLive,containersIdle:value.containersIdle,graphicsActive:value.graphicsActive,graphicsIdle:value.graphicsIdle,spritesActive:value.spritesActive,spritesIdle:value.spritesIdle,textureCount:value.textureCount,textureRefs:value.textureRefs,textureAllocations:value.textureAllocations,textureDestroyCount:value.textureDestroyCount,sourceBytes:value.sourceBytes}); } }
+                  const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},ordered=samples.slice().sort((a,b)=>a-b),percentile=value=>ordered[Math.min(ordered.length-1,Math.floor(ordered.length*value))]||0; return {before,after,measurement:'local synchronous CPU/render-submission; excludes GPU, compositor, display presentation, and input latency',p95:percentile(.95),p99:percentile(.99),max:ordered.at(-1)||0,resources,rendering:renderer.diagnostics().layers.interactionOverlays};
+                },
                 renderNotificationPixelMatrix(variant='all',inherited={}){
                   const previous={nukeAlerts,badges,songBanner},enemy=players.find(value=>value!==me()&&value.kind!=='neutral')||players.find(value=>value!==me())||me(),alert={from:[-200,-100],at:[W/2,H/2],owner:enemy.id,age:variant==='fade'?78:18,life:88},fallen={text:'Old Republic',sub:`killed by ${me().name}`,flag:enemy.flag,kflag:me().flag,col:me().color,age:variant==='fade'?118:24,life:130};
                    try{ nukeAlerts=variant==='fallen'?[]:[alert]; songBanner=variant==='all'?{title:'The Long March',age:20,life:70}:null; badges=variant==='alert'?[]:[fallen]; notificationCanvasStateOverride=inherited; renderPass({now:123456,advance:false,visualShotFrame:null,labelPositions:null}); return {rendering:renderer.diagnostics().layers.notificationOverlays,evidence:renderer.notificationRasterEvidence(),handoff:notificationCanvasStateDescriptor(captureNotificationCanvasState(ctx)),raster:{...notificationRasterStats,width:notificationRasterCanvas?.width||0,height:notificationRasterCanvas?.height||0}}; }
@@ -1504,6 +1515,16 @@ function updateNotificationOverlay(frame,cw,ch,dpr){
   }catch(error){
     const reason=error?.notificationFallbackReason||'transaction-resource'; renderer.rejectWorldLayer('notification-overlays',reason); releaseNotificationRaster(); paintNotificationOverlay(ctx,frame,presentation); return {credits:presentation.credits,owned:false};
   }
+}
+function prepareInteractionPresentation(frame){
+  if(frame.interactionPresentation) return frame.interactionPresentation;
+  frame.presentationChronology?.push('interaction-overlays');
+  let pick=null;
+  if(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf){ const a=areaAt(hover); if(a) pick=Object.freeze({cx:a.cx,cy:a.cy,text:`send ${fmtN(a.troops*ratio.value/100)} of ${fmtN(a.troops)}`}); }
+  const box_=box?Object.freeze({x0:box.x0,y0:box.y0,x1:box.x1,y1:box.y1}):null;
+  let draft=null; if(draftState.draft){ const value=draftState.draft,p=value.order[value.idx],text=p===me()?`Your pick — click a neutral country (flags mark what's taken) (round ${value.round+1} of ${value.per})`:`${p.name} is picking… (round ${value.round+1} of ${value.per})`; draft=Object.freeze({text}); }
+  let build=null; if(buildMode&&hover>=0){ let tile=hover; if(buildMode!=='nuke'){ const snapped=snapBuild(me().id,hover,buildMode); tile=snapped>=0?snapBuild(me().id,hover,buildMode):hover; } build=Object.freeze({tile,valid:canBuildAt(hover)}); }
+  return frame.interactionPresentation=Object.freeze({pick,box:box_,draft,paused:!!lifecycleState.userPaused,build});
 }
 function renderPass(frame){
   presentationFrameAdvancing=frame.advance;
@@ -1710,13 +1731,10 @@ function renderPass(frame){
   if(notificationDestinationOverride){ ctx.save(); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; ctx.fillStyle=notificationDestinationOverride; ctx.fillRect(0,0,cw,ch); ctx.restore(); }
   if(notificationCanvasStateOverride){ const state=notificationCanvasStateOverride; if(state.globalAlpha!=null) ctx.globalAlpha=state.globalAlpha; if(state.globalCompositeOperation) ctx.globalCompositeOperation=state.globalCompositeOperation; if(state.lineCap) ctx.lineCap=state.lineCap; if(state.lineJoin) ctx.lineJoin=state.lineJoin; if(state.lineWidth!=null) ctx.lineWidth=state.lineWidth; if(state.strokeStyle) ctx.strokeStyle=state.strokeStyle; if(state.fillStyle) ctx.fillStyle=state.fillStyle; if(state.lineDash) ctx.setLineDash(state.lineDash); if(state.lineDashOffset!=null) ctx.lineDashOffset=state.lineDashOffset; if(state.font) ctx.font=state.font; if(state.textAlign) ctx.textAlign=state.textAlign; if(state.textBaseline) ctx.textBaseline=state.textBaseline; if(state.translateX||state.translateY) ctx.translate(state.translateX||0,state.translateY||0); }
   const notificationFrame=updateNotificationOverlay(frame,cw,ch,dpr);
-  if(notificationFrame.credits) return renderer.renderFrame(frame.startCamera);
-  if(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf){ const a=areaAt(hover); if(a){ ctx.font='bold 14px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.fillStyle='#ffd27a'; const px=cam.x+a.cx*s, py=cam.y+a.cy*s-10; const txt=`send ${fmtN(a.troops*ratio.value/100)} of ${fmtN(a.troops)}`; ctx.strokeText(txt,px,py); ctx.fillText(txt,px,py); } }
-  if(box){ ctx.strokeStyle='#fff'; ctx.fillStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1; const bx=Math.min(box.x0,box.x1),by=Math.min(box.y0,box.y1),bw=Math.abs(box.x1-box.x0),bh=Math.abs(box.y1-box.y0); ctx.fillRect(bx,by,bw,bh); ctx.strokeRect(bx,by,bw,bh); }
-  if(draftState.draft){ const p=draftState.draft.order[draftState.draft.idx]; ctx.fillStyle='rgba(10,20,30,.55)'; ctx.fillRect(0,0,cw,44); ctx.font='bold 16px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText(p===me()?`Your pick — click a neutral country (flags mark what's taken) (round ${draftState.draft.round+1} of ${draftState.draft.per})`:`${p.name} is picking… (round ${draftState.draft.round+1} of ${draftState.draft.per})`,cw/2,28); }
-  if(lifecycleState.userPaused){ ctx.fillStyle='rgba(10,20,30,.35)'; ctx.fillRect(0,0,cw,ch); ctx.font='bold 28px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.fillText('Paused',cw/2,ch/2); ctx.font='13px "Segoe UI",system-ui,sans-serif'; ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillText('Space to resume',cw/2,ch/2+24); }
-  // build cursor
-  if(buildMode&&hover>=0){ const ht=buildMode!=='nuke'?(snapBuild(me().id,hover,buildMode)>=0?snapBuild(me().id,hover,buildMode):hover):hover; const x=ht%W,y=(ht-x)/W; ctx.strokeStyle=canBuildAt(hover)?'#7fffa0':'#ff6b6b'; ctx.lineWidth=2; ctx.strokeRect(cam.x+x*s-2,cam.y+y*s-2,s+4,s+4); }
+  if(notificationFrame.credits){ renderer.rejectWorldLayer('interaction-overlays','credits-exclusive'); return renderer.renderFrame(frame.startCamera); }
+  const interactionPresentation=prepareInteractionPresentation(frame),interactionIncomingState=captureNotificationCanvasState(ctx),interactionState={viewport:{width:cw,height:ch},resolution:dpr,camera:{x:cam.x,y:cam.y,scale:s},mapWidth:W,inheritedCanvasState:notificationCanvasStateDescriptor(interactionIncomingState),...interactionPresentation,measureText},interactionOwned=renderer.updateWorldLayer('interaction-overlays',interactionState);
+  if(!interactionOwned) paintInteractionOverlaysCanvas(ctx,interactionState);
+  else{ const state=renderer.diagnostics().layers.interactionOverlays.canvasState; applyNotificationCanvasState(ctx,{...interactionIncomingState,...state,lineDash:[...state.lineDash],transform:[...interactionIncomingState.transform]}); }
   return renderer.renderFrame(frame.startCamera);
 }
 const centCache={}; let highlightId=-1;
@@ -2055,7 +2073,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
-  <tr><td>1.10.28</td><td>Development-only Phase E16 Pixi credits, nuclear alerts, song banner, and badges/notices after E15 ef5633e. Canvas retains final interaction overlays.</td></tr>
+  <tr><td>1.10.29</td><td>Development-only Phase E17 Pixi final pick, selection, draft, paused, and build-cursor visuals after E16 49967b0. Input remains on Canvas.</td></tr>
   <tr><td>1.10.27</td><td>Development-only Phase E15 Pixi opening marker, region labels, and hovered SAM-network annotations after nation overlays.</td></tr>
   <tr><td>1.10.26</td><td>Development-only Phase E14 Pixi nation overlays after global effects.</td></tr>
   <tr><td>1.10.25</td><td>Development-only Phase E13 Pixi global effects after floating text. Canvas retains nation/global labels and every later world layer.</td></tr>
