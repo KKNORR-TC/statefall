@@ -1,6 +1,19 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.23, build `2026-09-18-phase-e11-pixi-support-actors`, on 18 September 2026. E10 is `3d40023`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.24, build `2026-09-18-phase-e12-pixi-floating-text`, on 18 September 2026. E11 is `4bc1cb5`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E12 Implemented Slice
+
+- Migrated exactly the contiguous floating-text block immediately after support actors and before scorches, sparks, smoke, fragments, tracers, wrecks, flashes, global labels, and later effects. Source array order, `txt` strings, colors, `big` selection, 11/16 px bold Segoe UI font stacks, centered alignment, inherited baseline, 3 px black stroke, fill, 40/80-frame lifetimes, linear fade, 0.6/0.9 px rise, big-floater sine bob, and strict lifetime pruning are unchanged. No effect or later label is included.
+- Render-time age and pruning moved to one backend-neutral presentation update per top-level frame. The frame object retains the post-age/pre-prune source snapshot, so fatal Canvas replay is idempotent and restart/reset replaces all presentation sources without simulation authority writes. The pure model is immutable and uses source WeakMap identity with occurrence suffixes; legacy has no explicit floater visibility test or source-level culling, so all entries remain ordered and viewport clipping remains renderer-owned.
+- Bounded Canvas-raster textures include text, font, stroke/fill, alignment/baseline, effective alpha, metrics, and DPR in identity but never position. Position remains a sprite transform. Alpha is baked into each stroke and fill operation because sprite alpha is not source-over equivalent where those operations overlap; obsolete zero-reference fade textures are destroyed each update. Hard reject-not-truncate limits cover 4,096 entries/labels/containers/sprites/textures, 131,072 characters, and 32 MiB source bytes. Pixi Text remains unused and GPU bytes remain unknown.
+- Ownership requires complete Pixi ownership through support actors. Any floater model, cap, measure/font/source, raster, container/sprite, append, prerequisite, or context failure withdraws every floater in the same frame and invokes the direct uncapped Canvas painter after valid Pixi support actors. Fatal update/final-submit failure synchronously replays the complete Canvas frame once without double-age. Canvas state is handed to scorches exactly as the legacy loop leaves it.
+
+## E12 Evidence
+
+- Pure contracts pin age/lifetime/prune behavior, replay idempotence, exact formulas/order/text/style/state handoff, no source culling, WeakMap occurrence identity, cap boundaries, input immutability, and direct Canvas operation inventory independent of Pixi caps. Browser evidence also delivers a labeled synthetic `cashFloat` event through the real `presentEngineEvent`/`cashFloat` creation path.
+- Actual Pixi and direct Canvas pixels are compared over an opaque background at DPR 1, 1.5, and 2 with mid-fade alpha and subpixel screen positions. Production `renderPass` probes exercise final-append, fatal update, and fatal final-submit failure against real engine support actors, the real Canvas scorch block above floaters, actual composed framebuffers, frame/tick/RAF counters, and age evidence.
+- Focused E12 passes 18/18 primary Chromium cases and 3/3 dedicated DPR cases. The labeled 1,800-frame synthetic age/text/color/create/remove/reorder/cull/pan churn measured local synchronous CPU/render-submission mean 1.657 ms, p95 3.8 ms, p99 5.2 ms, and max 26.7 ms; containers/sprites and source bytes plateaued. `npm test`, syntax, 18/18 unchanged Canvas cases, 2/2 source/built contracts, 6/6 renderer lifecycle/context cases, and 24-file reproducibility pass; release-manifest SHA-256 is `44befa1d5a5c0d88e266fca2d384344075b76cb8d9204ee1c9a358aaf4e9c933`. Timings exclude GPU, compositor, display presentation, and input latency; heap remains advisory.
 
 ## E11 Implemented Slice
 
@@ -123,6 +136,6 @@ E8 was committed as `db6ab09` and is the clean base for E9.
 
 ## Remaining Phase E Work
 
-- Continue after the deliberate E11 boundary with floating text/effects, global labels/selection, and later layers in bounded ordered slices.
+- Continue after the deliberate E12 boundary with global effects, later labels/selection, and subsequent layers in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.

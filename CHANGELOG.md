@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.24 - 2026-09-18
+
+- Added bounded Phase E12 development-only Pixi floating text after E11 `4bc1cb5`. Exact source order, text conversion, colors, big/small fonts and lifetimes, stroke/fill/alignment/baseline, age-driven rise/bob/fade formulas, pruning, and Canvas state handoff are retained; scorches, sparks, smoke, global effects, and all later labels remain Canvas-owned above it.
+- Moved render-time floater age/pruning into one renderer-neutral, same-frame-idempotent presentation update. A pure WeakMap-identity model feeds bounded Canvas-raster sprites; legacy per-operation alpha is baked into style/text/font/DPR textures, stale fade variants are promptly evicted, and position uses sprite transforms without entering cache identity. Reject-not-truncate entry/label/character/source-byte/texture/container/sprite caps fall back to the direct uncapped Canvas painter.
+- This remains migration art, not final art. Phase E remains open for global effects, later labels/selection, atlases, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.23 - 2026-09-18
 
 - Added bounded Phase E11 development-only Pixi support actors after E10 `3d40023`: repair trucks with work progress, spy planes with owned orbit ranges, and defensive interceptors with ordered trails and bodies preserve exact collection/category/child order, raw stepped positions without new smoothing, fog/ownership exceptions, geometry, heading, colors, formulas, and Canvas state handoff. Floating text and every later effect/label remain Canvas-owned above them.

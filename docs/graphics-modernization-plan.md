@@ -334,7 +334,7 @@ Status: TECHNICALLY COMPLETE in development game 1.10.12, build `2026-09-18-phas
 
 ### Phase E: Pixi renderer foundation
 
-Status: IN PROGRESS in development game 1.10.23, build `2026-09-18-phase-e11-pixi-support-actors`. E10 commit `3d40023` established terrain through map labels. E11 migrates only the exact immediately following repair-truck, spy-plane, and defensive-interceptor block with one bounded renderer-neutral vector model, WeakMap occurrence identity, prerequisite ownership, and same-frame direct Canvas fallback. Floating text/effects, global labels/selection, UI, and input remain above Pixi; production/default remains Canvas-only. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
+Status: IN PROGRESS in development game 1.10.24, build `2026-09-18-phase-e12-pixi-floating-text`. E11 commit `4bc1cb5` established terrain through support actors. E12 migrates only the exact immediately following floating-text block with one bounded renderer-neutral model, frame-idempotent presentation aging/pruning, WeakMap occurrence identity, Canvas-raster sprites, prerequisite ownership, and same-frame direct Canvas fallback. Scorches/sparks/smoke/global effects, later labels/selection, UI, and input remain above Pixi; production/default remains Canvas-only. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
 
 - Add PixiJS behind a renderer interface and a development-only renderer switch.
 - Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise mouse/pointer input. Keep input commands abstract enough for a future touch adapter.

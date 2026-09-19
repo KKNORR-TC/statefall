@@ -1,6 +1,6 @@
 {
   "name": "statefall",
-  "version": "1.10.23",
+  "version": "1.10.24",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
@@ -18,7 +18,7 @@
     "syntax:prototype": "node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js",
     "test": "npm run test:rendering-contract && npm run test:runtime && npm run test:engine && npm run test:engine-isolation && npm run test:relay && npm run test:adversarial-boundaries && npm run test:compatibility-effects && npm run test:world-loop && npm run test:command-router && npm run test:rules-geometry && npm run test:state && npm run test:map-generation && npm run test:world-setup && npm run test:match-flow && npm run test:diplomacy && npm run test:land-combat && npm run test:ai && npm run test:logistics && npm run test:economy && npm run test:structures && npm run test:missiles && npm run test:fog && npm run test:air && npm run test:naval && npm run test:simulation-ports && npm run test:harness-hardening && npm run test:help-contract && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:phase-d-parity && npm run test:smoke && npm run test:restart && npm run test:renderer-independence && npm run determinism",
     "test:runtime": "node tests/deterministic-runtime.js",
-    "test:rendering-contract": "node tests/rendering-contract.js && node tests/structure-layer-model.js && node tests/pre-structure-layer-model.js && node tests/naval-logistics-model.js && node tests/warship-layer-model.js && node tests/projectile-layer-model.js && node tests/missile-layer-model.js && node tests/aircraft-layer-model.js && node tests/map-label-layer-model.js && node tests/support-actor-layer-model.js",
+    "test:rendering-contract": "node tests/rendering-contract.js && node tests/structure-layer-model.js && node tests/pre-structure-layer-model.js && node tests/naval-logistics-model.js && node tests/warship-layer-model.js && node tests/projectile-layer-model.js && node tests/missile-layer-model.js && node tests/aircraft-layer-model.js && node tests/map-label-layer-model.js && node tests/support-actor-layer-model.js && node tests/floating-text-layer-model.js",
     "test:engine": "node tests/engine.js",
     "test:engine-isolation": "node tests/engine-isolation.js",
     "test:relay": "node tests/multiplayer-relay.js",
