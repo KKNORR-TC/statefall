@@ -5,16 +5,22 @@ const boundedReason=value=>String(value||'').slice(0,160);
 export async function createRenderer({stage,metrics,search=location.search}={}){
   const params=new URLSearchParams(search),query=params.get('renderer'),requested=query||'canvas';
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let active=createCanvasRenderer({reducedMotion}),fallbackReason=null,fallbackCleanup=null,fallbackPromise=null;
+  let active=createCanvasRenderer({reducedMotion}),fallbackReason=null,fallbackCleanup=null,fallbackPromise=null,replayRequired=false;
   const controller={
     get kind(){ return active.kind; }, get hybrid(){ return active.hybrid; }, ready:Promise.resolve(),
     async mount(){ return controller.ready; },
     resize(value){ active.resize(value); }, updateRaster(source){ active.updateRaster(source); }, invalidateRaster(source){ active.invalidateRaster(source); },
     motionState(time=performance.now()){ return active.motionState(time); },
-    updateWorldLayer(layer,state){ try{ return active.updateWorldLayer(layer,state); }catch(error){ void fallback(`pixi-world-layer-failed: ${error?.message||error}`,active); return false; } },
+    updateWorldLayer(layer,state){ try{ return active.updateWorldLayer(layer,state); }catch(error){ fallbackSync(`pixi-world-layer-failed: ${error?.message||error}`,active); replayRequired=true; return false; } },
     capabilities(){ return active.capabilities(); },
     injectFailure(kind){ if(typeof active.injectFailure!=='function') throw new Error('renderer failure injection unavailable'); active.injectFailure(kind); },
-    renderFrame(camera){ try{ active.renderFrame(camera); }catch(error){ void fallback(`pixi-render-failed: ${error?.message||error}`,active); } },
+    projectileRasterEvidence(points){ if(typeof active.projectileRasterEvidence!=='function') throw new Error('projectile raster evidence unavailable'); return active.projectileRasterEvidence(points); },
+    renderFrame(camera){
+      try{ active.renderFrame(camera); }
+      catch(error){ fallbackSync(`pixi-render-failed: ${error?.message||error}`,active); replayRequired=true; }
+      if(replayRequired){ replayRequired=false; return {replay:true,reason:fallbackReason}; }
+      return {replay:false};
+    },
     reset(){ active.reset(); }, suspend(){ active.suspend(); },
     async resume(value){
       const resuming=active;
@@ -25,6 +31,15 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
     diagnostics(){ return {requested,active:active.kind,fallbackReason,fallbackCleanup,...metrics(),...active.diagnostics()}; }
   };
   const syncStage=()=>stage.classList.toggle('pixi-hybrid',active.hybrid);
+  const fallbackSync=(reason,failed=active)=>{
+    if(active.kind==='canvas'&&failed===active) throw new Error(boundedReason(reason)||'canvas renderer failed');
+    if(typeof failed.markUnhealthy==='function') failed.markUnhealthy();
+    failed.destroy(); fallbackCleanup=failed.diagnostics();
+    const replacement=createCanvasRenderer({reducedMotion});
+    try{ replacement.mount({stage,metrics:metrics()}); replacement.resize(metrics()); }
+    catch(error){ try{ replacement.destroy(); }catch{} active=failed; fallbackReason=boundedReason(reason); syncStage(); throw new Error(`canvas-fallback-failed: ${error?.message||error}`); }
+    active=replacement; fallbackReason=boundedReason(reason); syncStage();
+  };
   const fallback=async(reason,failed=active)=>{
     if(active.kind==='canvas'&&failed===active) return;
     if(fallbackPromise) return fallbackPromise;
@@ -47,8 +62,9 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
       const preStructureLimits={primitives:testLimit('pixiPrimitiveCap'),segments:testLimit('pixiSegmentCap')};
       const navalLimits={entities:testLimit('pixiNavalEntityCap'),pathPoints:testLimit('pixiNavalPathCap'),wakePoints:testLimit('pixiNavalWakeCap'),primitives:testLimit('pixiNavalPrimitiveCap'),segments:testLimit('pixiNavalSegmentCap'),labels:testLimit('pixiNavalLabelCap'),containers:testLimit('pixiNavalContainerCap'),graphics:testLimit('pixiNavalGraphicsCap'),failContainerCreate:injected&&params.get('pixiNavalContainerFail')==='1',failGraphicsCreate:injected&&params.get('pixiNavalGraphicsFail')==='1',failLabelCreate:injected&&params.get('pixiNavalLabelFail')==='1'};
       const warshipLimits={entries:testLimit('pixiWarshipEntryCap'),wakePoints:testLimit('pixiWarshipWakeCap'),primitives:testLimit('pixiWarshipPrimitiveCap'),segments:testLimit('pixiWarshipSegmentCap'),labels:testLimit('pixiWarshipLabelCap'),containers:testLimit('pixiWarshipContainerCap'),graphics:testLimit('pixiWarshipGraphicsCap'),failContainerCreate:injected&&params.get('pixiWarshipContainerFail')==='1',failGraphicsCreate:injected&&params.get('pixiWarshipGraphicsFail')==='1',failLabelCreate:injected&&params.get('pixiWarshipLabelFail')==='1'};
+      const projectileLimits={entries:testLimit('pixiProjectileEntryCap'),trailPoints:testLimit('pixiProjectileTrailCap'),primitives:testLimit('pixiProjectilePrimitiveCap'),segments:testLimit('pixiProjectileSegmentCap'),containers:testLimit('pixiProjectileContainerCap'),graphics:testLimit('pixiProjectileGraphicsCap'),failContainerCreate:injected&&params.get('pixiProjectileContainerFail')==='1',failGraphicsCreate:injected&&params.get('pixiProjectileGraphicsFail')==='1'};
       const queryQuality=params.get('quality'),requestedQuality=injected&&queryQuality?queryQuality:'high',quality=['high','medium','low'].includes(requestedQuality)?requestedQuality:'high';
-      const candidate=createPixiHybridRenderer({onContextFailure:reason=>void fallback(reason,candidate),failResumeAt,structureLimits,preStructureLimits,navalLimits,warshipLimits,requestedQuality,quality,reducedMotion,failGraphics:injected&&params.get('pixiGraphicsFail')==='1',failText:injected&&params.get('pixiTextFail')==='1'});
+      const candidate=createPixiHybridRenderer({onContextFailure:reason=>void fallback(reason,candidate),failResumeAt,structureLimits,preStructureLimits,navalLimits,warshipLimits,projectileLimits,requestedQuality,quality,reducedMotion,failGraphics:injected&&params.get('pixiGraphicsFail')==='1',failText:injected&&params.get('pixiTextFail')==='1',testMode:injected});
       try{ await candidate.mount({stage,metrics:metrics(),failBefore:initFailure==='fail',failAfterSetup:initFailure==='fail-after-setup'}); }
       catch(error){ candidate.destroy(); fallbackCleanup=candidate.diagnostics(); throw error; }
       active=candidate; active.resize(metrics());

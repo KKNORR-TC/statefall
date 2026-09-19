@@ -1,17 +1,19 @@
-import {Application,CanvasSource,Container,Graphics,Sprite,Texture} from 'pixi.js';
+import {Application,CanvasSource,Container,Graphics,Rectangle,Sprite,Texture} from 'pixi.js';
 import {MAX_STRUCTURE_POOL,MAX_STRUCTURE_SPRITES,MAX_STRUCTURE_TEXTURES,MAX_STRUCTURE_TEXT_POOL,createBoundedPool,structureBasePaintBounds,structureTextureKey,structureVisual} from './structure-layer-model.mjs';
 import {MAX_PRE_STRUCTURE_PRIMITIVES,MAX_PRE_STRUCTURE_SEGMENTS,MAX_STRUCTURE_TEXTS,createPreStructureScene} from './pre-structure-layer-model.mjs';
 import {MAX_NAVAL_CONTAINERS,MAX_NAVAL_GRAPHICS,MAX_NAVAL_IDLE_CONTAINERS,MAX_NAVAL_IDLE_GRAPHICS,MAX_NAVAL_IDLE_LABELS,MAX_NAVAL_LABEL_RESOURCES,createNavalLogisticsScene} from './naval-logistics-model.mjs';
 import {MAX_WARSHIP_CONTAINERS,MAX_WARSHIP_GRAPHICS,MAX_WARSHIP_IDLE_CONTAINERS,MAX_WARSHIP_IDLE_GRAPHICS,MAX_WARSHIP_IDLE_LABELS,MAX_WARSHIP_LABEL_RESOURCES,createWarshipScene} from './warship-layer-model.mjs';
+import {MAX_PROJECTILE_CONTAINERS,MAX_PROJECTILE_GRAPHICS,MAX_PROJECTILE_IDLE_CONTAINERS,MAX_PROJECTILE_IDLE_GRAPHICS,createProjectileModel} from './projectile-layer-model.mjs';
 
-export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0,structureLimits={},preStructureLimits={},navalLimits={},warshipLimits={},quality='high',requestedQuality=quality,reducedMotion=false,failGraphics=false,failText=false}={}){
-  let app=null,canvas=null,world=null,entities=null,frontsGraphics=null,routesGraphics=null,structureLayer=null,navalLayer=null,warshipLayer=null,effects=null,texture=null,sprite=null,source=null,dirty=false,stage=null,lastMetrics=null,healthy=false;
+export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0,structureLimits={},preStructureLimits={},navalLimits={},warshipLimits={},projectileLimits={},quality='high',requestedQuality=quality,reducedMotion=false,failGraphics=false,failText=false,testMode=false}={}){
+  let app=null,canvas=null,world=null,entities=null,frontsGraphics=null,routesGraphics=null,structureLayer=null,navalLayer=null,warshipLayer=null,projectileLayer=null,effects=null,texture=null,sprite=null,source=null,dirty=false,stage=null,lastMetrics=null,healthy=false;
   let rasterBuildCount=0,rasterUploadCount=0,contextState='initializing',contextListenerCount=0,resumeCount=0;
   let applicationAllocations=0,rendererAllocations=0,textureAllocations=0,releaseCount=0,textureDestroyCount=0,textureClock=0;
   let structureTotal=0,structureVisible=0,structureCulled=0,structureTextureAllocations=0,structureTextureDestroyCount=0,structureSpriteSerial=0,structureTextureSerial=0,structureFrameOwned=false,resourceLimitFallbackCount=0,resourceLimitFallbackReason=null;
   let preStructureFrameOwned=false,preStructureFallbackCount=0,preStructureFallbackReason=null,preStructureScene=null;
   let navalFrameOwned=false,navalFallbackCount=0,navalFallbackReason=null,navalScene=null,navalIdentitySerial=0,navalLabelRasterUpdates=0,navalLabelSourceBytes=0;
   let warshipFrameOwned=false,warshipFallbackCount=0,warshipFallbackReason=null,warshipScene=null,warshipLabelRasterUpdates=0,warshipLabelSourceBytes=0;
+  let projectileFrameOwned=false,projectileFallbackCount=0,projectileFallbackReason=null,projectileScene=null,failFinalRenderRemaining=0,failWorldLayerRemaining=0;
   const spriteMaximum=Number.isInteger(structureLimits.sprites)?Math.max(0,structureLimits.sprites):MAX_STRUCTURE_SPRITES;
   const poolMaximum=Number.isInteger(structureLimits.pool)?Math.max(0,Math.min(spriteMaximum,structureLimits.pool)):Math.min(spriteMaximum,MAX_STRUCTURE_POOL);
   const textureMaximum=Number.isInteger(structureLimits.textures)?Math.max(0,structureLimits.textures):MAX_STRUCTURE_TEXTURES;
@@ -20,7 +22,7 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
   const primitiveMaximum=Number.isInteger(preStructureLimits.primitives)?Math.max(0,preStructureLimits.primitives):MAX_PRE_STRUCTURE_PRIMITIVES;
   const segmentMaximum=Number.isInteger(preStructureLimits.segments)?Math.max(0,preStructureLimits.segments):MAX_PRE_STRUCTURE_SEGMENTS;
   const structureTextures=new Map(),activeStructures=new Map();
-  const activeNaval=new Map(),navalIdentities=new WeakMap(),activeWarships=new Map();
+  const activeNaval=new Map(),navalIdentities=new WeakMap(),activeWarships=new Map(),activeProjectiles=new Map(),projectileModel=createProjectileModel();
   const graphicsMaximum=Math.min(primitiveMaximum,spriteMaximum*9),graphicsPoolMaximum=Math.min(graphicsMaximum,MAX_STRUCTURE_TEXT_POOL*2);
   let failEntryCreateRemaining=structureLimits.failEntryCreate?1:0,failGraphicsCreateRemaining=failGraphics?1:0,failLabelCreateRemaining=failText?1:0,failStructureGraphicsAfterAppend=0,failStructureLabelAfterPaint=0,failStructureContainerAfterAppend=0,labelRasterUpdates=0,labelTextureSourceBytes=0;
   const destroyGraphics=value=>{ try{ value.destroy(); }catch{} };
@@ -48,7 +50,12 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
   const warshipGraphicsPool=createBoundedPool({maximum:warshipGraphicsMaximum,idleMaximum:Math.min(warshipGraphicsMaximum,MAX_WARSHIP_IDLE_GRAPHICS),create:()=>{ const value=new Graphics({label:'warship-graphics'}); if(failWarshipGraphicsRemaining){ failWarshipGraphicsRemaining--; value.destroy(); throw new Error('graphics-resource'); } return value; },destroy:destroyGraphics});
   const warshipLabelPool=createBoundedPool({maximum:warshipLabelMaximum,idleMaximum:Math.min(warshipLabelMaximum,MAX_WARSHIP_IDLE_LABELS),create:()=>{ const canvas=document.createElement('canvas'); canvas.width=1; canvas.height=1; const source=new CanvasSource({resource:canvas,resolution:1,autoDensity:false,antialias:false}),texture=new Texture({source}),sprite=new Sprite(texture),value={canvas,texture,sprite,bytes:4}; warshipLabelSourceBytes+=4; if(failWarshipLabelRemaining){ failWarshipLabelRemaining--; destroyWarshipLabel(value); throw new Error('label-resource'); } return value; },destroy:destroyWarshipLabel});
   const warshipPool=createBoundedPool({maximum:warshipContainerMaximum,idleMaximum:Math.min(warshipContainerMaximum,MAX_WARSHIP_IDLE_CONTAINERS),create:()=>{ const value={container:new Container({label:'warship-entry'}),graphics:[],labels:[]}; if(failWarshipContainerRemaining){ failWarshipContainerRemaining--; value.container.destroy({children:false}); throw new Error('container-resource'); } return value; },destroy:value=>{ releaseWarshipChildren(value); try{ value.container.destroy({children:false}); }catch{} }});
-  const capabilities=()=>({preStructures:!!(healthy&&app?.renderer&&frontsGraphics&&routesGraphics&&contextState==='ready'),structures:!!(healthy&&app?.renderer&&structureLayer&&contextState==='ready'),navalLogistics:!!(healthy&&app?.renderer&&navalLayer&&contextState==='ready'),warships:!!(healthy&&app?.renderer&&warshipLayer&&contextState==='ready')});
+  const projectileContainerMaximum=Number.isInteger(projectileLimits.containers)?Math.max(0,projectileLimits.containers):MAX_PROJECTILE_CONTAINERS,projectileGraphicsMaximum=Number.isInteger(projectileLimits.graphics)?Math.max(0,projectileLimits.graphics):MAX_PROJECTILE_GRAPHICS;
+  let failProjectileContainerRemaining=projectileLimits.failContainerCreate?1:0,failProjectileGraphicsRemaining=projectileLimits.failGraphicsCreate?1:0,failProjectileGraphicsAfterPaint=0,failProjectileContainerAfterAppend=0;
+  const projectileGraphicsPool=createBoundedPool({maximum:projectileGraphicsMaximum,idleMaximum:Math.min(projectileGraphicsMaximum,MAX_PROJECTILE_IDLE_GRAPHICS),create:()=>{ const value=new Graphics({label:'projectile-graphics'}); if(failProjectileGraphicsRemaining){ failProjectileGraphicsRemaining--; value.destroy(); throw new Error('graphics-resource'); } return value; },destroy:destroyGraphics});
+  const releaseProjectileChildren=record=>{ for(const value of record.graphics) recycleGraphics(projectileGraphicsPool,value); record.graphics.length=0; };
+  const projectilePool=createBoundedPool({maximum:projectileContainerMaximum,idleMaximum:Math.min(projectileContainerMaximum,MAX_PROJECTILE_IDLE_CONTAINERS),create:()=>{ const value={container:new Container({label:'projectile-entry'}),graphics:[]}; if(failProjectileContainerRemaining){ failProjectileContainerRemaining--; value.container.destroy({children:false}); throw new Error('container-resource'); } return value; },destroy:value=>{ releaseProjectileChildren(value); try{ value.container.destroy({children:false}); }catch{} }});
+  const capabilities=()=>({preStructures:!!(healthy&&app?.renderer&&frontsGraphics&&routesGraphics&&contextState==='ready'),structures:!!(healthy&&app?.renderer&&structureLayer&&contextState==='ready'),navalLogistics:!!(healthy&&app?.renderer&&navalLayer&&contextState==='ready'),warships:!!(healthy&&app?.renderer&&warshipLayer&&contextState==='ready'),projectiles:!!(healthy&&app?.renderer&&projectileLayer&&contextState==='ready')});
   const markUnhealthy=()=>{ healthy=false; };
   const contextLost=event=>{ event.preventDefault(); markUnhealthy(); contextState='lost'; onContextFailure('pixi-context-lost'); };
   const contextRestored=()=>{ contextState='restored'; dirty=true; };
@@ -77,6 +84,8 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
   const clearNaval=()=>{ for(const record of activeNaval.values()) releaseNaval(record); activeNaval.clear(); navalPool.drain(); navalGraphicsPool.drain(); navalLabelPool.drain(); navalFrameOwned=false; navalScene=null; navalFallbackReason=null; };
   const releaseWarship=record=>{ if(!record) return; let clean=true; try{ warshipLayer?.removeChild(record.container); }catch{ clean=false; } releaseWarshipChildren(record); try{ record.container.removeChildren(); delete record.container.__statefall; record.key=null; }catch{ clean=false; } if(clean) warshipPool.release(record); else warshipPool.discard(record); };
   const clearWarships=()=>{ for(const record of activeWarships.values()) releaseWarship(record); activeWarships.clear(); warshipPool.drain(); warshipGraphicsPool.drain(); warshipLabelPool.drain(); warshipFrameOwned=false; warshipScene=null; warshipFallbackReason=null; };
+  const releaseProjectile=record=>{ if(!record) return; let clean=true; try{ projectileLayer?.removeChild(record.container); }catch{ clean=false; } releaseProjectileChildren(record); try{ record.container.removeChildren(); delete record.container.__statefall; record.key=null; }catch{ clean=false; } if(clean) projectilePool.release(record); else projectilePool.discard(record); };
+  const clearProjectiles=()=>{ for(const record of activeProjectiles.values()) releaseProjectile(record); activeProjectiles.clear(); projectilePool.drain(); projectileGraphicsPool.drain(); projectileModel.reset(); projectileFrameOwned=false; projectileScene=null; projectileFallbackReason=null; };
   const clearPreStructures=()=>{
     try{ frontsGraphics?.clear(); routesGraphics?.clear(); for(const record of activeStructures.values()) for(const graphics of record.graphics) graphics.clear(); }catch{}
     preStructureFrameOwned=false; preStructureScene=null; preStructureFallbackReason=null;
@@ -85,11 +94,11 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
     if(!app&&!canvas&&!world&&!entities&&!effects&&!texture&&!sprite){ if(!preserveSource){ source=null; dirty=false; } return; }
     releaseCount++; markUnhealthy();
     if(canvas){ canvas.removeEventListener('webglcontextlost',contextLost); canvas.removeEventListener('webglcontextrestored',contextRestored); contextListenerCount=0; }
-    clearPreStructures(); clearStructures(); clearNaval(); clearWarships();
+    clearPreStructures(); clearStructures(); clearNaval(); clearWarships(); clearProjectiles();
     if(sprite){ try{ world?.removeChild(sprite); sprite.destroy({texture:false}); }catch{} sprite=null; }
     destroyTexture();
     try{ if(app?.renderer) app.destroy(true,{children:true,texture:false,textureSource:false}); }catch{}
-    canvas?.remove(); app=null; canvas=null; world=null; entities=null; frontsGraphics=null; routesGraphics=null; structureLayer=null; navalLayer=null; warshipLayer=null; effects=null;
+    canvas?.remove(); app=null; canvas=null; world=null; entities=null; frontsGraphics=null; routesGraphics=null; structureLayer=null; navalLayer=null; warshipLayer=null; projectileLayer=null; effects=null;
     if(!preserveSource){ source=null; dirty=false; }
   };
   const mount=async({stage:nextStage,metrics,failBefore=false,failAfterSetup=false})=>{
@@ -101,8 +110,8 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
       app=new Application(); applicationAllocations++;
       await app.init({canvas,width:metrics.cssWidth,height:metrics.cssHeight,resolution:metrics.effectiveDpr,autoDensity:false,antialias:false,backgroundAlpha:1,backgroundColor:0x132a3d,preference:'webgl'});
       rendererAllocations++;
-        app.stop(); world=new Container({label:'world-raster'}); entities=new Container({label:'entities'}); frontsGraphics=new Graphics({label:'fronts'}); routesGraphics=new Graphics({label:'routes'}); structureLayer=new Container({label:'structures'}); navalLayer=new Container({label:'naval-logistics'}); warshipLayer=new Container({label:'warships'}); effects=new Container({label:'planned-effects'});
-        entities.addChild(frontsGraphics,routesGraphics,structureLayer,navalLayer,warshipLayer); app.stage.addChild(world,entities,effects); canvas.addEventListener('webglcontextlost',contextLost); canvas.addEventListener('webglcontextrestored',contextRestored); contextListenerCount=2;
+        app.stop(); world=new Container({label:'world-raster'}); entities=new Container({label:'entities'}); frontsGraphics=new Graphics({label:'fronts'}); routesGraphics=new Graphics({label:'routes'}); structureLayer=new Container({label:'structures'}); navalLayer=new Container({label:'naval-logistics'}); warshipLayer=new Container({label:'warships'}); projectileLayer=new Container({label:'projectiles'}); effects=new Container({label:'planned-effects'});
+        entities.addChild(frontsGraphics,routesGraphics,structureLayer,navalLayer,warshipLayer,projectileLayer); app.stage.addChild(world,entities,effects); canvas.addEventListener('webglcontextlost',contextLost); canvas.addEventListener('webglcontextrestored',contextRestored); contextListenerCount=2;
       if(failAfterSetup) throw new Error('Pixi failure injected after resource setup');
       contextState='ready'; healthy=true; dirty=!!source;
     }catch(error){ release({preserveSource:true}); contextState='failed'; throw error; }
@@ -360,6 +369,34 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
     const ordered=scene.entries.map(entry=>[entry.id,activeWarships.get(entry.id)]); activeWarships.clear(); for(const [id,record] of ordered) activeWarships.set(id,record);
     releaseReserved(); warshipScene=scene; warshipFrameOwned=true; warshipFallbackReason=null; return true;
   };
+  const failProjectileFrame=reason=>{ for(const record of activeProjectiles.values()) releaseProjectile(record); activeProjectiles.clear(); projectileFrameOwned=false; projectileScene=null; projectileFallbackCount++; projectileFallbackReason=reason; return false; };
+  const updateProjectiles=state=>{
+    projectileFrameOwned=false;
+    if(!capabilities().projectiles) return failProjectileFrame('context-unavailable');
+    if(!structureFrameOwned) return failProjectileFrame('structures-unowned');
+    if(!navalFrameOwned) return failProjectileFrame('naval-unowned');
+    if(!warshipFrameOwned) return failProjectileFrame('warships-unowned');
+    let scene;
+    try{ scene=projectileModel.build(state,projectileLimits); }
+    catch(error){ const message=String(error?.message||error),reason=['entry-cap','trail-cap','primitive-cap','segment-cap'].find(value=>message.includes(value))||(message.includes('invalid')?'invalid-source':'model-resource'); return failProjectileFrame(reason); }
+    const desired=new Set(scene.entries.map(entry=>entry.key));
+    for(const [key,record] of activeProjectiles) if(!desired.has(key)){ releaseProjectile(record); activeProjectiles.delete(key); }
+    let containers,graphics;
+    try{ containers=projectilePool.acquireMany(scene.entries.reduce((sum,entry)=>sum+(activeProjectiles.has(entry.key)?0:1),0)); }catch{ return failProjectileFrame('container-resource'); }
+    if(!containers) return failProjectileFrame('container-cap');
+    for(const record of activeProjectiles.values()) releaseProjectileChildren(record);
+    try{ graphics=projectileGraphicsPool.acquireMany(scene.items.length); }catch{ for(const value of containers) projectilePool.release(value); return failProjectileFrame('graphics-resource'); }
+    if(!graphics){ for(const value of containers) projectilePool.release(value); return failProjectileFrame('graphics-cap'); }
+    const releaseReserved=()=>{ for(const value of graphics) projectileGraphicsPool.release(value); for(const value of containers) projectilePool.release(value); };
+    for(const entry of scene.entries){
+      let record=activeProjectiles.get(entry.key); if(!record){ record=containers.pop(); record.key=entry.key; activeProjectiles.set(entry.key,record); }
+      record.container.removeChildren(); record.container.__statefall={key:entry.key,category:entry.category,variant:entry.variant,order:entry.order};
+      for(const item of entry.items){ const value=graphics.pop(); let reason='graphics-resource'; try{ value.label=item.semantic; value.__statefall={kind:'graphics',semantic:item.semantic}; for(const primitive of item.primitives) drawPrimitive(value,primitive); if(failProjectileGraphicsAfterPaint){ failProjectileGraphicsAfterPaint--; throw new Error('graphics-after-paint'); } record.graphics.push(value); record.container.addChild(value); if(failProjectileContainerAfterAppend){ failProjectileContainerAfterAppend--; reason='container-resource'; throw new Error('container-after-append'); } }catch{ const index=record.graphics.indexOf(value); if(index>=0) record.graphics.splice(index,1); discardGraphics(projectileGraphicsPool,value); releaseReserved(); return failProjectileFrame(reason); } }
+      projectileLayer.addChild(record.container);
+    }
+    const ordered=scene.entries.map(entry=>[entry.key,activeProjectiles.get(entry.key)]); activeProjectiles.clear(); for(const [key,record] of ordered) activeProjectiles.set(key,record);
+    releaseReserved(); projectileScene=scene; projectileFrameOwned=true; projectileFallbackReason=null; return true;
+  };
   const structureDiagnostics=()=>{
     const pool=structurePool.diagnostics(),graphics=graphicsPool.diagnostics(),labels=labelPool.diagnostics(),textureBytesEstimate=Array.from(structureTextures.values(),entry=>entry.bytes).reduce((sum,value)=>sum+value,0);
     const records=Array.from(activeStructures.values());
@@ -379,10 +416,38 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
     const containers=warshipPool.diagnostics(),graphics=warshipGraphicsPool.diagnostics(),labels=warshipLabelPool.diagnostics(),records=Array.from(activeWarships.values()),scene=warshipScene,activeGraphics=records.reduce((sum,record)=>sum+record.graphics.length,0),activeLabels=records.reduce((sum,record)=>sum+record.labels.length,0),activeLabelBytes=records.reduce((sum,record)=>sum+record.labels.reduce((inner,value)=>inner+value.bytes,0),0);
     return {owned:warshipFrameOwned,order:['complete-structures','naval-logistics','warships-array-order','canvas-shells-and-later'],canvasStrokeState:scene?.canvasStrokeState||{lineJoin:'miter',lineCap:'butt',globalAlpha:1,lineDash:[],lineDashOffset:0},strokeTimeline:scene?.strokeTimeline||[],counts:scene?.counts||{total:0,visible:0,culled:0,hidden:0},wakePointCount:scene?.wakePointCount||0,wakeSegmentCount:scene?.wakeSegmentCount||0,primitiveCount:scene?.primitiveCount||0,segmentCount:scene?.segmentCount||0,labelCount:scene?.labelCount||0,entries:records.length,containerMaximum:containers.maximum,containersLive:containers.live,containersIdle:containers.pooled,containersCreated:containers.created,containersReused:containers.reused,containersDestroyed:containers.destroyed,graphicsMaximum:graphics.maximum,graphicsActive:activeGraphics,graphicsIdle:graphics.pooled,graphicsCreated:graphics.created,graphicsReused:graphics.reused,graphicsDestroyed:graphics.destroyed,labelMaximum:labels.maximum,labelActive:activeLabels,labelIdle:labels.pooled,labelCreated:labels.created,labelReused:labels.reused,labelDestroyed:labels.destroyed,labelTextureCount:activeLabels+labels.pooled,labelActiveSourceBytes:activeLabelBytes,labelSourceBytes:warshipLabelSourceBytes,labelRasterUpdates:warshipLabelRasterUpdates,labelGpuBytes:{status:'unknown',bytes:null},generatedHullTextures:{strategy:'vector-primitives',references:0,textures:0,sourceBytes:0,gpuBytes:{status:'unknown',bytes:null}},resourceLimitFallback:{count:warshipFallbackCount,reason:warshipFallbackReason},presentation:scene?scene.entries.map(entry=>({id:entry.id,cls:entry.cls,order:entry.order,incomingLineCap:entry.incomingLineCap,outgoingLineCap:entry.outgoingLineCap,items:entry.items.map(item=>item.semantic),itemCaps:entry.items.map(item=>({semantic:item.semantic,lineCap:item.lineCap})),styles:entry.items.flatMap(item=>(item.primitives||[]).map(({kind,stroke,fill,width,alpha,cap,join})=>({kind,stroke,fill,width,alpha,cap,join})))})):[],resources:records.map(record=>({id:record.key,order:record.container.__statefall?.order,cls:record.container.__statefall?.cls,childCount:record.container.children.length,children:record.container.children.map(child=>child.__statefall?.semantic||child.label)}))};
   };
+  const projectileDiagnostics=()=>{
+    const containers=projectilePool.diagnostics(),graphics=projectileGraphicsPool.diagnostics(),records=Array.from(activeProjectiles.values()),scene=projectileScene,activeGraphics=records.reduce((sum,record)=>sum+record.graphics.length,0);
+    return {owned:projectileFrameOwned,order:['complete-structures','naval-logistics','warships','shells-array-order','visual-shots-array-order','canvas-missiles-and-later'],canvasStrokeState:scene?.canvasStrokeState||{lineJoin:'miter',lineCap:'butt',globalAlpha:1,lineDash:[],lineDashOffset:0},strokeTimeline:scene?.strokeTimeline||[],counts:scene?.counts||{shells:{total:0,visible:0,culled:0,hidden:0},visualShots:{total:0,visible:0,culled:0}},trailPointCount:scene?.trailPointCount||0,primitiveCount:scene?.primitiveCount||0,segmentCount:scene?.segmentCount||0,fallbackTotals:scene?.fallbackTotals||0,entries:records.length,containerMaximum:containers.maximum,containersLive:containers.live,containersIdle:containers.pooled,containersCreated:containers.created,containersReused:containers.reused,containersDestroyed:containers.destroyed,graphicsMaximum:graphics.maximum,graphicsActive:activeGraphics,graphicsIdle:graphics.pooled,graphicsCreated:graphics.created,graphicsReused:graphics.reused,graphicsDestroyed:graphics.destroyed,resourceLimitFallback:{count:projectileFallbackCount,reason:projectileFallbackReason},presentation:scene?scene.entries.map(entry=>({key:entry.key,category:entry.category,variant:entry.variant,order:entry.order,incomingLineCap:entry.incomingLineCap,outgoingLineCap:entry.outgoingLineCap,age:entry.age,alpha:entry.alpha,arc:entry.arc,items:entry.items.map(item=>item.semantic),itemCaps:entry.items.map(item=>({semantic:item.semantic,lineCap:item.lineCap})),styles:entry.items.flatMap(item=>item.primitives.map(({kind,stroke,fill,width,alpha,cap,join,dash})=>({kind,stroke,fill,width,alpha,cap,join,dash})))})):[],resources:records.map(record=>({key:record.key,category:record.container.__statefall?.category,variant:record.container.__statefall?.variant,order:record.container.__statefall?.order,childCount:record.container.children.length,children:record.container.children.map(child=>child.__statefall?.semantic)}))};
+  };
+  const projectileRasterEvidence=(samplePoints=[])=>{
+    if(!testMode) throw new Error('projectile raster evidence is test-only');
+    if(!app?.renderer||!projectileLayer||!projectileFrameOwned) throw new Error('projectile layer is unavailable');
+    const resolution=lastMetrics?.effectiveDpr||1,width=lastMetrics?.cssWidth||1,height=lastMetrics?.cssHeight||1,frame=new Rectangle(0,0,width,height),visibility=[];
+    const summarize=output=>{
+      const pixels=output.pixels||output,width_=output.width||Math.round(width*resolution),height_=output.height||Math.round(height*resolution),colors=new Set(); let count=0,minX=width_,minY=height_,maxX=-1,maxY=-1;
+      for(let i=0;i<pixels.length;i+=4){ if(!pixels[i+3]) continue; const n=i/4,x=n%width_,y=Math.floor(n/width_); count++; minX=Math.min(minX,x); minY=Math.min(minY,y); maxX=Math.max(maxX,x); maxY=Math.max(maxY,y); colors.add(`${pixels[i]},${pixels[i+1]},${pixels[i+2]},${pixels[i+3]}`); }
+      return {pixels:count,colors:colors.size,bounds:count?{left:minX/resolution,top:minY/resolution,right:(maxX+1)/resolution,bottom:(maxY+1)/resolution}:null,width:width_,height:height_};
+    };
+    const extract=(target,withSamples=false)=>{ const output=app.renderer.extract.pixels({target,frame,resolution,clearColor:[0,0,0,0],antialias:false}),summary=summarize(output); if(withSamples){ const pixels=output.pixels||output,width_=output.width||summary.width,height_=output.height||summary.height; summary.samples=samplePoints.map(({x,y})=>{ const px=Math.max(0,Math.min(width_-1,Math.floor(x*resolution))),py=Math.max(0,Math.min(height_-1,Math.floor(y*resolution))),i=(py*width_+px)*4; return {x,y,rgba:Array.from(pixels.slice(i,i+4))}; }); } return summary; };
+    let evidence=null;
+    try{
+      for(const child of app.stage.children){ visibility.push([child,child.visible]); child.visible=child===entities; }
+      for(const child of entities.children){ visibility.push([child,child.visible]); child.visible=child===projectileLayer; }
+      app.render();
+      const combined=extract(projectileLayer,true),semantics={},order=[];
+      for(const record of activeProjectiles.values()) for(const graphics of record.graphics){ const semantic=graphics.__statefall?.semantic||graphics.label; order.push(semantic); semantics[semantic]=extract(graphics); }
+      evidence={resolution,width,height,combined,semantics,order,restored:false}; return evidence;
+    }finally{
+      for(let i=visibility.length-1;i>=0;i--) visibility[i][0].visible=visibility[i][1];
+      if(evidence) evidence.restored=visibility.every(([value,visible])=>value.visible===visible);
+    }
+  };
   return {
     kind:'pixi-hybrid',hybrid:true,
     mount,markUnhealthy,capabilities,
-    injectFailure(kind){ if(kind==='entry') failEntryCreateRemaining=1; else if(kind==='graphics') failGraphicsCreateRemaining=1; else if(kind==='label') failLabelCreateRemaining=1; else if(kind==='structure-graphics-after-append') failStructureGraphicsAfterAppend=1; else if(kind==='structure-label-after-paint') failStructureLabelAfterPaint=1; else if(kind==='structure-container-after-append') failStructureContainerAfterAppend=1; else if(kind==='naval-container') failNavalContainerRemaining=1; else if(kind==='naval-graphics') failNavalGraphicsRemaining=1; else if(kind==='naval-label') failNavalLabelRemaining=1; else if(kind==='naval-graphics-after-append') failNavalGraphicsAfterAppend=1; else if(kind==='naval-label-after-paint') failNavalLabelAfterPaint=1; else if(kind==='naval-container-after-append') failNavalContainerAfterAppend=1; else if(kind==='warship-container') failWarshipContainerRemaining=1; else if(kind==='warship-graphics') failWarshipGraphicsRemaining=1; else if(kind==='warship-label') failWarshipLabelRemaining=1; else if(kind==='warship-graphics-after-append') failWarshipGraphicsAfterAppend=1; else if(kind==='warship-label-after-paint') failWarshipLabelAfterPaint=1; else if(kind==='warship-container-after-append') failWarshipContainerAfterAppend=1; else throw new Error(`unknown renderer failure: ${kind}`); },
+    injectFailure(kind){ if(kind==='entry') failEntryCreateRemaining=1; else if(kind==='graphics') failGraphicsCreateRemaining=1; else if(kind==='label') failLabelCreateRemaining=1; else if(kind==='structure-graphics-after-append') failStructureGraphicsAfterAppend=1; else if(kind==='structure-label-after-paint') failStructureLabelAfterPaint=1; else if(kind==='structure-container-after-append') failStructureContainerAfterAppend=1; else if(kind==='naval-container') failNavalContainerRemaining=1; else if(kind==='naval-graphics') failNavalGraphicsRemaining=1; else if(kind==='naval-label') failNavalLabelRemaining=1; else if(kind==='naval-graphics-after-append') failNavalGraphicsAfterAppend=1; else if(kind==='naval-label-after-paint') failNavalLabelAfterPaint=1; else if(kind==='naval-container-after-append') failNavalContainerAfterAppend=1; else if(kind==='warship-container') failWarshipContainerRemaining=1; else if(kind==='warship-graphics') failWarshipGraphicsRemaining=1; else if(kind==='warship-label') failWarshipLabelRemaining=1; else if(kind==='warship-graphics-after-append') failWarshipGraphicsAfterAppend=1; else if(kind==='warship-label-after-paint') failWarshipLabelAfterPaint=1; else if(kind==='warship-container-after-append') failWarshipContainerAfterAppend=1; else if(kind==='projectile-container') failProjectileContainerRemaining=1; else if(kind==='projectile-graphics') failProjectileGraphicsRemaining=1; else if(kind==='projectile-graphics-after-paint') failProjectileGraphicsAfterPaint=1; else if(kind==='projectile-container-after-append') failProjectileContainerAfterAppend=1; else if(kind==='final-render') failFinalRenderRemaining=1; else if(kind==='world-layer-update') failWorldLayerRemaining=1; else throw new Error(`unknown renderer failure: ${kind}`); },
+    projectileRasterEvidence,
     resize(metrics){
       lastMetrics=metrics; if(!app?.renderer) return;
       app.renderer.resolution=metrics.effectiveDpr; app.renderer.resize(metrics.cssWidth,metrics.cssHeight);
@@ -391,12 +456,17 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
     updateRaster(nextSource){ source=nextSource; dirty=true; rasterBuildCount++; },
     invalidateRaster(nextSource){ source=nextSource; dirty=true; rasterBuildCount++; },
     motionState(time=performance.now()){ return {time:reducedMotion?0:Number(time)||0,reducedMotion}; },
-    updateWorldLayer(layer,state){ const value=typeof state==='function'?state():state; return layer==='pre-structures'?updatePreStructures(value):layer==='structures'?updateStructures(value):layer==='naval-logistics'?updateNaval(value):layer==='warships'?updateWarships(value):false; },
+    updateWorldLayer(layer,state){ if(failWorldLayerRemaining){ failWorldLayerRemaining--; throw new Error('world-layer-update'); } const value=typeof state==='function'?state():state; return layer==='pre-structures'?updatePreStructures(value):layer==='structures'?updateStructures(value):layer==='naval-logistics'?updateNaval(value):layer==='warships'?updateWarships(value):layer==='projectiles'?updateProjectiles(value):false; },
     renderFrame(camera){
       if(!app||contextState==='lost') return;
       if(source&&!texture){ texture=Texture.from(source); textureAllocations++; texture.source.scaleMode='nearest'; sprite=new Sprite(texture); world.addChild(sprite); }
       if(dirty&&texture){ texture.source.update(); rasterUploadCount++; dirty=false; }
       if(sprite){ sprite.position.set(camera.x,camera.y); sprite.scale.set(camera.s); }
+      if(failFinalRenderRemaining){
+        failFinalRenderRemaining--;
+        const submit=app.render;
+        app.render=function(){ app.render=submit; throw new Error('final-app-render'); };
+      }
       app.render();
     },
     suspend(){},
@@ -408,7 +478,7 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
       this.resize(metrics); contextState='ready'; healthy=true;
     },
     reset(){
-      clearPreStructures(); clearStructures(); clearNaval(); clearWarships();
+      clearPreStructures(); clearStructures(); clearNaval(); clearWarships(); clearProjectiles();
       if(sprite){ world.removeChild(sprite); sprite.destroy({texture:false}); sprite=null; }
       destroyTexture(); source=null; dirty=false;
     },
@@ -417,7 +487,8 @@ export function createPixiHybridRenderer({onContextFailure=()=>{},failResumeAt=0
       const structures=structureDiagnostics();
       const naval=navalDiagnostics();
       const warships=warshipDiagnostics();
-      return {rasterBuildCount,rasterUploadCount,textureCount:(texture?1:0)+structures.textureCount+structures.labelTextureCount+naval.labelTextureCount+warships.labelTextureCount,spriteCount:(sprite?1:0)+structures.entries+structures.pooled+structures.activeLabelSprites+structures.idleLabelSprites+naval.labelActive+naval.labelIdle+warships.labelActive+warships.labelIdle,graphicsCount:(frontsGraphics?2:0)+structures.entryGraphicsCount+structures.pooledGraphicsCount+naval.graphicsActive+naval.graphicsIdle+warships.graphicsActive+warships.graphicsIdle,textCount:0,containerCount:app?8+structures.entries+structures.pooled+naval.containersLive+warships.containersLive:0,canvasCount:canvas?1:0,contextListenerCount,contextState,resumeCount,applicationAllocations,rendererAllocations,textureAllocations,releaseCount,textureDestroyCount,quality:{requested:requestedQuality,effective:quality},reducedMotion,motion:{clock:reducedMotion?'frozen':'monotonic',frozenTime:reducedMotion?0:null},capabilities:capabilities(),compositingConflictFallback:{active:false,count:0,reason:null,detail:null},layers:{terrain:{owned:!!(healthy&&texture),textureCount:texture?1:0,spriteCount:sprite?1:0},preStructures:preStructureDiagnostics(),structures,navalLogistics:naval,warships}};
+      const projectiles=projectileDiagnostics();
+      return {rasterBuildCount,rasterUploadCount,textureCount:(texture?1:0)+structures.textureCount+structures.labelTextureCount+naval.labelTextureCount+warships.labelTextureCount,spriteCount:(sprite?1:0)+structures.entries+structures.pooled+structures.activeLabelSprites+structures.idleLabelSprites+naval.labelActive+naval.labelIdle+warships.labelActive+warships.labelIdle,graphicsCount:(frontsGraphics?2:0)+structures.entryGraphicsCount+structures.pooledGraphicsCount+naval.graphicsActive+naval.graphicsIdle+warships.graphicsActive+warships.graphicsIdle+projectiles.graphicsActive+projectiles.graphicsIdle,textCount:0,containerCount:app?9+structures.entries+structures.pooled+naval.containersLive+warships.containersLive+projectiles.containersLive:0,canvasCount:canvas?1:0,contextListenerCount,contextState,resumeCount,applicationAllocations,rendererAllocations,textureAllocations,releaseCount,textureDestroyCount,quality:{requested:requestedQuality,effective:quality},reducedMotion,motion:{clock:reducedMotion?'frozen':'monotonic',frozenTime:reducedMotion?0:null},capabilities:capabilities(),compositingConflictFallback:{active:false,count:0,reason:null,detail:null},layers:{terrain:{owned:!!(healthy&&texture),textureCount:texture?1:0,spriteCount:sprite?1:0},preStructures:preStructureDiagnostics(),structures,navalLogistics:naval,warships,projectiles}};
     }
   };
 }

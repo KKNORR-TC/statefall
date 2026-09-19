@@ -334,7 +334,7 @@ Status: TECHNICALLY COMPLETE in development game 1.10.12, build `2026-09-18-phas
 
 ### Phase E: Pixi renderer foundation
 
-Status: IN PROGRESS in development game 1.10.18, build `2026-09-18-phase-e6-pixi-warships`. E1-E4 established terrain and the complete structure graph; E5 commit `bbd4dd3` completed naval logistics. E6 migrates only the immediately following complete warship/submarine block with bounded neutral models, stable simulation-ID resources, prerequisite ownership, and same-frame Canvas fallback. Canvas shells/projectiles, missiles, aircraft, later labels/effects, UI, and input remain above Pixi and production/default remains Canvas-only. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
+Status: IN PROGRESS in development game 1.10.19, build `2026-09-18-phase-e7-pixi-projectiles`. E1-E6 through commit `7cd64f4` established terrain, complete structures, naval logistics, and warships. E7 migrates only the exact immediately following shell and visual-shot blocks with bounded neutral models, object-identity resources, prerequisite ownership, and same-frame Canvas fallback. Canvas strategic/cruise missiles, main aircraft, later labels/effects, UI, and input remain above Pixi and production/default remains Canvas-only. This does not complete the Phase E gate and does not claim final art. See `docs/phase-e-progress.md`.
 
 - Add PixiJS behind a renderer interface and a development-only renderer switch.
 - Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise mouse/pointer input. Keep input commands abstract enough for a future touch adapter.

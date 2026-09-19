@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.19 - 2026-09-18
+
+- Added the bounded Phase E7 development-only Pixi projectile slice after E6 `7cd64f4`: torpedo foam/body, AAM trail/body, arcing barrage rocket/trail, arcing artillery shell/ground tether, ordinary gun-shell trail/body, and short visual gun lines preserve legacy array/category/primitive order, stepped positions, fog decisions, height-bearing trails, arc/rise/delay/total formulas, styles, and inherited Canvas cap chronology. Strategic/cruise missiles and all later layers remain Canvas-owned above it.
+- Added a pure renderer-neutral bounded model with WeakMap object identity, deterministic occurrence keys, renderer-owned arc-total fallback cleanup, crossing-geometry culling, immutable visual-shot frame descriptors, and reject-not-truncate entry/trail/primitive/segment/container/Graphics caps. Visual shots age and prune once per displayed frame before either backend, including Pixi failure fallback.
+- Projectile ownership requires complete structures, naval logistics, and warships. Model, cap, constructor, paint, append, prerequisite, or context failure atomically withdraws every shell and visual shot, preserves valid Pixi warships, paints the complete Canvas projectile block in the same frame, and retries later without dirty resources or ghosts.
+- This remains migration art. Phase E is open for strategic/cruise missiles, main aircraft, later layers/effects, atlases, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.18 - 2026-09-18
 
 - Added the bounded Phase E6 development-only Pixi warship/submarine block after E5 naval logistics. All eight classes preserve array and child order, stable simulation identity, interpolated display input, fog/sub-detection decisions, class radii, owner ranges, selection/destination, wakes or submarine alpha, tick-derived lean/recoil, hull details and ceil HP pips, muzzle flash, refit arc, CM raster badge, and barrage cooldown. Canvas cap state advances exactly in visible warship-array order: pre-wake work uses the incoming cap, qualifying surface wakes transition subsequent work to round before culling, submarines and short/hidden wakes do not transition it, and retained Canvas layers receive the final cap.

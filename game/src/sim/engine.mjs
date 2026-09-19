@@ -448,6 +448,7 @@ export function createEngine(options={},adapters={}){
     siloReadyIn:query(playerId=>missilesSystem.siloReadyIn(playerById(playerId))),silosReady:query((playerId,commandOnly=false)=>{ if(typeof commandOnly!=='boolean') throw new TypeError('commandOnly must be boolean.'); return missilesSystem.silosReady(playerById(playerId),commandOnly); },{min:1,max:2}),missileCost:query((playerId,structureTile=null)=>missilesSystem.missileCost(playerById(playerId),structureTile===null?null:structureByTile(structureTile)),{min:1,max:2}),cruiseTargets:query(candidates=>{ const copy=cloneQueryData(candidates); if(!Array.isArray(copy)||copy.length>10000) throw new TypeError('cruise target candidates must be a bounded array.'); for(const candidate of copy) if(!candidate||typeof candidate!=='object'||Array.isArray(candidate)||typeof candidate.type!=='string'||typeof candidate.t!=='number'||!Number.isSafeInteger(candidate.t)||typeof candidate.owner!=='number'||!Number.isSafeInteger(candidate.owner)) throw new TypeError('Invalid cruise target candidate.'); return navalSystem.cruiseTargetsForPresentation(copy); })
   });
   function installTestFixture(name){
+    if(name==='submission-failure-projectiles'){ installSubmissionFailureProjectiles(); return readonly.wrap({fixture:name,shells:engineState.actors.shells.length}); }
     if(!testBridge) throw new Error('Engine fixtures require the test bridge.');
     if(name!=='dense-late-game') throw new Error(`Unknown engine fixture: ${name}`);
     const human=me(); if(!human||!engineState.lifecycle.paused) throw new Error('late-game scene requires a paused match');
@@ -476,6 +477,13 @@ export function createEngine(options={},adapters={}){
     for(const player of [human,rivals[0],rivals[1]]) player.tiles=Math.max(1200,player.tiles);
     resetInterpolationFrame();
     return readonly.wrap({fixture:name,center:[cx,cy],flagshipId:flagship.id,labelPositions:[[human.id,[cx-27.5,cy-27.5]],[rivals[0].id,[cx+30.5,cy-26.5]],[rivals[1].id,[cx+2.5,cy+27.5]]],alert:{from:point(enemySam.t),at:point(city.t),owner:rivals[0].id}});
+  }
+  function installSubmissionFailureProjectiles(){
+    if(!testBridge||!me()||!engineState.lifecycle.paused) throw new Error('submission fixture requires a paused test match');
+    const base=engineState.actors.shells[0],cx=base?.x??me().sx,cy=base?.y??me().sy,owner=base?.owner??me().id;
+    engineState.replaceActors('shells',[{owner,x:cx-40,y:cy-12,tx:cx-30,ty:cy-12,torpedo:true,trail:[[cx-58,cy-15],[cx-55,cy-18],[cx-55,cy-10],[cx-49,cy-18],[cx-43,cy-15]]},{owner,x:cx-20,y:cy+12,tx:cx-10,ty:cy+12,kind:'aam',trail:[[cx-34,cy+15],[cx-27,cy+13]]},{owner,x:cx,y:cy-12,tx:cx+10,ty:cy-12,kind:'land',arc:true,missile:true,tot:20,rise:14,trail:[[cx-14,cy-8,0],[cx-7,cy-10,3]]},{owner,x:cx+20,y:cy+12,tx:cx+30,ty:cy+12,kind:'land',arc:true,tot:20,rise:14,trail:[[cx+6,cy+15],[cx+13,cy+13]]},{owner,x:cx+40,y:cy-12,tx:cx+50,ty:cy-12,kind:'gun',trail:[[cx+26,cy-9],[cx+33,cy-11]]}]);
+    const ship=engineState.actors.warships[0],tile=Math.max(0,Math.min(W*H-1,Math.floor(ship?.y??cy)*W+Math.floor(ship?.x??cx)));
+    engineState.replaceActors('transports',[{owner:me().id,path:[tile],pos:0,troops:24,heavy:true,hp:R.HEAVY.hp,hdg:0,wake:[[tile%W-2,(tile-tile%W)/W+.5],[tile%W-1,(tile-tile%W)/W+.5]]}]);
   }
   const systems=Object.freeze({structures:structuresSystem,landCombat,mapGeneration,diplomacy:diplomacySystem,air:airSystem,fog:fogSystem,missiles:missilesSystem,naval:navalSystem,logistics:logisticsSystem,ai:aiSystem,economy:economySystem,matchFlow,worldSetup,commandRouter,worldLoop});
   checkpointManager=createEngineCheckpointManager({engineState,runtime,W,H,tickMs,
