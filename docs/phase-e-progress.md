@@ -1,6 +1,20 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.19, build `2026-09-18-phase-e7-pixi-projectiles`, on 18 September 2026. E6 is `7cd64f4`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.20, build `2026-09-18-phase-e8-pixi-missiles`, on 18 September 2026. E7 is `c6b2089`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E8 Implemented Slice
+
+- Migrated exactly the contiguous strategic/cruise `missiles` block after visual shots and before main aircraft. Normal silo/nuclear and cruise entries retain missile-array and trail/body/ring primitive order, analytic `missilePos` arc versus straight formulas, `N=max(2,floor(age/2))` trail segments and exact sample ages, next-point heading versus target heading, cruise body scale 0.65, current-point enemy fog visibility, unconditional own visibility, and `NUKE_RADIUS` versus `CRUISE.radius` warning rings. Aircraft and all later actors remain on transparent Canvas above Pixi.
+- The pure renderer-neutral model consumes detached descriptors and the same `frame.now` timestamp as legacy Canvas. The warning remains `0.35 + 0.35*sin(now/150)` under the current reduced-motion policy: unlike earlier route motion, this legacy pulse is not frozen. It does not interpolate, mutate missiles, consume RNG, or write simulation/presentation authority. WeakMap source identity plus occurrence suffixes survive reorder/removal and duplicate references.
+- Reject-not-truncate caps cover 8,192 entries/containers, 262,144 trail samples, 262,144 primitives, 524,288 generated segments, and 24,576 Graphics; idle pools are bounded at 1,024 containers and 3,072 Graphics. Full geometric culling includes crossing trail segments, transformed body polygons, and the complete warning radius even when centers are offscreen.
+- Ownership requires complete structures, naval logistics, warships, and projectiles in the same frame. Model, cap, constructor, paint, append, prerequisite, or context failure withdraws every missile and paints the complete Canvas block after Pixi projectiles. Reservations are transactional, dirty partial Graphics are discarded, and valid update failures retry. Fatal submit/update failure retains E7's synchronous one-token full Canvas replay and terminal Canvas policy.
+
+## E8 Evidence
+
+- Pure contracts cover exact normal/cruise formulas, trail count/ages/order, body geometry/heading/scale, ring radius/pulse, owner/fog visibility, inherited/final Canvas state, WeakMap occurrence behavior, full bounds, exact caps, rejected-build identity stability, and input immutability. Existing browser-free missile tests cover real launch, flight/interceptor resolution, shield/impact completion, damage, and engine isolation; simultaneous hard renderer states are explicitly synthetic.
+- Test-guarded real Pixi extraction checks every semantic Graphics object, order, colors, bounds, visibility restoration, and unchanged tracked resources at DPR 1, 1.5, and 2. Recoverable fail-after-paint and fail-after-append paths run the actual Canvas model painter and record semantic pixels and final state. Fatal-submit evidence compares the actual full Canvas replay against an identical-timestamp no-missile baseline with independent per-entry/per-primitive fill/stroke masks and omission sensitivity; a retained aircraft crop is nontrivial and unchanged.
+- Prerequisite/reset/recovery, context/BFCache/restart infrastructure, WeakMap reorder/removal, source and canonical-state purity, and same-frame fatal replay are covered without changing E7 evidence. The labeled synthetic 1,800-frame churn varies age, normal/cruise type, owner, fog, culling, reorder, and create/remove count; pools plateau. The final focused local synchronous CPU/render-submission run measured p95 0.6 ms and p99 1.0 ms, below 16.7/33 ms. This excludes GPU, compositor, display presentation, and input latency; heap is advisory and GPU allocation bytes remain unknown.
+- `npm test`, syntax, the focused Chromium/DPR/reduced-motion missile matrix plus an intentional projectile-under-missile raster check, Canvas goldens, source/built production contracts, and 24-file reproducibility pass. The reproducible release-manifest SHA-256 is `78165cf7946e7ded7112301aac34951bf2020d512c6682f8366278f9aed42d9e`; the production build has no Pixi JavaScript graph. The broad browser matrix recorded 124 passes and 273 intentional project-selection skips; one replay-resume timing case failed there and passed immediately in isolation, so it is reported as a rerun rather than hidden.
 
 ## E7 Implemented Slice
 
@@ -64,6 +78,6 @@ _Development record through game/package 1.10.19, build `2026-09-18-phase-e7-pix
 
 ## Remaining Phase E Work
 
-- Migrate strategic/cruise missiles, main aircraft, and later labels/effects in bounded ordered slices.
+- Migrate main aircraft and later actors/labels/effects in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.

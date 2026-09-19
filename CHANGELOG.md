@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.20 - 2026-09-18
+
+- Added the bounded Phase E8 development-only Pixi missile slice after E7 `c6b2089`: normal silo/nuclear and cruise missiles preserve missile-array order, exact analytic arc/straight positions, historical trail sample ages, body heading and cruise scale, current-point fog/owner visibility, target radius, warning pulse from the shared frame timestamp, and Canvas stroke-state chronology. Main aircraft and every later layer remain Canvas-owned above it.
+- Added a pure renderer-neutral model with WeakMap source identity and occurrence keys, full trail/body/ring viewport bounds, and reject-not-truncate entry/trail-sample/primitive/segment/container/Graphics caps. Ownership requires every prerequisite through projectiles; missile-only failure atomically withdraws all missile resources, Canvas paints the complete block in the same frame, and valid updates retry.
+- Added pure formula/order/visibility/pulse/handoff/cap/immutability contracts; real isolated Pixi and Canvas fallback evidence at DPR 1/1.5/2; fail-after-paint/append, prerequisite, identity, reset/fatal-replay coverage; and labeled 1,800-frame synthetic churn. The final focused local synchronous submission soak measured p95 0.6 ms and p99 1.0 ms; heap remains advisory and GPU allocation bytes are unknown.
+- This remains migration art. Phase E is open for main aircraft, later actors/labels/effects, atlases, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.19 - 2026-09-18
 
 - Added the bounded Phase E7 development-only Pixi projectile slice after E6 `7cd64f4`: torpedo foam/body, AAM trail/body, arcing barrage rocket/trail, arcing artillery shell/ground tether, ordinary gun-shell trail/body, and short visual gun lines preserve legacy array/category/primitive order, stepped positions, fog decisions, height-bearing trails, arc/rise/delay/total formulas, styles, and inherited Canvas cap chronology. Strategic/cruise missiles and all later layers remain Canvas-owned above it.
