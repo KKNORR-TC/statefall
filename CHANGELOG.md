@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.28 - 2026-09-18
+
+- Added bounded Phase E16 development-only Pixi ownership of the exact notification-overlay block after E15 `ef5633e`: credits, nuclear alerts, the song banner, and badges/notices retain source order, viewport anchoring, timing, fades, pulses, controls, styles, and Canvas state handoff. Pick, selection, draft, pause, and build-cursor overlays remain Canvas-owned above it.
+- Added once-per-frame notification preparation at its legacy late-render boundary, preserving queued age-zero badge audio, same-frame age/alpha, and credits camera chronology. World layers use the frame-start camera; fatal final-submit replay restores that camera for world paint and reapplies the cached once-advanced credits camera only at notifications. Pixi ownership explicitly maps only compositionally equivalent transparent-preraster modes (`source-over` to `normal`, `lighter` to `add`). Destination-dependent and unknown modes reject before allocation and paint directly over the populated main Canvas. Every offscreen creation, context, resize, state, paint, capture, source, texture, update, and append failure withdraws only E16, releases partial resources, paints notifications directly in the same frame, and retries later while retaining E15 ownership. Canvas/default paints directly without allocating the raster; plugin 1.10.7 and simulation baseline 1.10.8 are unchanged.
+
 ## 1.10.27 - 2026-09-18
 
 - Added bounded Phase E15 development-only Pixi ownership of the exact contiguous world-annotation block after E14 `de15e58`: the opening ring and label, zoomed-out region names, hovered owned/allied SAM site and ship network ranges, and the network summary retain source order, conditions, formulas, owner/fog/hover rules, geometry, dashes, styles, strings, and Canvas state handoff.
