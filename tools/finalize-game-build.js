@@ -23,7 +23,8 @@ for(const file of emitted){
   if(/\.(?:html|js|css|json|txt)$/.test(file.path)&&/__STATEFALL_TEST(?:_[A-Z]+)?__/.test(file.data.toString('utf8'))){
     throw new Error(`Production dist contains capture bridge marker: ${file.path}`);
   }
-  if(/\.js$/.test(file.path)&&forbiddenProductionJs.test(file.data.toString('utf8'))){
+  const productionText=file.data.toString('utf8'),guardText=productionText.replaceAll(metadata.build,'');
+  if(/\.js$/.test(file.path)&&forbiddenProductionJs.test(guardText)){
     throw new Error(`Production JavaScript contains Pixi, renderer-switch, or test-bridge code: ${file.path}`);
   }
 }

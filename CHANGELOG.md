@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.27 - 2026-09-18
+
+- Added bounded Phase E15 development-only Pixi ownership of the exact contiguous world-annotation block after E14 `de15e58`: the opening ring and label, zoomed-out region names, hovered owned/allied SAM site and ship network ranges, and the network summary retain source order, conditions, formulas, owner/fog/hover rules, geometry, dashes, styles, strings, and Canvas state handoff.
+- A pure renderer-neutral model uses stable semantic/tile/ship/region keys, measured ink-overhang/crossing bounds, vector Graphics, and bounded Canvas-raster labels. Transactional refcounts preserve matching and recently unused text/DPR variants, deterministic age/idle limits remove stale zero-reference entries, and texture/source-byte pressure evicts least-recently-used zero-reference entries before allocation. Cumulative raster/allocation/reuse/destruction/eviction diagnostics are separate from live resource counts. Any annotation-only failure withdraws the complete block and direct uncapped Canvas paints it after valid Pixi nation overlays; fatal replay remains one nonadvancing frame.
+- This remains migration art, not final art. Phase E remains open for alerts/UI overlays, atlas/loading work, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.26 - 2026-09-18
 
 - Added bounded Phase E14 development-only Pixi ownership of the exact contiguous nation-overlay block after E13 `a1b1c39`: nation and neutral names, color marks, troop counts, procedural flags, fresh-alliance handshakes, heartbreak marks, team outlines, and painted `ALLY`/`PACT` glyphs retain exact cross-player Canvas chronology, conditions, formulas, transformed geometry, and final marker handoff.
