@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.22 - 2026-09-18
+
+- Added the bounded Phase E10 development-only Pixi draft/garrison label slice after E9 `a4b6f33`: draft flags, pick badges, owner names, and own garrison counts preserve legacy array/area order, draft visibility and fade, player mapping, flag glyphs, exact text and zoom/area thresholds, hover styles, alphabetic baseline placement, and Canvas state handoff. Repair trucks and every later actor/effect remain Canvas-owned above it.
+- Added a pure renderer-neutral model with stable semantic owner/pick and player/area keys, duplicate rejection, conservative culling, and reject-not-truncate entry/label/character limits. Bounded Canvas-raster texture sprites use measured actual bounding boxes at current DPR, explicit source-byte accounting, refcounted style/text/font/DPR cache keys, and bounded zero-reference eviction; Pixi Text remains unused and GPU bytes remain unknown.
+- Draft fade alpha is rasterized separately into every legacy flag/text operation and included in cache identity while sprites remain at alpha 1; obsolete zero-reference fade textures are promptly destroyed and stable garrison textures remain reusable. Ownership requires every prerequisite through aircraft. Label model, measured font/source, byte/texture/container/sprite cap, constructor, raster, child append, final parent append, prerequisite, or context failure withdraws the complete E10 block and direct uncapped Canvas paints it after valid Pixi aircraft in the same frame. Font/glyph checks are current-browser baseline evidence, not a cross-hardware fallback/tofu guarantee. No final art, ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.21 - 2026-09-18
 
 - Added the ninth bounded slice, Phase E9 development-only Pixi main aircraft after E8 `db6ab09`: stable-ID fighter, bomber, and carrier silhouettes retain interpolation, heading, bomber pull, faction color, own/fog visibility, own fighter patrol/hover rings, ceil-equivalent HP pips, exact array/child order, and Canvas state handoff. Hangar/refuel/heal remain omitted as before; draft/garrison labels, repair trucks, spy planes, interceptors, and all later layers remain Canvas-owned above aircraft.

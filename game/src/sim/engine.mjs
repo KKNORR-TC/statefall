@@ -449,6 +449,11 @@ export function createEngine(options={},adapters={}){
   });
   function installTestFixture(name){
     if(name==='submission-failure-projectiles'){ installSubmissionFailureProjectiles(); return readonly.wrap({fixture:name,shells:engineState.actors.shells.length}); }
+    if(name==='e10-support-truck'){
+      if(!testBridge||!me()||!engineState.lifecycle.paused) throw new Error('E10 support fixture requires a paused test match');
+      const owned=engineState.actors.structures.filter(value=>value.owner===me().id&&!value.building),home=owned[0],target=owned[1]||home; if(!home||!target) throw new Error('E10 support fixture requires owned structures'); const x=home.t%W+.5,y=(home.t-home.t%W)/W+.5; engineState.replaceActors('trucks',[{owner:me().id,target,path:[home.t],pos:0,x,y,hdg:0,state:'out',home}]); return readonly.wrap({fixture:name,x,y});
+    }
+    if(name==='e10-clear-support-truck'){ if(!testBridge) throw new Error('E10 support fixture requires the test bridge'); engineState.replaceActors('trucks',[]); return readonly.wrap({fixture:name}); }
     if(!testBridge) throw new Error('Engine fixtures require the test bridge.');
     if(name!=='dense-late-game') throw new Error(`Unknown engine fixture: ${name}`);
     const human=me(); if(!human||!engineState.lifecycle.paused) throw new Error('late-game scene requires a paused match');
