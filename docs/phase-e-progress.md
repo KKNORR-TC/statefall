@@ -1,6 +1,6 @@
 # Phase E Progress
 
-_Development record for game/package 1.10.15, build `2026-09-18-phase-e3-pixi-routes`, on 18 September 2026. E2 implementation/documentation commits are `78564c2`/`3b4b7bd`; E1 commits are `4361ad7`/`e5c4228`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record for game/package 1.10.15, build `2026-09-18-phase-e3-pixi-routes`, committed at `6b5438e` on 18 September 2026. E2 implementation/documentation commits are `78564c2`/`3b4b7bd`; E1 commits are `4361ad7`/`e5c4228`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
 
 ## E3 Implemented Slice
 
