@@ -1,6 +1,20 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.24, build `2026-09-18-phase-e12-pixi-floating-text`, on 18 September 2026. E11 is `4bc1cb5`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.25, build `2026-09-18-phase-e13-pixi-global-effects`, on 19 September 2026. E12 is `058051f`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E13 Implemented Slice
+
+- Migrated exactly the contiguous block after floating text and before nation labels: scorches, sparks, smoke/puffs, fragments/bombs, tracers, wrecks, and flashes. Category, array, and attached primitive order; formulas, colors, alpha, widths, radii, trajectories, rotation, fog visibility, strict lifetimes, and inherited Canvas handoff are unchanged. Quality and reduced motion intentionally do not alter this legacy block.
+- One renderer-neutral presentation transaction performs post-increment movement/aging and strict pruning exactly once per top-level displayed frame. `renderPass` supplies one retained source-keyed fog decision: hidden wrecks still age and expire normally, while visibility gates rendering and periodic air-wreck smoke. The same retained descriptors feed Pixi, direct Canvas retry, and fatal replay, preventing a second `visAt` decision, age update, or puff. The immutable pure vector model uses WeakMap occurrence identity and complete crossing bounds.
+- Hard reject-not-truncate limits cover 8,192 entries per category, 32,768 total entries/containers, 65,536 trail points/Graphics, 262,144 primitives, and 524,288 generated segments; idle pools are bounded at 2,048 containers and 4,096 Graphics. No textures are generated and GPU bytes remain unknown.
+- Ownership requires every layer through floating text. Any E13 model, cap, constructor, paint, append, prerequisite, or context failure withdraws all seven categories in the same frame and runs the direct uncapped Canvas painter after valid Pixi floaters. Dirty resources are discarded; fatal update/final-submit failure replays one complete nonadvancing Canvas frame. Nation/global labels remain Canvas above either path.
+
+## E13 Evidence
+
+- Pure contracts pin advancement/pruning, cross-category puff cadence, formulas, order, style/state, full bounds, hard caps, immutability, occurrence identity, quality/motion invariance, and uncapped Canvas operation inventory. Browser fixtures identify real `fxSpark`, `fxScorch`, `fxTracer`, and compatibility effect adapters; the simultaneous all-category fixture is explicitly synthetic.
+- Actual Pixi and direct Canvas pixels are compared by category over an opaque background, with CSS bounds and explicit overlap/delta limits. Production probes cover recoverable final append and fatal update/final submit, real composed framebuffers, Pixi floating text below, real Canvas nation-label pixels above, one age advance, and unchanged tick/callback/RAF state.
+- An independent test inventory covers all seven categories, fragment versus bomb, ship wreck classes `warship`, `privateer`, `sub`, `hunter`, `rship`, `scout`, `cruiser`, `battleship`, `trader`, and `transport`, air wreck classes `fighter`, `bomber`, and `carrier`, and dome wrecks: 21 entries, 63 primitives, and 73 fill/stroke operations. It does not derive expected keys, kinds, styles, colors, alpha, or operation order from the production model. Every primitive runs through production `drawPrimitive` and a direct Canvas primitive raster at DPR 1, 1.5, and 2 over a common opaque background with explicit overlap, area, channel-delta, edge bounds, and a smallest-footprint-first pairwise-disjoint pixel partition in which every primitive retains exclusive pixels; arbitrary extra, missing, skipped, or reordered primitives fail.
+- Focused E13 passes 19/19 primary Chromium cases and 3/3 dedicated DPR cases. The latest 1,800-frame all-category create/remove/reorder/age/color/fog/cull/pan churn measured local synchronous CPU/render-submission mean 1.164 ms, p95 3.6 ms, p99 5.5 ms, and max 48.0 ms with plateaued pools. `npm test`, syntax, Canvas 18/18, source/built 2/2, and 24-file reproducibility pass; release-manifest SHA-256 is `2c4d4dbb650d87a00909b22c342a08c8835f6bb4d13a5e692e002dae72a50e54`. The current six-project broad browser run completed 217 passes and 552 intentional project-selection skips; one unchanged E5 naval soak measured p99 33.1 ms against its 33.0 ms ceiling, then passed immediately in isolation at 31.4 ms. CPU timing excludes GPU, compositor, display presentation, and input latency; heap remains advisory.
 
 ## E12 Implemented Slice
 
@@ -136,6 +150,6 @@ E8 was committed as `db6ab09` and is the clean base for E9.
 
 ## Remaining Phase E Work
 
-- Continue after the deliberate E12 boundary with global effects, later labels/selection, and subsequent layers in bounded ordered slices.
+- Continue after the deliberate E13 boundary with nation/global labels, markers/network, UI overlays, and subsequent layers in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.

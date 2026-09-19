@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.25 - 2026-09-18
+
+- Added bounded Phase E13 development-only Pixi ownership of the exact contiguous global-effects block after E12 `058051f`: scorches, sparks, smoke/puffs, fragments/bombs, tracers, wrecks, and flashes retain category/array/primitive order, formulas, styles, trajectories, rotation, fog rules, age/lifetime/pruning, and Canvas state handoff. Nation/global labels remain Canvas-owned above it.
+- Moved all render-time effect advancement into one same-frame-idempotent presentation transaction. It retains one per-frame fog descriptor: hidden wrecks still age and expire at the legacy point but hidden air wrecks do not create threshold smoke, and retry/replay cannot recalculate visibility or create a second puff. A pure WeakMap-identity vector model provides complete crossing bounds and reject-not-truncate category/total/trail/primitive/segment/container/Graphics caps; any E13-only failure withdraws every category and invokes the direct uncapped Canvas painter after valid Pixi floaters. Fatal submit replay remains one nonadvancing frame.
+- This remains migration art, not final art. Phase E remains open for nation/global labels, markers/network, UI overlays, atlases/loading, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.24 - 2026-09-18
 
 - Added bounded Phase E12 development-only Pixi floating text after E11 `4bc1cb5`. Exact source order, text conversion, colors, big/small fonts and lifetimes, stroke/fill/alignment/baseline, age-driven rise/bob/fade formulas, pruning, and Canvas state handoff are retained; scorches, sparks, smoke, global effects, and all later labels remain Canvas-owned above it.
