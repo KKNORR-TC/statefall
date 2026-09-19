@@ -1,4 +1,5 @@
 const {test, expect} = require('@playwright/test');
+const {createCanvas,loadImage}=require('canvas');
 
 const GAME_URL = '/index.html?browserTest=1&case=PHASEADISPLAYSCALE';
 const VIEWPORTS = [
@@ -69,6 +70,20 @@ async function readDisplayState(page) {
   });
 }
 
+async function screenshotPixels(locator){
+  const image=await loadImage(await locator.screenshot()),canvas=createCanvas(image.width,image.height),context=canvas.getContext('2d');
+  context.drawImage(image,0,0); return {width:image.width,height:image.height,data:context.getImageData(0,0,image.width,image.height).data};
+}
+
+function changedPixelsInColumns(a,b,columns){
+  let changed=0;
+  for(let y=0;y<a.height;y++) for(let x=0;x<Math.min(columns,a.width);x++){
+    const offset=(y*a.width+x)*4;
+    if(a.data[offset]!==b.data[offset]||a.data[offset+1]!==b.data[offset+1]||a.data[offset+2]!==b.data[offset+2]||a.data[offset+3]!==b.data[offset+3]) changed++;
+  }
+  return changed;
+}
+
 function expectContained(state) {
   expect(state.document.width).toBeLessThanOrEqual(state.viewport.width);
   expect(state.document.bodyWidth).toBeLessThanOrEqual(state.viewport.width);
@@ -133,7 +148,7 @@ test('keeps Pixi raster and Canvas overlay aligned across desktop display scales
       const snapshot=window.__STATEFALL_TEST__.snapshot(),map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
       return {snapshot,map:map.toJSON(),world:world.toJSON()};
     });
-    expect(state.snapshot.rendering).toMatchObject({active:'pixi-hybrid',effectiveDpr:expectedDpr,capabilities:{structures:true},layers:{terrain:{textureCount:1}}});
+    expect(state.snapshot.rendering).toMatchObject({active:'pixi-hybrid',effectiveDpr:expectedDpr,capabilities:{preStructures:true,structures:true},layers:{terrain:{textureCount:1},preStructures:{owned:true}}});
     expect(state.snapshot.canvas.width).toBe(state.snapshot.rendering.pixelWidth);
     expect(state.snapshot.canvas.height).toBe(state.snapshot.rendering.pixelHeight);
     expect(state.world).toMatchObject({x:state.map.x,y:state.map.y,width:state.map.width,height:state.map.height});
@@ -148,7 +163,7 @@ test('keeps Pixi raster and Canvas overlay aligned across desktop display scales
 test('keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales',async({page},testInfo)=>{
   await startMatch(page,'pixi');
   await page.evaluate(()=>{ window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
-  const state=await page.evaluate(()=>({rendering:window.__STATEFALL_TEST__.rendererDiagnostics(),expected:window.__STATEFALL_TEST__.structurePresentation()}));
+  const state=await page.evaluate(()=>{ const expected=window.__STATEFALL_TEST__.structurePresentation(); return {rendering:window.__STATEFALL_TEST__.exerciseStructureLayer(expected,{preStructures:expected}).rendering,expected}; });
   test.skip(state.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
   expect(state.rendering.effectiveDpr).toBe(Math.min(testInfo.project.use.deviceScaleFactor,2));
   expect(state.rendering.layers.structures.visible).toBe(state.expected.length);
@@ -157,6 +172,43 @@ test('keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates acros
     const position=expected.get(sprite.tile); expect(sprite.x).toBeCloseTo(position.x,8); expect(sprite.y).toBeCloseTo(position.y,8);
     expect(await page.evaluate(point=>window.__STATEFALL_TEST__.screenToTile(point.x,point.y),sprite)).toBe(sprite.tile);
   }
+});
+
+test('uses rasterized scaled-texture fringe for edge culling and compositing conflicts at every DPR',async({page},testInfo)=>{
+  await startMatch(page,'pixi');
+  await page.evaluate(()=>{ window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
+  const dpr=Math.min(testInfo.project.use.deviceScaleFactor,2),source=await page.evaluate(()=>window.__STATEFALL_TEST__.structurePresentation()[0]);
+  const edge=await page.evaluate(item=>{
+    const scale=12,pop=1.35,radius=scale*2.4,visualRadius=radius*pop,geometricExtent=visualRadius+Math.max(1.5,visualRadius*.18)/2;
+    const tileX=item.tile%720,tileY=(item.tile-tileX)/720,x=-(geometricExtent+1.2),y=180;
+    window.__STATEFALL_TEST__.setCameraOrigin(x-(tileX+.5)*scale,y-(tileY+.5)*scale,scale);
+    const empty=window.__STATEFALL_TEST__.exerciseStructureLayer([],{preStructures:[]});
+    return {item:{...item,type:'city',building:false,pop},x,y,geometricExtent,empty};
+  },source);
+  test.skip(edge.empty.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
+  const before=await screenshotPixels(page.locator('.pixi-world'));
+  const visible=await page.evaluate(item=>window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}),edge.item);
+  expect(visible).toMatchObject({preOwned:true,owned:true,rendering:{layers:{structures:{visible:1,culled:0}}}});
+  const instance=visible.rendering.layers.structures.instances[0];
+  expect(instance.paintBounds.left).toBeLessThan(0);
+  expect(instance.paintBounds.right).toBeGreaterThan(0);
+  expect(edge.x+edge.geometricExtent).toBeLessThan(-1,'only scaled source-texture AA lies inside the viewport');
+  const after=await screenshotPixels(page.locator('.pixi-world'));
+  const fringePixels=changedPixelsInColumns(before,after,Math.ceil(2*dpr));
+  expect(fringePixels,'browser-rasterized icon fringe must reach the viewport edge').toBeGreaterThan(0);
+
+  const conflict=await page.evaluate(item=>{
+    const scale=12,tileX=item.tile%720,tileY=(item.tile-tileX)/720;
+    window.__STATEFALL_TEST__.setCameraOrigin(240-(tileX+.5)*scale,180-(tileY+.5)*scale,scale);
+    const first={...item,type:'city',building:false,pop:1.35},within={...item,tile:item.tile+8,type:'city',building:false,pop:1.35},beyond={...item,tile:item.tile+9,type:'city',building:false,pop:1.35};
+    return {
+      within:window.__STATEFALL_TEST__.exerciseStructureLayer([first,within],{preStructures:[first,within]}),
+      beyond:window.__STATEFALL_TEST__.exerciseStructureLayer([first,beyond],{preStructures:[first,beyond]})
+    };
+  },source);
+  expect(conflict.within).toMatchObject({preOwned:false,owned:false,rendering:{layers:{preStructures:{compositingConflictFallback:{reason:'earlier-pop-ring-overlaps-later-base'}},structures:{visible:0}}}});
+  expect(conflict.beyond).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{reason:null},layers:{structures:{visible:2,culled:0}}}});
+  console.log(`DPR ${dpr} scaled texture edge: ${fringePixels} changed raster pixels in first ${Math.ceil(2*dpr)} columns; 96px gap fallback, 108px gap safe`);
 });
 
 function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }

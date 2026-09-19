@@ -909,13 +909,28 @@ function installBrowserTestBridge(){
       },
       setCameraOrigin(x,y,scale=cam.s){ cam.x=+x; cam.y=+y; cam.s=+scale; render(); return snapshot().camera; },
       structurePresentation(){ return structures.map(st=>{ const x=cam.x+(st.t%W+.5)*cam.s,y=cam.y+((st.t-st.t%W)/W+.5)*cam.s; return {tile:st.t,type:st.type,color:players[st.owner].color,building:!!st.building,x,y}; }); },
-      exerciseStructureLayer(items,{invalidSource=false}={}){
+      exerciseStructureLayer(items,{invalidSource=false,preStructures=[],preState={}}={}){
         const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
-        const owned=renderer.updateWorldLayer('structures',{items:structuredClone(items),fog:null,camera:{x:cam.x,y:cam.y,scale:cam.s},viewport:{width:viewWidth(),height:viewHeight()},mapWidth:W,textureRadius:24,createTextureCanvas:invalidSource?()=>null:structureTextureCanvas});
+        const preOwned=renderer.updateWorldLayer('pre-structures',{camera:{x:cam.x,y:cam.y,scale:cam.s},viewport:{width:viewWidth(),height:viewHeight()},mapWidth:W,time:0,fronts:[],supplyLinks:[],commandLinks:[],...structuredClone(preState),structures:structuredClone(preStructures)});
+        const owned=renderer.updateWorldLayer('structures',{items:structuredClone(items),fog:preState.fog||null,camera:{x:cam.x,y:cam.y,scale:cam.s},viewport:{width:viewWidth(),height:viewHeight()},mapWidth:W,textureRadius:24,createTextureCanvas:invalidSource?()=>null:structureTextureCanvas});
         renderer.renderFrame(cam);
         const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
         for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`structure layer purity violation: ${key} changed`);
-        return {owned,rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
+        return {preOwned,owned,rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
+      },
+      exerciseStructureCompositing(items){
+        const copy=structuredClone(items),before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
+        const camera={x:cam.x,y:cam.y,scale:cam.s},viewport_={width:viewWidth(),height:viewHeight()};
+        let preOwned=renderer.updateWorldLayer('pre-structures',{camera,viewport:viewport_,mapWidth:W,time:0,fronts:[],supplyLinks:[],commandLinks:[],structures:copy});
+        const owned=renderer.updateWorldLayer('structures',{items:copy.map(item=>({tile:item.tile,type:item.type,color:item.color||'#d9d9d9',building:!!item.building,pop:item.pop||1})),fog:null,camera,viewport:viewport_,mapWidth:W,textureRadius:24,createTextureCanvas:structureTextureCanvas});
+        if(!owned) preOwned=false;
+        ctx.setTransform(viewport.metrics.effectiveDpr,0,0,viewport.metrics.effectiveDpr,0,0); ctx.clearRect(0,0,viewport_.width,viewport_.height); ctx.fillStyle='#132a3d'; ctx.fillRect(0,0,viewport_.width,viewport_.height);
+        const positions=[];
+        resetE3CanvasStroke(ctx); if(cam.s>=.9) for(const item of copy){ const x=cam.x+(item.tile%W+.5)*cam.s,y=cam.y+((item.tile-item.tile%W)/W+.5)*cam.s,r=Math.max(6,cam.s*2.4); positions.push({tile:item.tile,x,y,r}); if(!owned) drawIcon(item.type,x,y,r*(item.pop||1),item.color||'#d9d9d9'); if(item.linked){ ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,r+2,0,Math.PI*2); ctx.stroke(); } } resetE3CanvasStroke(ctx);
+        renderer.renderFrame(cam);
+        const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
+        for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`structure compositing purity violation: ${key} changed`);
+        return {preOwned,owned,positions,rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
       },
       resetRendererResources(){ renderer.reset(); return renderer.diagnostics(); },
       restoreRendererResources(){ drawMap(); render(); return renderer.diagnostics(); },
@@ -945,7 +960,26 @@ function installBrowserTestBridge(){
       },
       rendererDiagnostics:()=>renderer.diagnostics(),
        renderingLifecycle:()=>({rafPending:renderLoop.frame?1:0,rafCallbacks:renderLoop.callbacks,renderCount:renderLoop.renders,frozen:presentationFrozen(),...rendering.diagnostics()}),
-       freezePresentation(){ if(me()&&!lifecycleState.paused) togglePause(); setPresentationFrozen(true); if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const [id,position] of presentationLabelPositions.entries()) if(position) labelRenderState.set(id,position.slice()); } render(); return status(); }
+       freezePresentation(){ if(me()&&!lifecycleState.paused) togglePause(); setPresentationFrozen(true); if(deterministicScene){ for(const na of nukeAlerts) na.age=18; for(const [id,position] of presentationLabelPositions.entries()) if(position) labelRenderState.set(id,position.slice()); } render(); return status(); },
+       resumePresentation(){ setPresentationFrozen(false); return status(); },
+       focusDashProbe({x,y,r,time,width,height,withSupply=false,points=[]}){
+         const canvas=document.createElement('canvas'); canvas.width=width; canvas.height=height; const c=canvas.getContext('2d'),phase=(time/60)%16;
+         if(withSupply){ c.lineCap='butt'; c.lineJoin='miter'; c.setLineDash([6,10]); c.lineDashOffset=-phase; }
+         drawMissileFocus(c,x,y,r,phase);
+         return points.map(point=>{ let painted=0; for(let py=Math.max(0,Math.floor(point.y)-2);py<=Math.min(height-1,Math.ceil(point.y)+2);py++) for(let px=Math.max(0,Math.floor(point.x)-2);px<=Math.min(width-1,Math.ceil(point.x)+2);px++) if(c.getImageData(px,py,1,1).data[3]) painted++; return painted; });
+       },
+       e3CanvasStatePoisonProbe(){
+         const paint=poison=>{ const canvas=document.createElement('canvas'); canvas.width=canvas.height=160; const c=canvas.getContext('2d'); if(poison){ c.lineCap='round'; c.lineJoin='bevel'; c.setLineDash([1,13]); c.lineDashOffset=7.25; } drawMissileFocus(c,80,80,45,5.25); return {pixels:Array.from(c.getImageData(0,0,160,160).data),state:{lineCap:c.lineCap,lineJoin:c.lineJoin,dash:c.getLineDash(),offset:c.lineDashOffset}}; };
+         return {baseline:paint(false),poisoned:paint(true)};
+       },
+       preStructureMotionGeometry(){
+         const {time,reducedMotion}=renderer.motionState(),s=cam.s,front=attacks.flatMap(a=>Array.from(a.front,t=>({x:cam.x+(t%W+.5)*s,y:cam.y+((t-t%W)/W+.5)*s,r:Math.max(2,s/2)})))[0]||null;
+         const link=links[0]; let route=null;
+         if(link){ const ax=cam.x+(link.a.t%W+.5)*s,ay=cam.y+((link.a.t-link.a.t%W)/W+.5)*s,bx=cam.x+(link.b.t%W+.5)*s,by=cam.y+((link.b.t-link.b.t%W)/W+.5)*s,k=reducedMotion?.5:((time/1400)+(link.a.t%7)/7)%1,length=Math.hypot(bx-ax,by-ay),dashAt=3; route={dash:{x:ax+(bx-ax)*dashAt/length,y:ay+(by-ay)*dashAt/length,r:2},marker:{x:ax+(bx-ax)*k,y:ay+(by-ay)*k,r:Math.max(2,Math.max(1.5,s*.9)+1)}}; }
+         let focus=null; if(me().cmdFocusT!=null&&me().cmdFocus!=null&&players[me().cmdFocus].alive){ const x=cam.x+(me().cmdFocusT%W+.5)*s,y=cam.y+((me().cmdFocusT-me().cmdFocusT%W)/W+.5)*s,r=60*s,angle=4/r; focus={x:x+Math.cos(angle)*r,y:y+Math.sin(angle)*r,r:2}; }
+         const low=structures.find(st=>!st.building&&(st.type==='shield'&&st.hp<=3||st.type==='airfield'&&(st.level||1)>=2&&(st.lshield||0)>0&&st.lshield<=2)),lowShield=low?{x:cam.x+(low.t%W+.5)*s,y:cam.y+((low.t-low.t%W)/W+.5)*s,r:2}:null;
+         return {time,reducedMotion,front,route,focus,lowShield};
+       }
   })});
 }
 installBrowserTestBridge();
@@ -988,48 +1022,70 @@ function render(){
   if((highlightId>=0&&!renderer.hybrid)||pickMode) { hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf)?engineState.garrison.areaOf[hover]:-1; drawMap(); }
   ctx.imageSmoothingEnabled=false;
   if(!renderer.hybrid) ctx.drawImage(off,cam.x,cam.y,W*cam.s,H*cam.s);
-  const s=cam.s;
-  // attacks: pulse frontier tiles
-  ctx.globalAlpha=0.5+0.3*Math.sin(performance.now()/120);
-  for(const a of attacks){ ctx.fillStyle=players[a.owner].color; for(const t of a.front){ const x=t%W,y=(t-x)/W; ctx.fillRect(cam.x+x*s,cam.y+y*s,s,s);} }
-  ctx.globalAlpha=1;
-  // supply lines between factories and cities
-  { const ph=(performance.now()/60)%16; const lowZoom=s<0.6;
-    for(const l of links){ if(renderState.fog.vis&&!renderState.fog.vis[l.a.t]&&!renderState.fog.vis[l.b.t]) continue; const ax=cam.x+(l.a.t%W+.5)*s, ay=cam.y+((l.a.t-l.a.t%W)/W+.5)*s, bx=cam.x+(l.b.t%W+.5)*s, by=cam.y+((l.b.t-l.b.t%W)/W+.5)*s;
-      if(!lowZoom){ ctx.strokeStyle='rgba(15,26,38,.7)'; ctx.lineWidth=Math.max(2,s*1.4); ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
-      ctx.strokeStyle=players[l.owner].color; ctx.lineWidth=Math.max(1,s*0.6); ctx.setLineDash([6,10]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]); }
-      const k=((performance.now()/1400)+(l.a.t%7)/7)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle='#ffd27a'; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.5,s*0.9),0,Math.PI*2); ctx.fill();
+  const s=cam.s,{time:motionTime,reducedMotion}=renderer.motionState();
+  let preStructuresOwned=renderer.updateWorldLayer('pre-structures',()=>{
+    const commandLinks=[];
+    if(s>=.6) for(const c of structures){
+      if(!(c.type==='command'||c.type==='flightops'||c.type==='troopcmd')||c.building) continue;
+      const rgb=c.type==='command'?'255,170,80':c.type==='flightops'?'120,220,255':'190,230,150';
+      for(const q of structures) if(q.owner===c.owner&&!q.building&&q!==c&&(c.type==='command'?q.type==='silo':c.type==='flightops'?q.type==='airfield':q.type==='city'||q.type==='port')&&((q.t%W-c.t%W)**2+((q.t-q.t%W)/W-(c.t-c.t%W)/W)**2)<=(c.type==='command'?CMD_RANGE:LINK_RANGE)**2) commandLinks.push({from:c.t,to:q.t,color:`rgba(${rgb},.55)`,markerColor:`rgb(${rgb})`,type:c.type});
     }
-  }
-  if(me().cmdFocusT!=null&&me().cmdFocus!=null&&players[me().cmdFocus].alive){ const fx=cam.x+(me().cmdFocusT%W+.5)*s, fy=cam.y+((me().cmdFocusT-me().cmdFocusT%W)/W+.5)*s; ctx.strokeStyle='rgba(255,170,80,.5)'; ctx.lineWidth=1.5; ctx.setLineDash([8,8]); ctx.beginPath(); ctx.arc(fx,fy,60*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
-  // command links: each missile command to the silos it controls (orange), flight ops to airfields (cyan), troop command to cities and ports (green)
-  if(s>=0.6){ const ph=(performance.now()/60)%16;
-    for(const c of structures){ if(!(c.type==='command'||c.type==='flightops'||c.type==='troopcmd')||c.building) continue; if(renderState.fog.vis&&!renderState.fog.vis[c.t]) continue;
-      const col=c.type==='command'?'255,170,80':c.type==='flightops'?'120,220,255':'190,230,150';
-      const targets=structures.filter(q=>q.owner===c.owner&&!q.building&&q!==c&&(c.type==='command'?q.type==='silo':c.type==='flightops'?q.type==='airfield':(q.type==='city'||q.type==='port'))&&((q.t%W-c.t%W)**2+((q.t-q.t%W)/W-(c.t-c.t%W)/W)**2)<=(c.type==='command'?CMD_RANGE:LINK_RANGE)**2);
-      for(const q of targets){ if(renderState.fog.vis&&!renderState.fog.vis[q.t]) continue; const ax=cam.x+(c.t%W+.5)*s, ay=cam.y+((c.t-c.t%W)/W+.5)*s, bx=cam.x+(q.t%W+.5)*s, by=cam.y+((q.t-q.t%W)/W+.5)*s;
-        ctx.strokeStyle=`rgba(${col},.55)`; ctx.lineWidth=Math.max(1,s*0.5); ctx.setLineDash([3,7]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]);
-        const k=((performance.now()/1100)+(q.t%5)/5)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle=`rgba(${col},.9)`; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.2,s*0.7),0,Math.PI*2); ctx.fill(); } } }
-  // structures
+    return {time:motionTime,camera:{x:cam.x,y:cam.y,scale:s},viewport:{width:cw,height:ch},mapWidth:W,fog:renderState.fog.vis,
+      fronts:attacks.flatMap(a=>Array.from(a.front,tile=>({tile,color:players[a.owner].color}))),supplyLinks:links.map(l=>({from:l.a.t,to:l.b.t,color:players[l.owner].color})),
+      missileFocus:{tile:me().cmdFocusT,active:me().cmdFocusT!=null&&me().cmdFocus!=null&&players[me().cmdFocus].alive},commandLinks,
+      structures:structures.map(st=>{ const pop=st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1,airQueue=st.aq&&st.aq.length?st.aq[0]:null,shipQueue=st.queue&&st.queue.length?st.queue[0]:null,airCount=st.type==='airfield'?aircraft.filter(a=>a.home===st).length:0; return {tile:st.t,type:st.type,building:!!st.building,buildText:st.building?Math.ceil((st.done-clockState.tickN)/10)+'s':null,pop,level:st.level||1,upgrading:!!st.upgrading,airQueue:!!airQueue,airQueueText:st.type==='airfield'?`${airCount}/${AIR.hangar}${airQueue?' · '+(airQueue.type==='fighter'?'F':airQueue.type==='carrier'?'T':'B')+' '+Math.ceil(Math.max(0,airQueue.done-clockState.tickN)/10)+'s':''}`:null,shipQueue:!!shipQueue,shipQueueText:shipQueue?`${SHIPS[shipQueue.cls].label} ${shipQueue.done?Math.ceil((shipQueue.done-clockState.tickN)/10)+'s':''}${st.queue.length>1?' +'+(st.queue.length-1):''}`:null,suppressed:st.type==='sam'&&shelled[st.t]>clockState.tickN,linked:!!st.linked,cooldown:st.cool>clockState.tickN&&(st.type==='sam'||st.type==='silo'||st.type==='battery'||st.type==='bertha'),owned:st.owner===me().id,hp:st.hp,hpMax:st.type==='shield'?SHIELD.hp:undefined,lshield:st.lshield,lshieldMax:LSHIELD.hp,gunHp:st.gunHp,gunHpMax:GUNS[st.type]?.hp,gunHpDamaged:!!(GUNS[st.type]&&!st.building&&st.hp!=null&&st.hp<GUNS[st.type].hp),repairing:!!st.repairing,repairFraction:1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks,flashing:st.flash>clockState.tickN,bubbleRange:st.type==='airfield'?LSHIELD.r:st.type==='shield'?SHIELD.r:0,jammerRange:st.type==='jammer'?FOG.jam:0,gunRange:GUNS[st.type]?.range||0,commandRange:st.type==='command'?CMD_RANGE:0,samRange:st.type==='sam'?SAM_RANGE:0,fortRange:st.type==='fort'?fortRange(st.t):0}; })};
+  });
   const structuresOwned=renderer.updateWorldLayer('structures',()=>({
     items:structures.map(st=>({tile:st.t,type:st.type,color:players[st.owner].color,building:!!st.building,pop:st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1})),
     fog:renderState.fog.vis,camera:{x:cam.x,y:cam.y,scale:s},viewport:{width:cw,height:ch},mapWidth:W,textureRadius:24,createTextureCanvas:structureTextureCanvas
   }));
+  if(!structuresOwned) preStructuresOwned=false;
+  if(!preStructuresOwned){
+  resetE3CanvasStroke(ctx);
+  // attacks: pulse frontier tiles
+  ctx.globalAlpha=0.5+0.3*Math.sin(motionTime/120);
+  for(const a of attacks){ ctx.fillStyle=players[a.owner].color; for(const t of a.front){ const x=t%W,y=(t-x)/W; ctx.fillRect(cam.x+x*s,cam.y+y*s,s,s);} }
+  ctx.globalAlpha=1;
+  // supply lines between factories and cities
+  { const ph=(motionTime/60)%16; const lowZoom=s<0.6;
+    for(const l of links){ if(renderState.fog.vis&&!renderState.fog.vis[l.a.t]&&!renderState.fog.vis[l.b.t]) continue; const ax=cam.x+(l.a.t%W+.5)*s, ay=cam.y+((l.a.t-l.a.t%W)/W+.5)*s, bx=cam.x+(l.b.t%W+.5)*s, by=cam.y+((l.b.t-l.b.t%W)/W+.5)*s;
+      if(!lowZoom){ ctx.strokeStyle='rgba(15,26,38,.7)'; ctx.lineWidth=Math.max(2,s*1.4); ctx.setLineDash([]); ctx.lineDashOffset=0; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke();
+      ctx.strokeStyle=players[l.owner].color; ctx.lineWidth=Math.max(1,s*0.6); ctx.setLineDash([6,10]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset=0; }
+      const k=reducedMotion?.5:((motionTime/1400)+(l.a.t%7)/7)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle='#ffd27a'; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.5,s*0.9),0,Math.PI*2); ctx.fill();
+    }
+  }
+  if(me().cmdFocusT!=null&&me().cmdFocus!=null&&players[me().cmdFocus].alive){ const fx=cam.x+(me().cmdFocusT%W+.5)*s, fy=cam.y+((me().cmdFocusT-me().cmdFocusT%W)/W+.5)*s; drawMissileFocus(ctx,fx,fy,60*s,(motionTime/60)%16); }
+  // command links: each missile command to the silos it controls (orange), flight ops to airfields (cyan), troop command to cities and ports (green)
+  if(s>=0.6){ const ph=(motionTime/60)%16;
+    for(const c of structures){ if(!(c.type==='command'||c.type==='flightops'||c.type==='troopcmd')||c.building) continue; if(renderState.fog.vis&&!renderState.fog.vis[c.t]) continue;
+      const col=c.type==='command'?'255,170,80':c.type==='flightops'?'120,220,255':'190,230,150';
+      const targets=structures.filter(q=>q.owner===c.owner&&!q.building&&q!==c&&(c.type==='command'?q.type==='silo':c.type==='flightops'?q.type==='airfield':(q.type==='city'||q.type==='port'))&&((q.t%W-c.t%W)**2+((q.t-q.t%W)/W-(c.t-c.t%W)/W)**2)<=(c.type==='command'?CMD_RANGE:LINK_RANGE)**2);
+      for(const q of targets){ if(renderState.fog.vis&&!renderState.fog.vis[q.t]) continue; const ax=cam.x+(c.t%W+.5)*s, ay=cam.y+((c.t-c.t%W)/W+.5)*s, bx=cam.x+(q.t%W+.5)*s, by=cam.y+((q.t-q.t%W)/W+.5)*s;
+        ctx.strokeStyle=`rgba(${col},.55)`; ctx.lineWidth=Math.max(1,s*0.5); ctx.setLineDash([3,7]); ctx.lineDashOffset=-ph; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset=0;
+        const k=reducedMotion?.5:((motionTime/1100)+(q.t%5)/5)%1, gx=ax+(bx-ax)*k, gy=ay+(by-ay)*k; ctx.fillStyle=`rgba(${col},.9)`; ctx.beginPath(); ctx.arc(gx,gy,Math.max(1.2,s*0.7),0,Math.PI*2); ctx.fill(); } } }
+  resetE3CanvasStroke(ctx);
+  }
+  // structures
   if(s>=0.9){
+    resetE3CanvasStroke(ctx);
     for(const st of structures){
       if(renderState.fog.vis&&!renderState.fog.vis[st.t]) continue;
       const x=cam.x+(st.t%W+0.5)*s, y=cam.y+((st.t-st.t%W)/W+0.5)*s, r=Math.max(6,s*2.4);
-      if(st.type==='airfield'&&(st.level||1)>=2&&!st.building){ const hp=st.lshield||0; if(hp>0){ const low=hp<=2; const a=st.flash>clockState.tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,LSHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.fillStyle=hp>0?'#9df':'#ff9a9a'; const pw=2*r/LSHIELD.hp; for(let i=0;i<hp;i++) ctx.fillRect(x-r+i*pw,y+r+22,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
-      if(st.type==='shield'&&!st.building){ const low=st.hp<=3; const a=st.flash>clockState.tickN?0.45:low?0.10+0.08*Math.abs(Math.sin(performance.now()/120)):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,SHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke();
+      if(!preStructuresOwned){
+      resetE3CanvasStroke(ctx);
+      if(st.type==='airfield'&&(st.level||1)>=2&&!st.building){ const hp=st.lshield||0; if(hp>0){ const low=hp<=2; const a=st.flash>clockState.tickN?0.45:low?(reducedMotion?.14:.10+.08*Math.abs(Math.sin(motionTime/120))):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,LSHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); } ctx.fillStyle=hp>0?'#9df':'#ff9a9a'; const pw=2*r/LSHIELD.hp; for(let i=0;i<hp;i++) ctx.fillRect(x-r+i*pw,y+r+22,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
+      if(st.type==='shield'&&!st.building){ const low=st.hp<=3; const a=st.flash>clockState.tickN?0.45:low?(reducedMotion?.14:.10+0.08*Math.abs(Math.sin(motionTime/120))):0.12; ctx.fillStyle=`rgba(150,220,255,${a})`; ctx.strokeStyle=low?'rgba(255,120,120,.8)':'rgba(150,220,255,.6)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,SHIELD.r*s,0,Math.PI*2); ctx.fill(); ctx.stroke();
         ctx.fillStyle='#fff'; const pw=2*r/SHIELD.hp; for(let i=0;i<st.hp;i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2);
         if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
       if(st.type==='port'&&(st.level||1)>=2&&!st.building){ const gh=st.gunHp||0; ctx.fillStyle=gh<=1?'#ff9a9a':'#fff'; const pw=2*r/4; for(let i=0;i<Math.ceil(gh);i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); ctx.fillStyle='rgba(255,255,255,.25)'; for(let i=Math.ceil(gh);i<4;i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); if(st.repairing){ const f=1-Math.max(0,(st.repairAt-clockState.tickN))/SHIELD.repairTicks; ctx.strokeStyle='#7fffa0'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+6,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); } }
       if(GUNS[st.type]&&!st.building&&st.hp!=null&&st.hp<GUNS[st.type].hp){ const mh=GUNS[st.type].hp; ctx.fillStyle='#fff'; const pw=2*r/mh; for(let i=0;i<Math.ceil(st.hp);i++) ctx.fillRect(x-r+i*pw,y+r+4,Math.max(1,pw-1),2); }
-      if(st.type==='jammer'&&!st.building&&st.owner===me().id){ ctx.strokeStyle='rgba(255,180,80,.35)'; ctx.fillStyle='rgba(255,180,80,.05)'; ctx.lineWidth=1; ctx.setLineDash([2,6]); ctx.beginPath(); ctx.arc(x,y,FOG.jam*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]); }
+      if(st.type==='jammer'&&!st.building&&st.owner===me().id){ ctx.strokeStyle='rgba(255,180,80,.35)'; ctx.fillStyle='rgba(255,180,80,.05)'; ctx.lineWidth=1; ctx.setLineDash([2,6]); ctx.lineDashOffset=0; ctx.beginPath(); ctx.arc(x,y,FOG.jam*s,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset=0; }
       if(GUNS[st.type]&&st.owner===me().id&&!st.building){ ctx.strokeStyle=st.type==='bertha'?'rgba(255,180,80,.16)':'rgba(255,220,150,.14)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,GUNS[st.type].range*s,0,Math.PI*2); ctx.stroke(); }
-      if(st.type==='command'&&st.owner===me().id&&!st.building){ ctx.strokeStyle='rgba(255,180,80,.18)'; ctx.lineWidth=1; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.arc(x,y,CMD_RANGE*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
+      if(st.type==='command'&&st.owner===me().id&&!st.building){ ctx.strokeStyle='rgba(255,180,80,.18)'; ctx.lineWidth=1; ctx.setLineDash([3,5]); ctx.lineDashOffset=0; ctx.beginPath(); ctx.arc(x,y,CMD_RANGE*s,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); ctx.lineDashOffset=0; }
       if(st.type==='sam'&&st.owner===me().id){ ctx.strokeStyle='rgba(150,220,255,.12)'; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(x,y,SAM_RANGE*s,0,Math.PI*2); ctx.stroke(); }
       if(st.type==='fort'&&st.owner===me().id){ ctx.strokeStyle=(st.level||1)>=3?'rgba(255,210,122,.35)':(st.level||1)>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)'; ctx.lineWidth=(st.level||1); ctx.beginPath(); ctx.arc(x,y,fortRange(st.t)*s,0,Math.PI*2); ctx.stroke(); }
+      resetE3CanvasStroke(ctx);
+      }
       if(st.building){ if(!structuresOwned){ ctx.globalAlpha=0.45; drawIcon(st.type,x,y,r,players[st.owner].color); ctx.globalAlpha=1; } const f=1-(st.done-clockState.tickN)/st.total; ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); if(s>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.strokeStyle='rgba(0,0,0,.6)'; ctx.lineWidth=3; const tx=Math.ceil((st.done-clockState.tickN)/10)+'s'; ctx.strokeText(tx,x,y+r+11); ctx.fillText(tx,x,y+r+11); } continue; }
       { const pop=st.popAt!=null&&clockState.tickN-st.popAt<10?1+0.35*(1-(clockState.tickN-st.popAt)/10):1; if(!structuresOwned) drawIcon(st.type,x,y,r*pop,players[st.owner].color); if(pop>1){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r*pop*1.3,0,Math.PI*2); ctx.stroke(); } }
       if((st.level||1)>=2){ ctx.font='bold 9px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#ffd27a'; ctx.strokeStyle='rgba(0,0,0,.7)'; ctx.lineWidth=2.5; ctx.strokeText('II',x+r*0.9,y-r*0.8); ctx.fillText((st.level||1)>=3?'III':'II',x+r*0.9,y-r*0.8); }
@@ -1040,6 +1096,7 @@ function render(){
       if(st.linked){ ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,y,r+2,0,Math.PI*2); ctx.stroke(); }
       if(st.cool>clockState.tickN&&(st.type==='sam'||st.type==='silo'||st.type==='battery'||st.type==='bertha')){ const f=(st.cool-clockState.tickN)/(st.type==='sam'?SAM_COOLDOWN:st.type==='silo'?SILO_COOLDOWN:GUNS[st.type].cd); ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,y,r+3,-Math.PI/2,-Math.PI/2+Math.PI*2*f); ctx.stroke(); }
     }
+    resetE3CanvasStroke(ctx);
   }
   // transports with tracer
   for(const [transportIndex,tr] of transports.entries()){
@@ -1305,6 +1362,10 @@ function drawIcon(type,x,y,r,col,c=ctx){
   }
   c.restore();
 }
+function drawMissileFocus(c,x,y,r,phase){
+  c.strokeStyle='rgba(255,170,80,.5)'; c.lineWidth=1.5; c.lineCap='butt'; c.lineJoin='miter'; c.setLineDash([8,8]); c.lineDashOffset=-phase; c.beginPath(); c.arc(x,y,r,0,Math.PI*2); c.stroke(); resetE3CanvasStroke(c);
+}
+function resetE3CanvasStroke(c){ c.setLineDash([]); c.lineDashOffset=0; c.lineCap='butt'; c.lineJoin='miter'; }
 function structureTextureCanvas(type,col){
   const canvas=document.createElement('canvas'); canvas.width=canvas.height=64;
   drawIcon(type,32,32,24,col,canvas.getContext('2d'));
@@ -1579,6 +1640,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.15</td><td>Development-only Phase E3 Pixi fronts, routes, pre-base structure status/ranges, and structure bases; Canvas retains post-base overlays, entities, effects, labels, selection, and input.</td></tr>
   <tr><td>1.10.14</td><td>Development-only Phase E2 Pixi structure-base layer; Canvas retains all structure overlays and input.</td></tr>
   <tr><td>1.10.13</td><td>First development-only Phase E pixi-hybrid foundation; production and default rendering remain Canvas.</td></tr>
   <tr><td>1.10.12</td><td>Development-only completed Phase D2 two-human lockstep and shared replay technical proof.</td></tr>

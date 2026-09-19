@@ -64,7 +64,7 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
       expect(initial.rendering.cssWidth).toBe(initial.canvas.clientWidth);
       expect(initial.rendering.pixelWidth).toBe(initial.canvas.width);
       if(renderer==='pixi'){
-        expect(initial.rendering).toMatchObject({textureCount:1,spriteCount:1,containerCount:4,contextState:'ready',capabilities:{structures:true}});
+        expect(initial.rendering).toMatchObject({textureCount:1,spriteCount:1,containerCount:6,contextState:'ready',capabilities:{preStructures:true,structures:true}});
         const layers=await page.evaluate(()=>{
           const map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
           return {map:map.toJSON(),world:world.toJSON(),mapPointer:getComputedStyle(document.querySelector('#map')).pointerEvents,worldPointer:getComputedStyle(document.querySelector('.pixi-world')).pointerEvents};
@@ -164,7 +164,7 @@ test('source Pixi smoke preserves raster, input alignment, and canonical parity'
   const capability=await page.evaluate(()=>{ const canvas=document.createElement('canvas'); return !!(canvas.getContext('webgl2')||canvas.getContext('webgl')); });
   const rendering=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
   if(capability){
-    expect(rendering).toMatchObject({active:'pixi-hybrid',contextState:'ready',capabilities:{structures:true},layers:{terrain:{textureCount:1}}});
+    expect(rendering).toMatchObject({active:'pixi-hybrid',contextState:'ready',capabilities:{preStructures:true,structures:true},layers:{terrain:{textureCount:1}}});
     await expect(page.locator('.pixi-world')).toBeVisible();
     expect(rendering.rasterUploadCount).toBeGreaterThan(0);
     if(testInfo.project.name==='chromium-desktop'){
@@ -211,7 +211,7 @@ for(const renderer of ['canvas','pixi']) test(`${renderer} survives repeated per
     expect((after.camera.visibleBounds.left+after.camera.visibleBounds.right)/2).toBeCloseTo((before.camera.visibleBounds.left+before.camera.visibleBounds.right)/2,8);
     expect((after.camera.visibleBounds.top+after.camera.visibleBounds.bottom)/2).toBeCloseTo((before.camera.visibleBounds.top+before.camera.visibleBounds.bottom)/2,8);
     if(renderer==='pixi'&&cycle===0){
-      expect(after.rendering).toMatchObject({active:'pixi-hybrid',containerCount:4,canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{structures:true},layers:{terrain:{textureCount:1}}});
+      expect(after.rendering).toMatchObject({active:'pixi-hybrid',containerCount:6,canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{preStructures:true,structures:true},layers:{terrain:{textureCount:1}}});
       expect(after.rendering.applicationAllocations).toBeLessThanOrEqual(2); expect(after.rendering.textureAllocations).toBeLessThanOrEqual(2);
     }
     if(renderer==='pixi'&&cycle>=1){
