@@ -1,6 +1,19 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.22, build `2026-09-18-phase-e10-pixi-draft-garrison-labels`, on 18 September 2026. E9 is `a4b6f33`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.23, build `2026-09-18-phase-e11-pixi-support-actors`, on 18 September 2026. E10 is `3d40023`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E11 Implemented Slice
+
+- Migrated exactly the contiguous repair-truck, spy-plane, and defensive-interceptor blocks after map labels and before floating text. Truck chassis/tyres/bed/cab/windscreen/slats/tools and work progress, spy body and own orbit range, and interceptor trail segments and body preserve category, array, child, and point order; raw current positions, headings, scale/radii, colors, fog and own exceptions, states/skips, repair target timing formula, orbit center/range, and trail alpha/width remain unchanged. No support actor gained interpolation or smoothing.
+- The pure vector model uses renderer-side WeakMap source identities and occurrence suffixes because these simulation collections have no authoritative IDs. It preserves inherited line cap/join/dash/offset/global alpha and the exact support-to-floater handoff. Conservative full bounds retain crossing trails and offscreen-center ranges/arcs. Hard reject-not-truncate limits cover 8,192 entries/containers, 262,144 trail points/primitives, 524,288 generated segments, and 32,768 Graphics; pools are bounded and generated texture references remain zero.
+- Ownership requires complete Pixi ownership through map labels. A support model, cap, constructor, paint, child append, final parent append, prerequisite, or context failure withdraws all three categories in the same frame and runs the direct uncapped legacy-equivalent Canvas painter after valid Pixi labels. Dirty partial resources are discarded and later valid frames retry. Floating text and every later effect/label remain Canvas above either path; fatal final submission retains synchronous complete Canvas replay.
+
+## E11 Evidence
+
+- Pure contracts pin an independent exact 19-primitive/22-operation inventory, state and category order, progress/orbit/trail formulas and styles, fog/own behavior, state handoff, crossing culling, cap boundaries, occurrence identity under repeat/reorder/removal, and immutability. The detached Canvas helper remains unit evidence only and is not cited as production fallback evidence. Existing real simulation suites retain repair dispatch/work/return, spy launch/orbit/loss, and missile-interceptor behavior; simultaneous renderer hard states are explicitly synthetic.
+- Test-only extraction sends every production-model primitive through the real `drawPrimitive` into an isolated Pixi `Graphics` at DPR 1/1.5/2, extracts actual pixels, and compares bounds, styles, colors, position, area, overlap, and opaque-background channel delta with a direct Canvas primitive raster. Every primitive must be visible; visibility and tracked resources must restore. Separate production-`renderPass` probes install real engine truck/plane/interceptor actors and real floating text, then exercise support paint-resource, final-parent-append, update-throw, and final-`app.render()` failure. The real `#map`/Pixi composition is compared with an identical support-omission frame using independently hardcoded per-primitive operation order and pairwise-disjoint masks partitioned smallest footprint first; every mask needs actual framebuffer differential and omission sensitivity. Recoverable failures retain Pixi labels below Canvas support and floating text above; fatal failures synchronously replay prerequisites, support, and the later floater with one presentation advance and no intervening RAF callback. The detached helper is not part of this production claim.
+- The labeled synthetic 1,800-frame churn varies state, type, color, progress, trail length, fog, culling, order, and create/remove count; pools plateaued and the final run measured local synchronous CPU/render-submission p95 4.3 ms and p99 30.0 ms, below 16.7/33 ms. The 769.9 ms maximum was a one-time local browser stall. Timings exclude GPU, compositor, display presentation, and input latency; heap is advisory and GPU bytes remain unknown.
+- Focused E11 passed 17/17 in primary Chromium and 3/3 dedicated DPR extraction cases. E9/E10 plus Canvas goldens passed 49/49, `npm test`, syntax, 2/2 source/built contracts, and 24-file reproducibility passed; the release-manifest SHA-256 is `ead1a0b62db187f9353395a6d272c1c5fb450ef7a33ace33b7e2509b07050d81`. The larger broad browser rerun completed all 622 configured project cases in 10.7 minutes with 181 passes, 441 intentional project-selection skips, and no failures; this supersedes the earlier incomplete timeout at case 490. Canvas remains production/default with no selectable Pixi production graph or Pixi JavaScript chunk. Plugin 1.10.7 and `SIMULATION_BASELINE_VERSION='1.10.8'` remain unchanged.
 
 ## E10 Implemented Slice
 
@@ -110,6 +123,6 @@ E8 was committed as `db6ab09` and is the clean base for E9.
 
 ## Remaining Phase E Work
 
-- Continue after the deliberate E10 boundary with repair trucks, spy planes, interceptors, and later effects/labels in bounded ordered slices.
+- Continue after the deliberate E11 boundary with floating text/effects, global labels/selection, and later layers in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.

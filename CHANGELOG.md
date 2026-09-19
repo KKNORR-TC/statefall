@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.23 - 2026-09-18
+
+- Added bounded Phase E11 development-only Pixi support actors after E10 `3d40023`: repair trucks with work progress, spy planes with owned orbit ranges, and defensive interceptors with ordered trails and bodies preserve exact collection/category/child order, raw stepped positions without new smoothing, fog/ownership exceptions, geometry, heading, colors, formulas, and Canvas state handoff. Floating text and every later effect/label remain Canvas-owned above them.
+- Added one pure renderer-neutral vector model with WeakMap source identity plus occurrence keys, complete crossing bounds, and reject-not-truncate entry/trail/primitive/segment/container/Graphics caps. Ownership requires every layer through map labels; any prerequisite or support-only failure withdraws all three categories and directly paints the complete uncapped Canvas block after valid Pixi labels. Fatal submission retains synchronous full-Canvas replay.
+- This remains migration art, not final art. Phase E remains open for floating text/effects, global labels/selection, atlases, and physical-GPU/hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 are unchanged; no ZIP, Docker, commit, push, production access, or deployment is included.
+
 ## 1.10.22 - 2026-09-18
 
 - Added the bounded Phase E10 development-only Pixi draft/garrison label slice after E9 `a4b6f33`: draft flags, pick badges, owner names, and own garrison counts preserve legacy array/area order, draft visibility and fade, player mapping, flag glyphs, exact text and zoom/area thresholds, hover styles, alphabetic baseline placement, and Canvas state handoff. Repair trucks and every later actor/effect remain Canvas-owned above it.

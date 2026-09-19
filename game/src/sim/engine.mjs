@@ -454,6 +454,13 @@ export function createEngine(options={},adapters={}){
       const owned=engineState.actors.structures.filter(value=>value.owner===me().id&&!value.building),home=owned[0],target=owned[1]||home; if(!home||!target) throw new Error('E10 support fixture requires owned structures'); const x=home.t%W+.5,y=(home.t-home.t%W)/W+.5; engineState.replaceActors('trucks',[{owner:me().id,target,path:[home.t],pos:0,x,y,hdg:0,state:'out',home}]); return readonly.wrap({fixture:name,x,y});
     }
     if(name==='e10-clear-support-truck'){ if(!testBridge) throw new Error('E10 support fixture requires the test bridge'); engineState.replaceActors('trucks',[]); return readonly.wrap({fixture:name}); }
+    if(name==='e11-support-actors'){
+      if(!testBridge||!me()||!engineState.lifecycle.paused) throw new Error('E11 support fixture requires a paused test match');
+      const owned=engineState.actors.structures.filter(value=>value.owner===me().id&&!value.building),home=owned[0],target=owned[1]||home; if(!home||!target) throw new Error('E11 support fixture requires owned structures');
+      const anchor=engineState.actors.aircraft.find(value=>value.owner===me().id)||engineState.actors.aircraft[0],x=anchor?.x??me().sx,y=anchor?.y??me().sy,owner=me().id,tickN=engineState.clock.tickN,truck={owner,target,path:[home.t],pos:0,x:x-12,y:y-4,hdg:.2,state:'work',workAt:tickN+40,home},plane={owner,x:x+8,y:y-3,tx:x+12,ty:y-3,hdg:.4,phase:'orbit'},interceptor={owner,x:x+22,y:y+5,trail:[[x+14,y+2],[x+18,y+3],[x+21,y+4]]};
+      engineState.replaceActors('trucks',[truck]); engineState.replaceActors('planes',[plane]); engineState.replaceActors('interceptors',[interceptor]); return readonly.wrap({fixture:name,truck:{x:truck.x,y:truck.y},plane:{x:plane.x,y:plane.y},interceptor:{x:interceptor.x,y:interceptor.y}});
+    }
+    if(name==='e11-clear-support-actors'){ if(!testBridge) throw new Error('E11 support fixture requires the test bridge'); engineState.replaceActors('trucks',[]); engineState.replaceActors('planes',[]); engineState.replaceActors('interceptors',[]); return readonly.wrap({fixture:name}); }
     if(!testBridge) throw new Error('Engine fixtures require the test bridge.');
     if(name!=='dense-late-game') throw new Error(`Unknown engine fixture: ${name}`);
     const human=me(); if(!human||!engineState.lifecycle.paused) throw new Error('late-game scene requires a paused match');
