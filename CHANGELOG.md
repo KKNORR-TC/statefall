@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.17 - 2026-09-18
+
+- Added the bounded Phase E5 development-only Pixi naval-logistics prefix after the complete E4 structure graph: each transport remains in array order with route, wake, hull, optional heavy HP, and zoom-gated troop label; merchants retain wake then hull/cargo; privateer boarding lines remain last. Canvas warships and all later layers still composite above Pixi.
+- Added a pure renderer-neutral model with exact stepped positions, route sampling every eight path entries, legacy fog inputs, owner colors, heavy geometry/HP, Canvas alphabetic label semantics, complete route/wake/line bounds, shared CSS-pixel antialias margins, crossing-geometry culling, and hard entity/path/wake/primitive/segment/label/resource limits.
+- Added bounded WeakMap-identity container, Graphics, and canvas-raster label pools. Naval ownership reserves resources atomically and withdraws to the complete same-frame Canvas prefix on structure, model, cap, constructor, source, or context failure; partially mutated Graphics/labels are discarded with live accounting decremented, and containers return to idle only after reset. The existing structure pools now use the same transactional rule. Valid Pixi structures remain owned when only naval logistics fails. Hulls use exact legacy vector joins: transport is locally rounded while merchant inherits global miter. Generated hull texture references are explicitly zero; GPU allocation bytes remain unknown.
+- Added pure and focused browser evidence for geometry/order/fog/zoom/heavy/HP/caps/immutability, semantic pixels, exact merchant miter and inherited boarding-cap state including viewport-culled wakes, invalid paint and injected fail-after-mutation fallback, retained Canvas warship ordering, identity under reorder/compaction, reset/BFCache/context-loss recovery, DPR 1/1.5/2 miter-only corners and butt/round dash endpoints, and 1,800-frame create/remove/reorder/state/visibility churn. The recorded local p95 4.0 ms and p99 12.1 ms are synchronous CPU/render-submission measurements, not GPU/compositor/display latency; heap samples are advisory and GPU bytes are unavailable.
+- Phase E remains open for warships, projectiles, aircraft, later labels/effects, atlases, and sustained physical-GPU/hardware qualification. No final art, plugin, baseline, production, package handoff, deployment, commit, or push is included.
+
 ## 1.10.16 - 2026-09-18
 
 - Added the bounded Phase E4 complete ordered structure scene to the development-only `pixi-hybrid` renderer. Every tile-keyed pooled entry now interleaves pooled `Graphics`, the generated legacy base `Sprite`, and pooled canvas-raster label `Sprite` resources in the exact per-structure legacy order.

@@ -34,7 +34,9 @@ const assert=require('node:assert/strict');
   assert.equal(atomic.acquireMany(3),null,'a frame reservation over the cap must fail atomically');
   assert.deepEqual(atomic.diagnostics(),{live:2,pooled:2,created:2,reused:0,destroyed:0,maximum:2,idleMaximum:2});
   const complete=atomic.acquireMany(2); assert.equal(complete.length,2); assert.equal(atomic.acquire(),null);
-  complete.forEach(value=>atomic.release(value)); atomic.drain();
+  atomic.discard(complete.pop()); assert.equal(atomic.diagnostics().live,1,'discard must remove a tainted value from live accounting');
+  const replacement=atomic.acquire(); assert.ok(replacement,'discard must immediately free a live slot');
+  complete.forEach(value=>atomic.release(value)); atomic.release(replacement); atomic.drain();
   for(const pattern of ['acquire','acquireMany']){
     let attempts=0;
     const throwing=createBoundedPool({maximum:1,idleMaximum:1,create:()=>{ if(attempts++===0) throw new Error('create-once'); return {ok:true}; },destroy:()=>{}});

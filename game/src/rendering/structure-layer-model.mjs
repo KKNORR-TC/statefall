@@ -59,6 +59,10 @@ export function createBoundedPool({maximum,idleMaximum=maximum,create,destroy}){
       if(idle.length<idleMaximum) idle.push(value);
       else { try{ destroy(value); } finally { live--; destroyed++; } }
     },
+    discard(value){
+      if(!value) return;
+      try{ destroy(value); } finally { live--; destroyed++; }
+    },
     drain(){ let error=null; while(idle.length){ const value=idle.pop(); try{ destroy(value); }catch(caught){ error??=caught; }finally{ live--; destroyed++; } } if(error) throw error; },
     diagnostics(){ return {live,pooled:idle.length,created,reused,destroyed,maximum,idleMaximum}; }
   };

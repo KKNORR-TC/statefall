@@ -6,6 +6,7 @@ import {createAudioState,saveAudioLevels} from './audio/audio-state.js';
 import {STATEFALL_SIGN_KEY} from './config/signing.js';
 import {createEngine} from './sim/engine.mjs';
 import {renderingRuntime} from './rendering/runtime.mjs';
+import {navalLogisticsCanvasStrokeState} from './rendering/naval-logistics-model.mjs';
 import {
   WIN_SHARE,BOTS,TILES_PER_NEUTRAL,QUICK_TILES,DIFFS,FOG,STRUCT,CMD_RANGE,CMD_DISCOUNT,CMD_DISCOUNT_MAX,
   BUILD_TICKS,SHIELD,UPGRADE,LSHIELD,HEAVY,CRUISE,AIR,GUNS,ARMOR,CMD_RESERVE,SHIP_BUILD,CANCEL_REFUND,TRUCK,
@@ -997,8 +998,45 @@ function installBrowserTestBridge(){
          c.font='10px "Segoe UI",system-ui,sans-serif'; c.textAlign='center'; c.textBaseline='alphabetic'; c.fillStyle='#fff'; c.strokeStyle='rgba(0,0,0,.6)'; c.lineWidth=3; c.strokeText('2/6 · F 12s',x,y+r+11); c.fillText('2/6 · F 12s',x,y+r+11);
          c.strokeStyle='#bfe6ff'; c.lineWidth=2.5; c.beginPath(); c.arc(x,y,r+3,-Math.PI/2,Math.PI/2); c.stroke(); c.beginPath(); c.arc(x,y,r+3,-Math.PI/2,Math.PI); c.stroke();
          c.font='10px "Segoe UI",system-ui,sans-serif'; c.textAlign='center'; c.textBaseline='alphabetic'; c.fillStyle='#fff'; c.strokeStyle='rgba(0,0,0,.6)'; c.lineWidth=3; c.strokeText('Cruiser 12s +1',x,y+r+11); c.fillText('Cruiser 12s +1',x,y+r+11);
-         return {dataUrl:canvas.toDataURL(),dpr,level:{x:x+r*.9,y:y-r*.8},queue:{x,y:y+r+11},arc:{x,y:y-r-3}};
-       },
+          return {dataUrl:canvas.toDataURL(),dpr,level:{x:x+r*.9,y:y-r*.8},queue:{x,y:y+r+11},arc:{x,y:y-r-3}};
+        },
+        exerciseNavalLogistics(state,{drawRetainedWarship=false}={}){
+          const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},camera={x:cam.x,y:cam.y,scale:cam.s},viewport_={width:viewWidth(),height:viewHeight()};
+          ctx.clearRect(0,0,viewport_.width,viewport_.height); resetE3CanvasStroke(ctx);
+          const navalState={camera,viewport:viewport_,mapWidth:W,...state},strokeState=navalLogisticsCanvasStrokeState(navalState),owned=renderer.updateWorldLayer('naval-logistics',navalState); renderer.renderFrame(cam);
+          if(!owned){
+            const screen=([x,y])=>[camera.x+x*camera.scale,camera.y+y*camera.scale],paintWake=item=>{ if(item.wake.length<2) return; ctx.lineCap='round'; const bow=.7+Math.min(1.6,(Number(item.speed)||1.3)/1.6); for(let i=1;i<item.wake.length;i++){ const alpha=i/item.wake.length,[ax,ay]=screen(item.wake[i-1]),[bx,by]=screen(item.wake[i]); ctx.strokeStyle=`rgba(200,230,255,${alpha*.45*Math.min(1,bow)})`; ctx.lineWidth=(Math.max(1,camera.scale*.8)*(1-alpha*.5)+alpha*Math.max(1,camera.scale*1.6))*bow; ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); } };
+            for(const item of state.transports||[]){ if(item.visible===false) continue; const [px,py]=screen([item.x,item.y]),r=Math.max(4,camera.scale*2),start=item.path[0]; ctx.strokeStyle=item.color; ctx.globalAlpha=.55; ctx.lineWidth=1.5; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.moveTo(camera.x+(start%W+.5)*camera.scale,camera.y+((start-start%W)/W+.5)*camera.scale); for(let i=8;i<Number(item.pos);i+=8){ const tile=item.path[i]; ctx.lineTo(camera.x+(tile%W+.5)*camera.scale,camera.y+((tile-tile%W)/W+.5)*camera.scale); } ctx.lineTo(px,py); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; paintWake(item); drawShip('transport',px,py,item.heading,item.heavy?r*1.35:r,item.color,item.heavy?item.hp:null,item.heavy?item.maxHp:null); if(camera.scale>=1.2){ ctx.font='10px "Segoe UI",system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillStyle='#fff'; ctx.fillText(Math.round(item.troops),px,py-r*1.2); } }
+            for(const item of state.merchants||[]){ if(item.visible===false) continue; const [px,py]=screen([item.x,item.y]),r=Math.max(3.5,camera.scale*1.7); paintWake(item); ctx.save(); ctx.translate(px,py); ctx.rotate(item.heading); const u=r/10; ctx.scale(u,u); ctx.fillStyle='#d9c9a3'; ctx.strokeStyle='#5a4a30'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(8,0); ctx.lineTo(3,-3); ctx.lineTo(-8,-3); ctx.lineTo(-8,3); ctx.lineTo(3,3); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle=item.color; ctx.fillRect(-6,-2,4,4); ctx.fillRect(-1,-2,3,4); ctx.restore(); }
+            for(const item of state.boarding||[]){ if(item.visible===false||item.active===false) continue; const [ax,ay]=screen([item.x,item.y]),[bx,by]=screen([item.targetX,item.targetY]); ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]); }
+          }else{ ctx.globalAlpha=1; ctx.setLineDash([]); ctx.lineDashOffset=0; ctx.lineJoin=strokeState.lineJoin; ctx.lineCap=strokeState.lineCap; }
+          let retainedWarship=null;
+          if(drawRetainedWarship){ retainedWarship={x:viewport_.width/2,y:viewport_.height/2,r:Math.max(5,cam.s*2.8)}; drawShip('warship',retainedWarship.x,retainedWarship.y,0,retainedWarship.r,'#ff3355',4,4); }
+          const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN};
+          for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`naval logistics purity violation: ${key} changed`);
+          return {owned,fallbackPainted:!owned,retainedWarship,canvasStrokeState:{lineJoin:ctx.lineJoin,lineCap:ctx.lineCap},rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
+        },
+        navalIdentityChurn(){
+          const camera={x:cam.x,y:cam.y,scale:cam.s},viewport_={width:viewWidth(),height:viewHeight()},world=(x,y)=>[(x-cam.x)/cam.s,(y-cam.y)/cam.s],pathTile=(x,y)=>Math.max(0,Math.min(W*H-1,Math.floor(y)*W+Math.floor(x))),make=(name,x,color)=>{ const [wx,wy]=world(x,220),start=pathTile(wx-12,wy); return {name,x:wx,y:wy,heading:0,troops:10,hp:4,maxHp:4,heavy:false,color,visible:true,pos:1,path:[start],wake:[[wx-4,wy],[wx-2,wy]],speed:1.3}; };
+          const a=make('a',360,'#ff3355'),b=make('b',460,'#33cc66'),state=items=>({camera,viewport:viewport_,mapWidth:W,transports:items,merchants:[],boarding:[]});
+          renderer.updateWorldLayer('naval-logistics',state([a,b])); const first=renderer.diagnostics().layers.navalLogistics.resources.map(value=>({key:value.key,order:value.order}));
+          renderer.updateWorldLayer('naval-logistics',state([b,a])); const reordered=renderer.diagnostics().layers.navalLogistics.resources.map(value=>({key:value.key,order:value.order}));
+          renderer.updateWorldLayer('naval-logistics',state([b])); renderer.updateWorldLayer('naval-logistics',state([a,b])); const compacted=renderer.diagnostics().layers.navalLogistics.resources.map(value=>({key:value.key,order:value.order}));
+          return {first,reordered,compacted,rendering:renderer.diagnostics()};
+        },
+        renderNavalChurnFrames(count=1800){
+          const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},viewport_={width:viewWidth(),height:viewHeight()},origin={x:cam.x,y:cam.y,s:cam.s},samples=[],resources=[],heap=[],world=(x,y)=>[(x-origin.x)/origin.s,(y-origin.y)/origin.s],tile=(x,y)=>Math.max(0,Math.min(W*H-1,Math.floor(y)*W+Math.floor(x))),pool=[];
+          for(let i=0;i<24;i++){ const [x,y]=world(180+(i%8)*120,180+Math.floor(i/8)*110),start=tile(x-20,y); pool.push({x,y,heading:0,troops:10,hp:4,maxHp:4,heavy:false,color:'#d9485f',visible:true,pos:1,path:[start],wake:[[x-8,y],[x-4,y],[x-1,y]],speed:1.3}); }
+          try{ for(let frame=0;frame<Math.max(0,Math.floor(count));frame++){
+            const started=performance.now(),visible=Math.floor(frame/30)%2===0,camera=visible?{x:origin.x,y:origin.y,scale:origin.s}:{x:100000,y:100000,scale:origin.s},n=1+Math.floor(frame/30)%pool.length,items=pool.slice(0,n);
+            for(let i=0;i<items.length;i++){ const item=items[i]; item.heavy=(frame+i)%3===0; item.hp=1+(frame+i)%4; item.troops=(frame*7+i*13)%1000; item.color=['#d9485f','#33a06f','#3f7bd9','#d98b36'][(Math.floor(frame/20)+i)%4]; item.heading=(frame%60)/60; item.wake=[[item.x-8-(frame%4),item.y],[item.x-4,item.y],[item.x-1,item.y]]; }
+            if(frame%2) items.reverse();
+            renderer.updateWorldLayer('naval-logistics',{camera,viewport:viewport_,mapWidth:W,transports:items,merchants:[],boarding:[]}); renderer.renderFrame(cam); samples.push(performance.now()-started);
+            if(frame%150===149){ const layer=renderer.diagnostics().layers.navalLogistics; resources.push({frame,visibility:visible?'visible':'offscreen',entries:layer.entries,containersCreated:layer.containersCreated,containersDestroyed:layer.containersDestroyed,graphicsCreated:layer.graphicsCreated,graphicsDestroyed:layer.graphicsDestroyed,labelCreated:layer.labelCreated,labelDestroyed:layer.labelDestroyed,labelTextures:layer.labelTextureCount,hullTextureRefs:layer.generatedHullTextures.references}); if(performance.memory) heap.push({frame,usedJSHeapSize:performance.memory.usedJSHeapSize,advisory:true}); }
+          } }finally{ Object.assign(cam,origin); }
+          const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`naval churn purity violation: ${key} changed`);
+          const ordered=samples.slice().sort((a,b)=>a-b),percentile=value=>ordered[Math.min(ordered.length-1,Math.floor(ordered.length*value))]||0; return {measurement:'local synchronous CPU/render-submission; excludes GPU, compositor, display presentation, and input latency',mean:samples.reduce((sum,value)=>sum+value,0)/Math.max(1,samples.length),p95:percentile(.95),p99:percentile(.99),max:ordered.at(-1)||0,resources,heap,heapAssertion:'advisory-only: browser GC timing and performance.memory are nondeterministic',gpuAssertion:'unknown: Pixi/WebGL does not expose reliable allocation bytes',rendering:renderer.diagnostics()};
+        },
        e3CanvasStatePoisonProbe(){
          const paint=poison=>{ const canvas=document.createElement('canvas'); canvas.width=canvas.height=160; const c=canvas.getContext('2d'); if(poison){ c.lineCap='round'; c.lineJoin='bevel'; c.setLineDash([1,13]); c.lineDashOffset=7.25; } drawMissileFocus(c,80,80,45,5.25); return {pixels:Array.from(c.getImageData(0,0,160,160).data),state:{lineCap:c.lineCap,lineJoin:c.lineJoin,dash:c.getLineDash(),offset:c.lineDashOffset}}; };
          return {baseline:paint(false),poisoned:paint(true)};
@@ -1129,6 +1167,13 @@ function render(){
     }
     resetE3CanvasStroke(ctx);
   }
+  const navalLogisticsState={
+    camera:{x:cam.x,y:cam.y,scale:s},viewport:{width:cw,height:ch},mapWidth:W,
+    transports:transports.map((tr,transportIndex)=>{ const [x,y]=shipXY(transportIndex); return {source:tr,x,y,heading:tr.hdg,troops:tr.troops,heavy:!!tr.heavy,hp:tr.hp,maxHp:HEAVY.hp,color:players[tr.owner].color,visible:visAt(x,y),pos:tr.pos,path:tr.path,wake:tr.wake,speed:1.3}; }),
+    merchants:traders.filter(tr=>tr.x!=null).map(tr=>({source:tr,x:tr.x,y:tr.y,heading:tr.hdg,color:players[tr.owner].color,visible:visAt(tr.x,tr.y),wake:tr.wake,speed:tr.cls&&SHIPS[tr.cls]?SHIPS[tr.cls].speed:1.3})),
+    boarding:warships.filter(w=>w.boarding&&!w.boarding.done).map(w=>({source:w,x:w.x,y:w.y,targetX:w.boarding.x,targetY:w.boarding.y,active:true,visible:visAt(w.x,w.y)}))
+  },navalCanvasStrokeState=navalLogisticsCanvasStrokeState(navalLogisticsState),navalLogisticsOwned=renderer.updateWorldLayer('naval-logistics',navalLogisticsState);
+  if(!navalLogisticsOwned){
   // transports with tracer
   for(const [transportIndex,tr] of transports.entries()){
     const [x,y]=shipXY(transportIndex); const col=players[tr.owner].color; if(!visAt(x,y)) continue;
@@ -1145,6 +1190,10 @@ function render(){
     ctx.save(); ctx.translate(px,py); ctx.rotate(tr.hdg); const u=r/10; ctx.scale(u,u); ctx.fillStyle='#d9c9a3'; ctx.strokeStyle='#5a4a30'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(8,0); ctx.lineTo(3,-3); ctx.lineTo(-8,-3); ctx.lineTo(-8,3); ctx.lineTo(3,3); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle=players[tr.owner].color; ctx.fillRect(-6,-2,4,4); ctx.fillRect(-1,-2,3,4); ctx.restore(); }
   // boarding lines
   for(const w of warships){ if(w.boarding&&!w.boarding.done&&visAt(w.x,w.y)){ ctx.strokeStyle='rgba(255,210,122,.8)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(cam.x+w.x*s,cam.y+w.y*s); ctx.lineTo(cam.x+w.boarding.x*s,cam.y+w.boarding.y*s); ctx.stroke(); ctx.setLineDash([]); } }
+  }else{
+    ctx.globalAlpha=1; ctx.setLineDash([]); ctx.lineDashOffset=0; ctx.lineJoin=navalCanvasStrokeState.lineJoin;
+    ctx.lineCap=navalCanvasStrokeState.lineCap;
+  }
   // warships
   for(const [warshipIndex,w] of warships.entries()){
     const [wx,wy]=interpolatedPosition('warships',w,warshipIndex); if(!visAt(wx,wy)) continue; if(SHIPS[w.cls].sub&&!subSeenBy(w.id,me().id)) continue;
@@ -1671,6 +1720,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.17</td><td>Development-only Phase E5 Pixi naval-logistics prefix: transports, merchants, and privateer boarding lines after complete structures. Canvas retains warships and every later world layer.</td></tr>
   <tr><td>1.10.16</td><td>Development-only Phase E4 Pixi complete ordered structure scene: fronts, routes, pre-base status/ranges, bases, post-base marks, and structure labels. Canvas retains mobile entities, effects, later labels, selection, and input.</td></tr>
   <tr><td>1.10.15</td><td>Development-only Phase E3 Pixi fronts, routes, pre-base structure status/ranges, and structure bases; Canvas retains post-base overlays, entities, effects, labels, selection, and input.</td></tr>
   <tr><td>1.10.14</td><td>Development-only Phase E2 Pixi structure-base layer; Canvas retains all structure overlays and input.</td></tr>

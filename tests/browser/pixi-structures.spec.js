@@ -340,6 +340,24 @@ for(const failure of [
   const recovered=await run(); expect(recovered).toMatchObject({owned:true,resourceLimitFallback:{reason:null}}); expect(recovered[failure.created]).toBe(baseline[failure.created]+1);
 });
 
+test('structure pooled resources discard tainted paint failures and recover without stale children',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','shared transactional pool evidence runs in primary Chromium'); await start(page,'E4TRANSACTIONAL');
+  const make=()=>page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'city',level:2,linked:true}; return {item}; });
+  const fixture=await make();
+  for(const failure of [
+    {kind:'structure-graphics-after-append',reason:'graphics-resource',destroyed:'graphicsDestroyed'},
+    {kind:'structure-label-after-paint',reason:'text-resource',destroyed:'labelDestroyed'},
+    {kind:'structure-container-after-append',reason:'sprite-resource',destroyed:'labelDestroyed'}
+  ]){
+    await page.evaluate(({item})=>{ window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}); window.__STATEFALL_TEST__.exerciseStructureLayer([],{preStructures:[]}); },fixture);
+    const baseline=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().layers.structures);
+    const failed=await page.evaluate(({failure,item})=>{ window.__STATEFALL_TEST__.injectRendererFailure(failure.kind); return window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering.layers.structures; },{failure,item:fixture.item});
+    expect(failed).toMatchObject({owned:false,entries:0,entryGraphicsCount:0,activeLabelSprites:0,resourceLimitFallback:{reason:failure.reason}}); expect(failed[failure.destroyed]).toBe(baseline[failure.destroyed]+1);
+    const recovered=await page.evaluate(item=>window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering.layers.structures,fixture.item);
+    expect(recovered).toMatchObject({owned:true,entries:1,resourceLimitFallback:{reason:null},order:[{children:['base','level-mark','linked']}]});
+  }
+});
+
 test('segment cap accepts the exact generated count and rejects one less before drawing',async({browser},testInfo)=>{
   test.skip(testInfo.project.name!=='chromium-desktop','segment boundary ownership runs in primary Chromium');
   const baselineContext=await browser.newContext({viewport:{width:1280,height:720},deviceScaleFactor:1}),baselinePage=await baselineContext.newPage();
@@ -501,6 +519,7 @@ test('Pixi structure layer smokes every map and major mode',async({context},test
       const rendering=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
       test.skip(rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
       expect(rendering.layers.structures,entry.seed).toMatchObject({owned:true,total:11,visible:11,culled:0,resourceLimitFallback:{reason:null}});
+      expect(rendering.layers.navalLogistics,entry.seed).toMatchObject({owned:true,resourceLimitFallback:{reason:null}});
       expect(rendering.compositingConflictFallback,entry.seed).toMatchObject({active:false,reason:null});
     }finally{ await page.close(); }
   }

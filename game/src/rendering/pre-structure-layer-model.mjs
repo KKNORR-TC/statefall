@@ -20,6 +20,10 @@ const bounds=(left,top,right,bottom,kind)=>conservativePaintBounds(left,top,righ
 
 export function primitivePaintBounds(value){
   const margin=strokeMargin(value);
+  if(value.kind==='polyline'||value.kind==='polygon'){
+    const xs=value.points.map(point=>point.x),ys=value.points.map(point=>point.y);
+    return bounds(Math.min(...xs)-margin,Math.min(...ys)-margin,Math.max(...xs)+margin,Math.max(...ys)+margin,`pre-base-${value.kind}`);
+  }
   if(value.kind==='line') return bounds(Math.min(value.x1,value.x2)-margin,Math.min(value.y1,value.y2)-margin,Math.max(value.x1,value.x2)+margin,Math.max(value.y1,value.y2)+margin,'pre-base-line');
   if(value.kind==='rect') return bounds(value.x-margin,value.y-margin,value.x+value.width+margin,value.y+value.height+margin,'pre-base-rect');
   if(value.kind==='circle'||value.kind==='arc') return bounds(value.x-value.r-margin,value.y-value.r-margin,value.x+value.r+margin,value.y+value.r+margin,`pre-base-${value.kind}`);
@@ -49,6 +53,19 @@ export function dashSegments(length,dash,gap,phase=0,maximum=Infinity){
 export function dashedSegmentCount(length,dash,gap,phase=0){ return dashSegments(length,dash,gap,phase).length; }
 
 export function primitiveGraphicsSegments(value,maximum=Infinity){
+  if(value.kind==='polygon'){
+    if(value.points.length<2) return Object.freeze([]);
+    if(maximum<1) throw new RangeError('segment-cap');
+    return Object.freeze([Object.freeze({kind:'polygon',points:value.points})]);
+  }
+  if(value.kind==='polyline'){
+    const legs=[]; let total=0;
+    for(let i=1;i<value.points.length;i++){ const a=value.points[i-1],b=value.points[i],length=Math.hypot(b.x-a.x,b.y-a.y); if(length>0){ legs.push({a,b,length,at:total}); total+=length; } }
+    if(!value.dash){ if(legs.length>maximum) throw new RangeError('segment-cap'); return Object.freeze(legs.map(({a,b})=>Object.freeze({kind:'line',x1:a.x,y1:a.y,x2:b.x,y2:b.y}))); }
+    const intervals=dashSegments(total,value.dash[0],value.dash[1],value.phase,maximum),result=[];
+    for(const interval of intervals) for(const leg of legs){ const from=Math.max(interval.from,leg.at),to=Math.min(interval.to,leg.at+leg.length); if(to<=from) continue; const f=(from-leg.at)/leg.length,t=(to-leg.at)/leg.length; result.push(Object.freeze({kind:'line',x1:leg.a.x+(leg.b.x-leg.a.x)*f,y1:leg.a.y+(leg.b.y-leg.a.y)*f,x2:leg.a.x+(leg.b.x-leg.a.x)*t,y2:leg.a.y+(leg.b.y-leg.a.y)*t})); if(result.length>maximum) throw new RangeError('segment-cap'); }
+    return Object.freeze(result);
+  }
   if(value.kind==='line'){
     const dx=value.x2-value.x1,dy=value.y2-value.y1,length=Math.hypot(dx,dy);
     if(!(length>0)) return Object.freeze([]);
@@ -91,6 +108,7 @@ function circleIntersectsViewport(value,viewport){
 }
 
 export function primitiveIntersectsViewport(value,viewport){
+  if(value.kind==='polyline'||value.kind==='polygon') return paintBoundsIntersectViewport(primitivePaintBounds(value),viewport);
   if(value.kind==='line') return lineIntersectsViewport(value,viewport);
   if(value.kind==='circle') return circleIntersectsViewport(value,viewport);
   if(value.kind==='arc') return circleIntersectsViewport(value,viewport); // Conservative for partial arcs.
