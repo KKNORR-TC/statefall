@@ -61,7 +61,7 @@ export function primitiveGraphicsSegments(value,maximum=Infinity){
   if(value.kind==='polyline'){
     const legs=[]; let total=0;
     for(let i=1;i<value.points.length;i++){ const a=value.points[i-1],b=value.points[i],length=Math.hypot(b.x-a.x,b.y-a.y); if(length>0){ legs.push({a,b,length,at:total}); total+=length; } }
-    if(!value.dash){ if(legs.length>maximum) throw new RangeError('segment-cap'); return Object.freeze(legs.map(({a,b})=>Object.freeze({kind:'line',x1:a.x,y1:a.y,x2:b.x,y2:b.y}))); }
+    if(!value.dash?.length){ if(legs.length>maximum) throw new RangeError('segment-cap'); return Object.freeze(legs.map(({a,b})=>Object.freeze({kind:'line',x1:a.x,y1:a.y,x2:b.x,y2:b.y}))); }
     const intervals=dashSegments(total,value.dash[0],value.dash[1],value.phase,maximum),result=[];
     for(const interval of intervals) for(const leg of legs){ const from=Math.max(interval.from,leg.at),to=Math.min(interval.to,leg.at+leg.length); if(to<=from) continue; const f=(from-leg.at)/leg.length,t=(to-leg.at)/leg.length; result.push(Object.freeze({kind:'line',x1:leg.a.x+(leg.b.x-leg.a.x)*f,y1:leg.a.y+(leg.b.y-leg.a.y)*f,x2:leg.a.x+(leg.b.x-leg.a.x)*t,y2:leg.a.y+(leg.b.y-leg.a.y)*t})); if(result.length>maximum) throw new RangeError('segment-cap'); }
     return Object.freeze(result);
@@ -69,12 +69,12 @@ export function primitiveGraphicsSegments(value,maximum=Infinity){
   if(value.kind==='line'){
     const dx=value.x2-value.x1,dy=value.y2-value.y1,length=Math.hypot(dx,dy);
     if(!(length>0)) return Object.freeze([]);
-    if(!value.dash){ if(maximum<1) throw new RangeError('segment-cap'); return Object.freeze([Object.freeze({kind:'line',x1:value.x1,y1:value.y1,x2:value.x2,y2:value.y2})]); }
+    if(!value.dash?.length){ if(maximum<1) throw new RangeError('segment-cap'); return Object.freeze([Object.freeze({kind:'line',x1:value.x1,y1:value.y1,x2:value.x2,y2:value.y2})]); }
     return Object.freeze(dashSegments(length,value.dash[0],value.dash[1],value.phase,maximum).map(({from,to})=>Object.freeze({kind:'line',x1:value.x1+dx*from/length,y1:value.y1+dy*from/length,x2:value.x1+dx*to/length,y2:value.y1+dy*to/length})));
   }
   if(value.kind==='circle'){
     if(!(value.r>0)) return Object.freeze([]);
-    if(!value.dash){ if(maximum<1) throw new RangeError('segment-cap'); return Object.freeze([Object.freeze({kind:'circle',x:value.x,y:value.y,r:value.r})]); }
+    if(!value.dash?.length){ if(maximum<1) throw new RangeError('segment-cap'); return Object.freeze([Object.freeze({kind:'circle',x:value.x,y:value.y,r:value.r})]); }
     const result=value.fill?[Object.freeze({kind:'circle',x:value.x,y:value.y,r:value.r,paint:'fill'})]:[];
     if(result.length>maximum) throw new RangeError('segment-cap');
     result.push(...dashSegments(TAU*value.r,value.dash[0],value.dash[1],value.phase,maximum-result.length).map(({from,to})=>Object.freeze({kind:'arc',x:value.x,y:value.y,r:value.r,start:from/value.r,end:to/value.r,paint:'stroke'})));

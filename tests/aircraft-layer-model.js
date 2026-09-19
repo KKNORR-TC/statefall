@@ -1,0 +1,34 @@
+'use strict';
+
+const assert=require('node:assert/strict');
+
+(async()=>{
+  const {createAircraftModel,paintAircraftCanvas}=await import('../game/src/rendering/aircraft-layer-model.mjs');
+  const model=createAircraftModel(),fighter={id:101,type:'fighter',state:'patrol',x:40,y:50,targetX:45,targetY:50,heading:.25,hp:2.2,color:'#d9485f',owned:true,visible:false,hovered:true},bomber={id:102,type:'bomber',state:'return',x:80,y:55,heading:1.2,pull:.8,hp:1,color:'#33a06f',owned:false,visible:true},carrier={id:103,type:'carrier',state:'out',x:120,y:60,heading:2.4,hp:1,color:'#3f7bd9',owned:false,visible:true},hidden={id:104,type:'fighter',state:'out',x:160,y:65,targetX:165,targetY:65,heading:0,hp:5,color:'#d98b36',owned:false,visible:false},hangar={id:105,type:'fighter',state:'hangar',x:200,y:70,heading:0,hp:5,color:'#d9485f',owned:true,visible:true};
+  const inherited={lineJoin:'miter',lineCap:'round',globalAlpha:.8,lineDash:[2,3],lineDashOffset:4,lineWidth:7,strokeStyle:'#123456',fillStyle:'#654321'},input={camera:{x:10,y:20,scale:2},viewport:{width:500,height:300},fighterPatrol:25,fighterHp:5,inheritedCanvasState:inherited,aircraft:[fighter,bomber,carrier,hidden,hangar]},before=JSON.stringify(input),scene=model.build(input);
+  assert.equal(JSON.stringify(input),before,'aircraft model is pure');
+  assert.deepEqual(scene.entries.map(value=>[value.id,value.type,value.items.map(item=>item.semantic)]),[[101,'fighter',['aircraft-patrol-ring','aircraft-silhouette','aircraft-hp']],[102,'bomber',['aircraft-silhouette']],[103,'carrier',['aircraft-silhouette']]]);
+  assert.deepEqual(scene.counts,{total:5,visible:3,culled:0,hidden:1,skipped:1,fighter:1,bomber:1,carrier:1,patrolRings:1,hpPips:3});
+  assert.equal(scene.entries[0].baseRadius,4.4); assert.ok(Math.abs(scene.entries[0].bodyScale-.44)<1e-12); assert.equal(scene.entries[0].hpPips,3,'fractional fighter HP uses ceil-equivalent loop semantics');
+  assert.equal(scene.entries[1].pullScale,1.2); assert.ok(Math.abs(scene.entries[1].bodyScale-.528)<1e-12); assert.equal(scene.entries[2].items[0].primitives.length,4,'carrier preserves body, open upper-wing stroke, and lower-wing geometry');
+  const primitiveKeys=[],operationKeys=[]; for(const entry of scene.entries) for(const item of entry.items) for(let index=0;index<item.primitives.length;index++){ const primitive=item.primitives[index],key=`${entry.order}:${item.semantic}:${index}`; primitiveKeys.push(key); for(const operation of ['fill','stroke']) if(primitive[operation]) operationKeys.push(`${key}:${operation}`); }
+  assert.deepEqual(primitiveKeys,['0:aircraft-patrol-ring:0','0:aircraft-silhouette:0','0:aircraft-hp:0','0:aircraft-hp:1','0:aircraft-hp:2','1:aircraft-silhouette:0','2:aircraft-silhouette:0','2:aircraft-silhouette:1','2:aircraft-silhouette:2','2:aircraft-silhouette:3']);
+  assert.deepEqual(operationKeys,['0:aircraft-patrol-ring:0:stroke','0:aircraft-silhouette:0:fill','0:aircraft-silhouette:0:stroke','0:aircraft-hp:0:fill','0:aircraft-hp:1:fill','0:aircraft-hp:2:fill','1:aircraft-silhouette:0:fill','1:aircraft-silhouette:0:stroke','2:aircraft-silhouette:0:fill','2:aircraft-silhouette:0:stroke','2:aircraft-silhouette:1:fill','2:aircraft-silhouette:2:stroke','2:aircraft-silhouette:3:fill','2:aircraft-silhouette:3:stroke']);
+  assert.equal(scene.primitiveCount,10);
+  assert.deepEqual(scene.entries[0].patrolTarget,{x:45,y:50}); assert.equal(scene.entries[0].items[0].primitives[0].stroke,'rgba(191,230,255,.95)'); assert.equal(scene.entries[0].items[0].primitives[0].width,2); assert.deepEqual(scene.entries[0].items[0].primitives[0].dash,[5,5]);
+  assert.deepEqual(scene.entries[0].items[1].primitives[0].dash,[],'patrol reset is inherited by its silhouette'); assert.deepEqual(scene.entries[1].items[0].primitives[0].dash,[],'later silhouettes inherit the patrol reset');
+  assert.deepEqual(scene.canvasState,{lineJoin:'miter',lineCap:'round',globalAlpha:.8,lineDash:[],lineDashOffset:4,lineWidth:2,strokeStyle:'rgba(191,230,255,.95)',fillStyle:'#fff'});
+
+  const noPatrol=model.build({...input,aircraft:[bomber]}); assert.deepEqual(noPatrol.entries[0].items[0].primitives[0].dash,[2,3]); assert.deepEqual(noPatrol.canvasState,{...inherited,lineDash:[2,3]});
+  const ownFog=model.build({...input,aircraft:[{...fighter,state:'return',visible:false}]}); assert.equal(ownFog.entries.length,1,'owned aircraft ignore fog');
+  const enemyFog=model.build({...input,aircraft:[hidden]}); assert.equal(enemyFog.entries.length,0); assert.equal(enemyFog.counts.hidden,1);
+  const ringCross=model.build({...input,camera:{x:-138,y:-98,scale:2},viewport:{width:4,height:4},aircraft:[fighter]}); assert.equal(ringCross.entries[0].items.some(value=>value.semantic==='aircraft-patrol-ring'),true,'full patrol ring bounds survive offscreen-center culling');
+  const pipCross=model.build({...input,camera:{x:-77,y:-95,scale:2},viewport:{width:4,height:4},aircraft:[{...fighter,state:'return',x:40,y:50}]}); assert.equal(pipCross.entries[0].items.some(value=>value.semantic==='aircraft-hp'),true,'fighter pip bounds are independent of silhouette center culling');
+
+  assert.throws(()=>model.build({...input,aircraft:[fighter,{...bomber,id:101}]}),/duplicate aircraft stable ID/); assert.throws(()=>model.build({...input,aircraft:[{...fighter,id:0}]}),/missing aircraft stable ID/); assert.throws(()=>model.build(input,{entries:4}),/entry-cap/); assert.equal(model.build(input,{entries:5}).counts.total,5);
+  const exact=model.build(input); assert.throws(()=>model.build(input,{primitives:exact.primitiveCount-1}),/primitive-cap/); assert.equal(model.build(input,{primitives:exact.primitiveCount}).primitiveCount,exact.primitiveCount); assert.throws(()=>model.build(input,{segments:exact.segmentCount-1}),/segment-cap/); assert.equal(model.build(input,{segments:exact.segmentCount}).segmentCount,exact.segmentCount);
+
+  const operations=[],context={globalAlpha:1,lineJoin:'miter',lineCap:'butt',lineWidth:1,lineDashOffset:0,strokeStyle:'#000',fillStyle:'#000',setLineDash(value){ this.dash=value.slice(); },save(){},restore(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},stroke(){ operations.push('stroke'); },fill(){ operations.push('fill'); },fillRect(){ operations.push('fillRect'); },translate(){},rotate(){},scale(){},arc(){},rect(){}},uncapped={...input,aircraft:Array.from({length:4097},(_,index)=>index===4096?fighter:{...hidden,id:10000+index})};
+  const uncappedBefore=JSON.stringify(uncapped),order=paintAircraftCanvas(context,uncapped); assert.deepEqual(order,['aircraft-patrol-ring','aircraft-silhouette','aircraft-hp']); assert.ok(operations.length>0,'direct Canvas fallback paints beyond the Pixi entry cap'); assert.equal(JSON.stringify(uncapped),uncappedBefore,'direct Canvas painter is pure');
+  console.log('Aircraft layer model contracts PASS');
+})().catch(error=>{ console.error(error); process.exitCode=1; });

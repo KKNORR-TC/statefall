@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.21 - 2026-09-18
+
+- Added the ninth bounded slice, Phase E9 development-only Pixi main aircraft after E8 `db6ab09`: stable-ID fighter, bomber, and carrier silhouettes retain interpolation, heading, bomber pull, faction color, own/fog visibility, own fighter patrol/hover rings, ceil-equivalent HP pips, exact array/child order, and Canvas state handoff. Hangar/refuel/heal remain omitted as before; draft/garrison labels, repair trucks, spy planes, interceptors, and all later layers remain Canvas-owned above aircraft.
+- Aircraft ownership requires every prerequisite through missiles. Aircraft-only model, cap, constructor, paint, append, or prerequisite failure atomically withdraws the complete aircraft layer and invokes the direct uncapped Canvas-equivalent painter after valid Pixi missiles; fatal submission still uses the E7 synchronous full-Canvas replay policy. Input and list hover remain on the Canvas/controller path, Pixi remains noninteractive, and no final art or texture atlas is approved.
+
 ## 1.10.20 - 2026-09-18
 
 - Added the bounded Phase E8 development-only Pixi missile slice after E7 `c6b2089`: normal silo/nuclear and cruise missiles preserve missile-array order, exact analytic arc/straight positions, historical trail sample ages, body heading and cruise scale, current-point fog/owner visibility, target radius, warning pulse from the shared frame timestamp, and Canvas stroke-state chronology. Main aircraft and every later layer remain Canvas-owned above it.

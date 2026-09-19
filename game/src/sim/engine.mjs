@@ -484,6 +484,9 @@ export function createEngine(options={},adapters={}){
     engineState.replaceActors('shells',[{owner,x:cx-40,y:cy-12,tx:cx-30,ty:cy-12,torpedo:true,trail:[[cx-58,cy-15],[cx-55,cy-18],[cx-55,cy-10],[cx-49,cy-18],[cx-43,cy-15]]},{owner,x:cx-20,y:cy+12,tx:cx-10,ty:cy+12,kind:'aam',trail:[[cx-34,cy+15],[cx-27,cy+13]]},{owner,x:cx,y:cy-12,tx:cx+10,ty:cy-12,kind:'land',arc:true,missile:true,tot:20,rise:14,trail:[[cx-14,cy-8,0],[cx-7,cy-10,3]]},{owner,x:cx+20,y:cy+12,tx:cx+30,ty:cy+12,kind:'land',arc:true,tot:20,rise:14,trail:[[cx+6,cy+15],[cx+13,cy+13]]},{owner,x:cx+40,y:cy-12,tx:cx+50,ty:cy-12,kind:'gun',trail:[[cx+26,cy-9],[cx+33,cy-11]]}]);
     const ship=engineState.actors.warships[0],tile=Math.max(0,Math.min(W*H-1,Math.floor(ship?.y??cy)*W+Math.floor(ship?.x??cx)));
     engineState.replaceActors('transports',[{owner:me().id,path:[tile],pos:0,troops:24,heavy:true,hp:R.HEAVY.hp,hdg:0,wake:[[tile%W-2,(tile-tile%W)/W+.5],[tile%W-1,(tile-tile%W)/W+.5]]}]);
+    const [fighter,bomber,carrier]=engineState.actors.aircraft,home=fighter?.home;
+    engineState.replaceActors('aircraft',[{...fighter,owner:me().id,type:'fighter',home,state:'patrol',x:cx-24,y:cy+30,tx:cx-24,ty:cy+30,hp:2,hdg:.2,until:engineState.clock.tickN+300},{...bomber,owner:me().id,type:'bomber',home,state:'return',x:cx,y:cy+30,tx:cx,ty:cy,pull:1,hp:1,hdg:1.1},{...carrier,owner:me().id,type:'carrier',home,state:'out',x:cx+24,y:cy+30,tx:cx+24,ty:cy+30,hp:1,hdg:2.2}]);
+    resetInterpolationFrame();
   }
   const systems=Object.freeze({structures:structuresSystem,landCombat,mapGeneration,diplomacy:diplomacySystem,air:airSystem,fog:fogSystem,missiles:missilesSystem,naval:navalSystem,logistics:logisticsSystem,ai:aiSystem,economy:economySystem,matchFlow,worldSetup,commandRouter,worldLoop});
   checkpointManager=createEngineCheckpointManager({engineState,runtime,W,H,tickMs,
