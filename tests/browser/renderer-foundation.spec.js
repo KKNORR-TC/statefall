@@ -64,7 +64,7 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
       expect(initial.rendering.cssWidth).toBe(initial.canvas.clientWidth);
       expect(initial.rendering.pixelWidth).toBe(initial.canvas.width);
       if(renderer==='pixi'){
-        expect(initial.rendering).toMatchObject({textureCount:1,spriteCount:1,containerCount:7,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true}});
+        expect(initial.rendering).toMatchObject({textureCount:1,spriteCount:1,containerCount:8,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true}});
         const layers=await page.evaluate(()=>{
           const map=document.querySelector('#map').getBoundingClientRect(),world=document.querySelector('.pixi-world').getBoundingClientRect();
           return {map:map.toJSON(),world:world.toJSON(),mapPointer:getComputedStyle(document.querySelector('#map')).pointerEvents,worldPointer:getComputedStyle(document.querySelector('.pixi-world')).pointerEvents};
@@ -211,7 +211,7 @@ for(const renderer of ['canvas','pixi']) test(`${renderer} survives repeated per
     expect((after.camera.visibleBounds.left+after.camera.visibleBounds.right)/2).toBeCloseTo((before.camera.visibleBounds.left+before.camera.visibleBounds.right)/2,8);
     expect((after.camera.visibleBounds.top+after.camera.visibleBounds.bottom)/2).toBeCloseTo((before.camera.visibleBounds.top+before.camera.visibleBounds.bottom)/2,8);
     if(renderer==='pixi'&&cycle===0){
-      expect(after.rendering).toMatchObject({active:'pixi-hybrid',containerCount:7,canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true},layers:{terrain:{textureCount:1}}});
+      expect(after.rendering).toMatchObject({active:'pixi-hybrid',containerCount:8,canvasCount:1,contextListenerCount:2,contextState:'ready',capabilities:{preStructures:true,structures:true,navalLogistics:true,warships:true},layers:{terrain:{textureCount:1}}});
       expect(after.rendering.applicationAllocations).toBeLessThanOrEqual(2); expect(after.rendering.textureAllocations).toBeLessThanOrEqual(2);
     }
     if(renderer==='pixi'&&cycle>=1){

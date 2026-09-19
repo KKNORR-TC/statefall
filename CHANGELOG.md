@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.18 - 2026-09-18
+
+- Added the bounded Phase E6 development-only Pixi warship/submarine block after E5 naval logistics. All eight classes preserve array and child order, stable simulation identity, interpolated display input, fog/sub-detection decisions, class radii, owner ranges, selection/destination, wakes or submarine alpha, tick-derived lean/recoil, hull details and ceil HP pips, muzzle flash, refit arc, CM raster badge, and barrage cooldown. Canvas cap state advances exactly in visible warship-array order: pre-wake work uses the incoming cap, qualifying surface wakes transition subsequent work to round before culling, submarines and short/hidden wakes do not transition it, and retained Canvas layers receive the final cap.
+- Added a pure renderer-neutral model with hard entry/wake/primitive/segment/label limits, crossing-geometry bounds, reject-not-truncate behavior, exact retained-Canvas stroke-state handoff, and duplicate/missing-ID rejection. Dedicated bounded pools reserve before attach and discard dirty partial resources.
+- Warship ownership now requires complete structures and naval logistics in the same frame. A warship-only model, cap, constructor, paint, source, or context failure withdraws every warship and restores the complete Canvas warship block after valid Pixi naval logistics; retained Canvas shells stay above it and the next valid frame retries.
+- Added pure and browser evidence for every class/status, exact chronological cap order, ID and cap failures, dependency fallback, rollback recovery, CSS-pixel DPR coverage, inherited butt/round selected-ring and cruiser-detail endpoints, and 1,800-frame class/color/state/selection/fire/HP/wake/cull/reorder churn. The corrected full-browser run measured local synchronous CPU/render-submission p95 3.6 ms and p99 14.5 ms; heap evidence is advisory and GPU bytes are unknown.
+- Phase E remains open for shells/projectiles, missiles, aircraft, later layers/effects, atlases, and sustained physical-GPU/hardware qualification. No final art, plugin, baseline, production, ZIP, Docker, deployment, commit, or push is included.
+
 ## 1.10.17 - 2026-09-18
 
 - Added the bounded Phase E5 development-only Pixi naval-logistics prefix after the complete E4 structure graph: each transport remains in array order with route, wake, hull, optional heavy HP, and zoom-gated troop label; merchants retain wake then hull/cargo; privateer boarding lines remain last. Canvas warships and all later layers still composite above Pixi.

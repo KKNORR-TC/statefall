@@ -1,6 +1,23 @@
 # Phase E Progress
 
-_Development record for game/package 1.10.17, build `2026-09-18-phase-e5-pixi-naval-logistics`, on 18 September 2026. E4 is `c4dee5d`; E3 is `6b5438e`; E2 is `78564c2`/`3b4b7bd`; E1 is `4361ad7`/`e5c4228`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through game/package 1.10.18, build `2026-09-18-phase-e6-pixi-warships`, on 18 September 2026. E5 is `bbd4dd3`; E4 is `c4dee5d`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+
+## E6 Implemented Slice
+
+- Migrated exactly the contiguous warship/submarine block after boarding and before shells. All eight classes retain legacy warship-array order and per-entry range, selection/destination, wake, hull/detail/HP, muzzle, refit, CM, and cooldown order. Shells/projectiles and every later layer remain on the transparent Canvas above Pixi.
+- The pure renderer-neutral model receives interpolated presentation coordinates and explicit legacy fog/sub-detection results. Stable positive simulation IDs are mandatory and unique; reorder/removal/re-add uses those IDs and duplicate or missing IDs withdraw the complete layer instead of cross-wiring records. Renderer presentation lean state remains keyed by the same ID and updates at most once per visible actor per frame without simulation writes.
+- Class radii, colors, destination rules, surface wake formulas, submarine hull/muzzle alpha scope, tick-derived turn lean and recoil/fire angle, class details, ceil HP pips, refit/cooldown fractions, and the CM canvas-raster alphabetic baseline are represented by bounded vector/raster primitives. This is migration art, not final art, and no hull texture atlas was introduced.
+- Warships consume the exact E5 Canvas cap and advance it chronologically through fog-visible entries in warship-array order. Owned ranges and selection/destination use each entry's incoming cap; a surface wake with at least two points then changes the global cap to round before that ship's hull/details/statuses, even when the wake geometry is viewport-culled. A shorter surface wake and every submarine leave the cap unchanged, so submarines and later ships inherit prior actors' state. `drawShip` scopes only a round join with save/restore: closed hull outlines use that join while open mast/gun/detail lines retain the current cap. Refit/cooldown and the final retained-Canvas handoff use the resulting cap without retroactively changing earlier primitives; fog-hidden wakes do not transition it. The handoff also restores global alpha 1, empty dash, and zero offset.
+- Hard reject-not-truncate caps cover 4,096 entries/containers, 131,072 wake points, 131,072 primitives, 262,144 emitted segments, 16,384 Graphics resources, and 4,096 raster labels. Idle pools are bounded at 512 containers, 2,048 Graphics, and 512 labels. Bounds include ranges, destinations, wakes, muzzle flashes, hull/HP, and status arcs/labels; crossing lines and circles survive center culling.
+- Ownership is transactional. Warships can be Pixi-owned only when complete structures and naval logistics are both Pixi-owned in that frame. Resources reserve before attachment. Model/cap/container/Graphics/label/source/context failure discards dirty partials, withdraws every warship, and paints the complete Canvas warship block after valid Pixi naval logistics in the same frame. A valid later frame retries; retained Canvas shells remain above either path.
+
+## E6 Evidence
+
+- Pure contracts cover all classes, source/child order, radii/style/geometry, ranges, selection/destination, exact inherited butt/round chronology, wake transitions before hull/status but after range/selection, prior-surface-to-submarine inheritance, no-wake preservation, viewport-culled visible wakes, fog-hidden wakes, scoped round joins and open cruiser-detail caps, lean/recoil/muzzle, ceil HP, submarine alpha, refit/CM/cooldown, crossing bounds, exact and cap-minus-one boundaries, duplicate/missing IDs, immutability, and repeatability.
+- Focused Chromium covers all classes/statuses with targeted pixels, stable resource order, duplicate-ID failure, Graphics/label/container fail-after-mutation rollback, dependency fallback, and recovery. Existing reset/BFCache/context-loss teardown applies to the integrated layer cleanup path. Dedicated DPR projects exercise CSS-pixel alignment at 1, 1.5, and 2.
+- A labeled synthetic 1,800-frame churn varies class, color, heading/lean, selection, recoil/fire, HP, status, wakes, visibility, count, and reorder. Resources plateau after warm-up. The corrected full-browser run measured local synchronous CPU/render-submission p95 3.6 ms and p99 14.5 ms, below 16.7/33 ms; this excludes GPU, compositor, display presentation, and input latency. Heap samples are advisory and GPU allocation bytes remain unknown.
+- Real simulation movement, selection, firing, damage, refit, cooldown, fog, and submarine detection continue through the unchanged naval simulation and dense late-game fixture. Synthetic states are explicitly labeled where simultaneous all-class/status coverage is required.
+- The corrected final browser matrix passes 109 tests with 217 intentional project-selection skips. The desktop DPR matrix passes 21/21 and the E6-specific DPR run passes 6 tests with 18 intentional skips. Canvas goldens pass 18/18; source/built contracts, D2 browser relay, context loss/BFCache, reduced motion, quality/input, every map/mode, and production Pixi exclusion remain green. Reproducibility matches all 24 outputs with release-manifest SHA-256 `520c08335851dfd300b817098eb14664d1c8820f713085ecdcba889112f17b83`.
 
 ## E5 Implemented Slice
 
@@ -29,6 +46,6 @@ _Development record for game/package 1.10.17, build `2026-09-18-phase-e5-pixi-na
 
 ## Remaining Phase E Work
 
-- Migrate warships, projectiles, aircraft, and later labels/effects in bounded ordered slices.
+- Migrate shells/projectiles, missiles, aircraft, and later labels/effects in bounded ordered slices.
 - Define atlas/loading policy and complete sustained physical-GPU, hardware, and long-session qualification.
 - Complete every-map/mode playability and final Phase E gate before Phase F terrain/world art. Phase G entity art remains separate.
