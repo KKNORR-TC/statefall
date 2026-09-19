@@ -13,6 +13,7 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
     motionState(time=performance.now()){ return active.motionState(time); },
     updateWorldLayer(layer,state){ try{ return active.updateWorldLayer(layer,state); }catch(error){ void fallback(`pixi-world-layer-failed: ${error?.message||error}`,active); return false; } },
     capabilities(){ return active.capabilities(); },
+    injectFailure(kind){ if(typeof active.injectFailure!=='function') throw new Error('renderer failure injection unavailable'); active.injectFailure(kind); },
     renderFrame(camera){ try{ active.renderFrame(camera); }catch(error){ void fallback(`pixi-render-failed: ${error?.message||error}`,active); } },
     reset(){ active.reset(); }, suspend(){ active.suspend(); },
     async resume(value){
@@ -42,10 +43,10 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
       const injected=__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_MODE__===true,initFailure=injected?params.get('pixiInit'):null;
       const failResumeAt=injected?Math.max(0,Number(params.get('pixiResumeFailAt'))||0):0;
       const testLimit=name=>{ if(!injected||!params.has(name)) return undefined; const value=Number(params.get(name)); return Number.isInteger(value)&&value>=0?value:undefined; };
-      const structureLimits={sprites:testLimit('pixiSpriteCap'),pool:testLimit('pixiPoolCap'),textures:testLimit('pixiTextureCap')};
+      const structureLimits={sprites:testLimit('pixiSpriteCap'),pool:testLimit('pixiPoolCap'),textures:testLimit('pixiTextureCap'),texts:testLimit('pixiTextCap'),failEntryCreate:injected&&params.get('pixiEntryFail')==='1'};
       const preStructureLimits={primitives:testLimit('pixiPrimitiveCap'),segments:testLimit('pixiSegmentCap')};
       const queryQuality=params.get('quality'),requestedQuality=injected&&queryQuality?queryQuality:'high',quality=['high','medium','low'].includes(requestedQuality)?requestedQuality:'high';
-      const candidate=createPixiHybridRenderer({onContextFailure:reason=>void fallback(reason,candidate),failResumeAt,structureLimits,preStructureLimits,requestedQuality,quality,reducedMotion,failGraphics:injected&&params.get('pixiGraphicsFail')==='1'});
+      const candidate=createPixiHybridRenderer({onContextFailure:reason=>void fallback(reason,candidate),failResumeAt,structureLimits,preStructureLimits,requestedQuality,quality,reducedMotion,failGraphics:injected&&params.get('pixiGraphicsFail')==='1',failText:injected&&params.get('pixiTextFail')==='1'});
       try{ await candidate.mount({stage,metrics:metrics(),failBefore:initFailure==='fail',failAfterSetup:initFailure==='fail-after-setup'}); }
       catch(error){ candidate.destroy(); fallbackCleanup=candidate.diagnostics(); throw error; }
       active=candidate; active.resize(metrics());

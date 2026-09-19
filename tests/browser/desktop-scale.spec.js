@@ -174,7 +174,7 @@ test('keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates acros
   }
 });
 
-test('uses rasterized scaled-texture fringe for edge culling and compositing conflicts at every DPR',async({page},testInfo)=>{
+test('uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR',async({page},testInfo)=>{
   await startMatch(page,'pixi');
   await page.evaluate(()=>{ window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
   const dpr=Math.min(testInfo.project.use.deviceScaleFactor,2),source=await page.evaluate(()=>window.__STATEFALL_TEST__.structurePresentation()[0]);
@@ -197,7 +197,7 @@ test('uses rasterized scaled-texture fringe for edge culling and compositing con
   const fringePixels=changedPixelsInColumns(before,after,Math.ceil(2*dpr));
   expect(fringePixels,'browser-rasterized icon fringe must reach the viewport edge').toBeGreaterThan(0);
 
-  const conflict=await page.evaluate(item=>{
+  const overlap=await page.evaluate(item=>{
     const scale=12,tileX=item.tile%720,tileY=(item.tile-tileX)/720;
     window.__STATEFALL_TEST__.setCameraOrigin(240-(tileX+.5)*scale,180-(tileY+.5)*scale,scale);
     const first={...item,type:'city',building:false,pop:1.35},within={...item,tile:item.tile+8,type:'city',building:false,pop:1.35},beyond={...item,tile:item.tile+9,type:'city',building:false,pop:1.35};
@@ -206,9 +206,27 @@ test('uses rasterized scaled-texture fringe for edge culling and compositing con
       beyond:window.__STATEFALL_TEST__.exerciseStructureLayer([first,beyond],{preStructures:[first,beyond]})
     };
   },source);
-  expect(conflict.within).toMatchObject({preOwned:false,owned:false,rendering:{layers:{preStructures:{compositingConflictFallback:{reason:'earlier-pop-ring-overlaps-later-base'}},structures:{visible:0}}}});
-  expect(conflict.beyond).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{reason:null},layers:{structures:{visible:2,culled:0}}}});
-  console.log(`DPR ${dpr} scaled texture edge: ${fringePixels} changed raster pixels in first ${Math.ceil(2*dpr)} columns; 96px gap fallback, 108px gap safe`);
+  expect(overlap.within).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{structures:{visible:2,culled:0}}}});
+  expect(overlap.beyond).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{structures:{visible:2,culled:0}}}});
+  console.log(`DPR ${dpr} scaled texture edge: ${fringePixels} changed raster pixels in first ${Math.ceil(2*dpr)} columns; 96px and 108px overlaps remain Pixi-owned`);
+});
+
+test('matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR',async({page},testInfo)=>{
+  await startMatch(page,'pixi'); await page.evaluate(()=>{ window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
+  const evidence=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'airfield',pop:1.2,level:3,upgrading:true,upgradeFraction:.4,airQueue:true,airQueueFraction:.5,airQueueText:'2/6 · F 12s',shipQueue:true,shipQueueFraction:.75,shipQueueText:'Cruiser 12s +1'},result=window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}),instance=result.rendering.layers.structures.instances[0],r=instance.radius; return {result,probe:window.__STATEFALL_TEST__.structureLabelCanvasProbe({x:instance.x,y:instance.y,r})}; });
+  test.skip(evidence.result.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
+  const order=evidence.result.rendering.layers.structures.order[0];
+  expect(order.children).toEqual(['base','pop-graphics','level-mark','upgrade-graphics','airfield-label','airfield-arc','ship-arc','ship-label']);
+  const level=order.labels.find(value=>value.kind==='level-label'),air=order.labels.find(value=>value.kind==='airfield-label'),ship=order.labels.find(value=>value.kind==='ship-queue-label');
+  expect(level).toMatchObject({x:evidence.probe.level.x,y:evidence.probe.level.y,align:'center',baseline:'alphabetic',layers:[{operation:'stroke',text:'II'},{operation:'fill',text:'III'}]});
+  expect(air).toMatchObject({x:evidence.probe.queue.x,y:evidence.probe.queue.y,baseline:'alphabetic'}); expect(ship).toMatchObject({x:air.x,y:air.y,baseline:'alphabetic'});
+  const decode=async input=>{ const image=await loadImage(input),canvas=createCanvas(image.width,image.height),context=canvas.getContext('2d'); context.drawImage(image,0,0); return {width:image.width,height:image.height,data:context.getImageData(0,0,image.width,image.height).data}; };
+  const canvas=await decode(evidence.probe.dataUrl),pixi=await decode(await page.locator('.pixi-world').screenshot()),dpr=evidence.probe.dpr;
+  const count=(image,point,radius,predicate)=>{ let total=0,cx=point.x*dpr,cy=point.y*dpr,rr=radius*dpr; for(let y=Math.max(0,Math.floor(cy-rr));y<=Math.min(image.height-1,Math.ceil(cy+rr));y++) for(let x=Math.max(0,Math.floor(cx-rr));x<=Math.min(image.width-1,Math.ceil(cx+rr));x++){ const offset=(y*image.width+x)*4; if(predicate(...image.data.slice(offset,offset+4))) total++; } return total; };
+  const gold=(r,g,b,a)=>a>0&&r>180&&g>120&&b<150,white=(r,g,b,a)=>a>0&&r>185&&g>185&&b>185,cyan=(r,g,b,a)=>a>0&&r>120&&g>170&&b>190;
+  for(const [name,point,radius,predicate] of [['level',evidence.probe.level,10,gold],['overlapping queue labels',evidence.probe.queue,14,white],['overlapping queue arcs',evidence.probe.arc,5,cyan]]){
+    expect(count(canvas,point,radius,predicate),`Canvas ${name} pixels at DPR ${dpr}`).toBeGreaterThan(0); expect(count(pixi,point,radius,predicate),`Pixi ${name} pixels at DPR ${dpr}`).toBeGreaterThan(0);
+  }
 });
 
 function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.10.16 - 2026-09-18
+
+- Added the bounded Phase E4 complete ordered structure scene to the development-only `pixi-hybrid` renderer. Every tile-keyed pooled entry now interleaves pooled `Graphics`, the generated legacy base `Sprite`, and pooled canvas-raster label `Sprite` resources in the exact per-structure legacy order.
+- Migrated building, upgrade, airfield/ship queue, and cooldown arcs; countdown/queue labels; pop and linked rings; level labels; suppressed X marks; and all remaining structure-only marks. Zoom, fog, quality, reduced-motion, camera/DPR, and input behavior remain presentation-equivalent, while Canvas retains later mobile entities, effects, labels, selection, UI, and input.
+- Removed the active E3 split-canvas conflict fallback because complete structures now share one Pixi scene graph. Model, primitive, segment, entry, sprite, texture, text-cap, text-resource, source, and context failures still atomically withdraw ownership and synchronously draw the full legacy Canvas sequence.
+- Added pure ordered-item/cap contracts and browser coverage for actual child order, level III's historical `stroke II` then `fill III` behavior, Canvas alphabetic baselines, real game states, constructor failures and cap-one recovery, lifecycle/context loss, every map and major mode, DPR 1/1.5/2 overlap pixels, reduced motion, quality, render purity, and 1,800 frames of real state/visibility churn. The churn fixture plateaued at 11 entry records, 23 graphics chunks, 17 label texture/sprite resources, and 27 generated base textures; Pixi text-cache references remained zero. Heap samples are advisory and no no-growth claim is made.
+- Preserved every Canvas golden and the approved simulation hashes. Full browser verification passed 91 tests with 143 intentional project-selection skips; DPR passed 15/15; reproducibility matched 24/24 outputs with release-manifest SHA-256 `88914d42f05acc5e279791218a16e3b9e588311917d5b39bcae2181466eb7f97`. Production remains Canvas-only with no selectable Pixi graph or Pixi JavaScript chunk. No art approval, plugin change, package handoff, production access, or deployment occurred.
+
 ## 1.10.15 - 2026-09-18
 
 - Added bounded Phase E3 pre-structure compositing to the development-only `pixi-hybrid` renderer. In scenes proven safe, two fixed global `Graphics` objects draw fronts and routes and each bounded tile-keyed structure entry owns one pooled pre-base `Graphics` and one pooled base `Sprite`.

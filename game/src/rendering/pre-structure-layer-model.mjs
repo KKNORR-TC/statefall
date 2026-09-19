@@ -1,9 +1,10 @@
 import {structureBasePaintBounds} from './structure-layer-model.mjs';
-import {RASTER_ANTIALIAS_MARGIN_CSS,conservativePaintBounds,paintBoundsIntersect,paintBoundsIntersectViewport} from './paint-bounds.mjs';
+import {RASTER_ANTIALIAS_MARGIN_CSS,conservativePaintBounds,paintBoundsIntersectViewport} from './paint-bounds.mjs';
 
 export const PRE_STRUCTURE_QUALITY=Object.freeze(['high','medium','low']);
 export const MAX_PRE_STRUCTURE_PRIMITIVES=65536;
 export const MAX_PRE_STRUCTURE_SEGMENTS=131072;
+export const MAX_STRUCTURE_TEXTS=8192;
 
 const QUALITY_DASH_SCALE=Object.freeze({high:1,medium:1.5,low:2});
 const TAU=Math.PI*2;
@@ -13,6 +14,7 @@ const circle=(x,y,r,style)=>({kind:'circle',x,y,r,...style});
 const line=(a,b,style)=>({kind:'line',x1:a.x,y1:a.y,x2:b.x,y2:b.y,...style});
 const rect=(x,y,width,height,style)=>({kind:'rect',x,y,width,height,...style});
 const arc=(x,y,r,start,end,style)=>({kind:'arc',x,y,r,start,end,...style});
+const clamp01=value=>Math.max(0,Math.min(1,Number(value)||0));
 const strokeMargin=value=>Math.max(0,Number(value?.width)||0)/2;
 const bounds=(left,top,right,bottom,kind)=>conservativePaintBounds(left,top,right,bottom,kind);
 
@@ -24,42 +26,9 @@ export function primitivePaintBounds(value){
   throw new TypeError('unknown pre-structure primitive');
 }
 
-const ringBounds=(x,y,r,width,kind)=>bounds(x-r-width/2,y-r-width/2,x+r+width/2,y+r+width/2,kind);
-const textBounds=(x,y,text,kind)=>{ const half=Math.max(5,String(text||'').length*3.5+2); return bounds(x-half,y-11,x+half,y+4,kind); };
-
-export function retainedPostBaseBounds(st,camera,mapWidth){
-  const p=tilePoint(st.tile,camera,mapWidth),r=Math.max(6,camera.scale*2.4),result=[];
-  if(st.building){
-    result.push(ringBounds(p.x,p.y,r+3,2.5,'building-ring'));
-    if(camera.scale>=1.2) result.push(textBounds(p.x,p.y+r+11,st.buildText||'000s','building-text'));
-    return Object.freeze(result);
-  }
-  const pop=Number.isFinite(Number(st.pop))?Math.max(1,Number(st.pop)):1;
-  if(pop>1) result.push(ringBounds(p.x,p.y,r*pop*1.3,2,'pop-ring'));
-  if((Number(st.level)||1)>=2) result.push(textBounds(p.x+r*.9,p.y-r*.8,(Number(st.level)||1)>=3?'III':'II','level-mark'));
-  if(st.upgrading) result.push(ringBounds(p.x,p.y,r+3,2.5,'upgrade-ring'));
-  if(st.type==='airfield'&&camera.scale>=1.2) result.push(textBounds(p.x,p.y+r+11,st.airQueueText||'0/6','airfield-queue-text'));
-  if(st.airQueue) result.push(ringBounds(p.x,p.y,r+3,2.5,'airfield-queue-ring'));
-  if(st.shipQueue){ result.push(ringBounds(p.x,p.y,r+3,2.5,'port-queue-ring')); if(camera.scale>=1.2) result.push(textBounds(p.x,p.y+r+11,st.shipQueueText||'Ship 000s +00','port-queue-text')); }
-  if(st.suppressed) result.push(bounds(p.x-r-1,p.y-r-1,p.x+r+1,p.y+r+1,'suppressed-x'));
-  if(st.linked) result.push(ringBounds(p.x,p.y,r+2,1.5,'linked-ring'));
-  if(st.cooldown) result.push(ringBounds(p.x,p.y,r+3,2,'cooldown-ring'));
-  return Object.freeze(result);
-}
-
-export function findStructureCompositingConflict(entries,viewport){
-  for(let earlierIndex=0;earlierIndex<entries.length-1;earlierIndex++){
-    const earlier=entries[earlierIndex];
-    for(const overlay of earlier.postBounds||[]){
-       if(!paintBoundsIntersectViewport(overlay,viewport)) continue;
-      for(let laterIndex=earlierIndex+1;laterIndex<entries.length;laterIndex++){
-        const later=entries[laterIndex];
-         for(const painted of later.pixiBounds||[]) if(paintBoundsIntersectViewport(painted,viewport)&&paintBoundsIntersect(overlay,painted)) return Object.freeze({earlierIndex,earlierTile:earlier.tile,earlierMark:overlay.kind,laterIndex,laterTile:later.tile,laterPrimitive:painted.kind,reason:`earlier-${overlay.kind}-overlaps-later-${painted.kind}`});
-      }
-    }
-  }
-  return null;
-}
+const textPaintBounds=value=>{ const half=Math.max(5,String(value.text||'').length*(value.style==='level'?3:3.5)+2); return bounds(value.x-half,value.y-(value.style==='level'?10:11),value.x+half,value.y+4,`post-${value.kind}`); };
+const normalLabel=(kind,text,x,y)=>({kind,text:String(text||''),x,y,style:'normal',font:'10px "Segoe UI",system-ui,sans-serif',align:'center',baseline:'alphabetic',layers:Object.freeze([{operation:'stroke',text:String(text||''),color:'rgba(0,0,0,.6)',width:3},{operation:'fill',text:String(text||''),color:'#fff'}])});
+const levelLabel=(level,x,y)=>({kind:'level-label',text:level>=3?'III':'II',x,y,style:'level',font:'bold 9px "Segoe UI",system-ui,sans-serif',align:'center',baseline:'alphabetic',layers:Object.freeze([{operation:'stroke',text:'II',color:'rgba(0,0,0,.7)',width:2.5},{operation:'fill',text:level>=3?'III':'II',color:'#ffd27a'}])});
 
 // Returns every non-empty painted dash interval. This is the single source of
 // truth for both cap accounting and Pixi path emission.
@@ -132,13 +101,13 @@ export function primitiveIntersectsViewport(value,viewport){
   return false;
 }
 
-export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_PRIMITIVES,segmentLimit=MAX_PRE_STRUCTURE_SEGMENTS}={}){
+export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_PRIMITIVES,segmentLimit=MAX_PRE_STRUCTURE_SEGMENTS,textLimit=MAX_STRUCTURE_TEXTS}={}){
   const camera={x:Number(input?.camera?.x),y:Number(input?.camera?.y),scale:Number(input?.camera?.scale)};
   const viewport={width:Number(input?.viewport?.width),height:Number(input?.viewport?.height)},mapWidth=Number(input?.mapWidth);
   if(!finite(camera.x)||!finite(camera.y)||!finite(camera.scale)||camera.scale<=0||!finite(viewport.width)||!finite(viewport.height)||viewport.width<0||viewport.height<0||!Number.isInteger(mapWidth)||mapWidth<1) throw new TypeError('invalid pre-structure camera');
   const quality=PRE_STRUCTURE_QUALITY.includes(input?.quality)?input.quality:'high',reducedMotion=!!input?.reducedMotion,time=finite(input?.time)?Number(input.time):0;
-  const fog=input?.fog||null,fronts=[],routes=[],rangesStatus=[],structureEntries=[],counts={fronts:0,supplyLinks:0,supplyMarkers:0,focusRings:0,commandLinks:0,commandMarkers:0,bubbles:0,pips:0,repairArcs:0,jammerRanges:0,gunRanges:0,commandRanges:0,samRanges:0,fortRanges:0};
-  let primitives=0,segments=0;
+  const fog=input?.fog||null,fronts=[],routes=[],rangesStatus=[],postOverlays=[],structureEntries=[],counts={fronts:0,supplyLinks:0,supplyMarkers:0,focusRings:0,commandLinks:0,commandMarkers:0,bubbles:0,pips:0,repairArcs:0,jammerRanges:0,gunRanges:0,commandRanges:0,samRanges:0,fortRanges:0,buildingArcs:0,buildingLabels:0,popRings:0,levelLabels:0,upgradeArcs:0,airfieldLabels:0,airfieldQueueArcs:0,shipQueueArcs:0,shipQueueLabels:0,suppressedMarks:0,linkedRings:0,cooldownArcs:0};
+  let primitives=0,segments=0,texts=0;
   const add=(target,value,countName)=>{
     if(!primitiveIntersectsViewport(value,viewport)) return false;
     const nextPrimitives=primitives+1;
@@ -150,6 +119,11 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
   const addRoute=(value,countName,qualityScaled=false)=>{
     if(qualityScaled&&value.dash){ const scale=QUALITY_DASH_SCALE[quality]; value={...value,dash:[value.dash[0]*scale,value.dash[1]*scale]}; }
     return add(routes,value,countName);
+  };
+  const addText=(target,value,countName)=>{
+    if(!paintBoundsIntersectViewport(textPaintBounds(value),viewport)) return false;
+    if(++texts>textLimit) throw new RangeError('text-cap');
+    target.push(Object.freeze(value)); if(countName) counts[countName]++; return true;
   };
   const hidden=tile=>fog&&!fog[tile];
   const pulseAlpha=reducedMotion?.5:.5+.3*Math.sin(time/120);
@@ -181,11 +155,10 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
     const k=reducedMotion?.5:((time/1100)+(item.to%5)/5)%1;
     addRoute(circle(a.x+(b.x-a.x)*k,a.y+(b.y-a.y)*k,Math.max(1.2,camera.scale*.7),{fill:item.markerColor||item.color,alpha:.9,routeType:item.type}),'commandMarkers');
   }
-  const orderingEntries=[];
   if(camera.scale>=.9) for(const st of input?.structures||[]){
     if(!Number.isInteger(st.tile)||st.tile<0||hidden(st.tile)) continue;
-    const p=tilePoint(st.tile,camera,mapWidth),r=Math.max(6,camera.scale*2.4),entry={tile:st.tile,primitives:[]};
-    const addEntry=(value,name)=>add(entry.primitives,value,name);
+    const p=tilePoint(st.tile,camera,mapWidth),r=Math.max(6,camera.scale*2.4),entry={tile:st.tile,pre:[],post:[],labels:[],items:[]};
+    const addEntry=(value,name)=>add(entry.pre,value,name),addPost=(value,name)=>add(entry.post,value,name),addEntryText=(value,name)=>addText(entry.labels,value,name);
     const repair=()=>{ if(st.repairing) addEntry(arc(p.x,p.y,r+(st.type==='shield'?3:6),-Math.PI/2,-Math.PI/2+TAU*Math.max(0,Math.min(1,Number(st.repairFraction)||0)),{stroke:'#7fffa0',width:2.5}),'repairArcs'); };
     const pips=(value,max,y,color,empty=false)=>{ const count=Math.max(0,Math.ceil(Number(value)||0)),pw=2*r/max; for(let i=0;i<count;i++) addEntry(rect(p.x-r+i*pw,y,Math.max(1,pw-1),2,{fill:color,alpha:1}),'pips'); if(empty) for(let i=count;i<max;i++) addEntry(rect(p.x-r+i*pw,y,Math.max(1,pw-1),2,{fill:'rgba(255,255,255,.25)',alpha:1}),'pips'); };
     if(st.type==='airfield'&&st.level>=2&&!st.building){
@@ -204,12 +177,33 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
     if(st.commandRange&&!st.building&&st.owned) addEntry(circle(p.x,p.y,st.commandRange*camera.scale,{stroke:'rgba(255,180,80,.18)',width:1,dash:[3,5],phase:0}),'commandRanges');
     if(st.samRange&&st.owned) addEntry(circle(p.x,p.y,st.samRange*camera.scale,{stroke:'rgba(150,220,255,.12)',width:1}),'samRanges');
     if(st.fortRange&&st.owned) addEntry(circle(p.x,p.y,st.fortRange*camera.scale,{stroke:st.level>=3?'rgba(255,210,122,.35)':st.level>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)',width:st.level}),'fortRanges');
-    if(entry.primitives.length){ entry.primitives=Object.freeze(entry.primitives); structureEntries.push(Object.freeze(entry)); rangesStatus.push(...entry.primitives); }
-    const pop=st.building?1:(Number.isFinite(Number(st.pop))?Number(st.pop):1),baseRadius=r*pop;
-    const base=structureBasePaintBounds(st.type,p.x,p.y,baseRadius);
-    const pixiBounds=entry.primitives.map(primitivePaintBounds); if(paintBoundsIntersectViewport(base,viewport)) pixiBounds.push(base);
-    orderingEntries.push(Object.freeze({tile:st.tile,postBounds:retainedPostBaseBounds(st,camera,mapWidth),pixiBounds:Object.freeze(pixiBounds)}));
+    if(entry.pre.length) entry.items.push({kind:'graphics',semantic:'pre-graphics',primitives:entry.pre});
+    entry.items.push({kind:'base',semantic:'base'});
+    if(st.building){
+      const primitive=arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.buildFraction),{stroke:'#ffd27a',width:2.5,semantic:'building-arc'});
+      if(addPost(primitive,'buildingArcs')) entry.items.push({kind:'graphics',semantic:'building-arc',primitives:[entry.post.at(-1)]});
+      if(camera.scale>=1.2){ const label=normalLabel('building-label',st.buildText,p.x,p.y+r+11); if(addEntryText(label,'buildingLabels')) entry.items.push({kind:'label',semantic:'building-label',label:entry.labels.at(-1)}); }
+    }else{
+      const pop=Number.isFinite(Number(st.pop))?Math.max(1,Number(st.pop)):1,level=Number(st.level)||1;
+      const addOrderedGraphics=(value,name,semantic)=>{ if(addPost(value,name)) entry.items.push({kind:'graphics',semantic,primitives:[entry.post.at(-1)]}); };
+      if(pop>1) addOrderedGraphics(circle(p.x,p.y,r*pop*1.3,{stroke:'rgba(255,255,255,.6)',width:2,semantic:'pop-ring'}),'popRings','pop-graphics');
+      if(level>=2){ const label=levelLabel(level,p.x+r*.9,p.y-r*.8); if(addEntryText(label,'levelLabels')) entry.items.push({kind:'label',semantic:'level-mark',label:entry.labels.at(-1)}); }
+      if(st.upgrading) addOrderedGraphics(arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.upgradeFraction),{stroke:'#ffd27a',width:2.5,semantic:'upgrade-arc'}),'upgradeArcs','upgrade-graphics');
+      if(st.type==='airfield'&&camera.scale>=1.2){
+        const label=normalLabel('airfield-label',st.airQueueText,p.x,p.y+r+11); if(addEntryText(label,'airfieldLabels')) entry.items.push({kind:'label',semantic:'airfield-label',label:entry.labels.at(-1)});
+        if(st.airQueue) addOrderedGraphics(arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.airQueueFraction),{stroke:'#bfe6ff',width:2.5,semantic:'airfield-queue-arc'}),'airfieldQueueArcs','airfield-arc');
+      }
+      if(st.shipQueue){
+        addOrderedGraphics(arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.shipQueueFraction),{stroke:'#bfe6ff',width:2.5,semantic:'ship-queue-arc'}),'shipQueueArcs','ship-arc');
+        if(camera.scale>=1.2){ const label=normalLabel('ship-queue-label',st.shipQueueText,p.x,p.y+r+11); if(addEntryText(label,'shipQueueLabels')) entry.items.push({kind:'label',semantic:'ship-label',label:entry.labels.at(-1)}); }
+      }
+      if(st.suppressed){ const first=line({x:p.x-r,y:p.y-r},{x:p.x+r,y:p.y+r},{stroke:'rgba(255,120,120,.9)',width:2,semantic:'suppressed-x'}),second=line({x:p.x+r,y:p.y-r},{x:p.x-r,y:p.y+r},{stroke:'rgba(255,120,120,.9)',width:2,semantic:'suppressed-x'}),before=entry.post.length; addPost(first,'suppressedMarks'); addPost(second,'suppressedMarks'); if(entry.post.length>before) entry.items.push({kind:'graphics',semantic:'suppression',primitives:entry.post.slice(before)}); }
+      if(st.linked) addOrderedGraphics(circle(p.x,p.y,r+2,{stroke:'rgba(255,210,122,.8)',width:1.5,semantic:'linked-ring'}),'linkedRings','linked');
+      if(st.cooldown) addOrderedGraphics(arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.cooldownFraction),{stroke:'rgba(255,255,255,.7)',width:2,semantic:'cooldown-arc'}),'cooldownArcs','cooldown');
+    }
+    entry.pre=Object.freeze(entry.pre); entry.post=Object.freeze(entry.post); entry.labels=Object.freeze(entry.labels); entry.items=Object.freeze(entry.items.map(value=>Object.freeze({...value,primitives:value.primitives?Object.freeze(value.primitives):undefined})));
+    if(entry.pre.length||entry.post.length||entry.labels.length||paintBoundsIntersectViewport(structureBasePaintBounds(st.type,p.x,p.y,r*(st.building?1:Number.isFinite(Number(st.pop))?Number(st.pop):1)),viewport)) structureEntries.push(Object.freeze(entry));
+    rangesStatus.push(...entry.pre); postOverlays.push(...entry.post);
   }
-  const compositingConflict=findStructureCompositingConflict(orderingEntries,viewport);
-  return Object.freeze({quality,reducedMotion,time,fronts:Object.freeze(fronts),routes:Object.freeze(routes),rangesStatus:Object.freeze(rangesStatus),structureEntries:Object.freeze(structureEntries),counts:Object.freeze(counts),primitiveCount:primitives,segmentCount:segments,emittedSegmentCount:segments,compositingConflict});
+  return Object.freeze({quality,reducedMotion,time,fronts:Object.freeze(fronts),routes:Object.freeze(routes),rangesStatus:Object.freeze(rangesStatus),postOverlays:Object.freeze(postOverlays),structureEntries:Object.freeze(structureEntries),counts:Object.freeze(counts),primitiveCount:primitives,textCount:texts,segmentCount:segments,emittedSegmentCount:segments});
 }

@@ -4,6 +4,7 @@ export const STRUCTURE_ZOOM_CUTOFF=0.9;
 export const MAX_STRUCTURE_SPRITES=4096;
 export const MAX_STRUCTURE_POOL=512;
 export const MAX_STRUCTURE_TEXTURES=512;
+export const MAX_STRUCTURE_TEXT_POOL=1024;
 export const STRUCTURE_ANTIALIAS_MARGIN=RASTER_ANTIALIAS_MARGIN_CSS;
 
 // drawIcon's engineering hook reaches 1.13r and its Bertha flare reaches
@@ -37,25 +38,28 @@ export function createBoundedPool({maximum,idleMaximum=maximum,create,destroy}){
     acquire(){
       if(idle.length){ reused++; return idle.pop(); }
       if(live>=maximum) return null;
-      live++; created++; return create();
+      const value=create();
+      live++; created++; return value;
     },
     acquireMany(count){
-      const acquired=[];
+      const acquired=[]; let capped=false;
+      const rollback=()=>{ let rollbackError=null; for(const held of acquired) try{ pool.release(held); }catch(error){ rollbackError??=error; } return rollbackError; };
       try{
         for(let i=0;i<count;i++){
           const value=pool.acquire();
           if(value) acquired.push(value);
-          else { for(const held of acquired) pool.release(held); return null; }
+          else { capped=true; break; }
         }
-      }catch(error){ for(const held of acquired) pool.release(held); throw error; }
+      }catch(error){ const rollbackError=rollback(); if(rollbackError&&rollbackError!==error) error.rollbackError=rollbackError; throw error; }
+      if(capped){ const rollbackError=rollback(); if(rollbackError) throw rollbackError; return null; }
       return acquired;
     },
     release(value){
       if(!value) return;
       if(idle.length<idleMaximum) idle.push(value);
-      else { destroy(value); live--; destroyed++; }
+      else { try{ destroy(value); } finally { live--; destroyed++; } }
     },
-    drain(){ while(idle.length){ destroy(idle.pop()); live--; destroyed++; } },
+    drain(){ let error=null; while(idle.length){ const value=idle.pop(); try{ destroy(value); }catch(caught){ error??=caught; }finally{ live--; destroyed++; } } if(error) throw error; },
     diagnostics(){ return {live,pooled:idle.length,created,reused,destroyed,maximum,idleMaximum}; }
   };
   return pool;

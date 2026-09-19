@@ -3,9 +3,8 @@
 const assert=require('node:assert/strict');
 
 (async()=>{
-  const {createPreStructureScene,dashSegments,dashedSegmentCount,findStructureCompositingConflict,primitiveGraphicsSegments,primitiveIntersectsViewport,primitivePaintBounds,retainedPostBaseBounds}=await import('../game/src/rendering/pre-structure-layer-model.mjs');
-  const {structureBasePaintBounds}=await import('../game/src/rendering/structure-layer-model.mjs');
-  const {RASTER_ANTIALIAS_MARGIN_CSS,conservativePaintBounds,paintBoundsIntersect}=await import('../game/src/rendering/paint-bounds.mjs');
+  const {MAX_STRUCTURE_TEXTS,createPreStructureScene,dashSegments,dashedSegmentCount,primitiveGraphicsSegments,primitiveIntersectsViewport,primitivePaintBounds}=await import('../game/src/rendering/pre-structure-layer-model.mjs');
+  const {RASTER_ANTIALIAS_MARGIN_CSS}=await import('../game/src/rendering/paint-bounds.mjs');
   const base={camera:{x:0,y:0,scale:2},viewport:{width:300,height:200},mapWidth:100,time:600,reducedMotion:false,quality:'high',fronts:[{tile:101,color:'#f00'},{tile:99999,color:'#000'}],supplyLinks:[{from:101,to:110,color:'#0f0'}],missileFocus:{tile:105,active:true},commandLinks:[{from:102,to:108,color:'rgba(255,170,80,.55)',type:'command'},{from:103,to:109,color:'rgba(120,220,255,.55)',type:'flightops'},{from:104,to:106,color:'rgba(190,230,150,.55)',type:'troopcmd'}],structures:[
     {tile:101,type:'airfield',level:2,lshield:2,lshieldMax:6,bubbleRange:9,repairing:true,repairFraction:.5},
     {tile:102,type:'shield',level:1,hp:3,hpMax:12,bubbleRange:12},
@@ -17,7 +16,7 @@ const assert=require('node:assert/strict');
     {tile:108,type:'fort',level:3,owned:true,fortRange:14}
   ]};
   const scene=createPreStructureScene(base);
-  assert.deepEqual(scene.counts,{fronts:1,supplyLinks:1,supplyMarkers:1,focusRings:1,commandLinks:3,commandMarkers:3,bubbles:2,pips:12,repairArcs:1,jammerRanges:1,gunRanges:1,commandRanges:1,samRanges:1,fortRanges:1});
+  assert.deepEqual(scene.counts,{fronts:1,supplyLinks:1,supplyMarkers:1,focusRings:1,commandLinks:3,commandMarkers:3,bubbles:2,pips:12,repairArcs:1,jammerRanges:1,gunRanges:1,commandRanges:1,samRanges:1,fortRanges:1,buildingArcs:0,buildingLabels:0,popRings:0,levelLabels:3,upgradeArcs:0,airfieldLabels:1,airfieldQueueArcs:0,shipQueueArcs:0,shipQueueLabels:0,suppressedMarks:0,linkedRings:0,cooldownArcs:0});
   assert.deepEqual(scene.fronts.map(value=>value.kind),['rect']);
   assert.deepEqual({x:scene.fronts[0].x,y:scene.fronts[0].y,width:scene.fronts[0].width,height:scene.fronts[0].height},{x:2,y:2,width:2,height:2});
   assert.equal(scene.routes[0].kind,'line');
@@ -34,10 +33,10 @@ const assert=require('node:assert/strict');
     assert.equal(ring.phase,(time/60)%16,`focus phase must not depend on supply-link context state at ${time}ms`);
   }
 
-  const generated=[...scene.fronts,...scene.routes,...scene.rangesStatus].flatMap(value=>value.graphicsSegments);
+  const generated=[...scene.fronts,...scene.routes,...scene.rangesStatus,...scene.postOverlays].flatMap(value=>value.graphicsSegments);
   assert.equal(generated.length,scene.segmentCount);
   assert.equal(scene.emittedSegmentCount,scene.segmentCount);
-  for(const primitive of [...scene.fronts,...scene.routes,...scene.rangesStatus]) assert.deepEqual(primitive.graphicsSegments,primitiveGraphicsSegments(primitive));
+  for(const primitive of [...scene.fronts,...scene.routes,...scene.rangesStatus,...scene.postOverlays]) assert.deepEqual(primitive.graphicsSegments,primitiveGraphicsSegments(primitive));
 
   const shifted=dashSegments(103,6,10,13);
   assert.deepEqual(shifted[0],{from:3,to:9});
@@ -67,7 +66,7 @@ const assert=require('node:assert/strict');
   const medium=createPreStructureScene({...base,quality:'medium'}),low=createPreStructureScene({...base,quality:'low'});
   assert.equal(medium.counts.commandLinks,3); assert.equal(low.counts.commandLinks,3);
   assert.ok(low.segmentCount<medium.segmentCount&&medium.segmentCount<scene.segmentCount);
-  for(const qualityScene of [scene,medium,low]) assert.equal([...qualityScene.fronts,...qualityScene.routes,...qualityScene.rangesStatus].reduce((sum,value)=>sum+value.graphicsSegments.length,0),qualityScene.segmentCount);
+  for(const qualityScene of [scene,medium,low]) assert.equal([...qualityScene.fronts,...qualityScene.routes,...qualityScene.rangesStatus,...qualityScene.postOverlays].reduce((sum,value)=>sum+value.graphicsSegments.length,0),qualityScene.segmentCount);
   const focusSegments=value=>value.routes.find(route=>route.kind==='circle'&&route.dash).graphicsSegments.length;
   assert.ok(focusSegments(low)<focusSegments(medium)&&focusSegments(medium)<focusSegments(scene),'dashed circles must use the same once-scaled quality geometry as routes');
   const commandRangeSegments=value=>value.rangesStatus.find(range=>range.stroke==='rgba(255,180,80,.18)').graphicsSegments.length;
@@ -91,32 +90,23 @@ const assert=require('node:assert/strict');
 
   assert.equal(RASTER_ANTIALIAS_MARGIN_CSS,1);
   assert.deepEqual(primitivePaintBounds({kind:'circle',x:10,y:20,r:5,width:2}),{left:3,top:13,right:17,bottom:27,kind:'pre-base-circle'});
-  const overlayCamera={x:0,y:0,scale:2},overlayTile=101;
-  const marks=retainedPostBaseBounds({tile:overlayTile,type:'airfield',building:false,pop:1.2,level:3,upgrading:true,airQueue:true,airQueueText:'2/6 · F 12s',shipQueue:true,shipQueueText:'Cruiser 12s +1',suppressed:true,linked:true,cooldown:true},overlayCamera,100).map(value=>value.kind);
-  assert.deepEqual(marks,['pop-ring','level-mark','upgrade-ring','airfield-queue-text','airfield-queue-ring','port-queue-ring','port-queue-text','suppressed-x','linked-ring','cooldown-ring']);
-  assert.deepEqual(retainedPostBaseBounds({tile:overlayTile,type:'city',building:true,buildText:'12s'},overlayCamera,100).map(value=>value.kind),['building-ring','building-text']);
-  const conflictFor=mark=>findStructureCompositingConflict([{tile:1,postBounds:[{left:10,top:10,right:20,bottom:20,kind:mark}],pixiBounds:[]},{tile:2,postBounds:[],pixiBounds:[{left:15,top:15,right:25,bottom:25,kind:'base'}]}],{width:100,height:100});
-  for(const mark of ['building-ring','building-text','upgrade-ring','airfield-queue-ring','airfield-queue-text','port-queue-ring','port-queue-text','pop-ring','level-mark','suppressed-x','linked-ring','cooldown-ring']) assert.equal(conflictFor(mark).earlierMark,mark);
-  assert.equal(findStructureCompositingConflict([{tile:1,postBounds:[{left:10,top:10,right:20,bottom:20,kind:'building-text'}],pixiBounds:[]},{tile:2,postBounds:[],pixiBounds:[{left:21,top:10,right:30,bottom:20,kind:'base'}]}],{width:100,height:100}),null,'already-conservative separated bounds remain Pixi-safe');
-  const edgeBase=structureBasePaintBounds('city',30,20,6),edgeOverlay={left:22.25,top:20,right:22.25,bottom:20,kind:'linked-ring'};
-  assert.equal(edgeBase.left,22.25);
-  assert.ok(findStructureCompositingConflict([{tile:1,postBounds:[edgeOverlay],pixiBounds:[]},{tile:2,postBounds:[],pixiBounds:[edgeBase]}],{width:100,height:100}),'a conflict at the exact outer-stroke/AA edge must not be missed');
-  const viewportEdgeBase=structureBasePaintBounds('city',-7.75,50,6);
-  assert.equal(viewportEdgeBase.right,0);
-  assert.ok(findStructureCompositingConflict([{tile:1,postBounds:[{left:0,top:50,right:0,bottom:50,kind:'linked-ring'}],pixiBounds:[]},{tile:2,postBounds:[],pixiBounds:[viewportEdgeBase]}],{width:100,height:100}),'stroke/AA pixels touching the viewport edge must participate in conflict detection');
-  const crossingRange=findStructureCompositingConflict([{tile:1,postBounds:[{left:45,top:45,right:55,bottom:55,kind:'level-mark'}],pixiBounds:[]},{tile:2,postBounds:[],pixiBounds:[primitivePaintBounds({kind:'circle',x:100,y:50,r:50,width:2})]}],{width:100,height:100});
-  assert.equal(crossingRange.laterPrimitive,'pre-base-circle','later ranges extending onscreen participate in conflict detection');
-
-  for(const gap of [0,.25,.5,.99,1,1.01,1.99,2]){
-    const left=conservativePaintBounds(0,0,0,0,'left'),right=conservativePaintBounds(gap,0,gap,0,'right');
-    assert.equal(paintBoundsIntersect(left,right),true,`CSS gap ${gap} must not become false-safe`);
-  }
-  const separatedLeft=conservativePaintBounds(0,0,0,0,'left'),separatedRight=conservativePaintBounds(2.01,0,2.01,0,'right');
-  assert.equal(paintBoundsIntersect(separatedLeft,separatedRight),false,'a gap beyond both conservative paint margins should remain non-conflicting');
-  const scaledBase=structureBasePaintBounds('city',96,50,38.88),scaledPopRing=retainedPostBaseBounds({tile:0,type:'city',pop:1.35},{x:-6,y:44,scale:12},1)[0];
-  assert.equal(scaledPopRing.kind,'pop-ring');
-  assert.ok(paintBoundsIntersect(scaledPopRing,scaledBase),'the scaled source-texture margin closes the scale-12/pop-1.35 eight-tile gap');
-  assert.equal(paintBoundsIntersect(scaledPopRing,structureBasePaintBounds('city',108,50,38.88)),false,'a nine-tile gap beyond the conservative margins remains safe');
+  const overlayCamera={x:0,y:0,scale:2},overlayTile=101,overlayBase={...base,camera:overlayCamera,mapWidth:100,fronts:[],supplyLinks:[],commandLinks:[],missileFocus:null,structures:[]};
+  const allPost=createPreStructureScene({...overlayBase,structures:[{tile:overlayTile,type:'airfield',building:false,pop:1.2,level:3,upgrading:true,upgradeFraction:2,airQueue:true,airQueueFraction:-1,airQueueText:'2/6 · F 12s',shipQueue:true,shipQueueFraction:.25,shipQueueText:'Cruiser 12s +1',suppressed:true,linked:true,cooldown:true,cooldownFraction:.75}]});
+  const postEntry=allPost.structureEntries[0];
+  assert.deepEqual(postEntry.items.map(value=>value.semantic),['base','pop-graphics','level-mark','upgrade-graphics','airfield-label','airfield-arc','ship-arc','ship-label','suppression','linked','cooldown']);
+  assert.deepEqual(postEntry.items.find(value=>value.semantic==='level-mark').label.layers.map(value=>[value.operation,value.text]),[['stroke','II'],['fill','III']]);
+  assert.deepEqual(postEntry.post.map(value=>value.semantic),['pop-ring','upgrade-arc','airfield-queue-arc','ship-queue-arc','suppressed-x','suppressed-x','linked-ring','cooldown-arc']);
+  assert.deepEqual(postEntry.labels.map(value=>[value.kind,value.text]),[['level-label','III'],['airfield-label','2/6 · F 12s'],['ship-queue-label','Cruiser 12s +1']]);
+  assert.equal(postEntry.post.find(value=>value.semantic==='upgrade-arc').end,Math.PI*1.5,'progress above one clamps to a complete ring');
+  assert.equal(postEntry.post.find(value=>value.semantic==='airfield-queue-arc').end,-Math.PI/2,'negative progress clamps to an empty ring');
+  const building=createPreStructureScene({...overlayBase,structures:[{tile:overlayTile,type:'city',building:true,buildFraction:.4,buildText:'12s',pop:1.35,level:3,linked:true}]});
+  assert.deepEqual(building.structureEntries[0].post.map(value=>value.semantic),['building-arc'],'building continue semantics exclude completed-only marks');
+  assert.deepEqual(building.structureEntries[0].labels.map(value=>value.kind),['building-label']);
+  assert.deepEqual(building.structureEntries[0].items.map(value=>value.semantic),['base','building-arc','building-label'],'building early-continue order excludes every completed-only item');
+  const noText=createPreStructureScene({...overlayBase,camera:{...overlayCamera,scale:1.19},structures:[{tile:overlayTile,type:'airfield',airQueue:true,airQueueFraction:.5,airQueueText:'1/4 · F 8s'},{tile:overlayTile+1,type:'port',shipQueue:true,shipQueueFraction:.5,shipQueueText:'Destroyer 8s'}]});
+  assert.equal(noText.textCount,0); assert.deepEqual(noText.structureEntries.flatMap(entry=>entry.post.map(value=>value.semantic)),['ship-queue-arc'],'airfield queue arc shares the legacy text zoom threshold; ship arc does not');
+  assert.throws(()=>createPreStructureScene({...overlayBase,structures:[{tile:overlayTile,type:'city',level:2}]},{textLimit:0}),/text-cap/);
+  assert.equal(MAX_STRUCTURE_TEXTS,8192);
 
   const culled=createPreStructureScene({...base,camera:{x:10000,y:10000,scale:2}}); assert.equal(culled.primitiveCount,0);
   const strategic=createPreStructureScene({...base,camera:{x:0,y:0,scale:.5}}); assert.equal(strategic.counts.supplyLinks,0); assert.equal(strategic.counts.supplyMarkers,1); assert.equal(strategic.counts.commandLinks,0);

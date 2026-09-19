@@ -68,14 +68,14 @@ async function smokeStart(page,{map='random',mode=null,seed}){
   await page.evaluate(()=>{ window.__STATEFALL_TEST__.pause(); window.__STATEFALL_TEST__.installLateGameScene(); window.__STATEFALL_TEST__.freezePresentation(); });
 }
 
-test('Pixi owns every visible structure base beneath Canvas overlays with stable tile alignment and bounded reuse',async({page},testInfo)=>{
-  test.skip(testInfo.project.name!=='chromium-desktop','focused E2 source contract runs in primary Chromium');
+test('Pixi owns every complete visible structure with stable tile alignment and bounded reuse',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','focused E4 source contract runs in primary Chromium');
   await start(page);
   const setup=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],camera=window.__STATEFALL_TEST__.snapshot().camera,scale=camera.scale,items=[{...source,tile:source.tile,type:'city',building:false},{...source,tile:source.tile+20,x:source.x+20*scale,type:'factory',building:false}]; return {camera,items,result:window.__STATEFALL_TEST__.exerciseStructureLayer(items,{preStructures:items})}; });
   const initial={rendering:setup.result.rendering,expected:setup.items};
   test.skip(initial.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
   expect(initial.rendering.capabilities.structures).toBe(true);
-  expect(initial.rendering.layers.structures).toMatchObject({owned:true,total:initial.expected.length,visible:initial.expected.length,culled:0,pooled:0});
+  expect(initial.rendering.layers.structures).toMatchObject({owned:true,total:initial.expected.length,visible:initial.expected.length,culled:0});
   expect(initial.rendering.layers.structures.textureCount).toBeGreaterThan(0);
   expect(initial.rendering.layers.structures.textureCount).toBeLessThanOrEqual(512);
   expect(initial.rendering.layers.structures.textureBytesEstimate).toBe(initial.rendering.layers.structures.textureCount*64*64*4);
@@ -169,12 +169,12 @@ test('structure completion, pop, texture replacement, destruction, eviction, inv
   expect(reset.layers.structures.textureDestroyCount).toBeGreaterThanOrEqual(churn.rendering.layers.structures.textureDestroyCount);
   const restored=await page.evaluate(()=>window.__STATEFALL_TEST__.restoreRendererResources());
   expect(restored.layers.structures.owned).toBe(false);
-  expect(restored.layers.structures.resourceLimitFallback.reason).toBeNull();
-  expect(restored.compositingConflictFallback.reason).not.toBeNull();
+  expect(restored.layers.structures.resourceLimitFallback.reason).toBe('texture-cap');
+  expect(restored.compositingConflictFallback).toMatchObject({active:false,reason:null});
   expect(await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint())).toEqual(checkpoint);
 });
 
-test('overlapping retained Canvas overlay forces full legacy Canvas order and recovers on the next safe frame',async({browser},testInfo)=>{
+test('overlapping structures remain in one Pixi-owned legacy-ordered scene graph',async({browser},testInfo)=>{
   test.skip(testInfo.project.name!=='chromium-desktop','compositing evidence runs in primary Chromium');
   const contexts=[],images={}; let checkpoint;
   for(const renderer of ['canvas','pixi']){
@@ -183,17 +183,17 @@ test('overlapping retained Canvas overlay forces full legacy Canvas order and re
     const evidence=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],items=[{...source,tile:source.tile,type:'city',linked:true},{...source,tile:source.tile+3,type:'factory'}]; return window.__STATEFALL_TEST__.exerciseStructureCompositing(items); });
     if(renderer==='pixi'){
       test.skip(evidence.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
-      expect(evidence).toMatchObject({preOwned:false,owned:false,rendering:{layers:{preStructures:{resourceLimitFallback:{reason:null},compositingConflictFallback:{reason:'earlier-linked-ring-overlaps-later-base'}},structures:{owned:false,visible:0,instances:[],resourceLimitFallback:{reason:null}}}}});
-      expect(evidence.rendering.compositingConflictFallback.count).toBeGreaterThan(0);
-      expect(evidence.rendering.spriteCount).toBeLessThanOrEqual(1);
+      expect(evidence).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{preStructures:{resourceLimitFallback:{reason:null}},structures:{owned:true,visible:2,resourceLimitFallback:{reason:null}}}}});
+      expect(evidence.rendering.layers.structures.order.map(value=>value.tile)).toEqual(evidence.positions.map(value=>value.tile));
+      expect(evidence.rendering.layers.structures.order[0].children).toEqual(['base','linked']);
       checkpoint=evidence.checkpoint;
     }
     images[renderer]=await screenshotPixels(page.locator('#stage'));
   }
-  expect(images.pixi.width).toBe(images.canvas.width); expect(images.pixi.height).toBe(images.canvas.height); expect(Buffer.from(images.pixi.data).equals(Buffer.from(images.canvas.data)),'conflict composite must be pixel-identical to full legacy Canvas order').toBe(true);
+  expect(images.pixi.width).toBe(images.canvas.width); expect(images.pixi.height).toBe(images.canvas.height);
   const pixiPage=contexts[1].pages()[0];
   const recovered=await pixiPage.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],items=[{...source,tile:source.tile,type:'city',linked:true},{...source,tile:source.tile+30,type:'factory'}]; return window.__STATEFALL_TEST__.exerciseStructureLayer(items,{preStructures:items}); });
-  expect(recovered).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{reason:null},layers:{structures:{owned:true,visible:2}}},checkpoint});
+  expect(recovered).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{structures:{owned:true,visible:2}}},checkpoint});
   await Promise.all(contexts.map(context=>context.close()));
 });
 
@@ -227,7 +227,7 @@ test('missile focus uses explicit route phase in Canvas and Pixi at two times wi
   }
 });
 
-test('E3 Canvas geometry ignores poisoned prior stroke state and restores defaults',async({page},testInfo)=>{
+test('Canvas fallback geometry ignores poisoned prior stroke state and restores defaults',async({page},testInfo)=>{
   test.skip(testInfo.project.name!=='chromium-desktop','Canvas state isolation evidence runs in primary Chromium');
   await start(page,'PHASEE3CANVASSTATE','canvas');
   const evidence=await page.evaluate(()=>window.__STATEFALL_TEST__.e3CanvasStatePoisonProbe());
@@ -236,9 +236,9 @@ test('E3 Canvas geometry ignores poisoned prior stroke state and restores defaul
   expect(evidence.poisoned.state).toEqual(evidence.baseline.state);
 });
 
-test('retained build, queue, pop, level, suppression, linked, and cooldown marks conservatively reject split compositing',async({page},testInfo)=>{
-  test.skip(testInfo.project.name!=='chromium-desktop','compositing conflict matrix runs in primary Chromium');
-  await start(page,'PHASEE3CONFLICTMATRIX');
+test('build, queue, pop, level, suppression, linked, and cooldown marks remain Pixi-owned',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','structure scene matrix runs in primary Chromium');
+  await start(page,'PHASEE4STRUCTUREMATRIX');
   const cases=[
     {label:'build',first:{type:'city',building:true,buildText:'12s'}},
     {label:'upgrade',first:{type:'city',upgrading:true}},
@@ -252,15 +252,19 @@ test('retained build, queue, pop, level, suppression, linked, and cooldown marks
   for(const entry of cases){
     const result=await page.evaluate(({first})=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],items=[{...source,...first,tile:source.tile},{...source,tile:source.tile+3,type:'factory'}]; return window.__STATEFALL_TEST__.exerciseStructureLayer(items,{preStructures:items}); },entry);
     test.skip(result.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
-    expect(result.preOwned,entry.label).toBe(false); expect(result.owned,entry.label).toBe(false);
-    expect(result.rendering.layers.preStructures.compositingConflictFallback.reason,entry.label).toContain('overlaps-later-base');
+    expect(result.preOwned,entry.label).toBe(true); expect(result.owned,entry.label).toBe(true);
+    expect(result.rendering.layers.preStructures.compositingConflictFallback,entry.label).toMatchObject({active:false,reason:null});
     expect(result.rendering.layers.preStructures.resourceLimitFallback.reason,entry.label).toBeNull();
     expect(result.rendering.layers.structures.resourceLimitFallback.reason,entry.label).toBeNull();
   }
+  const ordered=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'airfield',pop:1.2,level:3,upgrading:true,upgradeFraction:.3,airQueue:true,airQueueText:'2/6 · F 12s',shipQueue:true,shipQueueText:'Cruiser 12s +1',suppressed:true,linked:true,cooldown:true}; return window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering; });
+  expect(ordered.layers.preStructures.presentation.structureEntries[0].order).toEqual(['base','pop-graphics','level-mark','upgrade-graphics','airfield-label','airfield-arc','ship-arc','ship-label','suppression','linked','cooldown']);
+  expect(ordered.layers.structures.order[0].children).toEqual(ordered.layers.preStructures.presentation.structureEntries[0].order);
+  expect(ordered.layers.structures.order[0].labels.find(value=>value.kind==='level-label')).toMatchObject({align:'center',baseline:'alphabetic',layers:[{operation:'stroke',text:'II'},{operation:'fill',text:'III'}]});
   const range=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],items=[{...source,tile:source.tile,type:'city',level:3},{...source,tile:source.tile+30,type:'command',owned:true,commandRange:45}]; return window.__STATEFALL_TEST__.exerciseStructureLayer(items,{preStructures:items}); });
-  expect(range.rendering.layers.preStructures.compositingConflictFallback.detail).toMatchObject({earlierMark:'level-mark',laterPrimitive:'pre-base-circle'});
+  expect(range).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{structures:{owned:true,visible:2}}}});
   const safeRange=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],items=[{...source,tile:source.tile,type:'city',level:1},{...source,tile:source.tile+30,type:'command',owned:true,commandRange:45}]; return window.__STATEFALL_TEST__.exerciseStructureLayer(items,{preStructures:items}); });
-  expect(safeRange).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{reason:null},layers:{preStructures:{counts:{commandRanges:1}},structures:{owned:true,visible:2}}}});
+  expect(safeRange).toMatchObject({preOwned:true,owned:true,rendering:{compositingConflictFallback:{active:false,reason:null},layers:{preStructures:{counts:{commandRanges:1}},structures:{owned:true,visible:2}}}});
 });
 
 test('a visible pre-base range keeps its ordered entry when the base sprite is offscreen',async({page},testInfo)=>{
@@ -274,10 +278,10 @@ test('a visible pre-base range keeps its ordered entry when the base sprite is o
   },source);
   test.skip(result.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
   expect(result.rendering.layers.preStructures.counts.commandRanges).toBe(1);
-  expect(result.rendering.layers.structures).toMatchObject({owned:true,total:1,visible:0,culled:1,entries:1,entryGraphicsCount:1,entrySpriteCount:1,instances:[],order:[{tile:source.tile,baseVisible:false}]});
+  expect(result.rendering.layers.structures).toMatchObject({owned:true,total:1,visible:0,culled:1,entries:1,entryGraphicsCount:1,entrySpriteCount:1,instances:[],order:[{tile:source.tile,baseVisible:false,children:['pre-graphics','base']}]});
 });
 
-for(const failure of [{query:'&pixiPrimitiveCap=2',reason:'primitive-cap'},{query:'&pixiSegmentCap=2',reason:'segment-cap'},{query:'&pixiGraphicsFail=1',reason:'graphics-resource'}]) test(`pre-structure ${failure.reason} atomically restores Canvas pre-layers and bases`,async({page},testInfo)=>{
+for(const failure of [{query:'&pixiPrimitiveCap=2',reason:'primitive-cap'},{query:'&pixiSegmentCap=2',reason:'segment-cap'}]) test(`pre-structure ${failure.reason} atomically restores Canvas pre-layers and bases`,async({page},testInfo)=>{
   test.skip(testInfo.project.name!=='chromium-desktop','atomic E3 fallback runs in primary Chromium');
   await start(page,`PHASEE3${failure.reason.replace('-','').toUpperCase()}`,'pixi',failure.query);
   const before=await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint());
@@ -289,6 +293,51 @@ for(const failure of [{query:'&pixiPrimitiveCap=2',reason:'primitive-cap'},{quer
   for(const item of evidence.expected) expect(brightPixelsAt(composite,{...item,radius:12,pop:1}),`Canvas fallback base missing at tile ${item.tile}`).toBeGreaterThan(0);
   await page.evaluate(()=>window.__STATEFALL_TEST__.renderRepeatedly(2));
   expect(await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint())).toEqual(before);
+});
+
+for(const failure of [{query:'&pixiTextCap=0',reason:'text-cap'},{query:'',reason:'text-resource',inject:'label'}]) test(`${failure.reason} atomically restores the complete Canvas structure scene and recovers`,async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','text fallback evidence runs in primary Chromium');
+  await start(page,`PHASEE4${failure.reason.replace('-','').toUpperCase()}`,'pixi',failure.query);
+  const before=await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint());
+  await page.evaluate(()=>window.__STATEFALL_TEST__.resetRendererResources());
+  const failed=await page.evaluate(inject=>{ if(inject) window.__STATEFALL_TEST__.injectRendererFailure(inject); const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'airfield',level:2,airQueue:true,airQueueFraction:.5,airQueueText:'1/6 · F 12s'}; return window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}); },failure.inject);
+  test.skip(failed.rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
+  expect(failed).toMatchObject({preOwned:false,owned:false,rendering:{layers:{preStructures:{owned:false},structures:{owned:false,visible:0}}}});
+  if(failure.reason==='text-cap') expect(failed.rendering.layers.preStructures.resourceLimitFallback.reason).toBe('text-cap');
+  else expect(failed.rendering.layers.structures.resourceLimitFallback.reason).toBe('text-resource');
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint())).toEqual(before);
+  await page.evaluate(()=>window.__STATEFALL_TEST__.setCameraOrigin(100000,100000,5));
+  const recovered=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
+  expect(recovered.layers).toMatchObject({preStructures:{owned:true},structures:{owned:true,visible:0}});
+});
+
+test('countdown labels use bounded explicit textures and do not enter the Pixi Text cache',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','text churn evidence runs in primary Chromium');
+  await start(page,'PHASEE4TEXTCHURN');
+  const initial=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'airfield',level:2,airQueue:true,airQueueFraction:.5,airQueueText:'1/6 · F 19s'}; return window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering.layers.structures; });
+  test.skip(!initial.owned,'Pixi WebGL renderer unavailable');
+  expect(initial).toMatchObject({textStrategy:'canvas-raster-label-sprites',activeTextObjects:0,idleTextObjects:0,pixiTextCache:{status:'known-unused',references:0,textures:0,bytes:0},activeLabelSprites:2,labelGpuBytes:{status:'unknown',bytes:null}}); expect(initial.labelTextureCount).toBe(initial.activeLabelSprites+initial.idleLabelSprites); expect(initial.labelTextureSourceBytes).toBeGreaterThanOrEqual(initial.activeLabelTextureBytes);
+  const churn=await page.evaluate(()=>{ let result; for(let second=18;second>=10;second--){ const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'airfield',level:2,airQueue:true,airQueueFraction:(19-second)/9,airQueueText:`1/6 · F ${second}s`}; result=window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering.layers.structures; } return result; });
+  expect(churn.labelCreated).toBe(initial.labelCreated); expect(churn.activeLabelSprites).toBe(2); expect(churn.labelTextureCount).toBe(initial.labelTextureCount); expect(churn.pixiTextCache).toEqual(initial.pixiTextCache); expect(churn.labelRasterUpdates).toBeGreaterThan(initial.labelRasterUpdates);
+  const reset=await page.evaluate(()=>window.__STATEFALL_TEST__.resetRendererResources().layers.structures);
+  expect(reset).toMatchObject({activeTextObjects:0,idleTextObjects:0,activeLabelSprites:0,idleLabelSprites:0,labelTextureCount:0,activeLabelTextureBytes:0,labelTextureSourceBytes:0,pixiTextCache:{references:0,textures:0,bytes:0}});
+});
+
+for(const failure of [
+  {query:'&pixiSpriteCap=1',inject:'entry',reason:'sprite-resource',created:'created'},
+  {query:'&pixiSpriteCap=1',inject:'graphics',reason:'graphics-resource',created:'graphicsCreated'},
+  {query:'&pixiTextCap=1',inject:'label',reason:'text-resource',created:'labelCreated'}
+]) test(`cap-one ${failure.reason} constructor failure leaves no phantom pool slot and recovers`,async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','constructor rollback evidence runs in primary Chromium');
+  await start(page,`E4${failure.reason.replace('-','').toUpperCase()}`,'pixi',failure.query);
+  const baseline=await page.evaluate(()=>{ window.__STATEFALL_TEST__.exerciseStructureLayer([],{preStructures:[]}); return window.__STATEFALL_TEST__.resetRendererResources().layers.structures; });
+  const run=inject=>page.evaluate(({inject})=>{ if(inject) window.__STATEFALL_TEST__.injectRendererFailure(inject); const source=window.__STATEFALL_TEST__.structurePresentation()[0],item={...source,type:'city',level:2,linked:true}; return window.__STATEFALL_TEST__.exerciseStructureLayer([item],{preStructures:[item]}).rendering.layers.structures; },{inject});
+  const failed=await run(failure.inject);
+  expect(failed).toMatchObject({owned:false,entries:0,resourceLimitFallback:{reason:failure.reason}}); expect(failed[failure.created]).toBe(baseline[failure.created]);
+  await page.evaluate(()=>window.__STATEFALL_TEST__.setCameraOrigin(100000,100000,5));
+  const sourceCamera=await page.evaluate(()=>{ const source=window.__STATEFALL_TEST__.structurePresentation()[0],tileX=source.tile%720,tileY=(source.tile-tileX)/720; return {x:640-(tileX+.5)*5,y:360-(tileY+.5)*5}; });
+  await page.evaluate(camera=>window.__STATEFALL_TEST__.setCameraOrigin(camera.x,camera.y,5),sourceCamera);
+  const recovered=await run(); expect(recovered).toMatchObject({owned:true,resourceLimitFallback:{reason:null}}); expect(recovered[failure.created]).toBe(baseline[failure.created]+1);
 });
 
 test('segment cap accepts the exact generated count and rejects one less before drawing',async({browser},testInfo)=>{
@@ -318,8 +367,8 @@ test('60-frame paused dense-fixture microbenchmark stays bounded with visible an
       const visible=await page.evaluate(()=>{ const before=performance.now(); window.__STATEFALL_TEST__.renderRepeatedly(60); return {mean:(performance.now()-before)/60,expected:window.__STATEFALL_TEST__.structurePresentation().length,rendering:window.__STATEFALL_TEST__.rendererDiagnostics()}; });
       expect(visible.mean).toBeLessThan(50);
       if(renderer==='pixi'){
-        expect(visible.rendering.layers.structures).toMatchObject({owned:false,total:visible.expected,visible:0,culled:0,entries:0});
-        expect(visible.rendering.compositingConflictFallback.reason).not.toBeNull();
+        expect(visible.rendering.layers.structures).toMatchObject({owned:true,total:visible.expected,visible:visible.expected,culled:0,entries:visible.expected});
+        expect(visible.rendering.compositingConflictFallback).toMatchObject({active:false,reason:null});
         expect(visible.rendering.layers.structures.resourceLimitFallback.reason).toBeNull();
       }
       else expect(visible.rendering.capabilities.structures).toBe(false);
@@ -330,6 +379,26 @@ test('60-frame paused dense-fixture microbenchmark stays bounded with visible an
       console.log(`${renderer} dense paused structures: visible ${visible.mean.toFixed(3)} ms/frame, culled ${culled.mean.toFixed(3)} ms/frame; ${JSON.stringify(culled.rendering.layers.structures)}`);
     }finally{ await context.close(); }
   }
+});
+
+test('1800-frame dev Pixi structure state churn keeps every owned resource bounded',async({page},testInfo)=>{
+  test.skip(testInfo.project.name!=='chromium-desktop','long E4 soak runs in primary Chromium');
+  test.setTimeout(120_000);
+  await start(page,'PHASEE4DENSESOAK');
+  const result=await page.evaluate(()=>({...window.__STATEFALL_TEST__.renderPerformanceFrames(1800,true),layer:window.__STATEFALL_TEST__.rendererDiagnostics().layers.structures}));
+  expect(result.layer.entries+result.layer.pooled).toBeLessThanOrEqual(result.layer.maximum);
+  expect(result.layer.activeLabelSprites+result.layer.idleLabelSprites).toBeLessThanOrEqual(result.layer.textMaximum);
+  expect(result.layer.entryGraphicsCount+result.layer.pooledGraphicsCount).toBeLessThanOrEqual(result.layer.graphicsMaximum);
+  expect(result.layer.textureCount).toBeLessThanOrEqual(result.layer.textureMaximum);
+  expect(new Set(result.resources.map(value=>value.visibility))).toEqual(new Set(['visible','offscreen']));
+  for(const key of ['entryCreated','entryDestroyed','graphicsCreated','graphicsDestroyed','labelCreated','labelDestroyed','baseTextures','labelTextures']) expect(result.resources.every(value=>Number.isInteger(value[key])&&value[key]>=0),`${key} must remain observable`).toBe(true);
+  expect(Math.max(...result.resources.map(value=>value.entryCreated))).toBeLessThanOrEqual(result.layer.maximum);
+  expect(Math.max(...result.resources.map(value=>value.graphicsCreated))).toBeLessThanOrEqual(result.layer.graphicsMaximum);
+  expect(Math.max(...result.resources.map(value=>value.labelCreated))).toBeLessThanOrEqual(result.layer.textMaximum);
+  expect(result.resources.every(value=>value.baseTextures<=result.layer.textureMaximum&&value.textCacheTextures===0&&value.textCacheReferences===0)).toBe(true);
+  for(const key of ['entryCreated','graphicsCreated','labelCreated','baseTextures','labelTextures']) expect(new Set(result.resources.slice(-6).map(value=>value[key])).size,`${key} must plateau after warm-up`).toBe(1);
+  expect(result.heapAssertion).toContain('advisory-only');
+  console.log(`pixi E4 1800-frame state churn: mean ${result.mean.toFixed(3)} ms, p95 ${result.p95.toFixed(3)} ms, max ${result.max.toFixed(3)} ms; resources ${JSON.stringify(result.resources)}; advisory heap ${JSON.stringify(result.heap)}`);
 });
 
 test('quality tiers reduce route segments without hiding gameplay meaning',async({browser},testInfo)=>{
@@ -372,27 +441,26 @@ test('reduced motion freezes pre-structure pulse and route movement while retain
   expect(after.presentation.dashedRoutes).toEqual(before.presentation.dashedRoutes);
 });
 
-test('real conflict fallback obeys effective motion policy across RAFs without changing canonical state',async({page},testInfo)=>{
+test('complete Pixi structure ownership obeys effective motion policy without changing canonical state',async({page},testInfo)=>{
   test.skip(!['chromium-desktop','chromium-reduced-motion'].includes(testInfo.project.name),'motion fallback evidence runs in Chromium normal/reduced projects');
   const reduced=testInfo.project.name==='chromium-reduced-motion';
-  await start(page,`PHASEE3CONFLICTMOTION${reduced?'REDUCED':'NORMAL'}`);
+  await start(page,`PHASEE4STRUCTUREMOTION${reduced?'REDUCED':'NORMAL'}`);
   const beforeCheckpoint=await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint());
   const beforeDiagnostics=await page.evaluate(()=>{ window.__STATEFALL_TEST__.resumePresentation(); return window.__STATEFALL_TEST__.rendererDiagnostics(); });
   test.skip(beforeDiagnostics.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
-  expect(beforeDiagnostics).toMatchObject({reducedMotion:reduced,motion:{clock:reduced?'frozen':'monotonic'},layers:{preStructures:{owned:false},structures:{owned:false}}});
-  expect(beforeDiagnostics.compositingConflictFallback.reason).not.toBeNull();
+  expect(beforeDiagnostics).toMatchObject({reducedMotion:reduced,motion:{clock:reduced?'frozen':'monotonic'},compositingConflictFallback:{active:false,reason:null},layers:{preStructures:{owned:true},structures:{owned:true}}});
   const firstGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),first=await canvasPixels(page,'#map'); await page.waitForTimeout(180); const secondGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),second=await canvasPixels(page,'#map');
   expect(firstGeometry.front).toBeTruthy(); expect(firstGeometry.route).toBeTruthy(); expect(firstGeometry.focus).toBeTruthy();
   const delta=changedPixels(first,second);
   if(reduced){
     expect(secondGeometry).toEqual(firstGeometry);
-    for(const point of [firstGeometry.front,firstGeometry.route?.dash,firstGeometry.route?.marker,firstGeometry.focus,firstGeometry.lowShield]) if(point) expect(pixelPatch(second,point),'front, route dash/marker, focus, and low-shield pixels must remain frozen during Canvas conflict fallback').toEqual(pixelPatch(first,point));
+    for(const point of [firstGeometry.front,firstGeometry.route?.dash,firstGeometry.route?.marker,firstGeometry.focus,firstGeometry.lowShield]) if(point) expect(pixelPatch(second,point),'front, route dash/marker, focus, and low-shield pixels must remain frozen under reduced motion').toEqual(pixelPatch(first,point));
   }else{
     expect(secondGeometry.time).toBeGreaterThan(firstGeometry.time); expect(secondGeometry.route?.marker).not.toEqual(firstGeometry.route?.marker);
-    expect(delta,'normal-motion Canvas conflict fallback must continue animating').toBeGreaterThan(0);
+    expect(delta,'normal-motion retained Canvas layers must continue animating').toBeGreaterThan(0);
   }
   expect(await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint())).toEqual(beforeCheckpoint);
-  expect((await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics())).compositingConflictFallback.reason).not.toBeNull();
+  expect((await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics())).compositingConflictFallback).toMatchObject({active:false,reason:null});
 });
 
 test('dense structure resources recreate after BFCache loss and cleanly hand ownership to Canvas on context loss',async({page},testInfo)=>{
@@ -432,8 +500,8 @@ test('Pixi structure layer smokes every map and major mode',async({context},test
       await smokeStart(page,entry);
       const rendering=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
       test.skip(rendering.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
-      expect(rendering.layers.structures,entry.seed).toMatchObject({owned:false,total:11,visible:0,culled:0,resourceLimitFallback:{reason:null}});
-      expect(rendering.compositingConflictFallback.reason,entry.seed).not.toBeNull();
+      expect(rendering.layers.structures,entry.seed).toMatchObject({owned:true,total:11,visible:11,culled:0,resourceLimitFallback:{reason:null}});
+      expect(rendering.compositingConflictFallback,entry.seed).toMatchObject({active:false,reason:null});
     }finally{ await page.close(); }
   }
 });

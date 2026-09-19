@@ -35,6 +35,14 @@ const assert=require('node:assert/strict');
   assert.deepEqual(atomic.diagnostics(),{live:2,pooled:2,created:2,reused:0,destroyed:0,maximum:2,idleMaximum:2});
   const complete=atomic.acquireMany(2); assert.equal(complete.length,2); assert.equal(atomic.acquire(),null);
   complete.forEach(value=>atomic.release(value)); atomic.drain();
+  for(const pattern of ['acquire','acquireMany']){
+    let attempts=0;
+    const throwing=createBoundedPool({maximum:1,idleMaximum:1,create:()=>{ if(attempts++===0) throw new Error('create-once'); return {ok:true}; },destroy:()=>{}});
+    assert.throws(()=>pattern==='acquire'?throwing.acquire():throwing.acquireMany(1),/create-once/);
+    assert.deepEqual(throwing.diagnostics(),{live:0,pooled:0,created:0,reused:0,destroyed:0,maximum:1,idleMaximum:1},`${pattern} must not leave a phantom live slot`);
+    const recovered=pattern==='acquire'?throwing.acquire():throwing.acquireMany(1)[0]; assert.deepEqual(recovered,{ok:true});
+    assert.equal(throwing.diagnostics().live,1,`${pattern} must recover at cap one`);
+  }
   assert.equal(MAX_STRUCTURE_SPRITES,4096); assert.equal(MAX_STRUCTURE_POOL,512);
   console.log('Structure layer model contracts PASS');
 })().catch(error=>{ console.error(error); process.exitCode=1; });
