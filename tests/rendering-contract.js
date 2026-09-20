@@ -1,6 +1,7 @@
 'use strict';
 
 const assert=require('node:assert/strict');
+require('./terrain-raster-model.js');
 
 (async()=>{
   const {createCamera,CAMERA_MIN_SCALE,CAMERA_MAX_SCALE}=await import('../game/src/rendering/camera.mjs');

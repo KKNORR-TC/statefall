@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Unit Direction 02 - Isolated Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="unit-study" data-prototype="unit-direction">
+    <header class="study-header">
+      <div class="title-block">
+        <span class="index">02</span>
+        <div><h1>UNIT DIRECTION 02</h1><p>IN-WORLD COMMAND MAP / GENERAL ART LANGUAGE</p></div>
+      </div>
+      <div class="unit-disclaimer">GENERAL LANGUAGE ONLY - INDIVIDUAL UNITS REQUIRE REVIEW</div>
+      <div class="status"><span></span> ISOLATED PROTOTYPE</div>
+    </header>
+
+    <section class="unit-composition" aria-label="Unit art direction in operational map context">
+      <figure class="unit-map">
+        <canvas id="unit-map" role="img" aria-label="Command map showing naval, air, coastal, air-defense, support, and projectile unit directions"></canvas>
+        <figcaption><span>OPERATIONAL CONTACT PICTURE</span><strong>SABLE APPROACH</strong><small>progressive-detail unit study / not gameplay UI</small></figcaption>
+        <div class="map-caption">CHARCOAL / NAVY / IVORY &nbsp;·&nbsp; BRASS COMMAND ACCENT &nbsp;·&nbsp; LIMITED IFF COLOR</div>
+        <div class="motion-key" aria-label="Animation direction notes"><b>AMBIENT</b><span>restrained, ID-phased</span><b>TRANSIT</b><span>occasional, class-specific</span><b>REDUCED MOTION</b><span>semantic state preserved</span></div>
+      </figure>
+
+      <aside class="unit-reference" aria-label="Unit direction key and strategic scale proof">
+        <section class="unit-key">
+          <header><span>DIRECTION KEY</span><b>IN-WORLD STATE LANGUAGE</b></header>
+          <div class="state-list">
+            <div data-unit="destroyer" data-state="selected"><i class="state-mark selected"></i><span><b>SELECTED</b><small>fine brass bearing ring + order line</small></span></div>
+            <div data-unit="stealth-fighter" data-state="normal"><i class="state-mark normal"></i><span><b>NORMAL / FRIENDLY</b><small>material silhouette + restrained IFF panel</small></span></div>
+            <div data-unit="bomber" data-state="hostile-targeted"><i class="state-mark hostile"></i><span><b>HOSTILE / TARGETED</b><small>red identification tabs + fine brackets</small></span></div>
+            <div data-unit="repair-support" data-state="damaged-disabled"><i class="state-mark damaged"></i><span><b>DAMAGED / DISABLED</b><small>broken amber status bar + smoke</small></span></div>
+            <div data-unit="submarine" data-state="submerged-detected"><i class="state-mark detected"></i><span><b>SUBMERGED / DETECTED</b><small>waterline ghost + sonar fix</small></span></div>
+            <div data-unit="sam-radar" data-state="active-firing"><i class="state-mark firing"></i><span><b>ACTIVE FIRING / LAUNCH</b><small>brief trajectory + origin signature</small></span></div>
+            <div data-unit="coastal-bastion" data-state="normal"><i class="state-mark structure"></i><span><b>COASTAL INSTALLATION</b><small>embedded footprint follows the ground</small></span></div>
+            <div data-unit="interceptor-missile" data-state="active-firing"><i class="state-mark projectile"></i><span><b>MISSILE / INTERCEPTOR</b><small>directional body, wake and terminal cue</small></span></div>
+          </div>
+        </section>
+
+        <section class="scale-inset">
+          <header><span>STRATEGIC SCALE</span><b>PROGRESSIVE DETAIL</b></header>
+          <canvas id="scale-map" role="img" aria-label="Strategic scale inset with simplified unit silhouettes"></canvas>
+          <p>Silhouette, heading and allegiance survive after physical detail resolves out.</p>
+        </section>
+
+        <footer class="unit-note"><b>NON-PRODUCTION DIRECTION</b><span>No Phase G row or individual unit is approved by this general-language plate.</span></footer>
+      </aside>
+    </section>
+  </main>
+  <script src="units.js"></script>
+</body>
+</html>

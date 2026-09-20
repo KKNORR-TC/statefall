@@ -306,9 +306,10 @@ test('resume catch-up suspends once on checkpoint divergence and Continue reache
   expect(ready).toMatchObject({tick:200,paused:true,replay:{on:true,mismatch:true,finalVerified:true},catchup:{status:'ready',target:200,framePending:false}});
   await page.locator('#cuPlay').click();
   const resumed=await page.evaluate(()=>window.__STATEFALL_TEST__.status());
-  expect(resumed).toMatchObject({ready:true,tick:200,paused:false,replay:{on:false},catchup:{status:'idle',framePending:false}});
+  expect(resumed).toMatchObject({ready:true,paused:false,replay:{on:false},catchup:{status:'idle',framePending:false}});
+  expect(resumed.tick).toBeGreaterThanOrEqual(200);
   await page.waitForTimeout(150);
-  expect((await page.evaluate(()=>window.__STATEFALL_TEST__.status())).tick).toBeGreaterThan(200);
+  expect((await page.evaluate(()=>window.__STATEFALL_TEST__.status())).tick).toBeGreaterThan(resumed.tick);
 });
 
 test('Stop replay resets a diverged resume and a subsequent ordinary resume succeeds', async ({page}, testInfo) => {

@@ -28,12 +28,26 @@ for(const file of emitted){
     throw new Error(`Production JavaScript contains Pixi, renderer-switch, or test-bridge code: ${file.path}`);
   }
 }
-for(const file of fs.readdirSync(path.join(dist,'assets'))){
-  if(!/\.(?:js|css)$/.test(file))continue;
-  const source=path.join(dist,'assets',file),data=fs.readFileSync(source);
-  const extension=path.extname(file),stem=path.basename(file,extension).split('.')[0];
-  const renamed=`${stem}.${sha256(data).slice(0,12)}${extension}`;
-  if(renamed!==file){fs.renameSync(source,path.join(dist,'assets',renamed));html=html.replaceAll(`assets/${file}`,`assets/${renamed}`);}
+const assetDir=path.join(dist,'assets'),assets=fs.readdirSync(assetDir).filter(file=>/\.(?:js|css)$/.test(file)).map(file=>({file,data:fs.readFileSync(path.join(assetDir,file))}));
+let renames=new Map(assets.map(({file})=>[file,file]));
+for(let pass=0;pass<=assets.length;pass++){
+  const next=new Map();
+  for(const asset of assets){
+    let data=asset.data.toString('utf8').replaceAll('/__STATEFALL_ASSET_BASE__/assets/','./');
+    for(const [source,target] of renames) data=data.replaceAll(source,target);
+    const extension=path.extname(asset.file),stem=path.basename(asset.file,extension).split('.')[0];
+    next.set(asset.file,`${stem}.${sha256(Buffer.from(data)).slice(0,12)}${extension}`);
+  }
+  if(Array.from(next).every(([source,target])=>renames.get(source)===target)){renames=next;break;}
+  if(pass===assets.length)throw new Error('Asset fingerprint references did not converge.');
+  renames=next;
+}
+for(const asset of assets){
+  let data=asset.data.toString('utf8').replaceAll('/__STATEFALL_ASSET_BASE__/assets/','./');
+  for(const [source,target] of renames) data=data.replaceAll(source,target);
+  fs.writeFileSync(path.join(assetDir,renames.get(asset.file)),data);
+  if(renames.get(asset.file)!==asset.file)fs.unlinkSync(path.join(assetDir,asset.file));
+  html=html.replaceAll(`assets/${asset.file}`,`assets/${renames.get(asset.file)}`);
 }
 const builtBase='/__STATEFALL_ASSET_BASE__/';
 if(!html.includes(builtBase))throw new Error('Vite output is missing the controlled asset base.');

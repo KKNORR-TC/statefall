@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 19 September 2026. Phases 0 through E and the minimal Phase D2 lockstep proof are technically complete locally; production remains unchanged._
+_Updated 20 September 2026. Phases 0 through E are technically complete locally at `d0c92fb`; Terrain Direction 02 is approved as the Phase F visual language and its bounded F2 production translation is pending in-game human visual review; production remains unchanged._
 
 ## 1. Goal
 
@@ -345,6 +345,8 @@ Status: TECHNICALLY COMPLETE LOCALLY in development game 1.10.30, build `2026-09
 Gate: every map and mode is playable through Pixi with correct targeting, fog, borders, selection, and stable simulation hashes.
 
 ### Phase F: Terrain and world art
+
+Status: OPEN. Ken approved Terrain Direction 02 as the general production visual language by saying “proceed”. Game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` is the bounded F2 production translation: a shared 2880 x 1656 (4x) source with strategic/operational ownership bands. The old 1x F1 candidate is superseded/changes requested. F2 does not update committed Canvas goldens and remains pending named in-game human visual approval; the direction approval is not final terrain, Phase G row, release, or deployment approval. See `docs/phase-f1-review.md`.
 
 - Implement the approved water, coastline, relief, terrain texture, rivers, ownership, border, and fog treatments.
 - Add zoom-dependent detail and cached/dirty layer updates.

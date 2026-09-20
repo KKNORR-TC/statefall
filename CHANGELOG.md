@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10.32 - 2026-09-20
+
+- Translated approved Terrain Direction 02 into a deterministic shared 4x terrain source with discrete strategic/operational ownership, Canvas high-quality image smoothing, Pixi linear sampling, and bounded static/composite caching. Final in-game visual approval remains pending; no production art baseline, package, release, or deployment is approved.
+
+## 1.10.31 - 2026-09-19
+
+- Added the bounded Phase F1 candidate shared map-resolution raster: deterministic cached water/coast/river/relief underpaint plus terrain-preserving ownership, allied/hostile borders, suppression, pick/highlight, and fog composition for the existing Canvas source and Pixi nearest texture.
+- Exact value snapshots skip unchanged composites and uploads, including irrelevant coarse ticks; `suppressTicks`, teams, and every visual input participate in invalidation, while reset/restart invalidates both caches. Pick-mode exits immediately remove paused pick-area highlighting. Added direct semantic pixel fixtures and complete tracked/untracked source-manifest verification. CVD review uses an explicit measured closest-palette boundary fixture. This is production visual candidate work pending human review, not final art, a golden update, a release, or approval. Phase F remains open; plugin 1.10.7 and simulation baseline 1.10.8 are unchanged.
+
 ## 1.10.30 - 2026-09-19
 
 - Completed the local Phase E technical gate with a renderer-neutral `statefall-atlas/v1` manifest and isolated development Pixi registry for future Phase G authored atlases. Validation covers relative same-origin paths, schema/version, dimensions, source bytes/MIME, unique nonoverlapping integer frames, scale/anchor metadata, hard caps, atomic fallback, refcounts, LRU eviction, teardown/context reset, and diagnostics. Synthetic Canvas atlas tests prove real Pixi subtextures at DPR 1/1.5/2 without adding art.

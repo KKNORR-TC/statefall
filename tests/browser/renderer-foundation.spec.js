@@ -26,7 +26,7 @@ async function start(page,renderer,seed='PHASEEFOUNDATION'){
   await page.locator('#countrySel').selectOption('0');
   await page.locator('#startBtn').click();
   await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__?.status().ready)).toBe(true);
-  await page.evaluate(()=>window.__STATEFALL_TEST__.pause());
+  await page.evaluate(async()=>{ window.__STATEFALL_TEST__.pause(); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(1); });
 }
 
 async function pixels(locator){
@@ -36,7 +36,7 @@ async function pixels(locator){
   for(let i=0;i<data.length;i+=4){
     const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
     if(a>240) opaque++;
-    if(Math.abs(r-28)<8&&Math.abs(g-58)<8&&Math.abs(b-82)<8) sea++;
+    if(Math.abs(r-28)<8&&Math.abs(g-58)<8&&Math.abs(b-82)<8||r<40&&g>=35&&g<80&&b>=45&&b<100) sea++;
     if(Math.abs(r-185)<12&&Math.abs(g-173)<12&&Math.abs(b-132)<12) land++;
     if(a>240&&Math.max(r,g,b)-Math.min(r,g,b)>45&&!(b>g&&g>r)) ownership++;
   }
@@ -78,7 +78,7 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
         expect(initialPixels.land+initialPixels.ownership).toBeGreaterThan(500);
 
         const beforeInvalidation=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
-        await page.evaluate(()=>window.__STATEFALL_TEST__.invalidateOwnershipRaster());
+        await page.evaluate(async()=>{ window.__STATEFALL_TEST__.invalidateOwnershipRaster(); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(1); });
         const afterInvalidation=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
         expect(afterInvalidation.rasterBuildCount-beforeInvalidation.rasterBuildCount).toBe(1);
         expect(afterInvalidation.rasterUploadCount-beforeInvalidation.rasterUploadCount).toBe(1);
@@ -93,8 +93,8 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
         await boardNation.hover();
         await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().rasterUploadCount)).toBeGreaterThan(beforeHover.diagnostics.rasterUploadCount);
         const entered=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
-        expect(entered.rasterBuildCount-beforeHover.diagnostics.rasterBuildCount).toBeLessThanOrEqual(1);
-        expect(entered.rasterUploadCount-beforeHover.diagnostics.rasterUploadCount).toBeLessThanOrEqual(1);
+        expect(entered.rasterBuildCount-beforeHover.diagnostics.rasterBuildCount).toBe(1);
+        expect(entered.rasterUploadCount-beforeHover.diagnostics.rasterUploadCount).toBe(1);
         expect(changedPixels(unhighlighted.data,(await pixels(page.locator('.pixi-world'))).data)).toBeGreaterThan(500);
         await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.renderingLifecycle().rafCallbacks)).toBeGreaterThanOrEqual(beforeHover.raf+20);
         const sustained=await page.evaluate(async()=>({diagnostics:window.__STATEFALL_TEST__.rendererDiagnostics(),checkpoint:await window.__STATEFALL_TEST__.canonicalCheckpoint()}));
@@ -104,15 +104,15 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
         await page.locator('#stage').hover({position:{x:5,y:5}});
         await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics().rasterUploadCount)).toBeGreaterThan(entered.rasterUploadCount);
         const cleared=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
-        expect(cleared.rasterBuildCount-entered.rasterBuildCount).toBeLessThanOrEqual(1);
-        expect(cleared.rasterUploadCount-entered.rasterUploadCount).toBeLessThanOrEqual(1);
+        const clearRaf=await page.evaluate(()=>window.__STATEFALL_TEST__.renderingLifecycle().rafCallbacks); await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.renderingLifecycle().rafCallbacks)).toBeGreaterThanOrEqual(clearRaf+20);
+        const clearPlateau=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics()); expect(clearPlateau.rasterBuildCount).toBe(cleared.rasterBuildCount); expect(clearPlateau.rasterUploadCount).toBe(cleared.rasterUploadCount);
       }else{
         expect(await page.locator('.pixi-world').count()).toBe(0);
         const beforeHover=await page.evaluate(async()=>({diagnostics:window.__STATEFALL_TEST__.rendererDiagnostics(),checkpoint:await window.__STATEFALL_TEST__.canonicalCheckpoint()}));
         await page.locator('#board [data-pid]').first().hover();
-        await page.evaluate(()=>window.__STATEFALL_TEST__.renderRepeatedly(10));
+        await page.evaluate(async()=>{ await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(10); });
         const pulsing=await page.evaluate(async()=>({diagnostics:window.__STATEFALL_TEST__.rendererDiagnostics(),checkpoint:await window.__STATEFALL_TEST__.canonicalCheckpoint()}));
-        expect(pulsing.diagnostics.rasterBuildCount-beforeHover.diagnostics.rasterBuildCount).toBeGreaterThanOrEqual(10);
+        expect(pulsing.diagnostics.rasterBuildCount-beforeHover.diagnostics.rasterBuildCount).toBe(1);
         expect(pulsing.checkpoint).toEqual(beforeHover.checkpoint);
         await page.locator('#stage').hover({position:{x:5,y:5}});
       }
@@ -145,7 +145,7 @@ test('Canvas and Pixi hybrid preserve state, input, camera, and bounded raster l
       results[renderer]=await page.evaluate(async()=>({checkpoint:await window.__STATEFALL_TEST__.canonicalCheckpoint(),terrain:window.__STATEFALL_TEST__.snapshot().landCount}));
       expect(results[renderer].terrain).toBeGreaterThan(10_000);
       const beforeReset=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
-      const reset=await page.evaluate(()=>{ const contract=window.__STATEFALL_TEST__.creditsReplayResetContract(); window.__STATEFALL_TEST__.renderRepeatedly(1); return {contract,rendering:window.__STATEFALL_TEST__.rendererDiagnostics()}; });
+      const reset=await page.evaluate(async()=>{ const contract=window.__STATEFALL_TEST__.creditsReplayResetContract(); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(1); return {contract,rendering:window.__STATEFALL_TEST__.rendererDiagnostics()}; });
       expect(reset.contract).toMatchObject({scratchCleared:true,setupInstalled:true,status:{ready:true,tick:0}});
       expect(reset.rendering.layers.terrain.textureCount||0).toBe(renderer==='pixi'?1:0);
       if(renderer==='pixi'){
@@ -162,6 +162,7 @@ test('source Pixi smoke preserves raster, input alignment, and canonical parity'
   test.skip(!['chromium-desktop','firefox-desktop','webkit-desktop'].includes(testInfo.project.name),'source desktop renderer smoke only');
   const failures=await configure(page);
   await start(page,'pixi','PHASE0DIGEST');
+  await page.evaluate(async()=>{ await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(1); });
   const capability=await page.evaluate(()=>{ const canvas=document.createElement('canvas'); return !!(canvas.getContext('webgl2')||canvas.getContext('webgl')); });
   const rendering=await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics());
   if(capability){

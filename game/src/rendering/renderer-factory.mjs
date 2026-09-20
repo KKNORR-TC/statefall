@@ -9,7 +9,7 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
   const controller={
     get kind(){ return active.kind; }, get hybrid(){ return active.hybrid; }, ready:Promise.resolve(),
     async mount(){ return controller.ready; },
-    resize(value){ active.resize(value); }, updateRaster(source){ active.updateRaster(source); }, invalidateRaster(source){ active.invalidateRaster(source); },
+    resize(value){ active.resize(value); }, updateRaster(source){ active.updateRaster(source); }, invalidateRaster(source){ active.invalidateRaster(source); }, updateRasterDiagnostics(value){ active.updateRasterDiagnostics(value); },
     motionState(time=performance.now()){ return active.motionState(time); },
     preflightWorldLayer(layer,state){ try{ return typeof active.preflightWorldLayer==='function'?active.preflightWorldLayer(layer,state):false; }catch(error){ fallbackSync(`pixi-world-layer-preflight-failed: ${error?.message||error}`,active); replayRequired=true; return false; } },
     rejectWorldLayer(layer,reason){ try{ return typeof active.rejectWorldLayer==='function'?active.rejectWorldLayer(layer,reason):false; }catch{ return false; } },
@@ -28,6 +28,7 @@ export async function createRenderer({stage,metrics,search=location.search}={}){
     worldAnnotationRasterEvidence(){ if(typeof active.worldAnnotationRasterEvidence!=='function') throw new Error('world annotation raster evidence unavailable'); return active.worldAnnotationRasterEvidence(); },
     notificationRasterEvidence(){ if(typeof active.notificationRasterEvidence!=='function') throw new Error('notification raster evidence unavailable'); return active.notificationRasterEvidence(); },
     interactionRasterEvidence(){ if(typeof active.interactionRasterEvidence!=='function') throw new Error('interaction raster evidence unavailable'); return active.interactionRasterEvidence(); },
+    terrainRasterEvidence(camera){ if(typeof active.terrainRasterEvidence!=='function') throw new Error('terrain raster evidence unavailable'); return active.terrainRasterEvidence(camera); },
     renderFrame(camera){
       try{ active.renderFrame(camera); }
       catch(error){ fallbackSync(`pixi-render-failed: ${error?.message||error}`,active); replayRequired=true; }

@@ -39,7 +39,7 @@ async function startMatch(page,renderer='canvas') {
   await page.locator('#countrySel').selectOption('0');
   await page.locator('#startBtn').click();
   await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__?.status().ready)).toBe(true);
-  await page.evaluate(() => window.__STATEFALL_TEST__.pause());
+  await page.evaluate(async() => { window.__STATEFALL_TEST__.pause(); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.renderRepeatedly(1); });
 }
 
 async function readDisplayState(page) {

@@ -1,10 +1,11 @@
 # Statefall Current Status
 
-_Updated 19 September 2026 for the local Phase E technical completion gate._
+_Updated 20 September 2026 for the Phase F2 high-resolution terrain candidate._
 
 ## Repository and production
 
-- Source authority: the local Git repository. Development game/package 1.10.30 build `2026-09-19-phase-e-complete` marks Phase E technically complete locally. Plugin remains 1.10.7 and the simulation baseline remains 1.10.8. This work is not committed, handed off, released, or deployed.
+- Source authority: the local Git repository. Phase E is committed at `d0c92fb`. Ken approved Terrain Direction 02 and the general Unit Direction 02 for production translation by saying “proceed”; this does not approve final in-game terrain or any Phase G row. Development game/package 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` is the bounded F2 4x translation pending named in-game human visual approval. The old 1x F1 candidate is superseded/changes requested. Plugin remains 1.10.7 and simulation baseline remains 1.10.8. This work is not committed, handed off, released, or deployed.
+- F2 technical qualification is source-bound and covers framebuffer parity, authoritative input alignment, suppression convergence, named main-thread responsiveness, and the configured browser/Direction 02 matrices. Worker compute time is not main-thread or input latency, and technical qualification does not equal visual approval, a golden update, release, or deployment.
 - Published GitHub state: `origin/main` remains at `de724b5`, the initial game 1.10.5/plugin 1.10.4 import. None of the later local history, including recovery, reconciliation, and normalization commits, has been pushed. GitHub must not be treated as a complete backup until publication is explicitly authorized and completed.
 - Production remains game 1.10.7/plugin 1.10.6; a repository version does not prove deployment without a release record.
 - Production: [WorldRTS.com](https://www.worldrts.com/) is a live public WordPress site. Ken confirmed successful installation and production verification of game 1.10.7/plugin 1.10.6 on 14 September 2026. The earlier authorized snapshot is retained as the pre-release baseline in `docs/production-baseline-2026-09-12.md`.

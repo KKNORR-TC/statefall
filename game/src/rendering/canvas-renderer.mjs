@@ -1,10 +1,12 @@
 export function createCanvasRenderer({reducedMotion=false}={}){
-  let rasterBuildCount=0,contextState='ready';
+  let rasterBuildCount=0,rasterDiagnostics=null,contextState='ready';
   return {
     kind:'canvas',hybrid:false,ready:Promise.resolve(),
     mount(){}, resize(){},
     updateRaster(){ rasterBuildCount++; },
     invalidateRaster(){ rasterBuildCount++; },
+    updateRasterDiagnostics(value){ rasterDiagnostics=value; },
+    get rasterDiagnostics(){ return rasterDiagnostics; },
     updateWorldLayer(){ return false; },
     motionState(time=performance.now()){ return {time:reducedMotion?0:Number(time)||0,reducedMotion}; },
     capabilities(){ return {preStructures:false,structures:false,navalLogistics:false,warships:false,projectiles:false,missiles:false,aircraft:false,mapLabels:false,supportActors:false,floatingText:false,globalEffects:false,nationOverlays:false}; },

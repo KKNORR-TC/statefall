@@ -1,0 +1,41 @@
+{
+  "schema": 2,
+  "status": "Pending human review",
+  "source": {
+    "algorithm": "sha256",
+    "manifestSha256": null,
+    "fileCount": 0,
+    "files": [],
+    "head": null,
+    "version": "1.10.32",
+    "build": "2026-09-20-phase-f2-high-resolution-terrain"
+  },
+  "candidate": {
+    "sourceCommit": "d0c92fb821c848bf362ed3c830f464e3c4ca5a56",
+    "head": null,
+    "gameVersion": "1.10.32",
+    "build": "2026-09-20-phase-f2-high-resolution-terrain",
+    "pluginVersion": "1.10.7",
+    "simulationBaseline": "1.10.8",
+    "terrainSource": {
+      "worldWidth": 720,
+      "worldHeight": 414,
+      "pixelWidth": 2880,
+      "pixelHeight": 1656,
+      "pixelsPerTile": 4,
+      "detailLevels": ["strategic", "operational"],
+      "filterPolicy": {
+        "canvas": "high-quality image smoothing",
+        "pixi": "bilinear/linear texture sampling"
+      }
+    }
+  },
+  "captures": [],
+  "reviewFixtures": [],
+  "contactSheets": [],
+  "review": {
+    "reviewer": null,
+    "state": "Pending human review",
+    "notes": []
+  }
+}

@@ -18,6 +18,8 @@ import {advanceGlobalEffectsPresentation,paintGlobalEffectsCanvas} from './rende
 import {drawNationBrokenHeart as drawBrokenHeart,drawNationHandshake as drawHandshake,paintNationOverlaysCanvas} from './rendering/nation-overlay-layer-model.mjs';
 import {paintWorldAnnotationsCanvas} from './rendering/world-annotation-layer-model.mjs';
 import {paintInteractionOverlaysCanvas} from './rendering/interaction-overlay-layer-model.mjs';
+import {TERRAIN_FILTER,TERRAIN_PIXELS_PER_TILE,TERRAIN_STYLE_REVISION} from './rendering/terrain-raster-model.mjs';
+import {createTerrainRasterClient} from './rendering/terrain-raster-client.mjs';
 import {
   WIN_SHARE,BOTS,TILES_PER_NEUTRAL,QUICK_TILES,DIFFS,FOG,STRUCT,CMD_RANGE,CMD_DISCOUNT,CMD_DISCOUNT_MAX,
   BUILD_TICKS,SHIELD,UPGRADE,LSHIELD,HEAVY,CRUISE,AIR,GUNS,ARMOR,CMD_RESERVE,SHIP_BUILD,CANCEL_REFUND,TRUCK,
@@ -398,8 +400,8 @@ async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+enco
     setTimeout(()=>{ if(wantEdit){ openBuilder(d,j.custom||null); return; } const st=jukeStingPick(/ictory/.test(d.result||'')?'victory':'defeat')||jukeStingPick('credits'); beginCredits(d,(d.custom&&d.custom.song)||(st?st.id:'builtin'),true); },600); }catch(e){ console.warn('[statefall] credits unavailable',e); const cl=document.getElementById('credLoad'); if(cl) cl.textContent='Could not load those credits.'; } }
 function rollSeek(sec){ if(ROLL.paused){ ROLL.t0-=sec*1000; const now=ROLL.pausedAt; if(now-ROLL.t0<0) ROLL.t0=now; } else { ROLL.t0-=sec*1000; if(performance.now()-ROLL.t0<0) ROLL.t0=performance.now(); } ROLL.done=false; }
 function rollTogglePause(){ if(ROLL.paused){ ROLL.t0+=performance.now()-ROLL.pausedAt; ROLL.paused=false; if(AUD.ctx) AUD.ctx.resume(); } else { ROLL.paused=true; ROLL.pausedAt=performance.now(); if(AUD.ctx) AUD.ctx.suspend(); } }
-function resetPresentationState(){ badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; visualShots=[]; flagUrlCache=new WeakMap(); shellRenderState=new WeakMap(); shellRenderSources.clear(); shipRenderState.clear(); labelRenderState.clear(); notificationIdentityMap=new WeakMap(); notificationIdentitySerial=0; selected.clear(); presentationState.matchRecorded=false; presentationState.controllerTasks.length=0; for(const key of Object.keys(centCache)) delete centCache[key]; pickMode=null; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; }
-function resetWorld(){ replayCatchUpCancel(); renderer.reset(); releaseNotificationRaster(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
+function resetPresentationState(){ badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; visualShots=[]; flagUrlCache=new WeakMap(); shellRenderState=new WeakMap(); shellRenderSources.clear(); shipRenderState.clear(); labelRenderState.clear(); notificationIdentityMap=new WeakMap(); notificationIdentitySerial=0; selected.clear(); presentationState.matchRecorded=false; presentationState.controllerTasks.length=0; for(const key of Object.keys(centCache)) delete centCache[key]; pickMode=null; hoverPickArea=-1; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; }
+function resetWorld(){ replayCatchUpCancel(); renderer.reset(); terrainRaster.reset(); terrainHasValidRaster=false; terrainEmergencyMode=false; installTerrainSurface('loading'); terrainDetailLevel=null; renderedPickArea=-1; renderedHighlightId=-1; releaseNotificationRaster(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
 function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||'')+'/'; const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); overlay.style.display='none';
   const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 6px;font-size:24px">Your credits are posted</h2><p class="muted" style="font-size:13px;margin:0 0 14px">Anyone with the link can watch them, with the whole match replayed behind the roll.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><a href="${fb}" target="_blank" rel="noopener" class="sf-fb">Share on Facebook</a><button id="pmCopy">Copy link</button></div><div style="display:grid;gap:8px;grid-template-columns:1fr 1fr"><button id="pmPlay" style="background:#2f5a8c;font-weight:600;padding:10px">Play another match</button><button id="pmBoard" style="padding:10px">Leaderboard</button><button id="pmHome" style="padding:10px">Home page</button><button id="pmWatch" style="padding:10px">Watch again</button></div></div>`);
   m.querySelector('#pmCopy').onclick=()=>{ const b=m.querySelector('#pmCopy'); (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy link'; },1800); }).catch(()=>prompt('Copy this link:',url)); };
@@ -719,7 +721,7 @@ function presentEngineEvent({type,args}){
   else if(type==='incrementStat') sInc(...args);
   else if(type==='timeline') sEvent(...args);
   else if(type==='notice') showNotice(a);
-  else if(type==='setPickMode'){ pickMode=a; updateHint(); }
+  else if(type==='setPickMode') setPickMode(a);
   else if(type==='clearBuildMode') setBuild(null);
   else if(type==='customBot') setTimeout(()=>{ log(`${a.name}, another player's nation, has joined this war — it plays at ${(DIFF().brain||2)<4?'Super hard':DIFF().label} regardless of your difficulty.`,true); showNotice({kind:'gold',flag:a.flag,title:`${a.name} has entered the war`,text:`A player's own nation, playing at ${(DIFF().brain||2)<4?'Super hard':DIFF().label}. Beat it and it goes on their record.`,ttl:12000}); },1500);
   else if(type==='setupComplete'){ startTime=performance.now(); log('Matches last about 20 minutes. Expand fast, but keep troops in reserve — a thin army invites invasion.'); }
@@ -838,8 +840,45 @@ function presentEnd(title,text){ try{ recordMatch(title); }catch(e){ console.err
 
 // ---------------------------------------------------------------- rendering
 const cv=document.getElementById('map'), ctx=cv.getContext('2d');
-const off=document.createElement('canvas'); off.width=W; off.height=H; const octx=off.getContext('2d');
-const img=octx.createImageData(W,H);
+const off=document.createElement('canvas'); off.width=W*TERRAIN_PIXELS_PER_TILE; off.height=H*TERRAIN_PIXELS_PER_TILE; const octx=off.getContext('2d');
+let img=octx.createImageData(off.width,off.height);
+const terrainSource=Object.freeze({canvas:off,worldWidth:W,worldHeight:H,pixelWidth:off.width,pixelHeight:off.height,pixelsPerTile:TERRAIN_PIXELS_PER_TILE,filter:TERRAIN_FILTER,styleRevision:TERRAIN_STYLE_REVISION});
+const terrainLoading=document.getElementById('terrainLoading');
+let terrainLoadingTimer=0,terrainLoadingDeadline=0;
+let terrainHasValidRaster=false,terrainEmergencyMode=false,terrainEmergencyMs=0,terrainInstalledWorkerEpoch=null,terrainInstalledRasterRevision=null;
+function invalidateTerrainRasterIdentity(){ terrainInstalledWorkerEpoch=null; terrainInstalledRasterRevision=null; }
+function installTerrainSurface(kind='loading'){
+  const started=performance.now(),loading=0xff342e1b,water=0xff352f13,ground=0xff424c43;
+  if(kind==='loading'){ const pixels=new Uint8ClampedArray(off.width*off.height*4); new Uint32Array(pixels.buffer).fill(loading); img=new ImageData(pixels,off.width,off.height); octx.putImageData(img,0,0); }
+  else { const source=document.createElement('canvas'); source.width=W; source.height=H; const context=source.getContext('2d'),model=context.createImageData(W,H),words=new Uint32Array(model.data.buffer); for(let tile=0;tile<words.length;tile++) words[tile]=land[tile]?ground:water; context.putImageData(model,0,0); octx.imageSmoothingEnabled=false; octx.drawImage(source,0,0,off.width,off.height); img=octx.getImageData(0,0,off.width,off.height); source.width=source.height=0; }
+  invalidateTerrainRasterIdentity(); terrainHasValidRaster=kind==='emergency'; terrainEmergencyMode=kind==='emergency'; terrainEmergencyMs=performance.now()-started; renderer.invalidateRaster(terrainSource); scheduleRender();
+}
+function beginTerrainLoading(){
+  if(terrainLoadingTimer||terrainLoadingDeadline>performance.now()) return;
+  clearTimeout(terrainLoadingTimer); terrainLoading.classList.remove('visible'); terrainLoading.textContent='Drawing terrain...'; terrainLoadingDeadline=performance.now()+4000;
+  terrainLoadingTimer=setTimeout(()=>{ terrainLoading.classList.add('visible'); terrainLoadingTimer=setTimeout(()=>{ terrainLoading.classList.remove('visible'); terrainLoadingTimer=0; terrainLoadingDeadline=0; },3600); },400);
+}
+function finishTerrainLoading(failed=false){ clearTimeout(terrainLoadingTimer); terrainLoadingTimer=0; terrainLoadingDeadline=0; if(failed){ terrainLoading.textContent='Terrain detail unavailable'; terrainLoading.classList.add('visible'); setTimeout(()=>terrainLoading.classList.remove('visible'),2000); } else terrainLoading.classList.remove('visible'); }
+const terrainBand=scale=>scale<2.4?'strategic':'operational';
+let terrainDetailLevel=null,renderedPickArea=-1,renderedHighlightId=-1;
+const terrainSnapshot=input=>({
+  ...input,land:new Uint8Array(input.land),river:new Uint8Array(input.river),rough:new Float32Array(input.rough),owner:new Int16Array(input.owner),shelled:new Uint32Array(input.shelled),
+  fog:input.fog?new Uint8Array(input.fog):null,areaOf:input.areaOf?new Int16Array(input.areaOf):null,teams:Array.from(input.teams),colors:input.colors.map(value=>Array.from(value))
+});
+const terrainRaster=createTerrainRasterClient({
+  workerFactory:()=>{ if(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('terrainWorkerFail')==='1') throw new Error('injected terrain worker startup failure'); return new Worker(new URL('./rendering/terrain-raster-worker.mjs',import.meta.url),{type:'module',name:'statefall-terrain'}); },
+  invalidateInstalled:invalidateTerrainRasterIdentity,
+  snapshot:terrainSnapshot,
+  captureGuard:input=>({fog:input.fog?new Uint8Array(input.fog):null,detailLevel:input.detailLevel,pickArea:input.pickArea,myId:input.myId,highlightId:input.highlightId}),
+  allowIntermediate:(guard,state)=>{ if(!guard||guard.detailLevel!==state?.detailLevel||guard.pickArea!==state.pickArea||guard.myId!==state.myId||guard.highlightId!==state.highlightId) return false; const fog=state.fog; if(!guard.fog&&!fog) return true; if(!guard.fog||!fog||guard.fog.length!==fog.length) return false; for(let i=0;i<guard.fog.length;i++) if(guard.fog[i]!==fog[i]) return false; return true; },
+  publish(message,diagnostics){
+    if(!message){ invalidateTerrainRasterIdentity(); if(!terrainHasValidRaster||terrainEmergencyMode) installTerrainSurface('emergency'); renderer.updateRasterDiagnostics({...diagnostics,emergencyMode:terrainEmergencyMode,emergencyMs:terrainEmergencyMs}); finishTerrainLoading(true); return {validRaster:terrainHasValidRaster,emergencyMode:terrainEmergencyMode,emergencyMs:terrainEmergencyMs,installedWorkerEpoch:null,installedRasterRevision:null}; }
+    const sameInstalled=terrainHasValidRaster&&!terrainEmergencyMode&&terrainInstalledWorkerEpoch===message.workerEpoch&&terrainInstalledRasterRevision===message.rasterRevision;
+    if(sameInstalled){ renderer.updateRasterDiagnostics({...diagnostics,emergencyMode:false,emergencyMs:terrainEmergencyMs}); finishTerrainLoading(); return {validRaster:true,emergencyMode:false,installedWorkerEpoch:terrainInstalledWorkerEpoch,installedRasterRevision:terrainInstalledRasterRevision,uploadSkippedSameRevision:true}; }
+    img=new ImageData(message.pixels,message.width,message.height); octx.putImageData(img,0,0); terrainHasValidRaster=true; terrainEmergencyMode=false; terrainInstalledWorkerEpoch=message.workerEpoch; terrainInstalledRasterRevision=message.rasterRevision; renderer.updateRasterDiagnostics({...diagnostics,emergencyMode:false,emergencyMs:terrainEmergencyMs}); renderer.invalidateRaster(terrainSource); finishTerrainLoading(); scheduleRender(); return {validRaster:true,emergencyMode:false,installedWorkerEpoch:terrainInstalledWorkerEpoch,installedRasterRevision:terrainInstalledRasterRevision,uploadSkippedSameRevision:false};
+  },
+  clock:()=>performance.now()
+});
 let interpolationCache=null,interpolationPrevious={},interpolationAlpha=1,interpolationSerial=0,renderedInterpolatedActors=0,presentationFrameAdvancing=true,lastRenderFrame=null;
 function prepareInterpolation(now){
   const frame=engine.interpolationFrame();
@@ -858,7 +897,7 @@ if(__STATEFALL_TEST_BRIDGE__){
 function installBrowserTestBridge(){
   const enabled=window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('browserTest')==='1';
   if(!enabled) return;
-  let deterministicScene=false;
+  let deterministicScene=false,terrainPickTile=-1;
   const lastCommand=()=>{ const c=CMD.log[CMD.log.length-1]; return c?{t:c.t,k:c.k,a:JSON.parse(JSON.stringify(c.a))}:null; };
   const replayStatus=()=>({on:REPLAY.on,commands:REPLAY.cmds.length,applied:REPLAY.i,targetTick:REPLAY.toTick,mismatch:!!REPLAY.mismatch,why:REPLAY.why||null,divTick:REPLAY.divTick??null,speed:REPLAY.speed,finalVerified:!!REPLAY.finalVerified,verifiedEvidence:!!REPLAY.verifiedEvidence,finished:REPLAY.on&&clockState.tickN===REPLAY.toTick&&lifecycleState.paused});
    const status=()=>({ready:!!me(),tick:clockState.tickN,paused:lifecycleState.paused,lastCommand:lastCommand(),replay:replayStatus(),catchup:{status:CATCHUP.status,target:CATCHUP.target,framePending:!!CATCHUP.frame,framesScheduled:CATCHUP.framesScheduled,framesRun:CATCHUP.framesRun}});
@@ -873,7 +912,7 @@ function installBrowserTestBridge(){
      replay:replayStatus(),
      camera:{...cam.snapshot(),visibleBounds:cam.visibleBounds(viewWidth(),viewHeight())},
      canvas:{width:cv.width,height:cv.height,clientWidth:cv.clientWidth,clientHeight:cv.clientHeight},
-     rendering:renderer.diagnostics()
+      rendering:{...renderer.diagnostics(),rasterDiagnostics:terrainRaster.diagnostics()}
    });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
     get me(){ return me(); },
@@ -974,7 +1013,7 @@ function installBrowserTestBridge(){
         for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`structure compositing purity violation: ${key} changed`);
         return {preOwned,owned,positions,rendering:renderer.diagnostics(),checkpoint:{hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}};
       },
-      resetRendererResources(){ renderer.reset(); return renderer.diagnostics(); },
+       resetRendererResources(){ renderer.reset(); terrainRaster.reset(); return renderer.diagnostics(); },
       restoreRendererResources(){ drawMap(); render(); return renderer.diagnostics(); },
       structureLineOrdering(){
         const supply=links.map(link=>({from:link.a.t,to:link.b.t}));
@@ -998,14 +1037,63 @@ function installBrowserTestBridge(){
         songBanner={title:'The Long March',age:20,life:70}; badges=[{kind:'unify',text:'North Reach',sub:`unified by ${me().name}`,flag:me().flag,col:me().color,age:18,life:130}]; floaters=[{x:cx,y:cy-5,age:10,txt:'+17',col:'#ffd27a',big:false}]; scorches=[{x:cx-5,y:cy+2,r:3,age:3}]; sparks=[]; puffs=[]; frags=[]; tracers=[]; wrecks=[]; flashes=[];
         mapLabelRenderOverride={now:345678,draftDoneAt:345678,draftActive:true,garrisonEnabled:true,draftPicks:[{owner:me().id,n:1,x:cx,y:cy,player:{name:me().name,color:me().color,flag:me().flag}}],areas:[]}; render(); return {fixture:scene.fixture};
       },
-      screenToTile(x,y){ return tileAt(x,y); },
+       screenToTile(x,y){ return tileAt(x,y); },
+       terrainAlignmentCases(){
+         const cardinal=t=>[t-W,t+1,t+W,t-1],inside=t=>t>=W&&t<W*(H-1)&&t%W>0&&t%W<W-1,cases={},add=(name,test)=>{ let tile=-1; for(let t=W+1;t<W*(H-1)&&tile<0;t++) if(inside(t)&&test(t,cardinal(t))) tile=t; if(tile<0){ cases[name]=null; return; } const x=tile%W,y=(tile-tile%W)/W,samples=[[.5,.5],[.001,.5],[.999,.5],[.5,.001],[.5,.999]].map(([dx,dy])=>{ const screen={x:cam.x+(x+dx)*cam.s,y:cam.y+(y+dy)*cam.s}; return {offset:[dx,dy],screen,mapped:tileAt(screen.x,screen.y),expected:tile}; }); cases[name]={tile,x,y,land:!!land[tile],river:!!river[tile],neighbors:cardinal(tile).map(value=>({tile:value,land:!!land[value],river:!!river[value]})),samples}; };
+         add('coast',(t,n)=>land[t]&&n.some(value=>!land[value]));
+         add('one-tile-island',(t,n)=>land[t]&&n.every(value=>!land[value]));
+         add('narrow-channel',(t,n)=>!land[t]&&((land[n[0]]&&land[n[2]])||(land[n[1]]&&land[n[3]])));
+         add('peninsula',(t,n)=>land[t]&&n.filter(value=>!land[value]).length>=3);
+         add('river-mouth',(t,n)=>land[t]&&river[t]&&n.some(value=>!land[value]));
+         const synthetic=(name,{centerLand,centerRiver,neighborLand,neighborRiver})=>{ if(cases[name]) return; const tile=Math.floor(H/2)*W+Math.floor(W/2),x=tile%W,y=(tile-tile%W)/W,samples=[[.5,.5],[.001,.5],[.999,.5],[.5,.001],[.5,.999]].map(([dx,dy])=>{ const screen={x:cam.x+(x+dx)*cam.s,y:cam.y+(y+dy)*cam.s}; return {offset:[dx,dy],screen,mapped:tileAt(screen.x,screen.y),expected:tile}; }); cases[name]={fixture:'controlled-authoritative-topology',tile,x,y,land:centerLand,river:centerRiver,neighbors:cardinal(tile).map((value,index)=>({tile:value,land:neighborLand[index],river:neighborRiver[index]})),samples}; };
+         synthetic('one-tile-island',{centerLand:true,centerRiver:false,neighborLand:[false,false,false,false],neighborRiver:[false,false,false,false]});
+         synthetic('river-mouth',{centerLand:true,centerRiver:true,neighborLand:[true,false,true,true],neighborRiver:[true,false,false,false]});
+         return {renderer:renderer.kind,camera:{x:cam.x,y:cam.y,scale:cam.s},authoritativeMapper:'production tileAt used by pointer/click handlers',presentationKernelRadiusTiles:.5/TERRAIN_PIXELS_PER_TILE,cases};
+       },
       invalidateOwnershipRaster(){
         if(!me()) throw new Error('match not started');
         const previous=highlightId,target=players.find(player=>player.alive&&player.id!==me().id)?.id??me().id;
         highlightId=target; try{ drawMap(); renderer.renderFrame(cam); } finally { highlightId=previous; }
         return renderer.diagnostics();
       },
-       rendererDiagnostics:()=>renderer.diagnostics(),
+       rendererDiagnostics:()=>({...renderer.diagnostics(),rasterDiagnostics:terrainRaster.diagnostics()}),
+       terrainFramebufferEvidence(){ renderer.renderFrame(cam); return renderer.terrainRasterEvidence({x:cam.x,y:cam.y,scale:cam.s}); },
+         async refreshTerrainRaster(){ const before=renderer.diagnostics().rasterBuildCount; drawMap(); await terrainRaster.settled(); renderer.renderFrame(cam); return {changed:renderer.diagnostics().rasterBuildCount>before,rendering:{...renderer.diagnostics(),rasterDiagnostics:terrainRaster.diagnostics()}}; },
+        async terrainRasterDigest(){ await terrainRaster.settled(); const bytes=img.data.slice(),digest=await crypto.subtle.digest('SHA-256',bytes),diagnostics=terrainRaster.diagnostics(); return {worldWidth:W,worldHeight:H,pixelWidth:off.width,pixelHeight:off.height,pixelsPerTile:TERRAIN_PIXELS_PER_TILE,detailLevel:diagnostics.detailLevel,filter:TERRAIN_FILTER,styleRevision:TERRAIN_STYLE_REVISION,sha256:Array.from(new Uint8Array(digest),value=>value.toString(16).padStart(2,'0')).join(''),bytes:bytes.length}; },
+        terrainRasterSettled:()=>terrainRaster.settled(),
+         async terrainRasterPublicationRace(){
+           await terrainRaster.settled(); const digest=async()=>{ const bytes=img.data.slice(),value=await crypto.subtle.digest('SHA-256',bytes); return Array.from(new Uint8Array(value),byte=>byte.toString(16).padStart(2,'0')).join(''); },a=await digest(),start=terrainRaster.diagnostics(),target=Array.from(land).findIndex((value,index)=>value&&owner[index]>=0&&(!renderState.fog.vis||renderState.fog.vis[index])),tick=clockState.tickN+10,until=tick+50,shelled_=new Uint32Array(shelled); if(target<0) throw new Error('terrain publication race target unavailable'); shelled_[target]=until; const before=renderer.diagnostics(),b=terrainRaster.request(terrainInput({tick,shelled:shelled_,pickArea:-1})); await Promise.resolve(); const c=terrainRaster.request(terrainInput({tick,shelled:new Uint32Array(shelled_),pickArea:2147483647})); await terrainRaster.settled(); renderer.renderFrame(cam); const afterDiagnostics=terrainRaster.diagnostics(),afterC=afterDiagnostics.scheduler,cDigest=await digest(),beforeRepeat=renderer.diagnostics(),repeat=terrainRaster.request(terrainInput({tick,shelled:new Uint32Array(shelled_),pickArea:2147483647})); await terrainRaster.settled(); renderer.renderFrame(cam); return {a,c:cDigest,generations:{b,c,repeat},start,startCacheSkip:start.cacheSkip,afterCCacheSkip:afterDiagnostics.cacheSkip,before,afterC,afterRepeat:renderer.diagnostics(),final:terrainRaster.diagnostics().scheduler,bChangedDisplay:cDigest!==a,repeatUploadDelta:renderer.diagnostics().rasterBuildCount-beforeRepeat.rasterBuildCount};
+         },
+         async terrainResetSurfaceProbe(){
+           await terrainRaster.settled(); const previous=terrainRaster.diagnostics().scheduler; renderer.reset(); terrainRaster.reset(); terrainHasValidRaster=false; terrainEmergencyMode=false; installTerrainSurface('loading'); const first=Array.from(img.data.slice(0,4)),uniform=img.data.every((value,index)=>value===first[index%4]),immediate={first,uniform,diagnostics:terrainRaster.diagnostics().scheduler,renderer:renderer.diagnostics()}; drawMap(); await terrainRaster.settled(); renderer.renderFrame(cam); return {previous,immediate,recovered:terrainRaster.diagnostics().scheduler};
+        },
+        async terrainSuppressionConvergence({requests=30,intervalMs=100}={}){
+          await terrainRaster.settled(); const start=terrainRaster.diagnostics().scheduler,fixedTick=clockState.tickN+requests+10,deadline=fixedTick+50,tilePixels=tile=>{ const values=[],x=(tile%W)*TERRAIN_PIXELS_PER_TILE,y=((tile-tile%W)/W)*TERRAIN_PIXELS_PER_TILE; for(let py=0;py<TERRAIN_PIXELS_PER_TILE;py++){ const offset=((y+py)*off.width+x)*4; values.push(...img.data.slice(offset,offset+TERRAIN_PIXELS_PER_TILE*4)); } return values; },targets=[]; for(let tile=0;tile<land.length&&targets.length<256;tile++) if(land[tile]&&owner[tile]>=0&&(!renderState.fog.vis||renderState.fog.vis[tile])) targets.push(tile); if(!targets.length) targets.push(Array.from(land).findIndex((value,index)=>value&&owner[index]>=0)); const target=targets[0],sample=()=>targets.flatMap(tile=>tilePixels(tile)),requestAt=(tick,until)=>{ const shelled_=new Uint32Array(shelled); for(const tile of targets) shelled_[tile]=until; return terrainRaster.request(terrainInput({tick,shelled:shelled_})); },settledPhase=async(tick,until)=>{ const before=terrainRaster.diagnostics().scheduler.latestPublications,generation=requestAt(tick,until); await terrainRaster.settled(); const diagnostics=terrainRaster.diagnostics().scheduler; return {generation,pixel:sample(),diagnostics,validPublications:diagnostics.latestPublications-before}; };
+          for(let i=0;i<requests;i++){ requestAt(fixedTick-requests+i,deadline); await new Promise(resolve=>setTimeout(resolve,intervalMs)); }
+          await terrainRaster.settled(); const pressure=terrainRaster.diagnostics().scheduler,baseline=await settledPhase(fixedTick,fixedTick-1),active=await settledPhase(fixedTick,deadline),nextTick=await settledPhase(fixedTick+1,deadline),expired=await settledPhase(fixedTick, fixedTick-1),end=expired.diagnostics;
+          const same=(a,b)=>a.length===b.length&&a.every((value,index)=>value===b[index]);
+           return {rateHz:1000/intervalMs,requestsPerPhase:requests,target,probeCount:targets.length,fixedTick,deadline,start,pressure,baseline,active,nextTick,expired,final:{latestRequestedGeneration:end.latestRequestedGeneration,latestPublishedGeneration:end.latestPublishedGeneration,latestPublications:end.latestPublications,intermediatePublications:end.intermediatePublications,staleDiscarded:end.staleDiscarded,validRaster:end.validRaster,emergencyMode:end.emergencyMode,completedWorkerEpoch:end.completedWorkerEpoch,completedRasterRevision:end.completedRasterRevision,publishedWorkerEpoch:end.publishedWorkerEpoch,publishedRasterRevision:end.publishedRasterRevision,installedWorkerEpoch:end.installedWorkerEpoch,installedRasterRevision:end.installedRasterRevision,uploadSkippedSameRevision:end.uploadSkippedSameRevision,queued:end.queued,inFlight:end.inFlight,stopped:end.stopped,failures:end.failures,retries:end.retries,workerStarts:end.workerStarts,snapshots:end.snapshots,dispatched:end.dispatched,coalesced:end.coalesced,requestSamplesMs:end.requestSamplesMs,publishSamplesMs:end.publishSamplesMs,maxRequestMs:end.maxRequestMs,maxPublishMs:end.maxPublishMs},semantics:{activeDiffersFromBaseline:!same(active.pixel,baseline.pixel),expiredEqualsBaseline:same(expired.pixel,baseline.pixel),consecutiveTickFade:!same(nextTick.pixel,active.pixel),independentValidPublications:[baseline,active,expired].every(value=>value.validPublications>0)}};
+        },
+       terrainResponsivenessSample(name){
+         const measure=operation=>{ const started=performance.now(); operation(); return performance.now()-started; },owned=Array.from(owner).findIndex(value=>value===me().id);
+         if(name==='enqueue') return measure(()=>drawMap());
+         if(name==='strategic-zoom-threshold') return measure(()=>{ cam.s=2.39; drawMap(); });
+         if(name==='operational-zoom-threshold') return measure(()=>{ cam.s=2.41; drawMap(); });
+         if(name==='hover-enter') return measure(()=>{ hover=owned; drawMap(); });
+         if(name==='hover-plateau') return measure(()=>{ hover=owned; drawMap(); });
+         if(name==='hover-leave') return measure(()=>{ hover=-1; drawMap(); });
+         if(name==='pick-enter') return measure(()=>window.__STATEFALL_TEST__.terrainPickProbe(true));
+         if(name==='pick-cancel') return measure(()=>setPickMode(null));
+         if(name==='paused-escape') return measure(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true})));
+         throw new Error(`unknown responsiveness sample: ${name}`);
+       },
+       terrainPickProbe(active=true){
+         if(!me()||!engineState.garrison.areaOf) throw new Error('terrain pick probe requires a started garrison match');
+         let tile=terrainPickTile; if(tile<0) for(let index=0;index<engineState.garrison.areaOf.length;index++) if(engineState.garrison.areaOf[index]>=0&&owner[index]===me().id){ tile=terrainPickTile=index; break; }
+         if(tile<0) throw new Error('owned garrison area not found');
+         hover=tile; hoverPickArea=engineState.garrison.areaOf[tile]; setPickMode(active?{kind:'reinforce',t:tile}:null); return {active:!!pickMode,tile,area:hoverPickArea,rendering:terrainRaster.diagnostics()};
+       },
+       terrainPickStatus:()=>({active:!!pickMode,hoverPickArea}),
        aircraftHoverStatus:()=>({id:hoverAir?.id??null,renderer:renderer.diagnostics().layers.aircraft}),
        aircraftSourceDiagnostics:()=>aircraft.map(value=>({id:value.id,type:value.type,state:value.state,x:value.x,y:value.y,heading:value.hdg,hp:value.hp,pull:value.pull,targetX:value.tx,targetY:value.ty,owner:value.owner,color:players[value.owner]?.color})),
        injectRendererFailure:kind=>{ if(kind.startsWith('notification-raster-')) notificationRasterFailure=kind.slice('notification-raster-'.length); else renderer.injectFailure(kind); },
@@ -1368,31 +1456,19 @@ function installBrowserTestBridge(){
 installBrowserTestBridge();
 }
 const hex=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];
-const pcol=[],pteam=[]; const seaC=hex('#1c3a52'), landC=hex('#b9ad84'), riverC=hex('#2f6389');
+const pcol=[],pteam=[];
 function colorCache(){ pcol.length=0; pteam.length=0; for(const p of players){ let c=hex(p.color);
   if(p.team!=null){ const t=hex(TEAM_COLS[p.team]); c=[c[0]*0.35+t[0]*0.65,c[1]*0.35+t[1]*0.65,c[2]*0.35+t[2]*0.65]; // teammates share a hue family
     const k=0.82+0.18*((p.id*7)%5)/4; c=c.map(v=>Math.min(255,v*k)); } // slight brightness offsets keep members distinguishable
   pcol.push(c); pteam.push(p.team); } }
-function drawMap(now=performance.now()){
-  const d=img.data,tickN=clockState.tickN,myId=matchState.playerId,fogVis=renderState.fog.vis,areaOf=engineState.garrison.areaOf;
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
-    const t=idx(x,y); let c;
-    if(!land[t]) c=river[t]?riverC:seaC;
-    else{ const o=owner[t];
-      if(o<0) c=shelled[t]>tickN?[landC[0]*0.6,landC[1]*0.6,landC[2]*0.6]:landC;
-      else{ c=pcol[o]; let border=0;
-        for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); const on=owner[n]; if(land[n]&&on!==o){ const same=on>=0&&pteam[o]!=null&&pteam[on]===pteam[o]; border=Math.max(border,same?1:2); } }
-        if(border===2) c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; else if(border===1) c=[c[0]*0.85,c[1]*0.85,c[2]*0.85]; else if(o===myId) c=[Math.min(255,c[0]*1.1),Math.min(255,c[1]*1.1),Math.min(255,c[2]*1.1)];
-        if(shelled[t]>tickN){ const k=0.55+0.25*(1-(shelled[t]-tickN)/SUPPRESS_TICKS); c=[c[0]*k,c[1]*k,c[2]*k]; }
-        if(pickMode&&areaOf&&hoverPickArea>=0&&areaOf[t]===hoverPickArea){ c=[Math.min(255,c[0]*1.25+30),Math.min(255,c[1]*1.25+30),Math.min(255,c[2]*1.25+30)]; }
-        if(highlightId>=0){ if(o===highlightId){ const pulse=renderer.hybrid?1:0.75+0.35*Math.sin(now/150); c=[Math.min(255,c[0]*pulse+40),Math.min(255,c[1]*pulse+40),Math.min(255,c[2]*pulse+40)]; } else c=[c[0]*0.55,c[1]*0.55,c[2]*0.55]; }
-      }
-    }
-    if(fogVis&&!fogVis[t]){ const g=(c[0]*0.3+c[1]*0.59+c[2]*0.11); c=[(c[0]*0.35+g*0.65)*0.62,(c[1]*0.35+g*0.65)*0.62,(c[2]*0.35+g*0.65)*0.66]; }
-    const i=t*4; d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2]; d[i+3]=255;
-  }
-  octx.putImageData(img,0,0);
-  renderer.invalidateRaster(off);
+function terrainInput(overrides={}){ const pickArea=pickMode?hoverPickArea:-1; return {width:W,height:H,land,river,rough,owner,teams:pteam,colors:pcol,fog:renderState.fog.vis,shelled,tick:clockState.tickN,suppressTicks:SUPPRESS_TICKS,areaOf:engineState.garrison.areaOf,pickArea,myId:matchState.playerId,highlightId,detailLevel:terrainBand(cam.s),...overrides}; }
+function drawMap(){
+  const detailLevel=terrainBand(cam.s),pickArea=pickMode?hoverPickArea:-1;
+  if(!terrainRaster.diagnostics().scheduler.published) beginTerrainLoading();
+  terrainRaster.request(terrainInput({detailLevel,pickArea}));
+  terrainDetailLevel=detailLevel; renderedPickArea=pickArea; renderedHighlightId=highlightId;
+  renderer.updateRasterDiagnostics(terrainRaster.diagnostics());
+  return true;
 }
 function render(){
   renderLoop.renders++;
@@ -1546,10 +1622,11 @@ function renderPass(frame){
   if(frame.advance){ renderedInterpolatedActors=0; prepareInterpolation(frame.now); }
   if(!renderer.hybrid){ ctx.fillStyle='#132a3d'; ctx.fillRect(0,0,cw,ch); }
   if(!me()) return renderer.renderFrame(frame.startCamera);
-  // Pixi keeps a static highlight raster; an animated overlay remains future work.
-  if((highlightId>=0&&!renderer.hybrid)||pickMode) { if(frame.advance) hoverPickArea=(pickMode&&hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf)?engineState.garrison.areaOf[hover]:-1; drawMap(frame.now); }
-  ctx.imageSmoothingEnabled=false;
+  if(frame.advance&&pickMode) hoverPickArea=hover>=0&&owner[hover]===me().id&&engineState.garrison.areaOf?engineState.garrison.areaOf[hover]:-1;
+  if(terrainDetailLevel!==terrainBand(cam.s)||renderedPickArea!==(pickMode?hoverPickArea:-1)||renderedHighlightId!==highlightId) drawMap();
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
   if(!renderer.hybrid) ctx.drawImage(off,cam.x,cam.y,W*cam.s,H*cam.s);
+  ctx.imageSmoothingEnabled=false;
   const s=cam.s,{time:motionTime,reducedMotion}=renderer.motionState(frame.now);
   let preStructuresOwned=renderer.updateWorldLayer('pre-structures',()=>{
     const commandLinks=[];
@@ -1861,6 +1938,15 @@ function drawShip(kind,x,y,hdg,r,col,hp,maxhp,c=ctx){
 }
 // ---------------------------------------------------------------- input
 let buildMode=null, hover=-1, drag=null, selected=new Set(), box=null, hoverShip=null, hoverStruct=null, pickMode=null;
+function setPickMode(value){
+  const changed=pickMode!==value&&(pickMode!==null||value!==null); pickMode=value;
+  if(!value) hoverPickArea=-1;
+  updateHint();
+  if(changed&&me()){
+    drawMap();
+    scheduleRender();
+  }
+}
 function resize(){ viewport.measure(); }
 function tileAt(px,py){ return cam.screenToTile(px,py,W,H); }
 function hideCtx(){ ctx_.style.display='none'; }
@@ -1946,7 +2032,7 @@ window.addEventListener('keydown',e=>{ const tg=e.target; if(tg&&(tg.tagName==='
   if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'){ if(closePauseModal()) return; return; } if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); return; }
   if(e.key==='Escape'&&$('modal').style.display!=='none'){ if(!closePauseModal()) closeModal(); return; }
   if(e.key==='['&&JUKE.loaded){ jukeNext(-1); return; } if(e.key===']'&&JUKE.loaded){ jukeNext(1); return; }
-  if(e.key==='Escape'){setBuild(null);hideCtx(); pickMode=null; updateHint(); if(selected.size){ selected.clear(); updateHint(); } } const k=HOTKEYS[e.key.toLowerCase()]; if(k){ if(k==='nuke'){ if(ALLOWED.has('missile')) setBuild(buildMode===k?null:k); } else if(ALLOWED.has(k)&&!(STRUCT[k]&&STRUCT[k].fog&&!START.fog)) setBuild(buildMode===k?null:k); } });
+  if(e.key==='Escape'){setBuild(null);hideCtx(); setPickMode(null); if(selected.size){ selected.clear(); updateHint(); } } const k=HOTKEYS[e.key.toLowerCase()]; if(k){ if(k==='nuke'){ if(ALLOWED.has('missile')) setBuild(buildMode===k?null:k); } else if(ALLOWED.has(k)&&!(STRUCT[k]&&STRUCT[k].fog&&!START.fog)) setBuild(buildMode===k?null:k); } });
 
 function fail(msg){ log(msg,true); snd('error'); }
 function canBuildAt(t){ if(!land[t]) return false; if(buildMode==='nuke') return owner[t]!==me().id; return snapBuild(me().id,t,buildMode)>=0; }
@@ -1974,7 +2060,7 @@ function showTip(e){ if(!land||!owner||!me()||ROLL.on){ tip.style.display='none'
 const $=id=>document.getElementById(id);
 const HINT_DEFAULT='Left-click a bordering country to invade. Right-click: build on your land, transports and missiles on enemy land, ships on water. Click a ship to select it (Shift-drag for several), then right-click water to move it.';
 function updateHint(){ if(pickMode){ $('hint').textContent=pickMode.kind==='reinforce'?`Click one of your areas to send ${ratio.value}% of its garrison here by transport. Esc cancels.`:`Click one of your areas to send ${ratio.value}% of its garrison at the target — by land if it borders, otherwise by transport. Esc cancels.`; cv.style.cursor='copy'; return; } cv.style.cursor=buildMode?'cell':'crosshair'; if(buildMode) return; const live=[...selected].filter(w=>warships.includes(w)); if(live.length){ const cls={}; for(const w of live) cls[w.cls]=(cls[w.cls]||0)+1; $('hint').textContent=`${live.length} ship${live.length>1?'s':''} selected (${Object.keys(cls).map(k=>cls[k]+' '+SHIPS[k].label.toLowerCase()).join(', ')}) — right-click water to move and patrol there, or an enemy port to blockade it. Esc to deselect.`; } else $('hint').textContent=HINT_DEFAULT; }
-function setBuild(k){ buildMode=k; cv.style.cursor=k?'cell':'crosshair'; $('hint').textContent=k?`${k==='nuke'?'Missile':STRUCT[k].label} mode — click a tile. Esc cancels.`:HINT_DEFAULT; }
+function setBuild(k){ if(k&&pickMode) setPickMode(null); buildMode=k; cv.style.cursor=k?'cell':'crosshair'; $('hint').textContent=k?`${k==='nuke'?'Missile':STRUCT[k].label} mode — click a tile. Esc cancels.`:HINT_DEFAULT; }
 function updateUI(){
   const cap=maxTroops(me().id);
   if(gOn(me().id)&&me().areas&&me().areas.length>1){ $('areaList').style.display=''; const bigA=me().areas.filter((a,i)=>i===0||a.tiles>=20), smallN=me().areas.length-bigA.length, smallT=me().areas.filter(a=>!bigA.includes(a)).reduce((s,a)=>s+a.troops,0); $('areaList').innerHTML=bigA.map((a,i)=>`<div data-area="${a.id}" style="display:flex;justify-content:space-between;cursor:pointer;padding:1px 0"><span>${areaLabel(me(),a)}</span><span>${fmtN(a.troops)} <span class="muted">· ${a.tiles} tiles</span></span></div>`).join('')+(smallN?`<div class="muted">+${smallN} small island${smallN>1?'s':''} · ${Math.round(smallT)}</div>`:''); $('areaList').querySelectorAll('[data-area]').forEach(r=>{ r.onmouseover=()=>{ hoverArea=+r.dataset.area; }; r.onmouseleave=()=>{ hoverArea=-1; }; }); } else $('areaList').style.display='none';
@@ -2090,6 +2176,8 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.32</td><td>Phase F2 high-resolution Terrain Direction 02 translation pending in-game human visual review; Canvas remains production.</td></tr>
+  <tr><td>1.10.31</td><td>Superseded Phase F1 1x terrain-raster candidate; changes requested.</td></tr>
   <tr><td>1.10.30</td><td>Phase E technically complete locally: bounded future-atlas contract and named physical-GPU qualification; migration art remains procedural and Canvas remains production.</td></tr>
   <tr><td>1.10.29</td><td>Development-only Phase E17 Pixi final pick, selection, draft, paused, and build-cursor visuals after E16 49967b0. Input remains on Canvas.</td></tr>
   <tr><td>1.10.27</td><td>Development-only Phase E15 Pixi opening marker, region labels, and hovered SAM-network annotations after nation overlays.</td></tr>

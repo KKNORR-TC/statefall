@@ -13,17 +13,40 @@ const relevant=relative=>{
   if(value.startsWith('node_modules/')||value.startsWith('dist/')||value.startsWith('.artifacts/')||value.startsWith('docs/evidence/')) return false;
   return value.startsWith('game/')||value.startsWith('tests/')||value.startsWith('tools/')||value.startsWith('prototypes/')||/^(?:package(?:-lock)?\.json|vite\.config\.js|playwright(?:\.wordpress)?\.config\.js)$/.test(value);
 };
+const candidateRelevant=relative=>{
+  const value=relative.replaceAll('\\','/');
+  if(value.startsWith('node_modules/')||value.startsWith('dist/')||value.startsWith('.artifacts/')||value.startsWith('docs/evidence/phase-e-')) return false;
+  return value.startsWith('game/')||value.startsWith('tests/')||value.startsWith('tools/')||value.startsWith('prototypes/')||value.startsWith('docs/')||/^(?:README\.md|CHANGELOG\.md|package(?:-lock)?\.json|vite\.config\.js|playwright(?:\.wordpress)?\.config\.js|\.gitignore)$/.test(value);
+};
 
-function createSourceEvidence(root){
-  const listed=git(root,['ls-files','--cached','--others','--exclude-standard','-z']).toString('utf8').split('\0').filter(Boolean).filter(relevant).sort((a,b)=>a.localeCompare(b,'en'));
+function sourceFiles(root,predicate){
+  const listed=git(root,['ls-files','--cached','--others','--exclude-standard','-z']).toString('utf8').split('\0').filter(Boolean).filter(predicate).sort((a,b)=>a.localeCompare(b,'en'));
   const files=listed.map(relative=>({path:relative.replaceAll('\\','/'),sha256:sha256(fs.readFileSync(path.join(root,relative)))}));
   const manifestText=files.map(value=>`${value.path}\0${value.sha256}\n`).join('');
+  return {files,manifestSha256:sha256(manifestText)};
+}
+
+function createSourceEvidence(root){
+  const {files,manifestSha256}=sourceFiles(root,relevant);
   const pathspec=['game','tests','tools','prototypes','package.json','package-lock.json','vite.config.js','playwright.config.js','playwright.wordpress.config.js'];
   const status=git(root,['status','--porcelain=v1','--untracked-files=all','--',...pathspec],{encoding:'utf8'}).replaceAll('\r\n','\n');
   const diff=git(root,['diff','--binary','HEAD','--',...pathspec]);
   const packageJson=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
   const buildSource=fs.readFileSync(path.join(root,'game/src/config/build.js'),'utf8');
-  return {algorithm:'sha256',manifestSha256:sha256(manifestText),fileCount:files.length,files,head:git(root,['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:!!status,dirtyStatus:status.trim().split('\n').filter(Boolean),dirtyStatusSha256:sha256(status),dirtyDiffSha256:sha256(diff),version:packageJson.version,build:(buildSource.match(/GAME_BUILD='([^']+)'/)||[])[1]||null};
+  return {algorithm:'sha256',manifestSha256,fileCount:files.length,files,head:git(root,['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:!!status,dirtyStatus:status.trim().split('\n').filter(Boolean),dirtyStatusSha256:sha256(status),dirtyDiffSha256:sha256(diff),version:packageJson.version,build:(buildSource.match(/GAME_BUILD='([^']+)'/)||[])[1]||null};
+}
+
+function createCandidateSourceEvidence(root){
+  const {files,manifestSha256}=sourceFiles(root,candidateRelevant),packageJson=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')),buildSource=fs.readFileSync(path.join(root,'game/src/config/build.js'),'utf8');
+  return {algorithm:'sha256',manifestSha256,fileCount:files.length,files,head:git(root,['rev-parse','HEAD'],{encoding:'utf8'}).trim(),version:packageJson.version,build:(buildSource.match(/GAME_BUILD='([^']+)'/)||[])[1]||null};
+}
+
+function verifyCandidateSourceEvidence(root,recorded){
+  if(!recorded) throw new Error('Review manifest has no candidate source evidence');
+  const current=createCandidateSourceEvidence(root);
+  for(const key of ['algorithm','manifestSha256','fileCount','head','version','build']) if(recorded[key]!==current[key]) throw new Error(`Candidate source mismatch for ${key}: recorded ${recorded[key]}, current ${current[key]}`);
+  if(JSON.stringify(recorded.files)!==JSON.stringify(current.files)) throw new Error('Candidate source path/hash list differs from current source');
+  return current;
 }
 
 function verifyReport(root,reportPath){
@@ -133,7 +156,7 @@ function verifyMatrixReport(root,report){
   equal(report.passed,zero&&report.counts.total===report.counts.passed+report.counts.skipped&&report.projects.every(value=>report.perProject[value]?.total>0),'matrix pass predicate');
 }
 
-module.exports={createSourceEvidence,verifyReport,verifyHardwareReport,verifyMatrixReport,summarize,matrixSummary};
+module.exports={createSourceEvidence,createCandidateSourceEvidence,verifyCandidateSourceEvidence,verifyReport,verifyHardwareReport,verifyMatrixReport,summarize,matrixSummary};
 
 if(require.main===module){
   const root=path.resolve(__dirname,'..'),index=process.argv.indexOf('--verify-report');

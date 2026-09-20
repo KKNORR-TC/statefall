@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Terrain Direction 02 - Isolated Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="terrain-study" data-prototype="terrain-only">
+    <header class="study-header">
+      <div class="title-block">
+        <span class="index">02</span>
+        <div><h1>TERRAIN DIRECTION 02</h1><p>THE NARROWS / OPERATIONAL COAST STUDY</p></div>
+      </div>
+      <div class="status"><span></span> ISOLATED PROTOTYPE</div>
+    </header>
+
+    <section class="composition" aria-label="Two-scale illustrated terrain direction">
+      <figure class="operational-map">
+        <canvas id="terrain-map" role="img" aria-label="Illustrated operational map of the Cairn Coast and the Sable Narrows"></canvas>
+        <figcaption>
+          <span>OPERATIONAL SCALE</span>
+          <strong>CAIRN COAST</strong>
+          <small>1 : 185 000 &nbsp; / &nbsp; relief + hydrography</small>
+        </figcaption>
+        <div class="north" aria-hidden="true"><b>N</b><i></i></div>
+        <div class="scale-bar" aria-label="Scale: 12 kilometers"><i></i><span>0</span><span>6</span><span>12 KM</span></div>
+      </figure>
+
+      <aside class="reference-column" aria-label="Strategic scale and visual legend">
+        <section class="overview">
+          <header><span>STRATEGIC CONTEXT</span><b>GREY SEA THEATER</b></header>
+          <canvas id="overview-map" role="img" aria-label="Strategic overview showing the operational map extent"></canvas>
+          <div class="overview-scale">1 : 1 250 000</div>
+        </section>
+
+        <section class="legend" aria-label="Terrain visual language legend">
+          <header><span>VISUAL KEY</span><b>READING THE GROUND</b></header>
+          <div class="legend-grid">
+            <div><i class="swatch relief"></i><span><b>RELIEF</b><small>directional high ground</small></span></div>
+            <div><i class="swatch forest"></i><span><b>WOODLAND</b><small>grouped canopy marks</small></span></div>
+            <div><i class="swatch water"></i><span><b>SHALLOWS</b><small>shelf + wetline</small></span></div>
+            <div><i class="swatch river"></i><span><b>WATERCOURSE</b><small>river hierarchy</small></span></div>
+            <div><i class="swatch allied"></i><span><b>ALLIED HOLDING</b><small>soft territorial wash</small></span></div>
+            <div><i class="swatch hostile"></i><span><b>HOSTILE LIMIT</b><small>crisp contested border</small></span></div>
+          </div>
+        </section>
+
+        <footer class="note"><b>ART-DIRECTION PLATE</b><span>Terrain, ownership and geographic legibility only. No gameplay layer.</span></footer>
+      </aside>
+    </section>
+  </main>
+  <script src="terrain.js"></script>
+</body>
+</html>

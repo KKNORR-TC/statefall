@@ -2,13 +2,13 @@
 
 Real-time browser strategy hosted at [WorldRTS.com](https://www.worldrts.com) on WordPress.
 
-- `game/` — local development game 1.10.30: Vite application with a browser-free Phase D engine, bounded Phase D2 relay proof, and technically complete local Phase E renderer foundation; Canvas remains the production/default renderer while development-only `pixi-hybrid` owns the complete legacy visual frame.
+- `game/` — local development game 1.10.32: Vite application with a browser-free Phase D engine, bounded Phase D2 relay proof, technically complete local Phase E renderer foundation, and a Phase F2 high-resolution terrain candidate; Canvas remains production/default.
 - `plugin/statefall-scores/` — repository plugin version 1.10.7: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools, and immutable manifest-based game releases.
 - `tools/` — direct-engine harness, determinism proof, replay checker, opening benchmark, release builders, and browser/Playwright trailer capture.
 - `sandbox/` — localhost-only WordPress 7.1 / PHP 8.4 integration environment restored from an authorized site backup.
 - `docs/` — current status and findings, release runbook and record template, graphics modernization plan, historical website handoff, and multiplayer plan.
 
-Production is live and public at game 1.10.7/plugin 1.10.6, installed and verified on 14 September 2026. Local game 1.10.30 build `2026-09-19-phase-e-complete` marks Phase E technically complete after the E17 visual migration, a versioned bounded future-atlas contract, and headed physical-GPU qualification. Current migration visuals remain bounded generated/vector/raster resources; authored atlases and unit art are deferred to the Phase G human art gate. Canvas remains production/default with no reachable Pixi or atlas loader graph. This is not a release, final art, handoff, or production change. Plugin remains 1.10.7 and the simulation baseline remains 1.10.8. See `docs/phase-e-completion.md`.
+Production is live and public at game 1.10.7/plugin 1.10.6. Phase E is committed at `d0c92fb`. Local game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` translates approved Terrain Direction 02 into a shared deterministic 4x source for Canvas and development Pixi. The old 1x F1 candidate is superseded/changes requested, while the F2 in-game result remains pending human visual approval: no golden, final-art, unit-art, release, handoff, or production approval is claimed. Canvas remains production/default; plugin remains 1.10.7 and simulation baseline remains 1.10.8. See `docs/phase-f1-review.md`.
 
 Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN` requirement, and run the applicable release gates. Game and plugin version numbers do not need to match when only one component changes.
 
@@ -23,7 +23,7 @@ npm run syntax
 npm test
 ```
 
-`npm test` runs atlas and all renderer-layer contracts, browser-free direct-engine/system contracts, the Phase D2 relay proof, old-versus-extracted parity, reduced-grid map and mode smoke simulations, same-page restart/replay checks, and production-size cold determinism. Development game 1.10.30 retains the approved 1.10.8 hashes in `tests/fixtures/simulation-baselines-v1.10.8.json`; see `docs/testing-baselines.md`.
+`npm test` runs atlas and renderer-layer contracts, browser-free engine/system contracts, the Phase D2 proof, parity, map/mode smoke, restart/replay, and production-size determinism. `npm run test:terrain-raster` runs the F2 exact-byte/cache fixture. Development game 1.10.32 retains the approved 1.10.8 simulation hashes; see `docs/testing-baselines.md`.
 
 Run `npm run build:release` to reproducibly produce `dist/`, schema-1 `dist/release.json`, and the exact game ZIP under `.artifacts/`. Run `npm run bench` for the longer Super hard opening benchmark.
 
