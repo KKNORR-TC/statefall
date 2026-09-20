@@ -1,6 +1,13 @@
 # Phase E Progress
 
-_Development record through game/package 1.10.29, build `2026-09-18-phase-e17-pixi-interaction-overlays`, on 19 September 2026. E16 is `49967b0`. This is not a release, handoff, production change, Phase E completion, or final-art approval._
+_Development record through local technical completion in game/package 1.10.30, build `2026-09-19-phase-e-complete`, on 19 September 2026. This is not a release, handoff, production change, or final-art approval. Final evidence is in `docs/phase-e-completion.md`._
+
+## E18 Final Gate
+
+- Added the isolated `statefall-atlas/v1` manifest and Pixi registry contract for future Phase G authored atlases, including same-origin path policy, complete validation/caps, atomic Canvas fallback, refcounts/LRU, teardown/context reset, diagnostics, bundle categories, and synthetic actual-subtexture proof at DPR 1/1.5/2. Existing procedural migration resources remain in their bounded registries.
+- Headed Chrome and Edge on `KEN-RAZER` both selected physical Intel D3D11 WebGL 2 and passed 1,801 measured RAFs plus at least 60,000 ms after 180 warm-up frames. Each retained 1,801 raw CPU samples, 140 valid raw GPU samples, and 61 full resource samples; both final frozen windows retained 12 samples spanning 11,000.1 ms, with every required layer nonzero and exact equality for every ownership/resource/cumulative field. Both retained canonical state and reported no context loss, GL errors, fallback, plateau delta, or failure.
+- The final isolated one-worker 2,531-case configured Playwright matrix completed across all 11 desktop, mobile-emulation, reduced-motion, DPR 1/1.5/2, and source/built projects in 1,576.435 s: 418 passed, 2,113 intentional project-selection skips, and zero failures. Its exact raw JSON is retained at `docs/evidence/phase-e-browser-matrix.raw.json.gz` (202,702 compressed bytes, SHA-256 `5d67d81ec1a0de1aac1e37fa35606fee3b0b162253d63119ccbfae710563c3e4`; 5,985,015 uncompressed bytes, SHA-256 `6c6e6ef2b4556b6311a4b9d60f9b5407db02f1e176b6adda56cc049778d859ed`). Syntax, `npm test`, mutation contracts, deterministic hashes, and 24-file reproducibility also pass at release-manifest SHA-256 `7d3ae8150d2e94d7ffd2a6c990ca06e01e1c69df634fe39153abbbf3c73c27be`. Hardware and matrix evidence share executable-manifest SHA-256 `46156b083fedbc89ec38810ce2e44a3e435c43bc910b450609608d726f2b705c`.
+- Phase E is technically COMPLETE locally. Canvas remains production/default; authored atlases and unit art are Phase G human-review work; Landings remains a separate product decision.
 
 ## E17 Implemented Slice
 
@@ -10,14 +17,14 @@ _Development record through game/package 1.10.29, build `2026-09-18-phase-e17-pi
 
 ## E17 Status
 
-- The legacy visual-layer migration is complete through end-of-frame. Phase E remains open for atlas/loading policy and final physical-GPU/hardware qualification. E17 is migration art, not final art; plugin 1.10.7 and simulation baseline 1.10.8 remain unchanged.
+- The legacy visual-layer migration is complete through end-of-frame. E17 is migration art, not final art; E18 subsequently closed atlas/loading policy and named hardware qualification. Plugin 1.10.7 and simulation baseline 1.10.8 remain unchanged.
 
 ## E17 Evidence
 
 - Syntax, every renderer-neutral contract, `npm test`, restart replay, old-engine parity, all map/mode smoke scenarios, renderer independence, and production-grid determinism pass without changing the approved 1.10.8 hashes. Focused primary-Chromium E17 coverage passes 24 applicable cases with two project-selection skips; E16 prerequisite coverage passes 28 applicable cases with three project-selection skips.
 - Actual Pixi-versus-direct-Canvas evidence passes at DPR 1, 1.5, and 2 over an opaque destination. Chromium/WebKit mobile and reduced-motion checks, unchanged Canvas goldens and real pointer targeting, renderer lifecycle/context loss, and source/built production Canvas-only contracts pass in the targeted 75-test cross-project run, with 195 intentional project-selection skips.
 - The 1,800-frame synthetic interaction run preserves canonical state, legacy hash, RNG, and tick; remains below the 16.7 ms p95 and 33 ms p99 local synchronous CPU/render-submission ceilings; keeps every pool, texture, reference, and source-byte count bounded; and records zero texture allocations or destructions during the final stable window. This does not measure GPU execution, compositor/display presentation, or input latency. GPU allocation bytes remain unknown and current-font rasterization remains host-specific.
-- Reproducibility passes across 24 files. `release.json` covers 23 payload files at SHA-256 `fc3e0a839df403b78d4aa1081b8040e3ee52142ca9b9cc2d751a0c0ea9deb650`. A broader 1,150-case browser invocation reached case 589 with no assertion failure but exceeded its 15-minute command limit during WebKit; it is incomplete evidence, not a matrix pass.
+- This slice's earlier reproducibility result covered 24 files and `release.json` covered 23 payload files at SHA-256 `fc3e0a839df403b78d4aa1081b8040e3ee52142ca9b9cc2d751a0c0ea9deb650`. Its earlier 1,150-case browser invocation reached case 589 without an assertion failure but timed out; E18 subsequently replaced that incomplete evidence with the completed final matrix recorded above.
 
 ## E16 Implemented Slice
 

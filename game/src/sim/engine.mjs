@@ -461,6 +461,11 @@ export function createEngine(options={},adapters={}){
       engineState.replaceActors('trucks',[truck]); engineState.replaceActors('planes',[plane]); engineState.replaceActors('interceptors',[interceptor]); return readonly.wrap({fixture:name,truck:{x:truck.x,y:truck.y},plane:{x:plane.x,y:plane.y},interceptor:{x:interceptor.x,y:interceptor.y}});
     }
     if(name==='e11-clear-support-actors'){ if(!testBridge) throw new Error('E11 support fixture requires the test bridge'); engineState.replaceActors('trucks',[]); engineState.replaceActors('planes',[]); engineState.replaceActors('interceptors',[]); return readonly.wrap({fixture:name}); }
+    if(name==='e18-hardware-actors'){
+      const support=installTestFixture('e11-support-actors'),ship=engineState.actors.warships[0],tile=Math.max(0,Math.min(W*H-1,Math.floor(ship?.y??support.plane.y)*W+Math.floor(ship?.x??support.plane.x)));
+      engineState.replaceActors('transports',[{owner:me().id,path:[tile],pos:0,troops:240,heavy:true,hp:R.HEAVY.hp,hdg:0,wake:[[tile%W-2,(tile-tile%W)/W+.5],[tile%W-1,(tile-tile%W)/W+.5]]}]);
+      return readonly.wrap({fixture:name,x:support.plane.x,y:support.plane.y});
+    }
     if(!testBridge) throw new Error('Engine fixtures require the test bridge.');
     if(name!=='dense-late-game') throw new Error(`Unknown engine fixture: ${name}`);
     const human=me(); if(!human||!engineState.lifecycle.paused) throw new Error('late-game scene requires a paused match');

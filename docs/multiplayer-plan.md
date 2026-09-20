@@ -1,6 +1,6 @@
 # Statefall - Multiplayer Project Plan
 
-_Status updated 18 September 2026. Phase D game 1.10.11 is committed locally at `16aec35`. Development game 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` completes the minimal Phase D2 technical gate and is committed locally at `91b156a`; plugin remains 1.10.7 and production remains game 1.10.7/plugin 1.10.6. Product multiplayer work remains out of scope._
+_Status updated 19 September 2026. Phase D game 1.10.11 is committed locally at `16aec35`. Game 1.10.12 build `2026-09-18-phase-d2-lockstep-proof` remains the historical minimal Phase D2 technical gate committed at `91b156a`; current local development is game 1.10.30. Plugin remains 1.10.7 and production remains game 1.10.7/plugin 1.10.6. Product multiplayer work remains out of scope._
 
 This phase status concerns multiplayer only; it is not a statement of overall site readiness or production release approval. See `docs/current-status.md` for current operational status and open findings.
 
@@ -104,7 +104,7 @@ The browser-free relay authority plus a localhost WebSocket wrapper and two isol
 
 ## 8. Where the files are
 
-- Game source: Vite application under `game/` (local development: 1.10.12; production: 1.10.7).
+- Game source: Vite application under `game/` (local development: 1.10.30; production: 1.10.7). The 1.10.12 references above describe the historical D2 proof.
 - Plugin source: `plugin/statefall-scores/` (current: 1.10.7).
 - Tests and build tools: `tests/`, `tools/`, `package.json`, and `package-lock.json`. Run commands from the repository root.
 - Release procedure: `docs/build-a-release.md`.

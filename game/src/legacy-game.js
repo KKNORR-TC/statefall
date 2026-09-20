@@ -900,7 +900,13 @@ function installBrowserTestBridge(){
         $('startBtn').click();
         return {scratchCleared,status:status(),setupInstalled:mapState.landCount>0};
       },
-      renderRepeatedly(count=1){ const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},wasFrozen=presentationFrozen(); setPresentationFrozen(true); try{ for(let i=0;i<Math.max(0,Math.floor(count));i++) render(); } finally { setPresentationFrozen(wasFrozen); } const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`render purity violation: ${key} changed`); return {hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}; },
+       renderRepeatedly(count=1){ const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},wasFrozen=presentationFrozen(); setPresentationFrozen(true); try{ for(let i=0;i<Math.max(0,Math.floor(count));i++) render(); } finally { setPresentationFrozen(wasFrozen); } const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`render purity violation: ${key} changed`); return {hash:after.hash,rng:JSON.parse(after.rng),tick:after.tick}; },
+       qualificationRenderFrame(){
+         if(!deterministicScene){ render(); return; }
+         const presentation=Object.freeze({pick:Object.freeze({cx:100,cy:80,text:'send 25 of 100'}),box:Object.freeze({x0:18,y0:22,x1:116,y1:84}),draft:Object.freeze({text:'Your pick - qualification fixture'}),paused:true,build:Object.freeze({tile:Math.floor(H/2)*W+Math.floor(W/2),valid:true})});
+         renderPass({now:345678,advance:false,visualShotFrame:null,labelPositions:null,interactionPresentation:presentation});
+       },
+       qualificationPresentFrame(){ renderer.renderFrame(cam); },
       renderPerformanceFrames(count=1800,churn=false){
         const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},wasFrozen=presentationFrozen(),origin={x:cam.x,y:cam.y,s:cam.s},samples=[],resources=[],heap=[];
         setPresentationFrozen(true);
@@ -927,7 +933,7 @@ function installBrowserTestBridge(){
       if(!me()) throw new Error('match not started');
       let target=-1,best=Infinity;
       for(let t=0;t<W*H;t++){
-        const matches=kind==='owned'?land[t]&&owner[t]===me().id:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me().id:kind==='water'?!land[t]:false;
+        const matches=kind==='owned'?land[t]&&owner[t]===me().id:kind==='buildable'?land[t]&&owner[t]===me().id&&!struct[t]&&snapBuild(me().id,t,'city',3)>=0:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me().id:kind==='water'?!land[t]:false;
         if(!matches) continue;
         const x=t%W,y=(t-x)/W,d=(x-me().sx)**2+(y-me().sy)**2;
         if(d<best){ best=d; target=t; }
@@ -980,13 +986,18 @@ function installBrowserTestBridge(){
         const scene=engine.installTestFixture('dense-late-game'),[cx,cy]=scene.center;
         engine.renderBuffers();
         selected.clear(); selected.add(warships.find(ship=>ship.id===scene.flagshipId)); highlightId=me().cmdFocus;
-        nukeAlerts=[{...scene.alert,age:18,life:88}];
-        document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
+         nukeAlerts=[{...scene.alert,age:18,life:88}];
+         document.querySelectorAll('#notices .notice').forEach(n=>n.remove()); showNotice({kind:'bad',title:'Eastern front under bombardment',text:'Missiles inbound; fleet route and air patrol active.',ttl:0});
          presentationLabelPositions=[]; for(const [id,position] of scene.labelPositions){ presentationLabelPositions[id]=position; labelRenderState.set(id,position.slice()); }
        deterministicScene=true;
         cam.focus(cx,cy,viewWidth(),viewHeight(),5); drawMap(); updateUI(); updateHint(); render();
-       return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!renderState.fog.vis,hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
-     },
+        return {fixture:'dense-late-game',nations:3,adjacentOwnership:true,structures:structures.length,ships:warships.length,selectedShips:selected.size,aircraft:aircraft.length,missiles:missiles.length,shells:shells.length,attacks:attacks.length,supplyRoutes:links.length,fog:!!renderState.fog.vis,hiddenTiles:renderState.fog.vis?Array.from(renderState.fog.vis).filter(v=>!v).length:0,alerts:nukeAlerts.length,notices:document.querySelectorAll('#notices .notice').length};
+      },
+      installHardwareQualificationScene(){
+        const scene=engine.installTestFixture('e18-hardware-actors'),cx=scene.x,cy=scene.y; engine.renderBuffers();
+        songBanner={title:'The Long March',age:20,life:70}; badges=[{kind:'unify',text:'North Reach',sub:`unified by ${me().name}`,flag:me().flag,col:me().color,age:18,life:130}]; floaters=[{x:cx,y:cy-5,age:10,txt:'+17',col:'#ffd27a',big:false}]; scorches=[{x:cx-5,y:cy+2,r:3,age:3}]; sparks=[]; puffs=[]; frags=[]; tracers=[]; wrecks=[]; flashes=[];
+        mapLabelRenderOverride={now:345678,draftDoneAt:345678,draftActive:true,garrisonEnabled:true,draftPicks:[{owner:me().id,n:1,x:cx,y:cy,player:{name:me().name,color:me().color,flag:me().flag}}],areas:[]}; render(); return {fixture:scene.fixture};
+      },
       screenToTile(x,y){ return tileAt(x,y); },
       invalidateOwnershipRaster(){
         if(!me()) throw new Error('match not started');
@@ -1041,18 +1052,19 @@ function installBrowserTestBridge(){
           renderer.updateWorldLayer('naval-logistics',state([b])); renderer.updateWorldLayer('naval-logistics',state([a,b])); const compacted=renderer.diagnostics().layers.navalLogistics.resources.map(value=>({key:value.key,order:value.order}));
           return {first,reordered,compacted,rendering:renderer.diagnostics()};
         },
-        renderNavalChurnFrames(count=1800){
-          const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},viewport_={width:viewWidth(),height:viewHeight()},origin={x:cam.x,y:cam.y,s:cam.s},samples=[],resources=[],heap=[],world=(x,y)=>[(x-origin.x)/origin.s,(y-origin.y)/origin.s],tile=(x,y)=>Math.max(0,Math.min(W*H-1,Math.floor(y)*W+Math.floor(x))),pool=[];
+         async renderNavalChurnFrames(count=1800){
+           const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},viewport_={width:viewWidth(),height:viewHeight()},origin={x:cam.x,y:cam.y,s:cam.s},samples=[],updateSamples=[],renderSamples=[],resources=[],heap=[],world=(x,y)=>[(x-origin.x)/origin.s,(y-origin.y)/origin.s],tile=(x,y)=>Math.max(0,Math.min(W*H-1,Math.floor(y)*W+Math.floor(x))),pool=[];
           for(let i=0;i<24;i++){ const [x,y]=world(180+(i%8)*120,180+Math.floor(i/8)*110),start=tile(x-20,y); pool.push({x,y,heading:0,troops:10,hp:4,maxHp:4,heavy:false,color:'#d9485f',visible:true,pos:1,path:[start],wake:[[x-8,y],[x-4,y],[x-1,y]],speed:1.3}); }
           try{ for(let frame=0;frame<Math.max(0,Math.floor(count));frame++){
             const started=performance.now(),visible=Math.floor(frame/30)%2===0,camera=visible?{x:origin.x,y:origin.y,scale:origin.s}:{x:100000,y:100000,scale:origin.s},n=1+Math.floor(frame/30)%pool.length,items=pool.slice(0,n);
             for(let i=0;i<items.length;i++){ const item=items[i]; item.heavy=(frame+i)%3===0; item.hp=1+(frame+i)%4; item.troops=(frame*7+i*13)%1000; item.color=['#d9485f','#33a06f','#3f7bd9','#d98b36'][(Math.floor(frame/20)+i)%4]; item.heading=(frame%60)/60; item.wake=[[item.x-8-(frame%4),item.y],[item.x-4,item.y],[item.x-1,item.y]]; }
             if(frame%2) items.reverse();
-            renderer.updateWorldLayer('naval-logistics',{camera,viewport:viewport_,mapWidth:W,transports:items,merchants:[],boarding:[]}); renderer.renderFrame(cam); samples.push(performance.now()-started);
-            if(frame%150===149){ const layer=renderer.diagnostics().layers.navalLogistics; resources.push({frame,visibility:visible?'visible':'offscreen',entries:layer.entries,containersCreated:layer.containersCreated,containersDestroyed:layer.containersDestroyed,graphicsCreated:layer.graphicsCreated,graphicsDestroyed:layer.graphicsDestroyed,labelCreated:layer.labelCreated,labelDestroyed:layer.labelDestroyed,labelTextures:layer.labelTextureCount,hullTextureRefs:layer.generatedHullTextures.references}); if(performance.memory) heap.push({frame,usedJSHeapSize:performance.memory.usedJSHeapSize,advisory:true}); }
+             renderer.updateWorldLayer('naval-logistics',{camera,viewport:viewport_,mapWidth:W,transports:items,merchants:[],boarding:[]}); const updated=performance.now(); renderer.renderFrame(cam); const finished=performance.now(); updateSamples.push(updated-started); renderSamples.push(finished-updated); samples.push(finished-started);
+             if(frame%150===149){ const layer=renderer.diagnostics().layers.navalLogistics; resources.push({frame,visibility:visible?'visible':'offscreen',entries:layer.entries,containersCreated:layer.containersCreated,containersDestroyed:layer.containersDestroyed,graphicsCreated:layer.graphicsCreated,graphicsDestroyed:layer.graphicsDestroyed,labelCreated:layer.labelCreated,labelDestroyed:layer.labelDestroyed,labelTextures:layer.labelTextureCount,hullTextureRefs:layer.generatedHullTextures.references}); if(performance.memory) heap.push({frame,usedJSHeapSize:performance.memory.usedJSHeapSize,advisory:true}); }
+             if(frame%30===29) await new Promise(requestAnimationFrame);
           } }finally{ Object.assign(cam,origin); }
           const after={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN}; for(const key of Object.keys(before)) if(after[key]!==before[key]) throw new Error(`naval churn purity violation: ${key} changed`);
-           const ordered=samples.slice().sort((a,b)=>a-b),percentile=value=>ordered[Math.min(ordered.length-1,Math.floor(ordered.length*value))]||0; return {measurement:'local synchronous CPU/render-submission; excludes GPU, compositor, display presentation, and input latency',mean:samples.reduce((sum,value)=>sum+value,0)/Math.max(1,samples.length),p95:percentile(.95),p99:percentile(.99),max:ordered.at(-1)||0,resources,heap,heapAssertion:'advisory-only: browser GC timing and performance.memory are nondeterministic',gpuAssertion:'unknown: Pixi/WebGL does not expose reliable allocation bytes',rendering:renderer.diagnostics()};
+            const summarize=values=>{ const ordered=values.slice().sort((a,b)=>a-b),percentile=value=>ordered[Math.min(ordered.length-1,Math.floor(ordered.length*value))]||0; return {mean:values.reduce((sum,value)=>sum+value,0)/Math.max(1,values.length),p95:percentile(.95),p99:percentile(.99),max:ordered.at(-1)||0}; },timing=summarize(samples); return {measurement:'local synchronous CPU/render-submission; excludes GPU, compositor, display presentation, and input latency',...timing,updateTiming:summarize(updateSamples),renderTiming:summarize(renderSamples),resources,heap,heapAssertion:'advisory-only: browser GC timing and performance.memory are nondeterministic',gpuAssertion:'unknown: Pixi/WebGL does not expose reliable allocation bytes',rendering:renderer.diagnostics()};
          },
         exerciseWarshipLayer(state){
           const before={state:canonicalState(),hash:engine.stateHash(),rng:JSON.stringify(engine.runtimeCheckpoint().rng),tick:clockState.tickN},value=structuredClone(state),stroke=warshipCanvasStrokeState(value); ctx.clearRect(0,0,viewWidth(),viewHeight()); resetE3CanvasStroke(ctx);
@@ -1306,9 +1318,9 @@ function installBrowserTestBridge(){
                   finally{ nukeAlerts=previous.nukeAlerts; badges=previous.badges; songBanner=previous.songBanner; }
                 },
                 notificationRasterEvidence(){ return renderer.notificationRasterEvidence(); },
-                renderInteractionInventory(variant='all',failure=null){
+                 renderInteractionInventory(variant='all',failure=null,composite='source-over'){
                   const snapshot=()=>({hover,box:box?{...box}:null,buildMode,pickMode:pickMode?{...pickMode}:null,paused:lifecycleState.userPaused,selected:Array.from(selected,value=>value.id).sort((a,b)=>a-b),tick:clockState.tickN,rng:JSON.stringify(engine.runtimeCheckpoint().rng)}),before=snapshot(),presentation=Object.freeze({pick:['all','pick'].includes(variant)?Object.freeze({cx:100,cy:80,text:'send 25 of 100'}):null,box:['all','box','dashed'].includes(variant)?Object.freeze({x0:18,y0:22,x1:116,y1:84}):null,draft:['all','draft'].includes(variant)?Object.freeze({text:'Your pick — click a neutral country (flags mark what\'s taken) (round 2 of 4)'}):null,paused:['all','paused'].includes(variant),build:['all','valid','invalid'].includes(variant)?Object.freeze({tile:Math.floor(H/2)*W+Math.floor(W/2),valid:variant!=='invalid'}):null}),frame={now:345678,advance:false,visualShotFrame:null,labelPositions:null,interactionPresentation:presentation,presentationChronology:[]};
-                  notificationCanvasStateOverride={globalCompositeOperation:'source-over',lineCap:'round',lineJoin:'bevel',lineWidth:5,lineDash:variant==='dashed'?[7,4]:[],lineDashOffset:variant==='dashed'?2:0}; try{ if(failure) renderer.injectFailure(failure); let submitted=renderPass(frame),replayed=false; if(submitted?.replay){ replayed=true; submitted=renderPass(frame); } const rendering_=renderer.diagnostics(),pixels=ctx.getImageData(0,0,cv.width,cv.height).data,pixiCanvas=document.querySelector('.pixi-world'); let canvasPixels=0; for(let index=3;index<pixels.length;index+=4) if(pixels[index]) canvasPixels++; return {before,after:snapshot(),replayed,chronology:frame.presentationChronology.slice(),rendering:rendering_.layers.interactionOverlays,notifications:rendering_.layers.notificationOverlays,active:rendering_.active,canvasPixels,canvas:{mounted:cv.isConnected,pointerEvents:getComputedStyle(cv).pointerEvents,cursor:getComputedStyle(cv).cursor},pixi:{pointerEvents:pixiCanvas?getComputedStyle(pixiCanvas).pointerEvents:null}}; }finally{ notificationCanvasStateOverride=null; }
+                   notificationCanvasStateOverride={globalCompositeOperation:composite,lineCap:'round',lineJoin:'bevel',lineWidth:5,lineDash:variant==='dashed'?[7,4]:[],lineDashOffset:variant==='dashed'?2:0}; try{ if(failure) renderer.injectFailure(failure); let submitted=renderPass(frame),replayed=false; if(submitted?.replay){ replayed=true; submitted=renderPass(frame); } const rendering_=renderer.diagnostics(),pixels=ctx.getImageData(0,0,cv.width,cv.height).data,pixiCanvas=document.querySelector('.pixi-world'); let canvasPixels=0; for(let index=3;index<pixels.length;index+=4) if(pixels[index]) canvasPixels++; return {before,after:snapshot(),replayed,chronology:frame.presentationChronology.slice(),rendering:rendering_.layers.interactionOverlays,notifications:rendering_.layers.notificationOverlays,active:rendering_.active,canvasPixels,canvas:{mounted:cv.isConnected,pointerEvents:getComputedStyle(cv).pointerEvents,cursor:getComputedStyle(cv).cursor},pixi:{pointerEvents:pixiCanvas?getComputedStyle(pixiCanvas).pointerEvents:null}}; }finally{ notificationCanvasStateOverride=null; }
                 },
                 interactionRasterEvidence(){ return renderer.interactionRasterEvidence(); },
                 renderInteractionChurnFrames(count=1800){
@@ -1912,6 +1924,11 @@ cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on
 });
 window.addEventListener('mousedown',e=>{ if(!e.target.closest('#ctx')) hideCtx(); });
 cv.addEventListener('mousedown',e=>{ if(ROLL.on) return; if(e.button!==0) return; if(e.shiftKey){ const local=viewport.local(e.clientX,e.clientY); box={x0:local.x,y0:local.y,x1:local.x,y1:local.y}; return; } drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false}; });
+const touchPointers=new Map(); let touchGesture=null; cv.style.touchAction='none';
+cv.addEventListener('pointerdown',e=>{ if(e.pointerType!=='touch'||ROLL.on) return; e.preventDefault(); hideCtx(); try{ cv.setPointerCapture?.(e.pointerId); }catch{} touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); const local=viewport.local(e.clientX,e.clientY); if(touchPointers.size===1) touchGesture={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false,startTile:tileAt(local.x,local.y)}; else if(touchPointers.size===2){ const [a,b]=touchPointers.values(); touchGesture={distance:Math.hypot(a.x-b.x,a.y-b.y),scale:cam.s,moved:true}; } },{passive:false});
+cv.addEventListener('pointermove',e=>{ if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId)) return; e.preventDefault(); touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(touchPointers.size===1&&touchGesture){ const dx=e.clientX-touchGesture.x,dy=e.clientY-touchGesture.y; if(Math.abs(dx)+Math.abs(dy)>4) touchGesture.moved=true; if(touchGesture.moved){ cam.x=touchGesture.cx; cam.y=touchGesture.cy; cam.pan(dx,dy); } }else if(touchPointers.size===2&&touchGesture){ const [a,b]=touchPointers.values(),distance=Math.hypot(a.x-b.x,a.y-b.y),center=viewport.local((a.x+b.x)/2,(a.y+b.y)/2); if(touchGesture.distance>0) cam.zoomAt(center.x,center.y,touchGesture.scale*distance/touchGesture.distance); } const local=viewport.local(e.clientX,e.clientY); hover=tileAt(local.x,local.y); },{passive:false});
+const endTouchPointer=e=>{ if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId)) return; e.preventDefault(); const finalGesture=touchGesture; touchPointers.delete(e.pointerId); if(!touchPointers.size){ if(finalGesture&&!finalGesture.moved&&finalGesture.startTile>=0){ hover=finalGesture.startTile; const w=shipAt(e.clientX,e.clientY); if(w){ selected.clear(); selected.add(w); updateHint(); }else{ if(selected.size){ selected.clear(); updateHint(); } issueClick(hover); } } touchGesture=null; }else if(touchPointers.size===1){ const point=touchPointers.values().next().value; touchGesture={x:point.x,y:point.y,cx:cam.x,cy:cam.y,moved:true}; } };
+cv.addEventListener('pointerup',endTouchPointer,{passive:false}); cv.addEventListener('pointercancel',endTouchPointer,{passive:false});
 window.addEventListener('mousemove',e=>{ if(ROLL.on){ const local=viewport.local(e.clientX,e.clientY); ROLL.mx=local.x; ROLL.my=local.y; return; }
   if(box){ const local=viewport.local(e.clientX,e.clientY); box.x1=local.x; box.y1=local.y; }
   if(drag){ const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(Math.abs(dx)+Math.abs(dy)>4) drag.moved=true; if(drag.moved){ cam.x=drag.cx; cam.y=drag.cy; cam.pan(dx,dy); } }
@@ -2073,6 +2090,7 @@ const HELP={
  <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
  <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
  <h3>Recent changes</h3><table class="ktable">
+  <tr><td>1.10.30</td><td>Phase E technically complete locally: bounded future-atlas contract and named physical-GPU qualification; migration art remains procedural and Canvas remains production.</td></tr>
   <tr><td>1.10.29</td><td>Development-only Phase E17 Pixi final pick, selection, draft, paused, and build-cursor visuals after E16 49967b0. Input remains on Canvas.</td></tr>
   <tr><td>1.10.27</td><td>Development-only Phase E15 Pixi opening marker, region labels, and hovered SAM-network annotations after nation overlays.</td></tr>
   <tr><td>1.10.26</td><td>Development-only Phase E14 Pixi nation overlays after global effects.</td></tr>

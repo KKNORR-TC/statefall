@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.30 - 2026-09-19
+
+- Completed the local Phase E technical gate with a renderer-neutral `statefall-atlas/v1` manifest and isolated development Pixi registry for future Phase G authored atlases. Validation covers relative same-origin paths, schema/version, dimensions, source bytes/MIME, unique nonoverlapping integer frames, scale/anchor metadata, hard caps, atomic fallback, refcounts, LRU eviction, teardown/context reset, and diagnostics. Synthetic Canvas atlas tests prove real Pixi subtextures at DPR 1/1.5/2 without adding art.
+- Added repeatable headed Chrome/Edge physical-GPU qualification on named Windows hardware. Both browsers passed 1,800 real RAFs over at least 60 seconds after warm-up, canonical purity, resource stability, GL/context checks, CPU submission p95/p99 gates, and reliable disjoint GPU timing. RAF pacing is reported separately and is not claimed as 60 Hz.
+- Phase E is technically complete locally, not released or handed off. Canvas remains production/default and production has no Pixi/atlas loader graph or atlas/network load. Authored atlases/unit art remain Phase G work subject to the human art gate; Statefall Landings remains a separate product decision.
+
 ## 1.10.29 - 2026-09-18
 
 - Added bounded Phase E17 development-only Pixi ownership of the exact final Canvas rendering block after E16 `49967b0`: the garrison pick label, drag-selection box, draft banner, paused scrim and labels, and build cursor retain source order, conditions, screen/world coordinate formulas, snap/validity decisions, strings, fonts, strokes, fills, alpha, inherited dash/composite state, and final frame state.

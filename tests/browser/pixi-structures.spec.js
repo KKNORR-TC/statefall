@@ -467,7 +467,7 @@ test('complete Pixi structure ownership obeys effective motion policy without ch
   const beforeDiagnostics=await page.evaluate(()=>{ window.__STATEFALL_TEST__.resumePresentation(); return window.__STATEFALL_TEST__.rendererDiagnostics(); });
   test.skip(beforeDiagnostics.active!=='pixi-hybrid','Pixi WebGL renderer unavailable');
   expect(beforeDiagnostics).toMatchObject({reducedMotion:reduced,motion:{clock:reduced?'frozen':'monotonic'},compositingConflictFallback:{active:false,reason:null},layers:{preStructures:{owned:true},structures:{owned:true}}});
-  const firstGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),first=await canvasPixels(page,'#map'); await page.waitForTimeout(180); const secondGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),second=await canvasPixels(page,'#map');
+  const firstGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),first=await screenshotPixels(page.locator('.pixi-world')); await page.waitForTimeout(180); const secondGeometry=await page.evaluate(()=>window.__STATEFALL_TEST__.preStructureMotionGeometry()),second=await screenshotPixels(page.locator('.pixi-world'));
   expect(firstGeometry.front).toBeTruthy(); expect(firstGeometry.route).toBeTruthy(); expect(firstGeometry.focus).toBeTruthy();
   const delta=changedPixels(first,second);
   if(reduced){
@@ -475,7 +475,7 @@ test('complete Pixi structure ownership obeys effective motion policy without ch
     for(const point of [firstGeometry.front,firstGeometry.route?.dash,firstGeometry.route?.marker,firstGeometry.focus,firstGeometry.lowShield]) if(point) expect(pixelPatch(second,point),'front, route dash/marker, focus, and low-shield pixels must remain frozen under reduced motion').toEqual(pixelPatch(first,point));
   }else{
     expect(secondGeometry.time).toBeGreaterThan(firstGeometry.time); expect(secondGeometry.route?.marker).not.toEqual(firstGeometry.route?.marker);
-    expect(delta,'normal-motion retained Canvas layers must continue animating').toBeGreaterThan(0);
+    expect(delta,'normal-motion Pixi layers must continue animating').toBeGreaterThan(0);
   }
   expect(await page.evaluate(()=>window.__STATEFALL_TEST__.canonicalCheckpoint())).toEqual(beforeCheckpoint);
   expect((await page.evaluate(()=>window.__STATEFALL_TEST__.rendererDiagnostics())).compositingConflictFallback).toMatchObject({active:false,reason:null});

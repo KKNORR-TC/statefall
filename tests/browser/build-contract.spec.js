@@ -28,9 +28,10 @@ test('source and built module applications load every chunk and preserve the can
     const inventory=await page.evaluate(()=>fetch('/bundle-report.json').then(response=>response.json()));
     expect(inventory.productionJsInventory.length).toBeGreaterThan(0);
     expect(inventory.productionJsInventory.every(file=>file.scanned&&/^[a-f0-9]{64}$/.test(file.sha256))).toBe(true);
+    expect(inventory.assetCategories).toEqual({atlasManifests:[],atlasTextures:[],fonts:[],audio:[]});
     const scripts=await page.evaluate(async paths=>Promise.all(paths.map(path=>fetch(`/${path}`).then(response=>response.text()))),inventory.productionJsInventory.map(file=>file.path)),versionText=await page.evaluate(()=>fetch('/VERSION.txt').then(response=>response.text())),build=versionText.match(/\bbuild (\S+)/)?.[1]||'',productionSource=scripts.join('\n'),guardSource=build?productionSource.replaceAll(build,''):productionSource;
     expect(productionSource).not.toContain('__STATEFALL_TEST__');
-    expect(guardSource).not.toMatch(/@pixi|pixi\.js|pixi-world|pixiInit|createPixiHybridRenderer|world-raster|planned-entities|unsupported-renderer|development-renderer-disabled|__STATEFALL_DEV_RENDERERS__/i);
+    expect(guardSource).not.toMatch(/@pixi|pixi\.js|pixi-world|pixiInit|createPixiHybridRenderer|createPixiAtlasRegistry|statefall-atlas|world-raster|planned-entities|unsupported-renderer|development-renderer-disabled|__STATEFALL_DEV_RENDERERS__/i);
     expect(productionSource).not.toMatch(/createRelayWebSocketClient|relay\.connect|relay\.ready|relay\.batch-outcome-report/);
     expect(failures,failures.join('\n')).toEqual([]);
     return;

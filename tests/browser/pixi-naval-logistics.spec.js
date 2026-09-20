@@ -139,6 +139,7 @@ test('naval active and idle resources release across BFCache recreation and cont
 test('1800-frame naval create/remove/reorder/state/visibility churn plateaus within frame budgets',async({page},testInfo)=>{
   test.skip(testInfo.project.name!=='chromium-desktop','long E5 soak runs in primary Chromium'); test.setTimeout(120_000); await start(page);
   const result=await page.evaluate(()=>window.__STATEFALL_TEST__.renderNavalChurnFrames(1800));
+  console.log(`pixi E5 timing split: update ${JSON.stringify(result.updateTiming)}, render ${JSON.stringify(result.renderTiming)}`);
   expect(result.measurement).toContain('local synchronous CPU/render-submission'); expect(result.measurement).toContain('excludes GPU');
   expect(result.p95).toBeLessThanOrEqual(16.7); expect(result.p99).toBeLessThanOrEqual(33);
   expect(new Set(result.resources.map(value=>value.visibility))).toEqual(new Set(['visible','offscreen']));

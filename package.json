@@ -1,6 +1,6 @@
 {
   "name": "statefall",
-  "version": "1.10.29",
+  "version": "1.10.30",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
@@ -18,7 +18,7 @@
     "syntax:prototype": "node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js",
     "test": "npm run test:rendering-contract && npm run test:runtime && npm run test:engine && npm run test:engine-isolation && npm run test:relay && npm run test:adversarial-boundaries && npm run test:compatibility-effects && npm run test:world-loop && npm run test:command-router && npm run test:rules-geometry && npm run test:state && npm run test:map-generation && npm run test:world-setup && npm run test:match-flow && npm run test:diplomacy && npm run test:land-combat && npm run test:ai && npm run test:logistics && npm run test:economy && npm run test:structures && npm run test:missiles && npm run test:fog && npm run test:air && npm run test:naval && npm run test:simulation-ports && npm run test:harness-hardening && npm run test:help-contract && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:phase-d-parity && npm run test:smoke && npm run test:restart && npm run test:renderer-independence && npm run determinism",
     "test:runtime": "node tests/deterministic-runtime.js",
-    "test:rendering-contract": "node tests/rendering-contract.js && node tests/structure-layer-model.js && node tests/pre-structure-layer-model.js && node tests/naval-logistics-model.js && node tests/warship-layer-model.js && node tests/projectile-layer-model.js && node tests/missile-layer-model.js && node tests/aircraft-layer-model.js && node tests/map-label-layer-model.js && node tests/support-actor-layer-model.js && node tests/floating-text-layer-model.js && node tests/global-effects-layer-model.js && node tests/nation-overlay-layer-model.js && node tests/world-annotation-layer-model.js && node tests/notification-overlay-layer-model.js && node tests/interaction-overlay-layer-model.js",
+    "test:rendering-contract": "node tests/rendering-contract.js && node tests/atlas-manifest.js && node tests/phase-e-hardware-harness.js && node tests/structure-layer-model.js && node tests/pre-structure-layer-model.js && node tests/naval-logistics-model.js && node tests/warship-layer-model.js && node tests/projectile-layer-model.js && node tests/missile-layer-model.js && node tests/aircraft-layer-model.js && node tests/map-label-layer-model.js && node tests/support-actor-layer-model.js && node tests/floating-text-layer-model.js && node tests/global-effects-layer-model.js && node tests/nation-overlay-layer-model.js && node tests/world-annotation-layer-model.js && node tests/notification-overlay-layer-model.js && node tests/interaction-overlay-layer-model.js",
     "test:engine": "node tests/engine.js",
     "test:engine-isolation": "node tests/engine-isolation.js",
     "test:relay": "node tests/multiplayer-relay.js",
@@ -65,6 +65,10 @@
     "test:visual:prototype:windows": "playwright test --config prototypes/graphics-vertical-slice/playwright.config.js --project=chromium-desktop",
     "test:visual:windows": "npm run test:visual:map:windows && npm run test:visual:prototype:windows",
     "perf:browser": "node tools/browser-performance.js",
+    "qualify:phase-e:hardware": "node tools/phase-e-hardware-qualification.js",
+    "verify:phase-e:report": "node tools/source-evidence-manifest.js --verify-report docs/evidence/phase-e-hardware-qualification.json",
+    "qualify:phase-e:matrix": "node tools/phase-e-browser-matrix.js",
+    "verify:phase-e:matrix": "node tools/source-evidence-manifest.js --verify-report docs/evidence/phase-e-browser-matrix.json",
     "verify:browser": "npm run test:browser && npm run test:desktop-scale && npm run test:prototype",
     "verify:fast": "npm run syntax && npm test",
     "build:game": "vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js",

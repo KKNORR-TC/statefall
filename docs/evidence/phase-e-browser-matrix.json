@@ -1,0 +1,1194 @@
+{
+  "schema": 2,
+  "type": "phase-e-browser-matrix",
+  "generatedAt": "2026-09-20T01:21:24.535Z",
+  "source": {
+    "algorithm": "sha256",
+    "manifestSha256": "46156b083fedbc89ec38810ce2e44a3e435c43bc910b450609608d726f2b705c",
+    "fileCount": 245,
+    "files": [
+      {
+        "path": "game/index.html",
+        "sha256": "176f40c05649ce1e28e007dbacdff9e89c8db859429096cef6cbc472c83f09f8"
+      },
+      {
+        "path": "game/src/audio/audio-state.js",
+        "sha256": "bbb11a609870f80f057504950e8274e481c6042418afd9b63a6a1826ac6a1ff0"
+      },
+      {
+        "path": "game/src/config/build.js",
+        "sha256": "054c477f6a442b84acbfd5aff4c8e6a3f9aae06b62fdfcdd4cb17887e74cd6d0"
+      },
+      {
+        "path": "game/src/config/flags.mjs",
+        "sha256": "cb5fa08802c8d63facbc10605d25c286cb841b698d508a89d0c8cb163b06fdff"
+      },
+      {
+        "path": "game/src/config/maps.js",
+        "sha256": "b7be67505207d85576fff310fe26395acdceb7fa0d337056cdc2f24ae266c81e"
+      },
+      {
+        "path": "game/src/config/signing.js",
+        "sha256": "177775c5230a533b7da8dc117da3bc0be174a9449ea3d79d2826f7784b9e2853"
+      },
+      {
+        "path": "game/src/help-contract.mjs",
+        "sha256": "e28b8db03850ba34a6c755c04a37cf8c564e2c475cb25b9d4cde3359719367aa"
+      },
+      {
+        "path": "game/src/help-pages/about.html",
+        "sha256": "367d6f3c92527cb056d1f9e3f92e256597e5c0fb128304dc65029bba28e2e721"
+      },
+      {
+        "path": "game/src/help-pages/about/index.html",
+        "sha256": "367d6f3c92527cb056d1f9e3f92e256597e5c0fb128304dc65029bba28e2e721"
+      },
+      {
+        "path": "game/src/help-pages/air.html",
+        "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+      },
+      {
+        "path": "game/src/help-pages/air/index.html",
+        "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+      },
+      {
+        "path": "game/src/help-pages/basics.html",
+        "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+      },
+      {
+        "path": "game/src/help-pages/basics/index.html",
+        "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+      },
+      {
+        "path": "game/src/help-pages/build.html",
+        "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+      },
+      {
+        "path": "game/src/help-pages/build/index.html",
+        "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+      },
+      {
+        "path": "game/src/help-pages/garrisons.html",
+        "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+      },
+      {
+        "path": "game/src/help-pages/garrisons/index.html",
+        "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+      },
+      {
+        "path": "game/src/help-pages/modes.html",
+        "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+      },
+      {
+        "path": "game/src/help-pages/modes/index.html",
+        "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+      },
+      {
+        "path": "game/src/help-pages/ships.html",
+        "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+      },
+      {
+        "path": "game/src/help-pages/ships/index.html",
+        "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+      },
+      {
+        "path": "game/src/help-pages/systems.html",
+        "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+      },
+      {
+        "path": "game/src/help-pages/systems/index.html",
+        "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+      },
+      {
+        "path": "game/src/help-pages/tabs.json",
+        "sha256": "b2a774d3611bdf64ddec26c915d7220c17615af453b1ab27c6bd750e6e26cac9"
+      },
+      {
+        "path": "game/src/integration/local-platform.js",
+        "sha256": "ef1806aaa7a67df23069ed81c6e5eb4c7884e168e3449ae5282eb381c23fb060"
+      },
+      {
+        "path": "game/src/integration/platform.js",
+        "sha256": "efb0bc262422f2b5b3c2490d081ee7f4ca94cb36b9d8cf64d4c823f274aef608"
+      },
+      {
+        "path": "game/src/integration/wordpress-platform.js",
+        "sha256": "424310cbfed953f11c617bb5a8aef179468d7c2dd5f65d882034ecb5430c365f"
+      },
+      {
+        "path": "game/src/legacy-game.js",
+        "sha256": "700a216f9030c4a249682f3eb532815c5ba4adcc2d847a5eada2fa1862ca7c9d"
+      },
+      {
+        "path": "game/src/main.js",
+        "sha256": "3b85fd5afc4cec8fd71358e5b75d08667af795b6cfba47c9db4743802f2430ca"
+      },
+      {
+        "path": "game/src/multiplayer/proof-capability.mjs",
+        "sha256": "c0e686e8234c121fb0f477374ce6e2d2b1e888b9fce0365eceb14fd96378b278"
+      },
+      {
+        "path": "game/src/multiplayer/proof-engine.mjs",
+        "sha256": "7e77a611efcacd233b9c514e2793c99293a0594f5237afe2e73132aed08dd669"
+      },
+      {
+        "path": "game/src/multiplayer/relay-websocket-client.mjs",
+        "sha256": "a74f4a41fb1bbf2f9e13d5026b4f6d9a80ead7ed0e9f5a2291a3bd824ef5dd2f"
+      },
+      {
+        "path": "game/src/multiplayer/relay/lockstep-client.mjs",
+        "sha256": "5f55a80589792790aa7d26efd8e214201e513cf1a2160937e2fc650a9c107563"
+      },
+      {
+        "path": "game/src/multiplayer/relay/room.mjs",
+        "sha256": "1f7380c647e0c8aebad37a3e0ea63b635912fd19ecec45b60817f8d7e4685c7e"
+      },
+      {
+        "path": "game/src/multiplayer/room-configuration.mjs",
+        "sha256": "e28961811a1672fd517590f347e5383aca32c5b7ce3026547018f8c952dddc0d"
+      },
+      {
+        "path": "game/src/rendering/aircraft-layer-model.mjs",
+        "sha256": "cb25187c2da27a28a2cbd4fee11c0d97fdfc3c8772dfc8471ce4cb797b60d1b5"
+      },
+      {
+        "path": "game/src/rendering/atlas-manifest.mjs",
+        "sha256": "fb455a24d57aa81ef01a3950ca51805d27f7f68a4d295cde15f8381dbcf291cc"
+      },
+      {
+        "path": "game/src/rendering/camera.mjs",
+        "sha256": "0f200342de05b983c1f0aef6fe6200c624c9b82d46cb14a3a68a353f84bcecae"
+      },
+      {
+        "path": "game/src/rendering/canvas-renderer.mjs",
+        "sha256": "6533f11f68e0b1dc58c550cc25c860c64580018ad9c0722db27f85e8a5857998"
+      },
+      {
+        "path": "game/src/rendering/floating-text-layer-model.mjs",
+        "sha256": "5df07df0a9881041a2ac20838177af64c8a32d38ee9781701d3a0f6d49625db4"
+      },
+      {
+        "path": "game/src/rendering/global-effects-layer-model.mjs",
+        "sha256": "cf827dba0a1f62836ed3c323bb80ecdfc94b2f0623508be58872ac36d2e6ea2d"
+      },
+      {
+        "path": "game/src/rendering/interaction-overlay-layer-model.mjs",
+        "sha256": "d4060d1692e6932c036ff0d908632a8a86a732d157e8557c1cb28927781dd906"
+      },
+      {
+        "path": "game/src/rendering/map-label-layer-model.mjs",
+        "sha256": "2e420eb60cf9372da33e80aff05ed21a11826e2243d1e823e2c270a09b4e60c3"
+      },
+      {
+        "path": "game/src/rendering/missile-layer-model.mjs",
+        "sha256": "bc1b798cf3ddb0e44313a3b37511d0dca7f0ec68d8fbd3b9202b35929cdd54f8"
+      },
+      {
+        "path": "game/src/rendering/nation-overlay-layer-model.mjs",
+        "sha256": "fb817467f89726452326a35a130a5eb5eaf65c57c16a3fd32fe9d362d65fceda"
+      },
+      {
+        "path": "game/src/rendering/naval-logistics-model.mjs",
+        "sha256": "83522a4c1fd6bf0468dd4f7e8faee9d196330f927aa62afbefe1ed8e35d16c28"
+      },
+      {
+        "path": "game/src/rendering/notification-overlay-layer-model.mjs",
+        "sha256": "acd7a62587762227d1b3c4b04e0a7206a36bbe4a1a9599b3f0a6a50f2e4d015b"
+      },
+      {
+        "path": "game/src/rendering/paint-bounds.mjs",
+        "sha256": "fc3f719a0b3f366deaefc79ca99c172eb30c1dafcc68f081ec809c04821bfd36"
+      },
+      {
+        "path": "game/src/rendering/pixi-atlas-registry.mjs",
+        "sha256": "57b529347c804ff9b7133479e6a62b6c2e2785473480114569d78afbb9afe697"
+      },
+      {
+        "path": "game/src/rendering/pixi-hybrid-renderer.mjs",
+        "sha256": "900d6b9a4db9ac3ca6697e9d75527be87db5a98ff2960911f18270930606a546"
+      },
+      {
+        "path": "game/src/rendering/pre-structure-layer-model.mjs",
+        "sha256": "cc1b2d8d36d537311330ddabd5690ee5aae0e4df33ad29419ee133408341041f"
+      },
+      {
+        "path": "game/src/rendering/projectile-layer-model.mjs",
+        "sha256": "e4376038d6fd4486c76fc9a6738947ec9731cfae0ad2fa0727cee37b4866d19b"
+      },
+      {
+        "path": "game/src/rendering/renderer-factory-production.mjs",
+        "sha256": "f8a68d6cf75bce6dae5f1b70e2591c13e9c379f9eeb0a083a9e33a001f38d2bf"
+      },
+      {
+        "path": "game/src/rendering/renderer-factory.mjs",
+        "sha256": "574949eb12be995a413ff7d60bb845530f688bd58b552857b0a81838906eeee9"
+      },
+      {
+        "path": "game/src/rendering/runtime.mjs",
+        "sha256": "047cab4812d3c89a959da6e62c280894fe1e9ab8b45e264a6b250af5a60f9538"
+      },
+      {
+        "path": "game/src/rendering/structure-layer-model.mjs",
+        "sha256": "fb452dd417d66006048fa675ca6d3bcb9bc3fabac52304f22f5b94002083fded"
+      },
+      {
+        "path": "game/src/rendering/support-actor-layer-model.mjs",
+        "sha256": "8217df697cc8ea1665919fee35d18071f4020c8e61c43157c52ed83b8f59f123"
+      },
+      {
+        "path": "game/src/rendering/viewport.mjs",
+        "sha256": "7fda0f721d8c795eb6c2287eb7b0897d021f41dcce519155339b152e0dae2f84"
+      },
+      {
+        "path": "game/src/rendering/warship-layer-model.mjs",
+        "sha256": "e7791a29e1b4bb36e12917ee472925ab4426b236677c597b8cb76334d0689b02"
+      },
+      {
+        "path": "game/src/rendering/world-annotation-layer-model.mjs",
+        "sha256": "4d5111533fd468c627a944a6d73b4d31242163b3df06620b3dfe676ef353647f"
+      },
+      {
+        "path": "game/src/sim/authoritative-state.mjs",
+        "sha256": "bccb04de82dc48c16f311e36e7d40f661f9ed48039c5fdcfb7b7c4112fcb7be1"
+      },
+      {
+        "path": "game/src/sim/authority-value.mjs",
+        "sha256": "fa4bbf215b55993e5ecbe780e462d2ee55808812e29f596b884e642b33ce3d59"
+      },
+      {
+        "path": "game/src/sim/command-router.mjs",
+        "sha256": "fce93d4eaecb48586c31ca87fd5fdbe6fcfd860f7cc28580fbb050c722e71109"
+      },
+      {
+        "path": "game/src/sim/command-schema.mjs",
+        "sha256": "76e7f3bd4841a0d29968ff53b8747549a443a32a0c709960309605dcda06aff2"
+      },
+      {
+        "path": "game/src/sim/compatibility-effects.mjs",
+        "sha256": "77e73cf6b89aa4755d6b70607208f3a28e0c1e4cf5b710a1d20db498d498caae"
+      },
+      {
+        "path": "game/src/sim/configuration-schema.mjs",
+        "sha256": "9c4ee8322e0a9b60740cb4cb8dfab31d0b34765116bf01ddd8d2e7b7d6a36150"
+      },
+      {
+        "path": "game/src/sim/deterministic-runtime.mjs",
+        "sha256": "4c46522e59fee49244c2aa9b16bd9ca967c7717711808bee294d83b1e9521a4a"
+      },
+      {
+        "path": "game/src/sim/engine-checkpoint.mjs",
+        "sha256": "4f20812199fb48c50c6172ed15e46c8a17051d156b113263c0cc31f6a1c49ca6"
+      },
+      {
+        "path": "game/src/sim/engine.mjs",
+        "sha256": "261950df52eed78afd0543d210d98d0db98c5bbdbb25dcb3dfbcdadd54a25fbf"
+      },
+      {
+        "path": "game/src/sim/geometry.mjs",
+        "sha256": "9f3c1d0e73a0dfccf2a6fe2f7a2c7e4fd503d46c73fa8073634288181c683f2d"
+      },
+      {
+        "path": "game/src/sim/graph-codec.mjs",
+        "sha256": "92e14db8f59483a5f3da806b2dc4b96a883273b4f4d9959380484e6a7125be49"
+      },
+      {
+        "path": "game/src/sim/map-generation.mjs",
+        "sha256": "05ed41b7d6fde232456710c83ca8e29d5206bf6ed8d20bc326ef1ec1761addfd"
+      },
+      {
+        "path": "game/src/sim/match-flow.mjs",
+        "sha256": "ecb8a5296ba49ac46a45f66e35b16850348f48ef97e2ed7bb5c896e7c518ff9a"
+      },
+      {
+        "path": "game/src/sim/replay-constraints.json",
+        "sha256": "1a0174ef129b22f489176cac3245f67654318339e7e7d8e6ff30338c2003820e"
+      },
+      {
+        "path": "game/src/sim/replay-schema.mjs",
+        "sha256": "3abbab626eeaba622ce860193072e58711e2c5703972b3b661c91ddb757a87c9"
+      },
+      {
+        "path": "game/src/sim/rules.mjs",
+        "sha256": "502872f9e3c284cb1879a8d9f1b600291cbe3f774fe257ec8d4e46ea124d9487"
+      },
+      {
+        "path": "game/src/sim/sha256.mjs",
+        "sha256": "f728adb0989422acf0ce3ac04c232febc2f0d9d0e65a79ec03c8c85a72d58180"
+      },
+      {
+        "path": "game/src/sim/simulation-ports.mjs",
+        "sha256": "309a8b3bdeed9c0bccde4538f1fab859d61cfc9cc4a8ffe8497a3511a746ed22"
+      },
+      {
+        "path": "game/src/sim/state-oracle.mjs",
+        "sha256": "490224711419cea352137647109066cae2ce1337d26813dbcb5bf95b457a81af"
+      },
+      {
+        "path": "game/src/sim/state-reset.mjs",
+        "sha256": "68ae5084c809a820b3774facb8c614fbd25b518321dc0f7242dfd31e3f5ca627"
+      },
+      {
+        "path": "game/src/sim/systems/ai.mjs",
+        "sha256": "44fb330ec2c492355992db10f86e88378722a5f35b9efc18b897d0e5a12b0f99"
+      },
+      {
+        "path": "game/src/sim/systems/air.mjs",
+        "sha256": "6cfd2af518a550a3615b74bfe9388c103b832561ae36c69ba25e0a095f930d13"
+      },
+      {
+        "path": "game/src/sim/systems/diplomacy.mjs",
+        "sha256": "11021991330ca567c86404943bb6620d921bd040332b226c9dbb5428001a3f7f"
+      },
+      {
+        "path": "game/src/sim/systems/economy.mjs",
+        "sha256": "22897b1706facd0b916193788219c1ecbfa3cf5df41cb5c925504c2326feb125"
+      },
+      {
+        "path": "game/src/sim/systems/fog.mjs",
+        "sha256": "671cfe3ae9440371561567f4367f2dd46898d1cc74edb79d6d065ebd4f94306b"
+      },
+      {
+        "path": "game/src/sim/systems/land-combat.mjs",
+        "sha256": "00e6bcd39baeba64cdc644d2f67fa652b4b8cb9c0f65b9c4b3e583032ef93c4a"
+      },
+      {
+        "path": "game/src/sim/systems/logistics.mjs",
+        "sha256": "bc88e3764127d7b65f9bc950122cc5b019624e0bf7eb6b24d130d31778b51f9d"
+      },
+      {
+        "path": "game/src/sim/systems/missiles.mjs",
+        "sha256": "6a0e6e751bc450f7ebab88c36df559440e9c617829a7b276b72b233a73e5cd8f"
+      },
+      {
+        "path": "game/src/sim/systems/naval.mjs",
+        "sha256": "85a9b532bb51a6291555c46e1e8bcdec7507bca60d72e45e38d6169baab97e63"
+      },
+      {
+        "path": "game/src/sim/systems/structures.mjs",
+        "sha256": "8d905e6622a418af3e50dc0126ead3ded66946f2455ad930796b6ebb3e72bae3"
+      },
+      {
+        "path": "game/src/sim/world-loop.mjs",
+        "sha256": "b6d8788549ae99e31a316e728866c2486bfb5f57e4488722a092e411c6dd4b34"
+      },
+      {
+        "path": "game/src/sim/world-setup.mjs",
+        "sha256": "7cad3790fc7bde7979b2533cdfb32f36fb6613e5ccc85ddb5cdb6d79ffaac3c9"
+      },
+      {
+        "path": "game/src/styles.css",
+        "sha256": "7d92a909144ba73dc7779c1e6740a1ede5638b2ebe5922e92e21995be5229384"
+      },
+      {
+        "path": "game/src/utils/storage.js",
+        "sha256": "e4b9d7f9df4534f97926e231e9bf92bb5572ef0819af774d22eeb6066f64332f"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "bab89cc18b7d0218ed11efe05e2ba652b8170cebddf1d19b81012f4091c2ce25"
+      },
+      {
+        "path": "package.json",
+        "sha256": "0acf9edd2ae0aded58957d4d427afe385a6f34ca45ee844f76a91b9c49da066d"
+      },
+      {
+        "path": "playwright.config.js",
+        "sha256": "109647849891e1d87b352d4c2aaca7a9d5986962312199bd40f206f2d3587abc"
+      },
+      {
+        "path": "playwright.wordpress.config.js",
+        "sha256": "b8ee235ce3073785ebbb4a3d019abeaf8d9c44d14187f9da53c960cc6e231980"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js",
+        "sha256": "318416a59deee91ec338f78f1f1e08b2f72b6258d2bec05a2f59712744682729"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-desktop-win32.png",
+        "sha256": "e087c3ca66e8d37eb6a986468b389b1bb49fdd2c770da0f3feec961397305838"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-mobile-win32.png",
+        "sha256": "f34f240852e7791e1ac32e01cc36944e7a43f36110e0eeeda168d13186765804"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/index.html",
+        "sha256": "f87ec132b164e78912a413d562316b74b42f70a67daef9e5e3f1a8f2721aff11"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/playwright.config.js",
+        "sha256": "3c20a3e154737619d19382addb49ad37ded655d52e41ac0fcb70d242c4b7f983"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/README.md",
+        "sha256": "edeafffd9db5b85d98b2bdeb541ef9383d3512e4cdd23fc5f93a6f34467a93cc"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/scene.js",
+        "sha256": "b2ed0d844696b69be2b1e583f160042c380628f50b1fdf47a646e524e4370f9e"
+      },
+      {
+        "path": "prototypes/graphics-vertical-slice/styles.css",
+        "sha256": "ef99056b0a358902a7a35477bd5f5537d83d04553c4d98d8793168224f0af472"
+      },
+      {
+        "path": "tests/adversarial-boundaries.js",
+        "sha256": "6971238484373fc35eca23b5f752c0caa7d3ca00cac33b90006ed8447ce848e5"
+      },
+      {
+        "path": "tests/ai.js",
+        "sha256": "4b9af1c80d3589b0319ffda283a250162737b037021754c5d63e2298dc746f25"
+      },
+      {
+        "path": "tests/air.js",
+        "sha256": "7acee00c314312b0f837e7cd3de45d7b78dcc1ef2d37c20f8760454792a19d77"
+      },
+      {
+        "path": "tests/aircraft-layer-model.js",
+        "sha256": "70f8fcab29155b60144f89aee2042012c3f6ae5ae3aec3558764fcffe88ee16e"
+      },
+      {
+        "path": "tests/atlas-manifest.js",
+        "sha256": "4cc4b9fad659a28523d83feb9f07de38a186509e0cf9d39a83d882b39749a11e"
+      },
+      {
+        "path": "tests/authoritative-state.js",
+        "sha256": "f330cab806145209aaa0b5805d2c417cbe75d726bac5edb110263fe5de2130c9"
+      },
+      {
+        "path": "tests/browser-server.js",
+        "sha256": "49497fc8dd6edfdfddbac99cb1fdbe058b260e1bf23983f1b52fe864e92d08e1"
+      },
+      {
+        "path": "tests/browser/build-contract.spec.js",
+        "sha256": "53c584ab9db1a10aa6a301ec6b8ff69ae63c249ad07a2e3cd1a701eba195f7ee"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js",
+        "sha256": "f8d2f506fdc0bba71fc105ed217e33ac9ba5cb7cb1c7d173b0d8b3fc17186b41"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png",
+        "sha256": "a51627c07fc79b89ae99010539cd98d21613a549ecc669eaa3e7340f1d408f95"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/dense-late-game-chromium-desktop-win32.png",
+        "sha256": "b97439ec5c137ef371c16e7c774f49c4a684c3c3150a04e42e126ceee3e4be02"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-close-chromium-desktop-win32.png",
+        "sha256": "5cf501964774eaa168f4dbd1c498848f52fb6854625c6021317b19df7a5820fc"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-strategic-chromium-desktop-win32.png",
+        "sha256": "f8febaccc074849c71d0925b0a01d5e92d6cda18486bdb1f810d1b13638fd88a"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-close-chromium-desktop-win32.png",
+        "sha256": "42fc1acf6692de8fe6b7b27a11323b1fa944abfbb0926eaff805933bdfc0786c"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-strategic-chromium-desktop-win32.png",
+        "sha256": "f7a34c6ead9958b2e103a56abfdbab0295c9f3bf787ebca3e1c90ecc9fbecae5"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-close-chromium-desktop-win32.png",
+        "sha256": "8f7fbc683f35b92304927941e79442797a5bfe4f7733c08edc427465608ef176"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-strategic-chromium-desktop-win32.png",
+        "sha256": "1f067d4283304cb6143f73154f264e1844ce3286fde784872114409e8664a2e5"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-close-chromium-desktop-win32.png",
+        "sha256": "967307f79cd6fff637571e6d74705aa6954bda56cd9fcc3b58eac0c435cc45a9"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-strategic-chromium-desktop-win32.png",
+        "sha256": "d393808f7b75eaec4eb09e9d31a63564f69d1464c43bed9a6f5dd1ac574b957d"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-close-chromium-desktop-win32.png",
+        "sha256": "b093fb7d5aa7ede4eb20388a33216c2298f9f07464e01656a35e2d12f64cdf9d"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-strategic-chromium-desktop-win32.png",
+        "sha256": "027e518ae4d52c5390535472f04c97309b379695b999d9a601f577d7edbbc8d5"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-close-chromium-desktop-win32.png",
+        "sha256": "d5a221dced8a7603b5ca40f2902fd482288dee94628dceb9ccbde0d780d9dfe0"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-strategic-chromium-desktop-win32.png",
+        "sha256": "024dfe23bb95ec80db78116009dd22388d8c441b1c085c43766288b0f1df2a9c"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-close-chromium-desktop-win32.png",
+        "sha256": "ee504e73c6db46c4960df668635b3aea2d707e1fd543b0b59ca6941720a2eff9"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-strategic-chromium-desktop-win32.png",
+        "sha256": "3a6f1e445de7582cbffc98695db836cc5f776cd44cc3bc174f487921273195be"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-close-chromium-desktop-win32.png",
+        "sha256": "14a9d2b3c5fe70d8f0d841cd0ed821bc8a7ef18bc208598ac155075b4145c494"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-strategic-chromium-desktop-win32.png",
+        "sha256": "9d777758321c9b9ccca2b24b5cc4e8ee5c602a6167e50252aba1514bb881d3ca"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-land-close-chromium-desktop-win32.png",
+        "sha256": "712425ca99b6533bd4e5251f0b3b585d5fcd72be66a0b6847b2ee189f666f6b8"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-land-strategic-chromium-desktop-win32.png",
+        "sha256": "fa37891034e094bfd7c07893a3658233c37e81dde28af529691f7997bb0a8e77"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-close-chromium-desktop-win32.png",
+        "sha256": "a55ac3a362b4dedd99c26b9a7ff07ae3eb33c803096cef8c047c6a0f78c26647"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-strategic-chromium-desktop-win32.png",
+        "sha256": "b42ead91002f9f7f57b1c2ac848d317fb05d4bc1585cf348b84085e3f038036f"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-random-close-chromium-desktop-win32.png",
+        "sha256": "30eb177d8d358283de5ceb97b8c508f0fc46cea09df61f662dfd2b0874da3d3d"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-random-strategic-chromium-desktop-win32.png",
+        "sha256": "172c136fdc7d5e60c235fc90db29b7a6182c0b0fd94416cf92c8c4ab03674804"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-world-close-chromium-desktop-win32.png",
+        "sha256": "2adb167338da32865da2354394b244db66ec5acd67e5697b79cafa43267a7627"
+      },
+      {
+        "path": "tests/browser/canvas.spec.js-snapshots/maps-world-strategic-chromium-desktop-win32.png",
+        "sha256": "be7c587e7f5f2b9cb34b80e3741f65c5c61a9bf95b73b40940789b4f76e41ff7"
+      },
+      {
+        "path": "tests/browser/desktop-scale.spec.js",
+        "sha256": "b4702925f0d82409fbc86c2fdcdc21893e62a5be495e36b11ca56a7092e8d510"
+      },
+      {
+        "path": "tests/browser/pixi-aircraft.spec.js",
+        "sha256": "b3c0f4aa82d3820a4d395f9d323948b58a52531831791d439fa1fa423bb4ce17"
+      },
+      {
+        "path": "tests/browser/pixi-atlas.spec.js",
+        "sha256": "a3a38674308a08ba532fc17869b36cf6124c96e984d36925a89aa9e8e55f4d36"
+      },
+      {
+        "path": "tests/browser/pixi-floating-text.spec.js",
+        "sha256": "6f9da4f7ea0d98258bf426e65115d12851e3db93ea8071219cc7f7193eec34e8"
+      },
+      {
+        "path": "tests/browser/pixi-global-effects.spec.js",
+        "sha256": "d0069ef1fb04cd03d61af827a7b05c0f6df1857eb1a36d5dccd4dfe81f355201"
+      },
+      {
+        "path": "tests/browser/pixi-interaction-overlays.spec.js",
+        "sha256": "0d52d70c462a4c141f17bd0a33cc9f0d876d99f8595b7df157de8bce82b1383d"
+      },
+      {
+        "path": "tests/browser/pixi-map-labels.spec.js",
+        "sha256": "95d3e1df74ab460597557a49bdec252f5933edfa37d1aef8d6005c5892749764"
+      },
+      {
+        "path": "tests/browser/pixi-missiles.spec.js",
+        "sha256": "2c03e01116f2469a620781bb3f13a9c9f965144f049bc5529401e8a8d4d4e0a1"
+      },
+      {
+        "path": "tests/browser/pixi-nation-overlays.spec.js",
+        "sha256": "61214bf440abbd51cdf2dedc79a53bec1fafa79a54819596eb08496246b86c3e"
+      },
+      {
+        "path": "tests/browser/pixi-naval-logistics.spec.js",
+        "sha256": "225ee4f38bf3ccb2a64297af3dd750e9c58000c6a7fc5b6c9a9b9531e9f864bb"
+      },
+      {
+        "path": "tests/browser/pixi-notifications.spec.js",
+        "sha256": "90f1df66858fdf135baf0ea54a42c78371b2fc7c82eb7eb87a7b1a75c5f8851b"
+      },
+      {
+        "path": "tests/browser/pixi-projectiles.spec.js",
+        "sha256": "87c76f81dc3fde28d41b25a600d2274dc47203f1ae3527437813a2d8b7a667fb"
+      },
+      {
+        "path": "tests/browser/pixi-structures.spec.js",
+        "sha256": "337ae16787d369f092c29e9e6c5541e798e98a965f79d4d3ba7d46a6473cd3a9"
+      },
+      {
+        "path": "tests/browser/pixi-support-actors.spec.js",
+        "sha256": "1d1f7b02ad6990746f97484e583168185d7a048d4c811903d098d7d614ae5e22"
+      },
+      {
+        "path": "tests/browser/pixi-warships.spec.js",
+        "sha256": "c862d1dd1cdf68c136ca96da71e5b709c2bfb82d22f81cb9ef2748e0c7506bbc"
+      },
+      {
+        "path": "tests/browser/pixi-world-annotations.spec.js",
+        "sha256": "a830025a9b2ed2f7bc5481f53088c1c913bc539508d0c58a8f31a74ba3298151"
+      },
+      {
+        "path": "tests/browser/platform.spec.js",
+        "sha256": "1ba474c3eaf76cd09ccae552f6c747595ac850adc0102eef9ecccff35098e29d"
+      },
+      {
+        "path": "tests/browser/relay-websocket.spec.js",
+        "sha256": "1ad546e695e339fd2b3de70d1cbc9e9f8396aed442713848b0aa2542c3478c33"
+      },
+      {
+        "path": "tests/browser/renderer-foundation.spec.js",
+        "sha256": "2c3b7cf2fe30a205ab041f992e11af5c00d59085ad236094d2bfd85168b38d04"
+      },
+      {
+        "path": "tests/browser/wordpress-artifact.spec.js",
+        "sha256": "d3d0c2b64f84e0a12030423be143e06461a037fc218763ff649499f3595d5b52"
+      },
+      {
+        "path": "tests/build-package-fixtures.js",
+        "sha256": "52ba6ba2438b7d57552e8bdf57df0409b4c64cb8f27dd0ac94716e8b8139adb4"
+      },
+      {
+        "path": "tests/build-reproducibility.js",
+        "sha256": "004d642ed886eb08926b023781ad4388c110265399e0c06fbead29c4395f98a9"
+      },
+      {
+        "path": "tests/command-router.js",
+        "sha256": "64158415c08f442f34a58df54cdbcd95ebd954b3a1a3e7feb778badbbf2d92e9"
+      },
+      {
+        "path": "tests/compatibility-effects.js",
+        "sha256": "02f456aa2b851f4257544adbec98eed57ec8a6568c10668cb9b71689e50b4e42"
+      },
+      {
+        "path": "tests/deterministic-runtime.js",
+        "sha256": "ddfc994eb36642501630b0b8caf63755a59dab35413e32d3d8ea9cda47be5a1d"
+      },
+      {
+        "path": "tests/diplomacy.js",
+        "sha256": "efc55fe9019ed65a8a0855d16c7c01276c5cf5c23b4fcc68321a4608475367f7"
+      },
+      {
+        "path": "tests/economy.js",
+        "sha256": "fadeadbc9016b0a93cc512171c8590609d37e1944d2ea5d611c22cb91ba5c256"
+      },
+      {
+        "path": "tests/engine-isolation.js",
+        "sha256": "699640988c95422d6590f280f884269abf20f5fb90a226cf6361c6e41dd6dd5b"
+      },
+      {
+        "path": "tests/engine.js",
+        "sha256": "7b049bd0bf5a6c48c2106d9de73f573e6aea97819f5af189759bc7b9f6e4505d"
+      },
+      {
+        "path": "tests/fixtures/browser-performance-ceilings.json",
+        "sha256": "60aaa25fccb2c707df30b707c0969874187f0ec45a7fa39a7f8fc6c60ca6f895"
+      },
+      {
+        "path": "tests/fixtures/phase-d-parity-corpus-ad30188.json",
+        "sha256": "c081ed5defaa9844410882d5cf9f17ef3a87146a925e574f865839e81c81dcdb"
+      },
+      {
+        "path": "tests/fixtures/replays/public-v1.10.7-focus.json",
+        "sha256": "cb217545e16b0da5c55e9bf486a5e699397f872972783a685d71d8c6a4514021"
+      },
+      {
+        "path": "tests/fixtures/simulation-baselines-v1.10.8.json",
+        "sha256": "8f9bdc61eb50ef5ddcd3dd03103bf78f38348f43177e23a8f0c0f0982272005a"
+      },
+      {
+        "path": "tests/floating-text-layer-model.js",
+        "sha256": "776628602759e33fee4e641a4035ccdd490932e2c5b9d141f2281b4471714b7b"
+      },
+      {
+        "path": "tests/fog.js",
+        "sha256": "66efee749ce143342bc56b58c0720ce334bebf32030de5b86a20651a7f8aefa2"
+      },
+      {
+        "path": "tests/global-effects-layer-model.js",
+        "sha256": "a25cd153b8090b4fab2402630f0137fbb945c33f40bb62a3893db81254b2044f"
+      },
+      {
+        "path": "tests/harness-hardening.js",
+        "sha256": "486c543bcb809b0963eaabdbd7cca28dc5ce9fa87a71a71b663c1809d976e6c3"
+      },
+      {
+        "path": "tests/help-contract.js",
+        "sha256": "5d3410c62783cdede49ee500c32dd49b59f1e6d27d07603c95f86f66a3c121cd"
+      },
+      {
+        "path": "tests/interaction-overlay-layer-model.js",
+        "sha256": "86f253885118f81721b0e116f8c9d7a93189cc179d5a55b54f3089b3911ee340"
+      },
+      {
+        "path": "tests/land-combat.js",
+        "sha256": "888a3cb2b353a0c9e2ef8d8f5e179a437f0ec777cb8fbfde0c1dcc0d219381cf"
+      },
+      {
+        "path": "tests/logistics.js",
+        "sha256": "c97e5fdd82fc2f158d67766a00bd739e5f5ddca441c309e8af16c46b511f1966"
+      },
+      {
+        "path": "tests/map-generation.js",
+        "sha256": "3aa8eb3d932b7541fc3f72d87e7f1e9926556d5c0541501d28077af9828a2fd9"
+      },
+      {
+        "path": "tests/map-label-layer-model.js",
+        "sha256": "a3d87b3abb59eccdcbbc26f05851cdb748ca2f6f5c2256c58eab565cca38476e"
+      },
+      {
+        "path": "tests/match-flow.js",
+        "sha256": "73ba1b51811908f5bd7f03f9e78b11be835bca2feb7496a15d399ae0fa0d730a"
+      },
+      {
+        "path": "tests/missile-layer-model.js",
+        "sha256": "a5c41c041d05a6a2fc16534b3e45d62e24147cb0c0f8d4cab5fe7ca76d0b2bdc"
+      },
+      {
+        "path": "tests/missiles.js",
+        "sha256": "38b0f946569130d68c23f3d889bae3c800fb5181b0ad1e774f8a00dcb7d7ef6f"
+      },
+      {
+        "path": "tests/multiplayer-relay.js",
+        "sha256": "4bc290f8d712f7d909b55ab26029f8e9c1bf04d101db7b0eda510f4bb72f624e"
+      },
+      {
+        "path": "tests/nation-overlay-layer-model.js",
+        "sha256": "8c71a479d3e81d4873450e6117254e0de5834b8688a5895319a43452fc2bc457"
+      },
+      {
+        "path": "tests/naval-logistics-model.js",
+        "sha256": "33c3a1715e8ae644c7263111155dc1e9e4152a7558b104df1e1042909790668d"
+      },
+      {
+        "path": "tests/naval.js",
+        "sha256": "0eb6321273e7649d87ee7c05edcdf8ee22b8bd5cc250fcc0a44f70acaf81bd30"
+      },
+      {
+        "path": "tests/notification-overlay-layer-model.js",
+        "sha256": "e4fb33f05d34896fdadd929b90db0d3a52fbf0519c843ef2e667da0832a3f5c9"
+      },
+      {
+        "path": "tests/phase-d-parity-corpus.js",
+        "sha256": "fbf175938a2fc4e4436134a4eb946dce88573f8d2fec239052aab8081c19f4c9"
+      },
+      {
+        "path": "tests/phase-e-hardware-harness.js",
+        "sha256": "1db77c4350a8d77201452337c4e76be3c00f3eae58c073fde9a1b00c8668c5a7"
+      },
+      {
+        "path": "tests/php/exact-score-key.php",
+        "sha256": "0c497908039e7b8670174f74889debf48e6ee3084b5ca4d3ba69fb639e349b3d"
+      },
+      {
+        "path": "tests/php/package-integration.php",
+        "sha256": "5448fbf60f78e79d2886a8f03fd81608ad74e1584b5106d7db4d53060ce442e4"
+      },
+      {
+        "path": "tests/pre-structure-layer-model.js",
+        "sha256": "3081c15aa711e6dc6530fedbbc380194e7e9069ffd542875393bdf0dbe1f0fc9"
+      },
+      {
+        "path": "tests/projectile-layer-model.js",
+        "sha256": "77030a29a817fe6476f4f17f0191a356280911d73442b8b17e0927fd3f511a6b"
+      },
+      {
+        "path": "tests/renderer-independence.js",
+        "sha256": "915cff94c39f3b362ee0bb138337cc820d6cb0b049561d0ad343cc2a101aa8e7"
+      },
+      {
+        "path": "tests/rendering-contract.js",
+        "sha256": "256f1f935d626a36884fc864c84080d1910bff5f586648c8d61db109383f3417"
+      },
+      {
+        "path": "tests/replaycheck.js",
+        "sha256": "f9764180324913234899d28dc5ff1e2bdc66740fb807fdf01395a4f625759eda"
+      },
+      {
+        "path": "tests/restart-replay.js",
+        "sha256": "359700ee9fcdb86f880e8a043e74ff408bb32db7b035eb29903d08a32e79a340"
+      },
+      {
+        "path": "tests/rules-geometry.js",
+        "sha256": "405f4cf4d062ee83b56b84adb043483951fb6b5167d4b1eddf32069f33593d43"
+      },
+      {
+        "path": "tests/security.js",
+        "sha256": "8a3f0663d08b07819dd789727d4094097087bd3ad614ff19ff7c2d2f035f813b"
+      },
+      {
+        "path": "tests/seeded-tier-order.js",
+        "sha256": "0b6d2ba6a24914836a131c6b8a11271d974b2ff3a149bcf314919c85ab99c767"
+      },
+      {
+        "path": "tests/simulation-ports.js",
+        "sha256": "0b75e01daba92aa38990178c8624de4cfdb2a51d43143ee1a60e353d00555112"
+      },
+      {
+        "path": "tests/smoke.js",
+        "sha256": "c8c896abbd9292555b6842e6d4e6cb21e0bebcee2b1b7c56d7c7f4330aa7a2b5"
+      },
+      {
+        "path": "tests/state-oracle.js",
+        "sha256": "b2b44d38f97366d454a3d3dbedc3e38c8e7f2a5e0b88cdef4218f00bf4f944ce"
+      },
+      {
+        "path": "tests/structure-layer-model.js",
+        "sha256": "8b7866a2fcef2a9c8e8db849ea887e6bf0c4d00e245d4d33782f71a8ebce5fd6"
+      },
+      {
+        "path": "tests/structures.js",
+        "sha256": "1fafcbe3c2ebdcc6f78553d87d1ccb82f0954746c53e5d4e76cdac4e82572efd"
+      },
+      {
+        "path": "tests/support-actor-layer-model.js",
+        "sha256": "add9cd14c37ae1496b70227207fc10b10bbc3b4f3188d890cccdff5e1d6686ac"
+      },
+      {
+        "path": "tests/tools/simulation-baselines.js",
+        "sha256": "ee936ffc30745ccce7ef564d69255ce62e02a31261fa4a5f22ce6a960f1fc9c7"
+      },
+      {
+        "path": "tests/tools/state-oracle.js",
+        "sha256": "09d88b972d558a1e58ca9d19c563964ab485cc0df15b3c095286bfc3b100a3c1"
+      },
+      {
+        "path": "tests/trailer-smoke.js",
+        "sha256": "6e4ff8a832217c1489c9dcdd186b253187e0eea94697ef6dc869d460b12b8ad8"
+      },
+      {
+        "path": "tests/warship-layer-model.js",
+        "sha256": "6e3c942543876940bec1fbbf42a9430ca467b3a47655c3fa55d2c76f14bb3236"
+      },
+      {
+        "path": "tests/world-annotation-layer-model.js",
+        "sha256": "3df9708695afe3aa1e3d72e1f9f8fa964c45f7efad295b9035613c1bf91fed16"
+      },
+      {
+        "path": "tests/world-loop.js",
+        "sha256": "c67f056c021d18885d4cd38e782dc977ef95b7b3bf5fad08a0798496999c9f0e"
+      },
+      {
+        "path": "tests/world-setup.js",
+        "sha256": "1f66a6ddcae8df2635fae161916d1bf287d0bae1c937c0c1e006f3fe7093a7b3"
+      },
+      {
+        "path": "tools/browser-performance.js",
+        "sha256": "6856e6f1c62816f59d354541a595946fad5a67202430488d32bf958feb857c34"
+      },
+      {
+        "path": "tools/browser-server.js",
+        "sha256": "665c7ea65767a4ff1bb52e441729fa99537c727169cb78faddc83d2b01341f52"
+      },
+      {
+        "path": "tools/build-flags.js",
+        "sha256": "33b08b48430bf07342524505fc9a2d51de87f17d45eccb84160bc8d326b75904"
+      },
+      {
+        "path": "tools/build-howto.js",
+        "sha256": "8cd1552678c7c958fdbfcf295e56dbdead2e47836f7afdb7d6e9c8cc8154949b"
+      },
+      {
+        "path": "tools/build-plugin.js",
+        "sha256": "cf26fbe80171c64de15ce284ca49e09c8aa1db8c161bb8665519de7d1d8182cc"
+      },
+      {
+        "path": "tools/build-previous-plugin.js",
+        "sha256": "1a65d026455e3cb63a2088e8d5699801588c7c82d7f4a867fefd54bcf96cc691"
+      },
+      {
+        "path": "tools/build-release.js",
+        "sha256": "a1abd13579c72e734367788f8d68edfc762140d9dc512995b0960a19f0bfeea5"
+      },
+      {
+        "path": "tools/check-game-syntax.js",
+        "sha256": "f8b8e3f9e0b13704a3d09f8c1e707b18ac17bb2ed84486f1744a0259c74e1534"
+      },
+      {
+        "path": "tools/determinism.js",
+        "sha256": "3f6512cc7a1747dcfc91e4bcef3fe40f084e00f87abe6a566808951ef474b695"
+      },
+      {
+        "path": "tools/dist-server.js",
+        "sha256": "3b6e16552f55d5f32951b28f05b74682b1c19f2c6ba4edfe20cccb3c4c1b0621"
+      },
+      {
+        "path": "tools/finalize-game-build.js",
+        "sha256": "d8b779eff2a923964aef92ecb945e58d09ff31a4b0f1a759a8a4e83d2f65acca"
+      },
+      {
+        "path": "tools/generate-parity-corpus.js",
+        "sha256": "a4d9988b76dfcc49031d9a5d89a827754c85f7887ade9efc92df106f1750ebfc"
+      },
+      {
+        "path": "tools/harness.js",
+        "sha256": "8debd045fb211046269f052b601ac0c871d82709937d68acef38328e92f7e7c7"
+      },
+      {
+        "path": "tools/kenbot.js",
+        "sha256": "d51af5e4577a548709cdc93ccb3fb3bd8d576e8874552a38809ec1956eb970a2"
+      },
+      {
+        "path": "tools/package-zip.js",
+        "sha256": "099d49f652c581d5010b5cc3f4404d6541ac03bb0eeeb0b1c0387c7ef6fcc12e"
+      },
+      {
+        "path": "tools/parity-corpus-driver.js",
+        "sha256": "eb68adf5a31b82d56bf2086c5ceccbb15782e185dbe117c4e9d3bc754973d573"
+      },
+      {
+        "path": "tools/phase-e-browser-matrix.js",
+        "sha256": "1a125631b4cbc850595078ec92714823f39602d2cbc84ee402ce2f909b8aa9f0"
+      },
+      {
+        "path": "tools/phase-e-hardware-qualification.js",
+        "sha256": "5c1169dd9ca5bdbf6bc21f31ee5ea3bbd2ab428a53be988a37e35374cca7225b"
+      },
+      {
+        "path": "tools/phase-e-qualification-contract.js",
+        "sha256": "21243ee583a24366a040195916b3336ee1f2726be355fbb1fa1dfb631f9582da"
+      },
+      {
+        "path": "tools/relay-websocket-server.mjs",
+        "sha256": "ff9afca686751a3827739aa4246105d93f3f2a1a0bf445f7ae209ec3be98958e"
+      },
+      {
+        "path": "tools/release-metadata.js",
+        "sha256": "43de2ed1cd3bd1b8cad1584a6a3461e99c43fc1fd697ade2506f271499d5ef06"
+      },
+      {
+        "path": "tools/replaycheck.js",
+        "sha256": "121d7d34f934f641994859c8ca4935be4754b59f3b0f3f11afddb447337739df"
+      },
+      {
+        "path": "tools/source-evidence-manifest.js",
+        "sha256": "40683c37a101edc01a200a721b8aca6b88c10f5298669440de4a26d68aa2b57b"
+      },
+      {
+        "path": "tools/trailer-capture.js",
+        "sha256": "dbaecb17f2f896420b844b14c3ab00774d3547e5f967879e98c3ae6c36615231"
+      },
+      {
+        "path": "tools/trailer.js",
+        "sha256": "e2f243c91a2c8f95a2d1b9011164ecd113496460c04f2d282c3226312d0a16a9"
+      },
+      {
+        "path": "tools/trailer2.js",
+        "sha256": "a8ccf8134a8e54c798c09a786f19440cb0a09061b2949615bd4c3634fc62b13b"
+      },
+      {
+        "path": "vite.config.js",
+        "sha256": "21021ee6a2d4885406f6304628b59560fbcb3d6e6715b149714f02027c49b916"
+      }
+    ],
+    "head": "0842f37fa3b5e175026e6c629c540c45f5536860",
+    "dirty": true,
+    "dirtyStatus": [
+      "M game/index.html",
+      " M game/src/config/build.js",
+      " M game/src/help-pages/about.html",
+      " M game/src/help-pages/about/index.html",
+      " M game/src/legacy-game.js",
+      " M game/src/rendering/pixi-hybrid-renderer.mjs",
+      " M game/src/sim/engine.mjs",
+      " M package-lock.json",
+      " M package.json",
+      " M playwright.config.js",
+      " M tests/browser/build-contract.spec.js",
+      " M tests/browser/pixi-interaction-overlays.spec.js",
+      " M tests/browser/pixi-naval-logistics.spec.js",
+      " M tests/browser/pixi-structures.spec.js",
+      " M tests/help-contract.js",
+      " M tests/interaction-overlay-layer-model.js",
+      " M tools/finalize-game-build.js",
+      "?? game/src/rendering/atlas-manifest.mjs",
+      "?? game/src/rendering/pixi-atlas-registry.mjs",
+      "?? tests/atlas-manifest.js",
+      "?? tests/browser/pixi-atlas.spec.js",
+      "?? tests/phase-e-hardware-harness.js",
+      "?? tools/phase-e-browser-matrix.js",
+      "?? tools/phase-e-hardware-qualification.js",
+      "?? tools/phase-e-qualification-contract.js",
+      "?? tools/source-evidence-manifest.js"
+    ],
+    "dirtyStatusSha256": "a0fd1ced6ee7e9daf505959d2c87d37bebb44b4b6440f62274a1f4cb6bf56b3b",
+    "dirtyDiffSha256": "50a586d1c226e2f76d52b161d083ef0f1a87d7b1772c81473dccb6ab1190e8d4",
+    "version": "1.10.30",
+    "build": "2026-09-19-phase-e-complete"
+  },
+  "isolation": {
+    "ports": [
+      4173,
+      4174
+    ],
+    "portsFreeBeforeRun": true,
+    "reuseExistingServer": false,
+    "freshPlaywrightWorkers": true
+  },
+  "command": "npx playwright test --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop --project=chromium-mobile --project=webkit-mobile --project=chromium-reduced-motion --project=chromium-source-contract --project=chromium-built-contract --project=chromium-desktop-scale-1 --project=chromium-desktop-scale-1.5 --project=chromium-desktop-scale-2 --workers=1 --reporter=json",
+  "precommand": "npm run build:game",
+  "projects": [
+    "chromium-desktop",
+    "firefox-desktop",
+    "webkit-desktop",
+    "chromium-mobile",
+    "webkit-mobile",
+    "chromium-reduced-motion",
+    "chromium-source-contract",
+    "chromium-built-contract",
+    "chromium-desktop-scale-1",
+    "chromium-desktop-scale-1.5",
+    "chromium-desktop-scale-2"
+  ],
+  "workers": 1,
+  "timeoutBudgetMs": 1800000,
+  "startedAt": "2026-09-20T00:55:08.100Z",
+  "endedAt": "2026-09-20T01:21:24.535Z",
+  "durationMs": 1576435,
+  "playwrightStats": {
+    "startTime": "2026-09-20T00:55:09.018Z",
+    "duration": 1575401.179,
+    "expected": 418,
+    "skipped": 2113,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "counts": {
+    "total": 2531,
+    "passed": 418,
+    "skipped": 2113,
+    "failed": 0,
+    "flaky": 0,
+    "interrupted": 0,
+    "timedOut": 0
+  },
+  "perProject": {
+    "chromium-desktop": {
+      "total": 303,
+      "passed": 281,
+      "skipped": 22,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 868208
+    },
+    "firefox-desktop": {
+      "total": 303,
+      "passed": 14,
+      "skipped": 289,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 108729
+    },
+    "webkit-desktop": {
+      "total": 303,
+      "passed": 13,
+      "skipped": 290,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 85982
+    },
+    "chromium-mobile": {
+      "total": 303,
+      "passed": 10,
+      "skipped": 293,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 58866
+    },
+    "webkit-mobile": {
+      "total": 303,
+      "passed": 10,
+      "skipped": 293,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 88353
+    },
+    "chromium-reduced-motion": {
+      "total": 303,
+      "passed": 16,
+      "skipped": 287,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 62834
+    },
+    "chromium-source-contract": {
+      "total": 1,
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 3766
+    },
+    "chromium-built-contract": {
+      "total": 1,
+      "passed": 1,
+      "skipped": 0,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 1554
+    },
+    "chromium-desktop-scale-1": {
+      "total": 237,
+      "passed": 24,
+      "skipped": 213,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 74003
+    },
+    "chromium-desktop-scale-1.5": {
+      "total": 237,
+      "passed": 24,
+      "skipped": 213,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 89291
+    },
+    "chromium-desktop-scale-2": {
+      "total": 237,
+      "passed": 24,
+      "skipped": 213,
+      "failed": 0,
+      "flaky": 0,
+      "interrupted": 0,
+      "timedOut": 0,
+      "durationMs": 107154
+    }
+  },
+  "zeroFailures": true,
+  "rawReport": {
+    "format": "playwright-json-gzip",
+    "path": "docs/evidence/phase-e-browser-matrix.raw.json.gz",
+    "compressedBytes": 202702,
+    "uncompressedBytes": 5985015,
+    "compressedSha256": "5d67d81ec1a0de1aac1e37fa35606fee3b0b162253d63119ccbfae710563c3e4",
+    "uncompressedSha256": "6c6e6ef2b4556b6311a4b9d60f9b5407db02f1e176b6adda56cc049778d859ed"
+  },
+  "passed": true
+}

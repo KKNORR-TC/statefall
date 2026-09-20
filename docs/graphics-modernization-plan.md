@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 18 September 2026. Phases 0 through D and the minimal Phase D2 lockstep proof are technically complete and committed locally; production remains unchanged._
+_Updated 19 September 2026. Phases 0 through E and the minimal Phase D2 lockstep proof are technically complete locally; production remains unchanged._
 
 ## 1. Goal
 
@@ -334,7 +334,7 @@ Status: TECHNICALLY COMPLETE in development game 1.10.12, build `2026-09-18-phas
 
 ### Phase E: Pixi renderer foundation
 
-Status: IN PROGRESS in development game 1.10.29, build `2026-09-18-phase-e17-pixi-interaction-overlays`. E16 `49967b0` established terrain through notifications. E17 migrates the exact final pick, drag-selection, draft, paused, and build-cursor visual block with immutable once-per-frame input presentation, a pure bounded vector/raster model, exact inherited Canvas-state/final-handoff semantics, prerequisite ownership, and direct uncapped Canvas fallback. The legacy visual-layer migration is complete through end-of-frame; input and events remain on the mounted Canvas and Pixi remains noninteractive. Atlas/loading policy and final physical-GPU/hardware qualification remain open, production/default remains Canvas-only, and this is not final art. See `docs/phase-e-progress.md`.
+Status: TECHNICALLY COMPLETE LOCALLY in development game 1.10.30, build `2026-09-19-phase-e-complete`. E17 completed the legacy visual migration through end-of-frame. E18 adds the isolated versioned/bounded atlas contract for future Phase G art and passes source-bound headed physical-GPU qualification in Chrome and Edge with both exact 1,800-frame/60,000-ms gates, rich 12-sample/11-second frozen resource plateaus, and 140 retained valid GPU samples per browser. The final isolated one-worker matrix completed all 2,531 configured cases with 418 passes, 2,113 intentional skips, and zero failures, with tracked raw evidence independently verified. Production/default remains Canvas-only with no reachable Pixi or atlas-loader graph. This is not a release, handoff, production change, or final-art approval. Authored atlases/unit art remain subject to the Phase G human art gate; Landings remains a separate product decision. See `docs/phase-e-completion.md`.
 
 - Add PixiJS behind a renderer interface and a development-only renderer switch.
 - Implement DPR-aware sizing, camera transforms, viewport culling, resize focus preservation, and precise mouse/pointer input. Keep input commands abstract enough for a future touch adapter.
