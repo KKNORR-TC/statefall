@@ -2,7 +2,7 @@
 
 ## 1.10.32 - 2026-09-20
 
-- Translated approved Terrain Direction 02 into a deterministic shared 4x terrain source with discrete strategic/operational ownership, Canvas high-quality image smoothing, Pixi linear sampling, and bounded static/composite caching. Final in-game visual approval remains pending; no production art baseline, package, release, or deployment is approved.
+- Translated approved Terrain Direction 02 into a deterministic shared 4x terrain source with discrete strategic/operational ownership, Canvas high-quality image smoothing, Pixi linear sampling, and bounded static/composite caching. Ken approved candidate commit `27a2389` as the final in-game F2 terrain on 2026-09-20 by stating `approved proceed`; terrain-affected Canvas goldens are accepted locally. No Phase G row, package, release, or deployment is approved.
 
 ## 1.10.31 - 2026-09-19
 

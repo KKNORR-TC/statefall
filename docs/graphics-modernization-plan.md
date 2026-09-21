@@ -1,6 +1,6 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 20 September 2026. Phases 0 through E are technically complete locally at `d0c92fb`; Terrain Direction 02 is approved as the Phase F visual language and its bounded F2 production translation is pending in-game human visual review; production remains unchanged._
+_Updated 20 September 2026. Phases 0 through E are technically complete locally at `d0c92fb`; candidate commit `27a2389` and its terrain-affected baselines are approved locally as the in-game Phase F2 terrain; production remains unchanged and Phase G has not started._
 
 ## 1. Goal
 
@@ -346,7 +346,7 @@ Gate: every map and mode is playable through Pixi with correct targeting, fog, b
 
 ### Phase F: Terrain and world art
 
-Status: OPEN. Ken approved Terrain Direction 02 as the general production visual language by saying “proceed”. Game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` is the bounded F2 production translation: a shared 2880 x 1656 (4x) source with strategic/operational ownership bands. The old 1x F1 candidate is superseded/changes requested. F2 does not update committed Canvas goldens and remains pending named in-game human visual approval; the direction approval is not final terrain, Phase G row, release, or deployment approval. See `docs/phase-f1-review.md`.
+Status: F2 TERRAIN APPROVED LOCALLY. The earlier “proceed” approved Terrain Direction 02 as the general production visual language. After reviewing candidate commit `27a2389`, Ken separately approved game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` as the final in-game F2 terrain on 2026-09-20 by stating `approved proceed`. The accepted translation uses a shared 2880 x 1656 (4x) source with strategic/operational ownership bands, and only terrain-affected Canvas goldens were updated. The old 1x F1 candidate is superseded/changes requested. This does not approve release or deployment, and every Phase G row remains pending. See `docs/phase-f1-review.md`.
 
 - Implement the approved water, coastline, relief, terrain texture, rivers, ownership, border, and fog treatments.
 - Add zoom-dependent detail and cached/dirty layer updates.

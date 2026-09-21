@@ -144,9 +144,9 @@ test('all map buttons launch useful maps and match the strategic/close visual ma
       expect(state.players, map).toBeGreaterThan(1);
 
       if (process.platform === 'win32') {
-        await mapPage.evaluate(() => { window.__STATEFALL_TEST__.setCamera(0.9, 'world'); window.__STATEFALL_TEST__.freezePresentation(); });
+        await mapPage.evaluate(async() => { window.__STATEFALL_TEST__.setCamera(0.9, 'world'); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.freezePresentation(); });
         await expect(mapPage.locator('#map')).toHaveScreenshot(`maps/${map}-strategic.png`, {animations: 'disabled'});
-        await mapPage.evaluate(() => window.__STATEFALL_TEST__.setCamera(4, 'player'));
+        await mapPage.evaluate(async() => { window.__STATEFALL_TEST__.setCamera(4, 'player'); await window.__STATEFALL_TEST__.terrainRasterSettled(); });
         await expect(mapPage.locator('#map')).toHaveScreenshot(`maps/${map}-close.png`, {animations: 'disabled'});
       }
       expect(mapPage.__statefallFailures, `${map} page failures:\n${mapPage.__statefallFailures.join('\n')}`).toEqual([]);

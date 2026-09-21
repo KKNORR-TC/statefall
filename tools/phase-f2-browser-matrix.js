@@ -20,11 +20,7 @@ const f2Tests=[
   ['F2-T07','F2 sustained 10Hz suppression converges and named synchronous interactions stay responsive','scheduler and responsiveness qualification'],
   ['F2-T08','production publisher installs discarded-B cache-hit C and skips only its installed revision','worker raster identity publication contract']
 ].map(([id,title,skipReason])=>({id,title,file:'terrain-raster.spec.js',applicableProjects:['chromium-desktop'],skippedProjects:f2Projects.slice(1),skipReason}));
-const allowedVisualPending=[
-  {id:'F2-V01',project:'chromium-desktop',file:'canvas.spec.js',title:'launches a fixed-seed match, renders the map, and supports camera zoom'},
-  {id:'F2-V02',project:'chromium-desktop',file:'canvas.spec.js',title:'all map buttons launch useful maps and match the strategic/close visual matrix'},
-  {id:'F2-V03',project:'chromium-desktop',file:'canvas.spec.js',title:'dense late-game fixture exposes strategic visual layers'}
-];
+const allowedVisualPending=[];
 const sha256=value=>crypto.createHash('sha256').update(value).digest('hex');
 const portAvailable=port=>new Promise(resolve=>{ const server=net.createServer(); server.once('error',()=>resolve(false)); server.listen(port,'127.0.0.1',()=>server.close(()=>resolve(true))); });
 function run(args,rawPath,options={}){ try{ fs.unlinkSync(rawPath); }catch(error){ if(error.code!=='ENOENT') throw error; } const invocationStartedMs=Date.now(),env={...process.env,PLAYWRIGHT_JSON_OUTPUT_NAME:rawPath},result=spawnSync('npx',args,{cwd:options.cwd||root,encoding:'utf8',stdio:'pipe',shell:process.platform==='win32',env,maxBuffer:64*1024*1024}); if(!fs.existsSync(rawPath)) throw new Error(`Playwright did not create ${path.relative(root,rawPath)} during this invocation`); const stat=fs.statSync(rawPath); if(stat.mtimeMs<invocationStartedMs-1000) throw new Error(`Playwright raw report is stale: ${path.relative(root,rawPath)}`); return {exitStatus:result.status,error:result.error?String(result.error):null,stderr:String(result.stderr||'').slice(-8000),invocationStartedMs,createdMtimeMs:stat.mtimeMs}; }

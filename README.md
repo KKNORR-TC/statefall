@@ -2,13 +2,13 @@
 
 Real-time browser strategy hosted at [WorldRTS.com](https://www.worldrts.com) on WordPress.
 
-- `game/` — local development game 1.10.32: Vite application with a browser-free Phase D engine, bounded Phase D2 relay proof, technically complete local Phase E renderer foundation, and a Phase F2 high-resolution terrain candidate; Canvas remains production/default.
+- `game/` — local development game 1.10.32: Vite application with a browser-free Phase D engine, bounded Phase D2 relay proof, technically complete local Phase E renderer foundation, and locally approved Phase F2 high-resolution terrain; Canvas remains production/default.
 - `plugin/statefall-scores/` — repository plugin version 1.10.7: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools, and immutable manifest-based game releases.
 - `tools/` — direct-engine harness, determinism proof, replay checker, opening benchmark, release builders, and browser/Playwright trailer capture.
 - `sandbox/` — localhost-only WordPress 7.1 / PHP 8.4 integration environment restored from an authorized site backup.
 - `docs/` — current status and findings, release runbook and record template, graphics modernization plan, historical website handoff, and multiplayer plan.
 
-Production is live and public at game 1.10.7/plugin 1.10.6. Phase E is committed at `d0c92fb`. Local game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` translates approved Terrain Direction 02 into a shared deterministic 4x source for Canvas and development Pixi. The old 1x F1 candidate is superseded/changes requested, while the F2 in-game result remains pending human visual approval: no golden, final-art, unit-art, release, handoff, or production approval is claimed. Canvas remains production/default; plugin remains 1.10.7 and simulation baseline remains 1.10.8. See `docs/phase-f1-review.md`.
+Production is live and public at game 1.10.7/plugin 1.10.6. Phase E is committed at `d0c92fb`; `27a2389` is the reviewed F2 candidate baseline. Ken approved local game 1.10.32 build `2026-09-20-phase-f2-high-resolution-terrain` as the final in-game F2 terrain on 2026-09-20 by stating `approved proceed`, and the terrain-affected Canvas goldens are accepted. The old 1x F1 candidate is superseded/changes requested. No unit art, Phase G row, package, release, handoff, deployment, or production change is approved. Canvas remains production/default; plugin remains 1.10.7 and simulation baseline remains 1.10.8. See `docs/phase-f1-review.md`.
 
 Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN` requirement, and run the applicable release gates. Game and plugin version numbers do not need to match when only one component changes.
 

@@ -1,6 +1,6 @@
 {
-  "schema": 2,
-  "status": "Pending human review",
+  "schema": 6,
+  "status": "Approved by Ken",
   "source": {
     "algorithm": "sha256",
     "manifestSha256": null,
@@ -11,8 +11,8 @@
     "build": "2026-09-20-phase-f2-high-resolution-terrain"
   },
   "candidate": {
-    "sourceCommit": "d0c92fb821c848bf362ed3c830f464e3c4ca5a56",
-    "head": null,
+    "sourceCommit": "27a2389945ebbcae650e0f80bd490b7157c8f7a3",
+    "acceptanceEvidenceHead": null,
     "gameVersion": "1.10.32",
     "build": "2026-09-20-phase-f2-high-resolution-terrain",
     "pluginVersion": "1.10.7",
@@ -34,8 +34,13 @@
   "reviewFixtures": [],
   "contactSheets": [],
   "review": {
-    "reviewer": null,
-    "state": "Pending human review",
-    "notes": []
+    "reviewer": "Ken",
+    "state": "Approved",
+    "date": "2026-09-20",
+    "statement": "approved proceed",
+    "notes": [
+      "Technical evidence plus Ken's named human decision accepted the in-game Phase F2 terrain.",
+      "No Phase G row, release, handoff, deployment, or production change is approved."
+    ]
   }
 }
