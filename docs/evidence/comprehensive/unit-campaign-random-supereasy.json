@@ -64,7 +64,7 @@
     "missile": true,
     "shell": true
   },
-  "p95TickMs": 7.076299999999719,
-  "maxTickMs": 179.91060000000004,
+  "p95TickMs": 5.967599999999948,
+  "maxTickMs": 151.59670000000006,
   "replay": "PASS"
 }

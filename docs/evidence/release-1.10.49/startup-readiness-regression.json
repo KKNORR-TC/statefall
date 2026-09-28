@@ -1,0 +1,44 @@
+{
+  "recorded": "2026-09-28T17:49:12.640Z",
+  "sourceCheckpoint": "ca83cdd",
+  "testCorrectionCheckpoint": "40439ad",
+  "finding": "Asynchronous bootstrap can finish after the document load event. Older tests accessed the development bridge before startup completed; the expired-score test also ended during a final reload.",
+  "fullRun": {
+    "passed": 332,
+    "failed": 33,
+    "intentionalProjectSkips": 937,
+    "result": "FAIL"
+  },
+  "targetedFollowup": {
+    "gameplayAndScore": {
+      "passed": 53,
+      "failed": 1,
+      "intentionalProjectSkips": 30
+    },
+    "finalScoreRetry": {
+      "passed": 9,
+      "failed": 0,
+      "browsers": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ]
+    }
+  },
+  "correction": "Wait for the development bridge and removal of the startup status before direct gameplay access and after every score-test reload. Preserve all existing assertions, errors, limits and expected outcomes.",
+  "qualification": "Fresh complete verification is required and running; this report does not certify release.",
+  "logs": [
+    {
+      "path": ".artifacts/go-verify-startup-race.log",
+      "sha256": "76f2b4e746a2367cd132d92da3956694c13da62cfd46595ea937ab1cef013489"
+    },
+    {
+      "path": ".artifacts/go-readiness-tests-before-reload.log",
+      "sha256": "e87597a32cc6e84bfc9573df733cbab894f88d41f782ba251b129ca6ac7b7aec"
+    },
+    {
+      "path": ".artifacts/go-reload-tests.log",
+      "sha256": "d3aefd905999b04b7ea2bb656db733f32220abc8991e0a8b60944a92ee8b124f"
+    }
+  ]
+}

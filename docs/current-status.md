@@ -1,20 +1,12 @@
 # Statefall Current Status
 
-**Current candidate update:** 1.10.49 / plugin 1.10.8 is now undergoing qualification for the approved GO objective. See [the current release record](release-record-1.10.49.md). References to 1.10.48 below describe the prior candidate. No publication has occurred.
+Updated 28 September 2026. **Game 1.10.49 / plugin 1.10.8 is GO for manual publishing after all required local gates passed.** [Complete release record](release-record-1.10.49.md).
 
-**28 September approval update:** Ken approved the recommended replacement and requested fixes to achieve GO. The required cold-load-plus-start limits are now 15 seconds at 25 Mbps / 100 ms and 40 seconds at 10 Mbps / 150 ms, maximum of three samples each. Both profiles run by default. Byte counts remain reported; the historical 0.9 MB gates are superseded. All other performance/correctness limits are unchanged. A passing current rerun is required. Earlier pending-approval wording below records the proposal history.
+The candidate includes classic artwork, gameplay/replay corrections, capture-front and effects optimizations, startup loading/retry controls and stable WordPress asset URLs. Qualification covers 365 primary browser cases, display scaling, determinism, 1,152 map/difficulty/mode cases, 84 extended campaigns, complete-roster replays, live performance, reproducibility, security and installation of the exact final ZIPs. Approved network limits pass at 11.500 s / 27.103 s worst load-plus-start. Docker is fully stopped.
 
-_Updated 28 September 2026 for release preparation._
+Ken approved current artwork for this release and deferred detailed Phase G review. Dense Middle East frame pacing and the approximately 31.58 MB initial download remain documented optimization follow-ups; all required gates pass. This is finite regression coverage, not proof of zero bugs on every device or seed.
 
-## Current candidate — NO-GO
-
-Game 1.10.48 (`2026-09-28-classic-release`) includes the classic artwork and requires plugin 1.10.8. The exact ZIPs pass local WordPress installation, upgrade, rollback, security and browser asset/worker checks. Release remains NO-GO because the approved network loading policy awaits its required passing rerun, the Pixi stress p99 gate is unstable, and the extreme Middle East headless verification times out and its late-game browser performance fails. The art register remains open. Production was not accessed, pushed or deployed; Docker is stopped.
-
-See [the complete release record](release-record-1.10.48.md) for current source identity, checksums, results, fixes and limitations. The old expired-login score retry finding is fixed and covered by cross-browser regressions.
-
-## Budget review and source checkpoints — 28 September 2026
-
-The 0.9 MB limit predates classic artwork and is not a platform limit. Supplemental network testing and a proposed user-experience budget are recorded in [the reassessment](performance-budget-reassessment.md). Three cold samples per network profile measured about 11.4 seconds at 25 Mbps and 26.9 seconds at 10 Mbps including match start. Ken approved required bounds of 15 and 40 seconds respectively; the fixture now enforces these network scenarios by default. [Checkpoint guidance](checkpoint-plan-2026-09-28.md) recommends preserving the substantial local work without treating that as release approval. Reviewed local checkpoint commits are authorized as part of the active GO preparation; no push or deployment is authorized.
+Source and harness checkpoints through 4a7cab9 are local. Final documentation/evidence is checkpointed with the handoff. No push, tag, production access or deployment has occurred. Ken uploads the checksum-verified ZIPs using [the installation guide](installation-handoff-1.10.49.md). The [1.10.48 record](release-record-1.10.48.md) remains historical NO-GO evidence.
 
 ## Historical status — 20 September 2026
 

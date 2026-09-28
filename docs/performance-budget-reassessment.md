@@ -2,13 +2,15 @@
 
 **28 September approval update:** Ken approved the recommended replacement and requested fixes to achieve GO. The required cold-load-plus-start limits are now 15 seconds at 25 Mbps / 100 ms and 40 seconds at 10 Mbps / 150 ms, maximum of three samples each. Both profiles run by default. Byte counts remain reported; the historical 0.9 MB gates are superseded. All other performance/correctness limits are unchanged. A passing current rerun is required. Earlier pending-approval wording below records the proposal history.
 
-Updated 28 September 2026. **Proposal supported by supplemental measurements; existing release gates remain active. Overall release remains NO-GO.**
+Updated 28 September 2026. **Replacement policy approved and implemented; current candidate qualification is recorded in [release 1.10.49](release-record-1.10.49.md).**
+
+The following provenance, measurements and proposal describe the earlier 1.10.48 reassessment. Historical failures and the initial automatic-review rejection are retained for traceability.
 
 ## Provenance
 
-The 900,000-byte transfer and decoded-response limits were introduced in commit 026b12bf97c773dae6997b7066ceb1f065708826 on 15 September 2026, “test: capture modernization phase A baseline,” in tests/fixtures/browser-performance-ceilings.json. They have not changed. Phase A reported approximately 690 kB transferred before the classic artwork existed. No explicit user requirement or calculation establishing 900,000 bytes was found. It is an inherited regression threshold, not a hosting, WordPress, browser, engine, or GPU capacity limit. Decoded response bytes are not decoded image/texture memory.
+The 900,000-byte transfer and decoded-response limits were introduced in commit 026b12bf97c773dae6997b7066ceb1f065708826 on 15 September 2026, “test: capture modernization phase A baseline,” in tests/fixtures/browser-performance-ceilings.json. They remained unchanged during the initial reassessment and were subsequently superseded after Ken’s approval. Phase A reported approximately 690 kB transferred before the classic artwork existed. No explicit user requirement or calculation establishing 900,000 bytes was found. It is an inherited regression threshold, not a hosting, WordPress, browser, engine, or GPU capacity limit. Decoded response bytes are not decoded image/texture memory.
 
-## Current measurement
+## Historical 1.10.48 measurement
 
 Twelve cold samples: three each for localhost desktop, localhost mobile emulation, and two desktop network profiles. Chromium cache is disabled, each sample uses a new context, and the production-optimized qualification build waits for artwork initialization before measuring readiness. Start cost is added to navigation-to-ready time; time spent choosing settings is excluded. The controlled initial match uses PHASEAPERF. All samples produced the same simulation digest. No game/plugin source or installation archive was changed.
 
@@ -25,7 +27,7 @@ At 31,582,416 bytes, transfer alone has an ideal lower bound of approximately 10
 
 [Raw samples and unchanged required checks](evidence/release-1.10.48/performance-reassessment.json). The run intentionally reports failure under the still-active byte gates; no failure was suppressed.
 
-## Proposed replacement, pending approval
+## Original replacement proposal — subsequently approved
 
 Replace only the two historical byte ceilings per profile with explicit cold-load experience targets for the illustrated desktop game:
 
@@ -36,12 +38,12 @@ Replace only the two historical byte ceilings per profile with explicit cold-loa
 
 Both sampled network profiles fall within these proposed bounds; see [explicit proposal comparison](evidence/release-1.10.48/proposed-loading-assessment.json). The bounds are engineering recommendations for Ken to approve or tighten, not derived platform limits. A 10-second broadband requirement would fail today and require optimizing/defer-loading artwork. The current 31.6 MB payload still merits optimization even if the 15-second proposal is accepted.
 
-Automatic approval review rejected an attempted replacement of the byte gates as a weakening of mandatory qualification. That attempt made no file changes. The safe alternative added supplemental measurements only; tests/fixtures/browser-performance-ceilings.json remains unchanged. Approval of a replacement policy is outstanding. After approval, implement the agreed targets in the required fixture/harness, rerun the gate, and retain this historical failing report alongside the new result.
+Automatic approval review rejected an attempted replacement of the byte gates as a weakening of mandatory qualification. That attempt made no file changes. The safe alternative added supplemental measurements only; tests/fixtures/browser-performance-ceilings.json remains unchanged. Ken subsequently approved this replacement. The required fixture and harness now enforce it; the historical failing report remains retained alongside current candidate results.
 
-## Release consequences and remaining work
+## Historical findings requiring follow-up
 
 A revised loading policy does not make the release green by itself. Middle East late-game play still fails the frame-rate gate and its headless record/replay verification exceeds 360 seconds; the development Pixi support-actor p99 stress check is intermittent. The detailed art review remains open. See [the release record](release-record-1.10.48.md). No source commit, production change, release tag, or handoff copy was made during this reassessment.
 
 ## Reproduction
 
-From the repository root, set STATEFALL_PERF_NETWORK=1 and STATEFALL_PERF_OUTPUT to a new evidence JSON path, then run npm run perf:browser. Clear those environment variables afterward. Default runs keep their original profiles. The supplemental mode always evaluates the unchanged required fixture as well as recording the extra profiles.
+From the repository root, run npm run perf:browser. Both required network profiles now run by default alongside the original localhost profiles, with three samples each. Set STATEFALL_PERF_OUTPUT to a new evidence JSON path when retaining a separate run, then clear that environment variable afterward.

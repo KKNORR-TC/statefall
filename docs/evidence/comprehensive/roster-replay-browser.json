@@ -1,6 +1,6 @@
 [
   {
-    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
     "browser": "chromium",
     "tick": 2100,
     "replay": "PASS",
@@ -8,7 +8,7 @@
     "errors": []
   },
   {
-    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
     "browser": "firefox",
     "tick": 2100,
     "replay": "PASS",
@@ -16,7 +16,7 @@
     "errors": []
   },
   {
-    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
     "browser": "webkit",
     "tick": 2100,
     "replay": "PASS",

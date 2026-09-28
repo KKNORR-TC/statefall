@@ -25,38 +25,38 @@
     "maxAttacks": 10,
     "maxTrucks": 0
   },
-  "p95TickMs": 7.654099999999971,
-  "maxTickMs": 158.45389999999998,
+  "p95TickMs": 6.156600000000026,
+  "maxTickMs": 156.33860000000004,
   "slowTicks": [
     {
       "tick": 100,
-      "ms": 158.45389999999998,
+      "ms": 156.33860000000004,
       "structures": 29,
       "ships": 0,
       "aircraft": 0
     },
     {
       "tick": 300,
-      "ms": 120.93820000000005,
+      "ms": 114.62819999999988,
       "structures": 95,
       "ships": 0,
       "aircraft": 0
     },
     {
       "tick": 200,
-      "ms": 90.61410000000001,
+      "ms": 91.61379999999997,
       "structures": 60,
       "ships": 0,
       "aircraft": 0
     },
     {
       "tick": 400,
-      "ms": 89.17669999999998,
+      "ms": 86.54390000000012,
       "structures": 132,
       "ships": 0,
       "aircraft": 0
     }
   ],
-  "elapsedMs": 3778.5240000000003,
+  "elapsedMs": 3087.3353,
   "replay": "PASS"
 }

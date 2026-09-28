@@ -1,12 +1,12 @@
 {
-  "frames": 303,
-  "elapsed": 6008.900000017882,
-  "p95": 33.399999999999636,
-  "max": 133.30000000000018,
+  "frames": 339,
+  "elapsed": 6014.89999998808,
+  "p95": 16.800000000000182,
+  "max": 116.70000000000073,
   "stalls": 2,
   "status": {
     "ready": true,
-    "tick": 203,
+    "tick": 265,
     "paused": false,
     "lastCommand": null,
     "replay": {

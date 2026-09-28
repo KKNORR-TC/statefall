@@ -1,13 +1,13 @@
 {
-  "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+  "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
   "fixture": "docs/evidence/comprehensive/campaign-atoll-impossible-SOAK5B-replay.json",
   "pass": true,
-  "elapsedMs": 12000.399999994042,
-  "frames": 714,
+  "elapsedMs": 12007.599999999999,
+  "frames": 715,
   "ticks": 120,
   "p95Ms": 16.700000000004366,
   "p99Ms": 16.80000000000291,
-  "maxMs": 133.40000000000146,
+  "maxMs": 116.60000000000582,
   "stallsOver50ms": 1,
   "status": {
     "ready": true,
@@ -42,8 +42,8 @@
       "status": "idle",
       "target": 6000,
       "framePending": false,
-      "framesScheduled": 362,
-      "framesRun": 362
+      "framesScheduled": 307,
+      "framesRun": 307
     }
   },
   "errors": []

@@ -1,0 +1,23 @@
+[
+    {
+        "name":  "sandbox-start",
+        "exit":  1,
+        "started":  "2026-09-28T18:46:38.5657926Z",
+        "ended":  "2026-09-28T18:51:57.2120094Z",
+        "log":  ".artifacts\\go-sandbox-start.log"
+    },
+    {
+        "name":  "sandbox-stop",
+        "exit":  0,
+        "started":  "2026-09-28T18:51:57.2455551Z",
+        "ended":  "2026-09-28T18:51:57.8362245Z",
+        "log":  ".artifacts\\go-sandbox-stop.log"
+    },
+    {
+        "name":  "sandbox-status-stopped",
+        "exit":  0,
+        "started":  "2026-09-28T18:52:07.8402974Z",
+        "ended":  "2026-09-28T18:52:08.4517504Z",
+        "log":  ".artifacts\\go-sandbox-status-stopped.log"
+    }
+]

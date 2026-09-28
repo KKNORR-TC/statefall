@@ -20,150 +20,150 @@
     "maxAttacks": 6,
     "maxTrucks": 0
   },
-  "p95TickMs": 5.5428999999985535,
-  "maxTickMs": 177.26300000000003,
+  "p95TickMs": 4.9429999999993015,
+  "maxTickMs": 148.61160000000007,
   "slowTicks": [
     {
       "tick": 100,
-      "ms": 177.26300000000003,
+      "ms": 148.61160000000007,
       "structures": 9,
       "ships": 0,
       "aircraft": 0
     },
     {
-      "tick": 1500,
-      "ms": 144.22609999999986,
-      "structures": 45,
-      "ships": 0,
-      "aircraft": 0
-    },
-    {
-      "tick": 3300,
-      "ms": 137.23949999999968,
-      "structures": 86,
-      "ships": 0,
-      "aircraft": 1
-    },
-    {
-      "tick": 4800,
-      "ms": 126.11139999999978,
-      "structures": 108,
+      "tick": 4200,
+      "ms": 117.84799999999996,
+      "structures": 96,
       "ships": 0,
       "aircraft": 5
     },
     {
-      "tick": 1200,
-      "ms": 125.53539999999975,
-      "structures": 39,
+      "tick": 6000,
+      "ms": 108.83309999999983,
+      "structures": 122,
       "ships": 0,
-      "aircraft": 0
+      "aircraft": 6
     },
     {
       "tick": 2700,
-      "ms": 125.51339999999982,
+      "ms": 108.59929999999986,
       "structures": 76,
       "ships": 0,
       "aircraft": 1
     },
     {
       "tick": 600,
-      "ms": 121.65809999999965,
+      "ms": 107.9706000000001,
       "structures": 21,
       "ships": 0,
       "aircraft": 0
     },
     {
-      "tick": 4200,
-      "ms": 120.52469999999994,
-      "structures": 96,
-      "ships": 0,
-      "aircraft": 5
-    },
-    {
-      "tick": 1100,
-      "ms": 119.24339999999984,
-      "structures": 34,
-      "ships": 0,
-      "aircraft": 0
-    },
-    {
-      "tick": 4500,
-      "ms": 118.91760000000068,
-      "structures": 102,
-      "ships": 0,
-      "aircraft": 5
-    },
-    {
       "tick": 2100,
-      "ms": 117.04759999999987,
+      "ms": 105.58230000000003,
       "structures": 62,
       "ships": 0,
       "aircraft": 0
     },
     {
-      "tick": 5400,
-      "ms": 112.6851999999999,
-      "structures": 118,
+      "tick": 300,
+      "ms": 104.096,
+      "structures": 10,
       "ships": 0,
-      "aircraft": 6
+      "aircraft": 0
     },
     {
-      "tick": 6000,
-      "ms": 112.1195000000007,
-      "structures": 122,
+      "tick": 4800,
+      "ms": 103.7377000000015,
+      "structures": 108,
       "ships": 0,
-      "aircraft": 6
+      "aircraft": 5
+    },
+    {
+      "tick": 3900,
+      "ms": 102.69969999999921,
+      "structures": 91,
+      "ships": 0,
+      "aircraft": 4
     },
     {
       "tick": 2400,
-      "ms": 111.76279999999952,
+      "ms": 101.35590000000047,
       "structures": 68,
       "ships": 0,
       "aircraft": 0
     },
     {
+      "tick": 3600,
+      "ms": 100.97470000000067,
+      "structures": 87,
+      "ships": 0,
+      "aircraft": 2
+    },
+    {
+      "tick": 1500,
+      "ms": 99.53439999999955,
+      "structures": 45,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
       "tick": 3000,
-      "ms": 111.47420000000056,
+      "ms": 99.19190000000071,
       "structures": 81,
       "ships": 0,
       "aircraft": 1
     },
     {
+      "tick": 4500,
+      "ms": 97.85770000000048,
+      "structures": 102,
+      "ships": 0,
+      "aircraft": 5
+    },
+    {
+      "tick": 1800,
+      "ms": 96.75510000000031,
+      "structures": 53,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 1200,
+      "ms": 96.08809999999994,
+      "structures": 39,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 5400,
+      "ms": 95.69690000000082,
+      "structures": 118,
+      "ships": 0,
+      "aircraft": 6
+    },
+    {
+      "tick": 2600,
+      "ms": 95.54020000000037,
+      "structures": 76,
+      "ships": 0,
+      "aircraft": 1
+    },
+    {
       "tick": 5100,
-      "ms": 110.83560000000034,
+      "ms": 95.50350000000071,
       "structures": 115,
       "ships": 0,
       "aircraft": 6
     },
     {
       "tick": 900,
-      "ms": 109.9965000000002,
+      "ms": 95.14010000000007,
       "structures": 30,
       "ships": 0,
       "aircraft": 0
-    },
-    {
-      "tick": 3900,
-      "ms": 109.4351999999999,
-      "structures": 91,
-      "ships": 0,
-      "aircraft": 4
-    },
-    {
-      "tick": 1800,
-      "ms": 108.67839999999978,
-      "structures": 53,
-      "ships": 0,
-      "aircraft": 0
-    },
-    {
-      "tick": 3200,
-      "ms": 106.42349999999897,
-      "structures": 84,
-      "ships": 0,
-      "aircraft": 1
     }
   ],
-  "elapsedMs": 37735.2808,
+  "elapsedMs": 31520.844100000002,
   "replay": "PASS"
 }

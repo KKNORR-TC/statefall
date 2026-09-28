@@ -1,0 +1,9 @@
+{
+  "at": "2026-09-28T19:13:33.063Z",
+  "changed": [
+    "CHANGELOG.md"
+  ],
+  "beforeDigest": "fb70c855193dc1271c6e103bdf6d7f4bf913aa8f31c4b46ecfe995fc3c50188f",
+  "afterDigest": "ebfa6f7c6d33210ec6998650318df00a87f4b5cfcedb3e5005a9c9fca2ad11e7",
+  "scope": "Only CHANGELOG.md changed after exact-package verification, to record passing qualification and local harness fixes. All executable and package inputs remain byte-identical."
+}

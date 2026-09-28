@@ -1,0 +1,20 @@
+{
+  "recorded": "2026-09-28T18:19:16.958Z",
+  "watchdogMs": 360000,
+  "cases": [
+    {
+      "id": "africa-impossible-SOAK9B",
+      "elapsedMs": 184537.7508,
+      "ticks": 6000,
+      "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+      "ok": true
+    },
+    {
+      "id": "mideast-impossible-SOAK11B",
+      "elapsedMs": 297453.9981,
+      "ticks": 6000,
+      "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+      "ok": true
+    }
+  ]
+}

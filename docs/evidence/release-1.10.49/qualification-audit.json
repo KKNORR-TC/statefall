@@ -1,0 +1,473 @@
+{
+  "at": "2026-09-28T19:14:08.090Z",
+  "groups": {
+    "source": [
+      {
+        "name": "install",
+        "exit": 0,
+        "started": "2026-09-28T17:47:10.7930396Z",
+        "ended": "2026-09-28T17:47:15.4208620Z"
+      },
+      {
+        "name": "verify",
+        "exit": 0,
+        "started": "2026-09-28T17:47:15.4451656Z",
+        "ended": "2026-09-28T18:06:37.6305594Z"
+      },
+      {
+        "name": "reproducibility",
+        "exit": 0,
+        "started": "2026-09-28T18:06:37.6315617Z",
+        "ended": "2026-09-28T18:06:43.4082007Z"
+      },
+      {
+        "name": "performance",
+        "exit": 0,
+        "started": "2026-09-28T18:06:43.4102022Z",
+        "ended": "2026-09-28T18:08:54.0793675Z"
+      }
+    ],
+    "simulation": [
+      {
+        "name": "soak-africa",
+        "code": 0,
+        "started": "2026-09-28T18:08:54.931Z",
+        "ended": "2026-09-28T18:11:59.883Z"
+      },
+      {
+        "name": "soak-mideast",
+        "code": 0,
+        "started": "2026-09-28T18:11:59.884Z",
+        "ended": "2026-09-28T18:16:57.754Z"
+      },
+      {
+        "name": "matrix",
+        "code": 0,
+        "started": "2026-09-28T18:16:57.755Z",
+        "ended": "2026-09-28T18:26:56.506Z"
+      },
+      {
+        "name": "soaks",
+        "code": 0,
+        "started": "2026-09-28T18:16:57.761Z",
+        "ended": "2026-09-28T18:30:37.180Z"
+      },
+      {
+        "name": "roster-random",
+        "code": 0,
+        "started": "2026-09-28T18:30:37.180Z",
+        "ended": "2026-09-28T18:30:47.072Z"
+      },
+      {
+        "name": "roster-world",
+        "code": 0,
+        "started": "2026-09-28T18:30:47.072Z",
+        "ended": "2026-09-28T18:30:58.350Z"
+      },
+      {
+        "name": "roster-islands_m",
+        "code": 0,
+        "started": "2026-09-28T18:30:58.350Z",
+        "ended": "2026-09-28T18:31:10.687Z"
+      },
+      {
+        "name": "roster-browser-prerequisite",
+        "code": 0,
+        "started": "2026-09-28T18:31:11.024Z",
+        "ended": "2026-09-28T18:31:37.933Z"
+      },
+      {
+        "name": "simulation-summary",
+        "code": 0,
+        "started": "2026-09-28T18:31:37.933Z",
+        "ended": "2026-09-28T18:31:38.049Z"
+      }
+    ],
+    "browser": [
+      {
+        "name": "classic-upgrade-game-review",
+        "code": 0,
+        "started": "2026-09-28T18:31:38.481Z",
+        "ended": "2026-09-28T18:31:43.883Z"
+      },
+      {
+        "name": "classic-submarine-base-review",
+        "code": 0,
+        "started": "2026-09-28T18:31:43.884Z",
+        "ended": "2026-09-28T18:31:56.819Z"
+      },
+      {
+        "name": "classic-naval-menu-review",
+        "code": 0,
+        "started": "2026-09-28T18:31:56.820Z",
+        "ended": "2026-09-28T18:32:00.611Z"
+      },
+      {
+        "name": "classic-transport-fog-review",
+        "code": 0,
+        "started": "2026-09-28T18:32:00.612Z",
+        "ended": "2026-09-28T18:32:05.154Z"
+      },
+      {
+        "name": "classic-credits-replay-review",
+        "code": 0,
+        "started": "2026-09-28T18:32:05.154Z",
+        "ended": "2026-09-28T18:32:12.090Z"
+      },
+      {
+        "name": "classic-attack-performance",
+        "code": 0,
+        "started": "2026-09-28T18:32:12.090Z",
+        "ended": "2026-09-28T18:33:09.920Z"
+      },
+      {
+        "name": "classic-credits-performance",
+        "code": 0,
+        "started": "2026-09-28T18:33:09.921Z",
+        "ended": "2026-09-28T18:33:19.999Z"
+      },
+      {
+        "name": "classic-pan-performance",
+        "code": 0,
+        "started": "2026-09-28T18:33:20.000Z",
+        "ended": "2026-09-28T18:33:24.631Z"
+      },
+      {
+        "name": "front-path-browser",
+        "code": 0,
+        "started": "2026-09-28T18:33:24.632Z",
+        "ended": "2026-09-28T18:33:31.896Z"
+      },
+      {
+        "name": "classic-worker-browser",
+        "code": 0,
+        "started": "2026-09-28T18:33:31.896Z",
+        "ended": "2026-09-28T18:33:35.932Z"
+      },
+      {
+        "name": "sprite-culling-browser",
+        "code": 0,
+        "started": "2026-09-28T18:33:35.932Z",
+        "ended": "2026-09-28T18:33:40.807Z"
+      },
+      {
+        "name": "catchup-timer-browser",
+        "code": 0,
+        "started": "2026-09-28T18:33:40.808Z",
+        "ended": "2026-09-28T18:33:47.352Z"
+      },
+      {
+        "name": "roster-cache-stress",
+        "code": 0,
+        "started": "2026-09-28T18:33:47.352Z",
+        "ended": "2026-09-28T18:33:48.594Z"
+      },
+      {
+        "name": "roster-replay-browser",
+        "code": 0,
+        "started": "2026-09-28T18:33:48.594Z",
+        "ended": "2026-09-28T18:34:15.682Z"
+      },
+      {
+        "name": "late-atoll",
+        "code": 0,
+        "started": "2026-09-28T18:34:15.683Z",
+        "ended": "2026-09-28T18:34:54.054Z"
+      },
+      {
+        "name": "late-europe",
+        "code": 0,
+        "started": "2026-09-28T18:34:54.055Z",
+        "ended": "2026-09-28T18:35:35.521Z"
+      },
+      {
+        "name": "late-africa",
+        "code": 0,
+        "started": "2026-09-28T18:35:35.522Z",
+        "ended": "2026-09-28T18:37:12.209Z"
+      },
+      {
+        "name": "late-mideast",
+        "code": 0,
+        "started": "2026-09-28T18:37:12.209Z",
+        "ended": "2026-09-28T18:39:35.919Z"
+      },
+      {
+        "name": "summary",
+        "code": 0,
+        "started": "2026-09-28T18:39:35.920Z",
+        "ended": "2026-09-28T18:39:36.030Z"
+      }
+    ],
+    "post": [
+      {
+        "name": "mobile-advisory",
+        "exit": 0,
+        "started": "2026-09-28T18:39:38.3565365Z",
+        "ended": "2026-09-28T18:42:07.0166685Z"
+      },
+      {
+        "name": "mobile-prototype",
+        "exit": 0,
+        "started": "2026-09-28T18:42:07.0456766Z",
+        "ended": "2026-09-28T18:42:08.9128424Z"
+      },
+      {
+        "name": "terrain-tests",
+        "exit": 0,
+        "started": "2026-09-28T18:42:08.9143480Z",
+        "ended": "2026-09-28T18:42:09.9660753Z"
+      },
+      {
+        "name": "trailer-smoke",
+        "exit": 0,
+        "started": "2026-09-28T18:42:09.9670769Z",
+        "ended": "2026-09-28T18:42:19.0519328Z"
+      },
+      {
+        "name": "docker",
+        "exit": 0,
+        "started": "2026-09-28T19:05:32.0544326Z",
+        "ended": "2026-09-28T19:08:05.6293937Z"
+      },
+      {
+        "name": "artifact-audit",
+        "exit": 0,
+        "started": "2026-09-28T19:08:05.6563673Z",
+        "ended": "2026-09-28T19:08:05.8146851Z"
+      },
+      {
+        "name": "source-inventory",
+        "exit": 0,
+        "started": "2026-09-28T19:08:05.8156916Z",
+        "ended": "2026-09-28T19:08:06.0635106Z"
+      }
+    ],
+    "docker": [
+      {
+        "name": "sandbox-start",
+        "exit": 0,
+        "started": "2026-09-28T19:05:32.3294496Z",
+        "ended": "2026-09-28T19:05:59.2324389Z",
+        "log": ".artifacts\\go-sandbox-start.log"
+      },
+      {
+        "name": "sandbox-status-running",
+        "exit": 0,
+        "started": "2026-09-28T19:05:59.2610801Z",
+        "ended": "2026-09-28T19:06:00.2037561Z",
+        "log": ".artifacts\\go-sandbox-status-running.log"
+      },
+      {
+        "name": "sandbox-verify",
+        "exit": 0,
+        "started": "2026-09-28T19:06:00.2062648Z",
+        "ended": "2026-09-28T19:06:06.9894583Z",
+        "log": ".artifacts\\go-sandbox-verify.log"
+      },
+      {
+        "name": "sandbox-security",
+        "exit": 0,
+        "started": "2026-09-28T19:06:06.9914584Z",
+        "ended": "2026-09-28T19:06:37.5969066Z",
+        "log": ".artifacts\\go-sandbox-security.log"
+      },
+      {
+        "name": "artifacts",
+        "exit": 0,
+        "started": "2026-09-28T19:06:37.5979162Z",
+        "ended": "2026-09-28T19:07:42.1613287Z",
+        "log": ".artifacts\\go-artifacts.log"
+      },
+      {
+        "name": "sandbox-stop",
+        "exit": 0,
+        "started": "2026-09-28T19:07:42.1623302Z",
+        "ended": "2026-09-28T19:07:54.9646878Z",
+        "log": ".artifacts\\go-sandbox-stop.log"
+      },
+      {
+        "name": "sandbox-status-stopped",
+        "exit": 0,
+        "started": "2026-09-28T19:08:04.9826484Z",
+        "ended": "2026-09-28T19:08:05.6069308Z",
+        "log": ".artifacts\\go-sandbox-status-stopped.log"
+      }
+    ]
+  },
+  "performance": [
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "median",
+      "actual": 476.80000001192093,
+      "ceiling": 2000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "simulation300TicksMs",
+      "stat": "median",
+      "actual": 479.30000001192093,
+      "ceiling": 7000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "renderedFrameP95Ms",
+      "stat": "median",
+      "actual": 1.300000011920929,
+      "ceiling": 50,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "cdpUsedHeapBytes",
+      "stat": "median",
+      "actual": 17471152,
+      "ceiling": 32000000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "median",
+      "actual": 487.6999999284744,
+      "ceiling": 2000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "simulation300TicksMs",
+      "stat": "median",
+      "actual": 469,
+      "ceiling": 7000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "renderedFrameP95Ms",
+      "stat": "median",
+      "actual": 1.199999988079071,
+      "ceiling": 50,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "cdpUsedHeapBytes",
+      "stat": "median",
+      "actual": 17507416,
+      "ceiling": 32000000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-broadband-25mbps",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "max",
+      "actual": 11500,
+      "ceiling": 15000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-constrained-10mbps",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "max",
+      "actual": 27102.69999998808,
+      "ceiling": 40000,
+      "passed": true
+    }
+  ],
+  "simulation": {
+    "generated": "2026-09-28T18:39:35.990Z",
+    "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+    "matrix": {
+      "expected": 1152,
+      "completed": 1152,
+      "passed": 1152,
+      "failures": [],
+      "missing": [],
+      "totalRecordedTicks": 345600,
+      "totalCommands": 19078,
+      "historicalAttemptsAllRevisions": 11453
+    },
+    "campaigns": {
+      "expected": 84,
+      "completed": 84,
+      "passed": 84,
+      "failures": [],
+      "missing": [],
+      "totalRecordedTicks": 341212,
+      "totalCommands": 5780,
+      "historicalAttemptsAllRevisions": 683,
+      "reached6000Ticks": 47,
+      "endedEarlier": 37,
+      "endings": [
+        "Overrun",
+        "Team victory",
+        "Defeat"
+      ],
+      "actorPeaks": {
+        "maxStructures": 1400,
+        "maxShips": 46,
+        "maxAir": 74,
+        "maxAttacks": 30,
+        "maxTrucks": 1
+      }
+    },
+    "rosterBrowser": [
+      {
+        "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+        "browser": "chromium",
+        "tick": 2100,
+        "replay": "PASS",
+        "renderPurity": "PASS",
+        "errors": []
+      },
+      {
+        "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+        "browser": "firefox",
+        "tick": 2100,
+        "replay": "PASS",
+        "renderPurity": "PASS",
+        "errors": []
+      },
+      {
+        "fingerprint": "4eec78c079e5214879dfcf467b0cf441b4e5acb82395ae8533b622bbf1f05481",
+        "browser": "webkit",
+        "tick": 2100,
+        "replay": "PASS",
+        "renderPurity": "PASS",
+        "errors": []
+      }
+    ],
+    "scope": "12 maps x 6 difficulties x 16 named profiles; 84 extended campaigns with explicit actual durations. Not exhaustive seeds, binary-option combinations, hardware, or arbitrary action sequences.",
+    "optimizationParity": {
+      "referenceFingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+      "compared": 1152,
+      "missingReference": [],
+      "mismatches": []
+    },
+    "pass": true
+  },
+  "source": {
+    "head": "4a7cab910bec42e4d5cacf68a3e46703fed36d39",
+    "digest": "ebfa6f7c6d33210ec6998650318df00a87f4b5cfcedb3e5005a9c9fca2ad11e7",
+    "files": 415
+  },
+  "artApproval": "Approve current art for this release; defer detailed Phase G review",
+  "artifacts": [
+    {
+      "component": "game",
+      "filename": "statefall-release-1.10.49.zip",
+      "sha256": "bcdcd534e3454939d34cebace3af7184bcc2ad89b95d8df0bd56d2c0a6dfc60a",
+      "bytes": 32439615
+    },
+    {
+      "component": "plugin",
+      "filename": "statefall-scores-1.10.8.zip",
+      "sha256": "8b8a65ed1282d5a9440c01b908a187772c0e517260666c8d8d63241d29b539dc",
+      "bytes": 212334
+    }
+  ],
+  "result": "All recorded required gates pass; inspect Docker stopped-state output and perform the final release-record/handoff audit before declaring GO."
+}

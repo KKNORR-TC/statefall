@@ -76,8 +76,8 @@
       "status": "ready",
       "target": 2100,
       "framePending": false,
-      "framesScheduled": 60,
-      "framesRun": 60
+      "framesScheduled": 50,
+      "framesRun": 50
     }
   },
   "errors": []

@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-28T19:05:31.720Z",
+  "head": "4a7cab910bec42e4d5cacf68a3e46703fed36d39",
+  "beforeDigest": "31a2a0af0c5a6a4aa64c390ac2a1df32d347f2513c24d2c5b1dfaa7434abd511",
+  "afterDigest": "fb70c855193dc1271c6e103bdf6d7f4bf913aa8f31c4b46ecfe995fc3c50188f",
+  "changed": [
+    "prototypes/classic-battlefield-direction/attack-zoom-10.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-24.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-5.png",
+    "prototypes/classic-battlefield-direction/credits-performance.json",
+    "prototypes/classic-battlefield-direction/medium-attack-performance.json",
+    "prototypes/classic-battlefield-direction/pan-performance.json",
+    "sandbox/status.ps1",
+    "sandbox/stop.ps1",
+    "sandbox/verify-artifacts.ps1"
+  ],
+  "scope": "Only three local sandbox verification/lifecycle scripts and six generated performance outputs differ. All game/plugin/build/gameplay-test inputs match the full passed qualification. Docker installation and lifecycle are rerun after these harness fixes."
+}

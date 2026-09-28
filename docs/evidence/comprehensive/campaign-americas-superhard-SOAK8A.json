@@ -25,24 +25,24 @@
     "maxAttacks": 6,
     "maxTrucks": 0
   },
-  "p95TickMs": 6.457899999999995,
-  "maxTickMs": 163.0059,
+  "p95TickMs": 6.330400000000054,
+  "maxTickMs": 154.51379999999995,
   "slowTicks": [
     {
       "tick": 100,
-      "ms": 163.0059,
+      "ms": 154.51379999999995,
       "structures": 12,
       "ships": 0,
       "aircraft": 0
     },
     {
       "tick": 200,
-      "ms": 101.42629999999997,
+      "ms": 93.4239,
       "structures": 23,
       "ships": 0,
       "aircraft": 0
     }
   ],
-  "elapsedMs": 1936.7453999999998,
+  "elapsedMs": 1717.8461,
   "replay": "PASS"
 }

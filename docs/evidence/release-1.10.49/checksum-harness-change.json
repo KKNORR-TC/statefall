@@ -1,0 +1,25 @@
+{
+  "at": "2026-09-28T18:47:39.895Z",
+  "beforeDigest": "31a2a0af0c5a6a4aa64c390ac2a1df32d347f2513c24d2c5b1dfaa7434abd511",
+  "afterDigest": "b75d5522cc70d4563d0ae0016d892c664c65c3eacacc6d3cbcaba342312b259d",
+  "head": "1517d9e0ab3598d8885d17dd39ff58facd6eb8be",
+  "changed": [
+    "prototypes/classic-battlefield-direction/attack-zoom-10.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-24.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-5.png",
+    "prototypes/classic-battlefield-direction/credits-performance.json",
+    "prototypes/classic-battlefield-direction/medium-attack-performance.json",
+    "prototypes/classic-battlefield-direction/pan-performance.json",
+    "sandbox/verify-artifacts.ps1"
+  ],
+  "generatedEvidence": [
+    "prototypes/classic-battlefield-direction/attack-zoom-10.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-24.png",
+    "prototypes/classic-battlefield-direction/attack-zoom-5.png",
+    "prototypes/classic-battlefield-direction/credits-performance.json",
+    "prototypes/classic-battlefield-direction/medium-attack-performance.json",
+    "prototypes/classic-battlefield-direction/pan-performance.json"
+  ],
+  "validation": "Known SHA-256 abc vector and independently generated game/plugin ZIP descriptors pass. Existing checksum mismatch assertions preserved. Full exact-package gate must pass after this change.",
+  "scope": "The local installation verification script changed, and the three classic performance probes regenerated their six named output reports/screenshots. All game, plugin, build and gameplay test inputs are byte-identical to the completed qualification."
+}

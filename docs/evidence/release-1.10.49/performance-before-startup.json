@@ -1,0 +1,621 @@
+{
+  "schemaVersion": 2,
+  "budgetPolicy": "classic-loading-v1",
+  "generatedAt": "2026-09-28T17:17:03.660Z",
+  "environment": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "node": "v22.23.2",
+    "browser": "chromium 153.0.8010.12",
+    "headless": true,
+    "samplesPerScenario": 3,
+    "target": "fresh production-optimized Vite build with guarded test instrumentation"
+  },
+  "scenarios": {
+    "desktop-1440x900": [
+      {
+        "network": null,
+        "coldLoadMs": 262.80000001192093,
+        "startToReadyMs": 238.80000001192093,
+        "coldLoadAndStartToReadyMs": 501.60000002384186,
+        "simulation300TicksMs": 491.0999999642372,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.5999999642372131,
+          "max": 1.600000023841858
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17461408,
+          "cdpTotalBytes": 19185664,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": null,
+        "coldLoadMs": 247.29999995231628,
+        "startToReadyMs": 229.10000002384186,
+        "coldLoadAndStartToReadyMs": 476.39999997615814,
+        "simulation300TicksMs": 478.80000001192093,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1.0999999642372131,
+          "p95": 1.300000011920929,
+          "max": 1.800000011920929
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17471660,
+          "cdpTotalBytes": 19972096,
+          "performanceUsedBytes": 199000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": null,
+        "coldLoadMs": 257.5,
+        "startToReadyMs": 233.60000002384186,
+        "coldLoadAndStartToReadyMs": 491.10000002384186,
+        "simulation300TicksMs": 482.2999999523163,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1.0999999642372131,
+          "p95": 1.2000000476837158,
+          "max": 1.699999988079071
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17458296,
+          "cdpTotalBytes": 18661376,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      }
+    ],
+    "mobile-pixel-7-390x844": [
+      {
+        "network": null,
+        "coldLoadMs": 238.89999997615814,
+        "startToReadyMs": 235.39999997615814,
+        "coldLoadAndStartToReadyMs": 474.2999999523163,
+        "simulation300TicksMs": 490.60000002384186,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.100000023841858,
+          "max": 1.800000011920929
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17513908,
+          "cdpTotalBytes": 18661376,
+          "performanceUsedBytes": 225000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": null,
+        "coldLoadMs": 226,
+        "startToReadyMs": 226,
+        "coldLoadAndStartToReadyMs": 452,
+        "simulation300TicksMs": 495.30000001192093,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.199999988079071,
+          "max": 2.099999964237213
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17503316,
+          "cdpTotalBytes": 18923520,
+          "performanceUsedBytes": 123000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": null,
+        "coldLoadMs": 251.30000001192093,
+        "startToReadyMs": 234.0999999642372,
+        "coldLoadAndStartToReadyMs": 485.39999997615814,
+        "simulation300TicksMs": 473.80000001192093,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 2.5,
+          "max": 4.800000011920929
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17509884,
+          "cdpTotalBytes": 18661376,
+          "performanceUsedBytes": 225000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      }
+    ],
+    "desktop-broadband-25mbps": [
+      {
+        "network": {
+          "mbps": 25,
+          "latencyMs": 100
+        },
+        "coldLoadMs": 11104.5,
+        "startToReadyMs": 231,
+        "coldLoadAndStartToReadyMs": 11335.5,
+        "simulation300TicksMs": 491.9000000357628,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.199999988079071,
+          "max": 1.800000011920929
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17465804,
+          "cdpTotalBytes": 18923520,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": {
+          "mbps": 25,
+          "latencyMs": 100
+        },
+        "coldLoadMs": 11134.399999976158,
+        "startToReadyMs": 221.10000002384186,
+        "coldLoadAndStartToReadyMs": 11355.5,
+        "simulation300TicksMs": 490.30000001192093,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1.0999999642372131,
+          "p95": 1.4000000357627869,
+          "max": 1.699999988079071
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17481488,
+          "cdpTotalBytes": 18661376,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": {
+          "mbps": 25,
+          "latencyMs": 100
+        },
+        "coldLoadMs": 11118,
+        "startToReadyMs": 246.30000001192093,
+        "coldLoadAndStartToReadyMs": 11364.300000011921,
+        "simulation300TicksMs": 512.8999999761581,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1.0999999642372131,
+          "p95": 1.300000011920929,
+          "max": 1.7000000476837158
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17483072,
+          "cdpTotalBytes": 18399232,
+          "performanceUsedBytes": 86400000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      }
+    ],
+    "desktop-constrained-10mbps": [
+      {
+        "network": {
+          "mbps": 10,
+          "latencyMs": 150
+        },
+        "coldLoadMs": 26665,
+        "startToReadyMs": 236.30000001192093,
+        "coldLoadAndStartToReadyMs": 26901.30000001192,
+        "simulation300TicksMs": 500.4000000357628,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1.0999999642372131,
+          "p95": 1.699999988079071,
+          "max": 1.899999976158142
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17479092,
+          "cdpTotalBytes": 18661376,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": {
+          "mbps": 10,
+          "latencyMs": 150
+        },
+        "coldLoadMs": 26678,
+        "startToReadyMs": 250.29999995231628,
+        "coldLoadAndStartToReadyMs": 26928.299999952316,
+        "simulation300TicksMs": 502.7999999523163,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.2999999523162842,
+          "max": 1.800000011920929
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17476764,
+          "cdpTotalBytes": 18923520,
+          "performanceUsedBytes": 212000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      },
+      {
+        "network": {
+          "mbps": 10,
+          "latencyMs": 150
+        },
+        "coldLoadMs": 26665.69999998808,
+        "startToReadyMs": 239.10000002384186,
+        "coldLoadAndStartToReadyMs": 26904.80000001192,
+        "simulation300TicksMs": 484.10000002384186,
+        "simulationTick": 300,
+        "simulationDigest": "2982b5fba751443e2a16b08a6c971d992cc3ff3617dc594edc36a8f14c1a00b5",
+        "renderedFrameMs": {
+          "median": 1,
+          "p95": 1.300000011920929,
+          "max": 1.899999976158142
+        },
+        "resources": {
+          "count": 30,
+          "transferBytes": 31582367,
+          "encodedBytes": 31573367,
+          "decodedBytes": 32292941
+        },
+        "heap": {
+          "cdpUsedBytes": 17473368,
+          "cdpTotalBytes": 18923520,
+          "performanceUsedBytes": 239000000,
+          "jsHeapSizeLimitBytes": 3760000000
+        },
+        "failures": []
+      }
+    ]
+  },
+  "summary": {
+    "desktop-1440x900": {
+      "coldLoadMs": {
+        "median": 257.5,
+        "p95": 262.80000001192093,
+        "max": 262.80000001192093
+      },
+      "startToReadyMs": {
+        "median": 233.60000002384186,
+        "p95": 238.80000001192093,
+        "max": 238.80000001192093
+      },
+      "coldLoadAndStartToReadyMs": {
+        "median": 491.10000002384186,
+        "p95": 501.60000002384186,
+        "max": 501.60000002384186
+      },
+      "simulation300TicksMs": {
+        "median": 482.2999999523163,
+        "p95": 491.0999999642372,
+        "max": 491.0999999642372
+      },
+      "renderedFrameP95Ms": {
+        "median": 1.300000011920929,
+        "p95": 1.5999999642372131,
+        "max": 1.5999999642372131
+      },
+      "resourceTransferBytes": {
+        "median": 31582367,
+        "p95": 31582367,
+        "max": 31582367
+      },
+      "resourceDecodedBytes": {
+        "median": 32292941,
+        "p95": 32292941,
+        "max": 32292941
+      },
+      "cdpUsedHeapBytes": {
+        "median": 17461408,
+        "p95": 17471660,
+        "max": 17471660
+      }
+    },
+    "mobile-pixel-7-390x844": {
+      "coldLoadMs": {
+        "median": 238.89999997615814,
+        "p95": 251.30000001192093,
+        "max": 251.30000001192093
+      },
+      "startToReadyMs": {
+        "median": 234.0999999642372,
+        "p95": 235.39999997615814,
+        "max": 235.39999997615814
+      },
+      "coldLoadAndStartToReadyMs": {
+        "median": 474.2999999523163,
+        "p95": 485.39999997615814,
+        "max": 485.39999997615814
+      },
+      "simulation300TicksMs": {
+        "median": 490.60000002384186,
+        "p95": 495.30000001192093,
+        "max": 495.30000001192093
+      },
+      "renderedFrameP95Ms": {
+        "median": 1.199999988079071,
+        "p95": 2.5,
+        "max": 2.5
+      },
+      "resourceTransferBytes": {
+        "median": 31582367,
+        "p95": 31582367,
+        "max": 31582367
+      },
+      "resourceDecodedBytes": {
+        "median": 32292941,
+        "p95": 32292941,
+        "max": 32292941
+      },
+      "cdpUsedHeapBytes": {
+        "median": 17509884,
+        "p95": 17513908,
+        "max": 17513908
+      }
+    },
+    "desktop-broadband-25mbps": {
+      "coldLoadMs": {
+        "median": 11118,
+        "p95": 11134.399999976158,
+        "max": 11134.399999976158
+      },
+      "startToReadyMs": {
+        "median": 231,
+        "p95": 246.30000001192093,
+        "max": 246.30000001192093
+      },
+      "coldLoadAndStartToReadyMs": {
+        "median": 11355.5,
+        "p95": 11364.300000011921,
+        "max": 11364.300000011921
+      },
+      "simulation300TicksMs": {
+        "median": 491.9000000357628,
+        "p95": 512.8999999761581,
+        "max": 512.8999999761581
+      },
+      "renderedFrameP95Ms": {
+        "median": 1.300000011920929,
+        "p95": 1.4000000357627869,
+        "max": 1.4000000357627869
+      },
+      "resourceTransferBytes": {
+        "median": 31582367,
+        "p95": 31582367,
+        "max": 31582367
+      },
+      "resourceDecodedBytes": {
+        "median": 32292941,
+        "p95": 32292941,
+        "max": 32292941
+      },
+      "cdpUsedHeapBytes": {
+        "median": 17481488,
+        "p95": 17483072,
+        "max": 17483072
+      }
+    },
+    "desktop-constrained-10mbps": {
+      "coldLoadMs": {
+        "median": 26665.69999998808,
+        "p95": 26678,
+        "max": 26678
+      },
+      "startToReadyMs": {
+        "median": 239.10000002384186,
+        "p95": 250.29999995231628,
+        "max": 250.29999995231628
+      },
+      "coldLoadAndStartToReadyMs": {
+        "median": 26904.80000001192,
+        "p95": 26928.299999952316,
+        "max": 26928.299999952316
+      },
+      "simulation300TicksMs": {
+        "median": 500.4000000357628,
+        "p95": 502.7999999523163,
+        "max": 502.7999999523163
+      },
+      "renderedFrameP95Ms": {
+        "median": 1.300000011920929,
+        "p95": 1.699999988079071,
+        "max": 1.699999988079071
+      },
+      "resourceTransferBytes": {
+        "median": 31582367,
+        "p95": 31582367,
+        "max": 31582367
+      },
+      "resourceDecodedBytes": {
+        "median": 32292941,
+        "p95": 32292941,
+        "max": 32292941
+      },
+      "cdpUsedHeapBytes": {
+        "median": 17476764,
+        "p95": 17479092,
+        "max": 17479092
+      }
+    }
+  },
+  "ceilingChecks": [
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "median",
+      "actual": 491.10000002384186,
+      "ceiling": 2000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "simulation300TicksMs",
+      "stat": "median",
+      "actual": 482.2999999523163,
+      "ceiling": 7000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "renderedFrameP95Ms",
+      "stat": "median",
+      "actual": 1.300000011920929,
+      "ceiling": 50,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-1440x900",
+      "metric": "cdpUsedHeapBytes",
+      "stat": "median",
+      "actual": 17461408,
+      "ceiling": 32000000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "median",
+      "actual": 474.2999999523163,
+      "ceiling": 2000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "simulation300TicksMs",
+      "stat": "median",
+      "actual": 490.60000002384186,
+      "ceiling": 7000,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "renderedFrameP95Ms",
+      "stat": "median",
+      "actual": 1.199999988079071,
+      "ceiling": 50,
+      "passed": true
+    },
+    {
+      "scenario": "mobile-pixel-7-390x844",
+      "metric": "cdpUsedHeapBytes",
+      "stat": "median",
+      "actual": 17509884,
+      "ceiling": 32000000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-broadband-25mbps",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "max",
+      "actual": 11364.300000011921,
+      "ceiling": 15000,
+      "passed": true
+    },
+    {
+      "scenario": "desktop-constrained-10mbps",
+      "metric": "coldLoadAndStartToReadyMs",
+      "stat": "max",
+      "actual": 26928.299999952316,
+      "ceiling": 40000,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "deterministic": true
+}

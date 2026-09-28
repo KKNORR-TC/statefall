@@ -1,0 +1,51 @@
+[
+    {
+        "name":  "sandbox-start",
+        "exit":  0,
+        "started":  "2026-09-28T18:42:19.3126847Z",
+        "ended":  "2026-09-28T18:42:46.7493265Z",
+        "log":  ".artifacts\\go-sandbox-start.log"
+    },
+    {
+        "name":  "sandbox-status-running",
+        "exit":  0,
+        "started":  "2026-09-28T18:42:46.7802842Z",
+        "ended":  "2026-09-28T18:42:47.7346165Z",
+        "log":  ".artifacts\\go-sandbox-status-running.log"
+    },
+    {
+        "name":  "sandbox-verify",
+        "exit":  0,
+        "started":  "2026-09-28T18:42:47.7357316Z",
+        "ended":  "2026-09-28T18:42:54.6013423Z",
+        "log":  ".artifacts\\go-sandbox-verify.log"
+    },
+    {
+        "name":  "sandbox-security",
+        "exit":  0,
+        "started":  "2026-09-28T18:42:54.6023473Z",
+        "ended":  "2026-09-28T18:43:26.5949313Z",
+        "log":  ".artifacts\\go-sandbox-security.log"
+    },
+    {
+        "name":  "artifacts",
+        "exit":  1,
+        "started":  "2026-09-28T18:43:26.5969234Z",
+        "ended":  "2026-09-28T18:43:50.3343500Z",
+        "log":  ".artifacts\\go-artifacts.log"
+    },
+    {
+        "name":  "sandbox-stop",
+        "exit":  0,
+        "started":  "2026-09-28T18:43:50.3363448Z",
+        "ended":  "2026-09-28T18:44:05.2989782Z",
+        "log":  ".artifacts\\go-sandbox-stop.log"
+    },
+    {
+        "name":  "sandbox-status-stopped",
+        "exit":  0,
+        "started":  "2026-09-28T18:44:15.3109862Z",
+        "ended":  "2026-09-28T18:44:15.8817347Z",
+        "log":  ".artifacts\\go-sandbox-status-stopped.log"
+    }
+]

@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased — Qualification and documentation
+## Release qualification — 28 September 2026
 
 - Retain loading-budget provenance and qualification history.
-- Trace the historical 0.9 MB limits, record measured startup and a proposed replacement policy, and reconcile current classic-art status with historical modernization evidence.
-- Document reviewed local checkpoints and release-specific artwork acceptance; final qualification remains in progress.
+- Trace the historical 0.9 MB limits, record measured startup and the approved replacement policy, and reconcile current classic-art status with historical modernization evidence.
+- Document reviewed local checkpoints and release-specific artwork acceptance; all required local qualification gates pass for 1.10.49 / plugin 1.10.8.
 
 ## 1.10.49 — Release performance fixes
 
@@ -13,6 +13,8 @@
 - Avoid Canvas state writes for offscreen effects; pixel-equivalence checks include screen-edge overlap.
 - Isolate changing development Pixi support graphics into a render group to reduce GPU-upload stalls; production remains classic Canvas.
 - Adopt Ken-approved cold-network startup gates: 15 seconds at 25 Mbps and 40 seconds at 10 Mbps, with all other release limits retained.
+
+- Harden local artifact checksum verification and Docker cleanup after crashed or unresponsive Desktop processes.
 
 ## Plugin 1.10.8 — Stable asset URLs
 
