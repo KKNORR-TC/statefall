@@ -17,6 +17,7 @@ for(const rejection of ['expired','invalid','signature'])test('score '+rejection
     localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));
   });
   await page.goto('/index.html?browserTest=1');
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   await page.evaluate(()=>window.__STATEFALL_TEST__.prepareControlledStart());
   await page.locator('#seedIn').fill('RELEASESCORE');await page.locator('#countrySel').selectOption('0');await page.locator('#startBtn').click();
   await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().ready)).toBe(true);
@@ -26,12 +27,12 @@ for(const rejection of ['expired','invalid','signature'])test('score '+rejection
   const outbox=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('statefall-outbox')||'[]'));
   await expect.poll(async()=>(await outbox()).length).toBe(rejection==='expired'?1:0);
   if(rejection==='expired'){
-    const original=await outbox();await page.reload();await expect.poll(()=>posted.length).toBe(2);
+    const original=await outbox();await page.reload();await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));await expect.poll(()=>posted.length).toBe(2);
     expect(await outbox()).toEqual(original);
-    accepted=true;await page.reload();await expect.poll(()=>posted.length).toBe(3);
+    accepted=true;await page.reload();await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));await expect.poll(()=>posted.length).toBe(3);
     await expect.poll(async()=>(await outbox()).length).toBe(0);
     expect(posted.map(p=>p.seed)).toEqual(['RELEASESCORE','RELEASESCORE','RELEASESCORE']);
     expect(new Set(posted.map(p=>p.sig)).size).toBe(1);
-    await page.reload();expect(posted).toHaveLength(3);
+    await page.reload();await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));expect(posted).toHaveLength(3);
   }
 });

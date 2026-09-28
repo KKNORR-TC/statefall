@@ -50,6 +50,7 @@ async function freezeVisualTime(page){ await page.evaluate(async()=>{await windo
 
 async function startFixedMatch(page, {map = 'random', seed = 'PHASE0CANVAS', mode, controlled = false} = {}) {
   await page.goto(`${GAME_URL}&case=${encodeURIComponent(seed)}`, {waitUntil: 'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   await expect(page.locator('#start')).toBeVisible();
   await expect(page.locator('#map')).toBeVisible();
   if (controlled) await page.evaluate(() => window.__STATEFALL_TEST__.prepareControlledStart());
@@ -78,6 +79,7 @@ async function createCanonicalResumeReplay(page, seed) {
   delete replay.finalDigest;
   delete replay.final;
   await page.goto(`${GAME_URL}&case=${encodeURIComponent(seed)}-resume`, {waitUntil: 'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   return replay;
 }
 
@@ -258,6 +260,7 @@ test('dense late-game fixture exposes strategic visual layers', async ({page}, t
 test('loads and plays the historical replay fixture in the browser', async ({page}, testInfo) => {
   test.skip(testInfo.project.name.includes('mobile'), 'full-game replay coverage follows the desktop-first policy');
   await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   const loaded=await page.evaluate(file => window.__STATEFALL_TEST__.loadReplay(file),replayFixture);
   expect(loaded.ready).toBe(true);
   expect(loaded.replay).toMatchObject({on:true,commands:1,applied:0,targetTick:200,mismatch:false});
@@ -279,6 +282,7 @@ test('loads and plays the historical replay fixture in the browser', async ({pag
 test('8x watch stops and finalizes exactly at the replay target', async ({page}, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'exact accelerated watch coverage runs in primary Chromium');
   await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file),replayFixture);
   await page.locator('#rpPlay').click();
   await page.locator('#rpSpeed button[data-sp="8"]').click();
@@ -359,6 +363,7 @@ test('credits replay reset clears setup scratch before rebuilding the match', as
 test('rejects malformed and unsupported replay commands before configuration', async ({page}, testInfo) => {
   test.skip(testInfo.project.name.includes('mobile'), 'full-game replay coverage follows the desktop-first policy');
   await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   const result=await page.evaluate(file=>{
     const before=window.__STATEFALL_TEST__.status();
     const messages=[];
@@ -380,6 +385,7 @@ test('rejects malformed and unsupported replay commands before configuration', a
 test('invalid replay settings leave start state usable and allow a successful retry', async ({page}, testInfo) => {
   test.skip(testInfo.project.name.includes('mobile'), 'replay boundary coverage runs on desktop');
   await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   const result=await page.evaluate(file=>{
     const before=window.__STATEFALL_TEST__.status(),messages=[];
     for(const mutate of [replay=>{ replay.settings.troops=0; },replay=>{ replay.settings.troops=1_000_000_001; },replay=>{ replay.settings=[]; }]){
@@ -400,6 +406,7 @@ test('invalid replay settings leave start state usable and allow a successful re
 
 test('invalid start configuration reports the error without hiding the start card', async ({page}) => {
   await page.goto(GAME_URL,{waitUntil:'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   await page.locator('#settingsBtn').click();
   await page.locator('#stTroops').fill('0');
   await page.locator('#settingsClose').click();
@@ -416,6 +423,7 @@ test('invalid start configuration reports the error without hiding the start car
 
 test('start and settings cards avoid horizontal overflow on desktop and mobile', async ({page}) => {
   await page.goto(GAME_URL, {waitUntil: 'load'});
+  await page.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
   const assertNoHorizontalOverflow = async selector => {
     const layout = await page.locator(selector).evaluate(element => ({
       documentWidth: document.documentElement.scrollWidth,
@@ -476,6 +484,7 @@ test('fixed-seed simulation has the same canonical digest in Chromium, Firefox, 
         localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));
       });
       await testPage.goto(GAME_URL,{waitUntil:'load'});
+      await testPage.waitForFunction(() => window.__STATEFALL_TEST__ && !document.getElementById('bootStatus'));
       await testPage.evaluate(() => window.__STATEFALL_TEST__.prepareControlledStart());
       await testPage.locator('#maps button[data-m="random"]').click();
       await testPage.locator('#seedIn').fill('PHASE0DIGEST');
