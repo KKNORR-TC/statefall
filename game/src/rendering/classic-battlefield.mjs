@@ -123,7 +123,11 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
       const target=terrainCache.getContext('2d');target.setTransform(1,0,0,1,0,0);target.clearRect(0,0,terrainCache.width,terrainCache.height);target.setTransform(dpr,0,0,dpr,0,0);
       paintTerrainFrame(target,{...state,groundSignature:signature});terrainKey=key;terrainRefreshes++;
     }
-    ctx.drawImage(terrainCache,visibleState.camera.x-c.x,visibleState.camera.y-c.y,state.width,state.height);paintOwnership(ctx,visibleState);return true;
+    // Cached terrain includes overscan; keep every terrain layer inside the real map.
+    const camera=visibleState.camera;
+    ctx.save();ctx.beginPath();ctx.rect(camera.x,camera.y,W*camera.s,H*camera.s);ctx.clip();
+    ctx.drawImage(terrainCache,camera.x-c.x,camera.y-c.y,state.width,state.height);paintOwnership(ctx,visibleState);
+    ctx.restore();return true;
   }
   let groundCanvas=null,groundKey='',groundPath=null;
   function paintTerrainFrame(ctx,state){

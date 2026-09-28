@@ -1,0 +1,12 @@
+[WebServer] (node:28944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+
+(node:48644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] [chromium-desktop] › tests\browser\classic-map-edge.spec.js:2:1 › classic terrain preserves all four map edges across cache pans and worker output
+  1 passed (3.1s)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.52 — Close-up map edge
+
+- Clip classic terrain and its cached overscan to map bounds, preserving the empty border when zoomed in or panning.
+- Debug/testing patch: focused verification only, as requested by Ken; full release qualification deferred.
+
 ## 1.10.51 — Custom-nation credits and replay fix
 
 - Accept the existing -1 custom-country marker when a custom flag accompanies the replay. Keep rejecting unsupported negative countries and -1 without a custom flag.

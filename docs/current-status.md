@@ -1,5 +1,9 @@
 # Statefall Current Status
 
+**Current debug patch: 1.10.52 / plugin 1.10.9.** Map-edge clipping corrected and focused rendering, syntax, exact-ZIP integrity/startup checks passed. Ken explicitly requested patch packaging without the full suite during debugging. Full release qualification is deferred; this patch is not declared production GO. [Patch record](release-record-1.10.52.md).
+
+## Prior qualified credits correction
+
 Updated 28 September 2026. **Game 1.10.51 with plugin 1.10.9 is qualified for manual corrective installation. Production acceptance remains pending.** [Release record](release-record-1.10.51.md).
 
 This correction restores custom-nation credits/replays and implements the missing production Canvas layer-rejection method. The reported credits 52 recording matched all 62 checkpoints across 6287 ticks and 119 commands without modifying the recording. The exact ZIP passed four installed WordPress browser scenarios, including the credits regression. Qualification scope and preserved earlier failures are recorded with the release evidence. Docker is fully stopped.
