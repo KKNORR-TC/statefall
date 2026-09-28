@@ -61,7 +61,7 @@ function validateReplay(value,{requireCanonicalCheckpoints=false}={}){
     requireValue(Number.isFinite(settings.troops)&&settings.troops>=1,'settings.troops','must be a positive number',errors);
     requireValue(Number.isFinite(settings.gold)&&settings.gold>=0,'settings.gold','must be a non-negative number',errors);
     requireValue(Number.isInteger(settings.teams)&&settings.teams>=0&&settings.teams<=4,'settings.teams','must be an integer from 0 to 4',errors);
-    requireValue(settings.country===null||(Number.isInteger(settings.country)&&settings.country>=0),'settings.country','must be null or a non-negative integer',errors);
+    requireValue(settings.country===null||settings.country===-1&&isObject(settings.customFlag)||(Number.isInteger(settings.country)&&settings.country>=0),'settings.country','must be null, a non-negative integer, or -1 with a custom flag',errors);
     for(const key of BOOLEAN_SETTINGS) requireValue(typeof settings[key]==='boolean','settings.'+key,'must be boolean',errors);
     requireValue(settings.allowed==null||(Array.isArray(settings.allowed)&&settings.allowed.length<=64&&settings.allowed.every(x=>typeof x==='string'&&x.length<=40)),'settings.allowed','must contain at most 64 short strings or be null',errors);
     requireValue(settings.customBots==null||(Array.isArray(settings.customBots)&&settings.customBots.length<=9),'settings.customBots','must contain at most 9 entries or be null',errors);

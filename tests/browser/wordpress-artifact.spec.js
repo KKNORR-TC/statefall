@@ -49,3 +49,23 @@ test(`installed exact release loads on ${scenario} without missing chunks`,async
 });
 
 }
+
+test('custom-nation credits link restores an existing -1 country replay',async({page})=>{
+ const base=require('../fixtures/replays/public-v1.10.7-focus.json');
+ const flag={name:'Synthetic credits nation',layers:[['h','#0038a8','#ffffff'],['emb','#ffffff','anchor',.5,.5,.2,null]],userId:123};
+ const replay={v:1,hashv:2,game:require('../../package.json').version,seed:base.seed,settings:{...base.settings,country:-1,customFlag:flag},cmds:[],hashes:[],tick:20};
+ const record={id:999999,country:flag.name,seed:base.seed,map:'random',user:{id:123,name:'Synthetic player'},stats:{name:flag.name,flag,diff:'normal',cls:'Standard',player:'Synthetic player',result:'Victory',minutes:1,land:72,tl:[],c:{},rivals:[],fallen:[],flags:{}}};
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'||m.text().includes('credits unavailable'))errors.push(m.text());});
+ page.on('requestfailed',r=>errors.push(r.url()));page.on('response',r=>{if(r.status()>=400)errors.push(r.status()+' '+r.url());});
+ await page.route('**/scores/999999/replay',r=>r.fulfill({json:{data:replay}}));
+ await page.route('**/scores/999999',r=>r.fulfill({json:record}));
+ await page.addInitScript(()=>localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0})));
+ await page.goto('/play/?credits=999999',{waitUntil:'networkidle'});
+ await expect(page.locator('#bootStatus')).toHaveCount(0);
+ await expect(page.locator('#credLoad')).toHaveCount(0);
+ await expect(page.locator('#start')).toBeHidden();
+ await expect(page.locator('#myName')).toContainText(flag.name);
+ await expect(page.locator('#side')).toHaveClass(/rolling/);
+ await page.waitForTimeout(1200);
+ expect(errors,errors.join('\n')).toEqual([]);
+});

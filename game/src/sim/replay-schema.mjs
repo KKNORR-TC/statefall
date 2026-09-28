@@ -35,7 +35,7 @@ export function validateReplaySchema(value,{multiplayerProof=false}={}){
     requireValue(finite(settings.troops,1,1_000_000_000),'settings.troops','must be between 1 and 1000000000');
     requireValue(finite(settings.gold,0,1_000_000_000),'settings.gold','must be between 0 and 1000000000');
     requireValue(Number.isInteger(settings.teams)&&settings.teams>=0&&settings.teams<=4,'settings.teams','must be an integer from 0 to 4');
-    requireValue(settings.country===null||Number.isInteger(settings.country)&&settings.country>=0,'settings.country','must be null or a non-negative integer');
+    requireValue(settings.country===null||settings.country===-1&&isObject(settings.customFlag)||Number.isInteger(settings.country)&&settings.country>=0,'settings.country','must be null, a non-negative integer, or -1 with a custom flag');
     for(const key of BOOLEAN_SETTINGS) requireValue(typeof settings[key]==='boolean',`settings.${key}`,'must be boolean');
     requireValue(settings.allowed==null||Array.isArray(settings.allowed)&&settings.allowed.length<=RULE_IDS.length&&settings.allowed.every(item=>RULE_ID_SET.has(item))&&new Set(settings.allowed).size===settings.allowed.length,'settings.allowed','must contain unique supported rule IDs or be null');
     requireValue(settings.customBots==null||Array.isArray(settings.customBots)&&settings.customBots.length<=9,'settings.customBots','must contain at most 9 entries or be null');

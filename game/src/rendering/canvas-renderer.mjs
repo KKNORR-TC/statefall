@@ -8,6 +8,7 @@ export function createCanvasRenderer({reducedMotion=false}={}){
     updateRasterDiagnostics(value){ rasterDiagnostics=value; },
     get rasterDiagnostics(){ return rasterDiagnostics; },
     updateWorldLayer(){ return false; },
+    rejectWorldLayer(){ return false; },
     motionState(time=performance.now()){ return {time:reducedMotion?0:Number(time)||0,reducedMotion}; },
     capabilities(){ return {preStructures:false,structures:false,navalLogistics:false,warships:false,projectiles:false,missiles:false,aircraft:false,mapLabels:false,supportActors:false,floatingText:false,globalEffects:false,nationOverlays:false}; },
     renderFrame(){}, reset(){}, suspend(){}, async resume(){},

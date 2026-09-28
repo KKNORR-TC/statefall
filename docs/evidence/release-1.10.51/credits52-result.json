@@ -1,0 +1,15 @@
+{
+  "url": "https://www.worldrts.com/play/?credits=52",
+  "recordedGame": "1.10.50",
+  "country": -1,
+  "customFlagPresent": true,
+  "ticks": 6287,
+  "commands": 119,
+  "checkpoints": 62,
+  "finalHash": "72f4dea9",
+  "verification": "REPLAY MATCH",
+  "change": "Replay schema accepts -1 only when customFlag is an object; downstream identity validation unchanged.",
+  "recordingModified": false,
+  "productionModified": false,
+  "publicReplayStoredOnlyInIgnoredArtifacts": true
+}

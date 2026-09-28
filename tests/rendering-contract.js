@@ -7,6 +7,23 @@ require('./terrain-raster-model.js');
   const {createCamera,CAMERA_MIN_SCALE,CAMERA_MAX_SCALE}=await import('../game/src/rendering/camera.mjs');
   const {viewportMetrics}=await import('../game/src/rendering/viewport.mjs');
 
+  const {createCanvasRenderer}=await import('../game/src/rendering/canvas-renderer.mjs');
+  const canvas=createCanvasRenderer(),canvasBefore=canvas.diagnostics();
+  assert.equal(canvas.rejectWorldLayer('interaction-overlays','credits-exclusive'),false);
+  assert.equal(canvas.rejectWorldLayer('notification-overlays','transaction-resource'),false);
+  assert.deepEqual(canvas.diagnostics(),canvasBefore,'Canvas layer rejection must preserve the Canvas render state');
+
+  const {createRenderer}=await import('../game/src/rendering/renderer-factory-production.mjs');
+  const previousMatchMedia=globalThis.matchMedia;
+  globalThis.matchMedia=()=>({matches:false});
+  try{
+    const production=await createRenderer({metrics:()=>({})});
+    assert.equal(production.rejectWorldLayer('interaction-overlays','credits-exclusive'),false);
+    assert.equal(production.rejectWorldLayer('notification-overlays','transaction-resource'),false);
+    assert.deepEqual(production.renderFrame({}),{replay:false});
+    production.destroy();
+  }finally{if(previousMatchMedia===undefined)delete globalThis.matchMedia;else globalThis.matchMedia=previousMatchMedia;}
+
   const camera=createCamera({x:13,y:-7,scale:2.5});
   const screen=camera.worldToScreen(42.25,19.5),world=camera.screenToWorld(screen.x,screen.y);
   assert.deepEqual(world,{x:42.25,y:19.5});

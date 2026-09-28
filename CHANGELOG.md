@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.51 — Custom-nation credits and replay fix
+
+- Accept the existing -1 custom-country marker when a custom flag accompanies the replay. Keep rejecting unsupported negative countries and -1 without a custom flag.
+- Implement the Canvas layer-rejection method used by credits so production credits rendering does not throw.
+- Align browser and command-line replay validation; preserve recorded data and checkpoint verification.
+
 ## 1.10.50 — Custom flag startup fix
 
 - Accept the optional null emblem accent already supported by WordPress flag validation. Preserve rejection of null in every other layer position.

@@ -1,10 +1,10 @@
 # Statefall Current Status
 
-Updated 28 September 2026. **Game 1.10.50 with plugin 1.10.9 is qualified for manual corrective installation. Live acceptance remains pending.** [Release record](release-record-1.10.50.md).
+Updated 28 September 2026. **Game 1.10.51 with plugin 1.10.9 is qualified for manual corrective installation. Production acceptance remains pending.** [Release record](release-record-1.10.51.md).
 
-The game fixes valid custom flags being rejected during authenticated startup or custom-opponent selection. All final gates passed, including real local WordPress login with a synthetic custom nation, guest custom-opponent selection, exact ZIP installation, security, determinism, browser regression and loading performance. Docker is fully stopped.
+This correction restores custom-nation credits/replays and implements the missing production Canvas layer-rejection method. The reported credits 52 recording matched all 62 checkpoints across 6287 ticks and 119 commands without modifying the recording. The exact ZIP passed four installed WordPress browser scenarios, including the credits regression. Qualification scope and preserved earlier failures are recorded with the release evidence. Docker is fully stopped.
 
-The prior game 1.10.49 custom-flag hold is superseded by this corrective candidate; plugin 1.10.9 remains required for physical asset URLs. No account/flag changes are needed. No production changes or push/deployment occurred. Ken remains the installer. Detailed Phase G review and dense-map frame pacing remain follow-ups.
+Game 1.10.50 is superseded for the credits defect; its custom-flag startup fix remains included. Keep plugin 1.10.9. No production changes, push or deployment occurred. Ken remains the installer. Detailed Phase G review and dense-map frame pacing remain follow-ups.
 
 ## Historical status — 20 September 2026
 

@@ -1,0 +1,160 @@
+{
+  "baseCommit": "bb1a59d",
+  "candidate": {
+    "version": "1.10.51",
+    "build": "2026-09-28-custom-credits-fix",
+    "filename": "statefall-release-1.10.51.zip",
+    "sha256": "1328cc26883d1d87be2994cec3ae8901a39d2601405af544f05755a9bd8ee8ba"
+  },
+  "plugin": {
+    "version": "1.10.9",
+    "filename": "statefall-scores-1.10.9.zip",
+    "sha256": "c3520f9091873f48e0b9cded7522b701546d69bf14671b5fc7f9a45fa89798bc"
+  },
+  "fullGates": [
+    {
+      "name": "install",
+      "exit": 0,
+      "started": "2026-09-28T21:38:23.2430227Z",
+      "ended": "2026-09-28T21:38:28.7942135Z"
+    },
+    {
+      "name": "verify",
+      "exit": 0,
+      "started": "2026-09-28T21:38:28.8501212Z",
+      "ended": "2026-09-28T21:59:12.6455018Z"
+    },
+    {
+      "name": "reproducibility",
+      "exit": 0,
+      "started": "2026-09-28T21:59:12.6475057Z",
+      "ended": "2026-09-28T21:59:18.7451298Z"
+    },
+    {
+      "name": "performance",
+      "exit": 0,
+      "started": "2026-09-28T21:59:18.7451298Z",
+      "ended": "2026-09-28T22:01:32.3082406Z"
+    },
+    {
+      "name": "socket-recovery",
+      "exit": 0,
+      "started": "2026-09-28T22:01:32.3092459Z",
+      "ended": "2026-09-28T22:01:32.6655253Z"
+    },
+    {
+      "name": "start",
+      "exit": 0,
+      "started": "2026-09-28T22:01:32.6665241Z",
+      "ended": "2026-09-28T22:01:59.6221325Z"
+    },
+    {
+      "name": "sandbox-verify",
+      "exit": 0,
+      "started": "2026-09-28T22:01:59.6231367Z",
+      "ended": "2026-09-28T22:02:06.2460609Z"
+    },
+    {
+      "name": "security",
+      "exit": 0,
+      "started": "2026-09-28T22:02:06.2470684Z",
+      "ended": "2026-09-28T22:02:37.0188733Z"
+    },
+    {
+      "name": "artifacts",
+      "exit": 1,
+      "started": "2026-09-28T22:02:37.0208735Z",
+      "ended": "2026-09-28T22:03:56.3142663Z"
+    },
+    {
+      "name": "stop",
+      "exit": 0,
+      "started": "2026-09-28T22:03:56.3172664Z",
+      "ended": "2026-09-28T22:04:09.1652220Z"
+    },
+    {
+      "name": "status",
+      "exit": 0,
+      "started": "2026-09-28T22:04:09.1662255Z",
+      "ended": "2026-09-28T22:04:09.7789729Z"
+    }
+  ],
+  "finalAffectedGates": [
+    {
+      "name": "rendering-final",
+      "exit": 0,
+      "started": "2026-09-28T22:04:57.3897299Z",
+      "ended": "2026-09-28T22:05:00.6804598Z"
+    },
+    {
+      "name": "reproducibility",
+      "exit": 0,
+      "started": "2026-09-28T22:05:00.7302089Z",
+      "ended": "2026-09-28T22:05:06.9451414Z"
+    },
+    {
+      "name": "performance",
+      "exit": 0,
+      "started": "2026-09-28T22:05:06.9461433Z",
+      "ended": "2026-09-28T22:07:22.0850826Z"
+    },
+    {
+      "name": "socket-recovery",
+      "exit": 0,
+      "started": "2026-09-28T22:07:22.0860939Z",
+      "ended": "2026-09-28T22:07:22.4360364Z"
+    },
+    {
+      "name": "start",
+      "exit": 0,
+      "started": "2026-09-28T22:07:22.4370361Z",
+      "ended": "2026-09-28T22:07:49.5709487Z"
+    },
+    {
+      "name": "sandbox-verify",
+      "exit": 0,
+      "started": "2026-09-28T22:07:49.5716488Z",
+      "ended": "2026-09-28T22:07:56.2637456Z"
+    },
+    {
+      "name": "security",
+      "exit": 0,
+      "started": "2026-09-28T22:07:56.2647451Z",
+      "ended": "2026-09-28T22:08:30.9255886Z"
+    },
+    {
+      "name": "artifacts",
+      "exit": 0,
+      "started": "2026-09-28T22:08:30.9265899Z",
+      "ended": "2026-09-28T22:09:50.4114845Z"
+    },
+    {
+      "name": "stop",
+      "exit": 0,
+      "started": "2026-09-28T22:09:50.4125571Z",
+      "ended": "2026-09-28T22:10:03.2121066Z"
+    },
+    {
+      "name": "status",
+      "exit": 0,
+      "started": "2026-09-28T22:10:03.2130964Z",
+      "ended": "2026-09-28T22:10:03.8200110Z"
+    }
+  ],
+  "scope": "Full verify passed before final production-wrapper forwarding method. Final rendering contracts, reproducibility, performance, sandbox, security and exact-artifact gate rerun after that correction. Earlier failed artifact logs preserved. Production recording is not included.",
+  "sourceHashes": {
+    "game/index.html": "4fdc78c38365e4a731bfb20754c39d1a3c638acf93eb081ee49e5fcf92df6240",
+    "game/src/config/build.js": "b9035bbf363f65aa15eec3d07f4a95702908b2b4fffd0283479c6e1c2f1ccf3c",
+    "game/src/sim/replay-schema.mjs": "5701c0702999c07c5f860a42e37aad0cdf08ab70f76e23556fb364ae0c5d20b4",
+    "game/src/rendering/canvas-renderer.mjs": "a25b623d1aa52bab3e747fd177617b68c818903f596d65ceed1b6b39d7a9350c",
+    "game/src/rendering/renderer-factory-production.mjs": "8e16bf5d1abe3998460075836618082af687691797ae81363a49c3e00e4aea5d",
+    "tools/replaycheck.js": "65f345c043d01f9ba564d06bfef19ba81d3c81a67b5e2b3ac837b312c3b0ce6b",
+    "tests/custom-country-replay.js": "a626f08dce64784eb4fbed42f30c175caab2d77b8928e44cf13cc3d0d1561616",
+    "tests/rendering-contract.js": "376d94354830a4b4163e12dac29869bfdc96ab1aec1723dacdd08f0c589a5a21",
+    "tests/browser/wordpress-artifact.spec.js": "168bc43c7f9e3c05d9c285dfc7730a620986c3d1b465830b4a70fbd4685c5831",
+    "package.json": "743244faecbfa74d17a4b3a90fab647930a3e5d847e44263a09e2173771c792c",
+    "package-lock.json": "97ed9c7dcdc8c07de3a4349c4fef91729af811f9b71084190ee8ad98c4c1818a"
+  },
+  "dockerStopped": true,
+  "productionModified": false
+}
