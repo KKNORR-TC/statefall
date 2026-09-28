@@ -1,0 +1,8 @@
+{
+  "issue": "Custom flag optional emblem accent null rejected by simulation configuration schema",
+  "evidence": "Ken supplied console chosenFlag.layers[2] contains an invalid value; anonymous live start independently failed settings.customBots[0].layers[2]. Synthetic local reproduction failed before fix.",
+  "fix": "Allow null only at index 6 of a seven-element emb layer; preserve payload bytes and all other validation.",
+  "tests": "Player and opponent starts, omitted/string/null accents, malformed null positions and objects, checkpoint round-trip; exact WordPress authenticated and forced guest-opponent scenarios added.",
+  "productionModified": false,
+  "status": "All final qualification gates passed"
+}

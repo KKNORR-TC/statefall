@@ -1,0 +1,69 @@
+{
+  "baseCommit": "0ba48b9",
+  "game": {
+    "version": "1.10.50",
+    "build": "2026-09-28-custom-flag-fix",
+    "filename": "statefall-release-1.10.50.zip",
+    "sha256": "ad23b6c5d25d9b779499093de4a7519bfb0ea4090ae2c5a479593fb203c74476"
+  },
+  "plugin": {
+    "version": "1.10.9",
+    "filename": "statefall-scores-1.10.9.zip",
+    "sha256": "c3520f9091873f48e0b9cded7522b701546d69bf14671b5fc7f9a45fa89798bc"
+  },
+  "source": [
+    {
+      "path": "game/index.html",
+      "sha256": "f7642ccc314aac7b728e8c61e5a9b604657efb0d740ab2b1c571ac8f7daa930e"
+    },
+    {
+      "path": "game/src/config/build.js",
+      "sha256": "ea5f29f9c2adb03a533fd27e987c11ff184a0a0d148ff52c0ff964c134c28e50"
+    },
+    {
+      "path": "game/src/sim/configuration-schema.mjs",
+      "sha256": "a0d8a08a588122897dd735173764ad6b7c5142d5cb509c68dbf49f62e958048f"
+    },
+    {
+      "path": "package.json",
+      "sha256": "c3d38908d3053371c912a084f96668ab2660efdbc7cc49dd65c8912bc01c9f46"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "abb1493137e18fd1853eff00bf13e0941241b7fbef76f589d99a96a2b3c7a81f"
+    },
+    {
+      "path": "tests/custom-flag-null.js",
+      "sha256": "a7c890148906b30a4f66fc0785001af7c3036e321a6901de3fc2e1112425579e"
+    },
+    {
+      "path": "tests/browser/wordpress-artifact.spec.js",
+      "sha256": "72f49957cd878ee93512cc1aa73d8e6ddb81e3af7eb866b156255f80aa37b1ea"
+    },
+    {
+      "path": "tests/php/custom-flag-fixtures.php",
+      "sha256": "a1c2c464069d38803d6d53d29d3372065792e169b98b7c53f30cd7054b1b7596"
+    },
+    {
+      "path": "sandbox/verify-artifacts.ps1",
+      "sha256": "418f809651c312f9aa67c28b6ac019bd58d095bca2eba8acfb59d9be6f96cee5"
+    }
+  ],
+  "allFinalGatesPassed": true,
+  "primaryBrowser": {
+    "passed": 365,
+    "intentionalProjectExclusions": 937
+  },
+  "scalePassed": 21,
+  "prototypePassed": 1,
+  "wordpressPassed": 3,
+  "networkMaxMs": {
+    "desktop-1440x900": 527.7000000476837,
+    "mobile-pixel-7-390x844": 534.2999999523163,
+    "desktop-broadband-25mbps": 11550.000000059605,
+    "desktop-constrained-10mbps": 27169.499999940395
+  },
+  "productionModified": false,
+  "dockerStopped": true,
+  "initialFailure": "HTML package markers initially remained at 1.10.49; syntax gate rejected mismatch. Markers corrected before the successful full rerun; failed log retained."
+}

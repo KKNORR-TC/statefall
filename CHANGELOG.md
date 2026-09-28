@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.50 — Custom flag startup fix
+
+- Accept the optional null emblem accent already supported by WordPress flag validation. Preserve rejection of null in every other layer position.
+- Cover custom player and opponent flags, deterministic start and checkpoint restoration, and authenticated WordPress startup using synthetic flags.
+- Require plugin 1.10.9 for physical asset URLs on static-file hosts.
+
 ## Plugin 1.10.9 — Static hosting correction
 
 - Use physical release URLs in uploads for startup scripts, styles, artwork and workers. The virtual /play/releases route returned 404 on the live host even though the installed files existed.

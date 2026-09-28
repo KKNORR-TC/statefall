@@ -1,12 +1,10 @@
 # Statefall Current Status
 
-Updated 28 September 2026. **Plugin 1.10.9 is qualified for manual corrective installation with unchanged game 1.10.49. Production acceptance is pending.** [Corrective release record](release-record-plugin-1.10.9.md).
+Updated 28 September 2026. **Game 1.10.50 with plugin 1.10.9 is qualified for manual corrective installation. Live acceptance remains pending.** [Release record](release-record-1.10.50.md).
 
-The previous plugin 1.10.8 release is on hold after the live site returned 404 for its startup scripts and stylesheet. Approved read-only inspection confirmed the files are available at their physical uploads paths. Plugin 1.10.9 uses those paths, and exact-package tests now cover a host that rejects virtual asset URLs. [Incident](hosting-incident-2026-09-28.md).
+The game fixes valid custom flags being rejected during authenticated startup or custom-opponent selection. All final gates passed, including real local WordPress login with a synthetic custom nation, guest custom-opponent selection, exact ZIP installation, security, determinism, browser regression and loading performance. Docker is fully stopped.
 
-Local verification passed after one development-server startup timeout was investigated and the unchanged display-scaling suite passed on rerun. The failure and rerun are retained in the evidence. Docker is fully stopped. No production changes, push or deployment occurred. Ken remains the installer.
-
-The previous game qualification still applies to the byte-identical game ZIP, including approved artwork and loading budgets. Detailed Phase G review and dense-map frame pacing remain follow-ups.
+The prior game 1.10.49 custom-flag hold is superseded by this corrective candidate; plugin 1.10.9 remains required for physical asset URLs. No account/flag changes are needed. No production changes or push/deployment occurred. Ken remains the installer. Detailed Phase G review and dense-map frame pacing remain follow-ups.
 
 ## Historical status — 20 September 2026
 

@@ -1,6 +1,6 @@
 {
   "name": "statefall",
-  "version": "1.10.49",
+  "version": "1.10.50",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
@@ -31,7 +31,7 @@
     "test:engine-isolation": "node tests/engine-isolation.js",
     "test:relay": "node tests/multiplayer-relay.js",
     "test:relay-browser": "playwright test tests/browser/relay-websocket.spec.js --project=chromium-desktop",
-    "test:adversarial-boundaries": "node tests/adversarial-boundaries.js",
+    "test:adversarial-boundaries": "node tests/adversarial-boundaries.js && node tests/custom-flag-null.js",
     "test:compatibility-effects": "node tests/compatibility-effects.js",
     "test:world-loop": "node tests/world-loop.js",
     "test:command-router": "node tests/command-router.js",

@@ -101,6 +101,8 @@ if (($badFingerprint.Headers['Cache-Control'] -join ',') -match 'immutable') { t
 $manifest = Invoke-WebRequest -Uri ($fixtureBase + 'release.json') -UseBasicParsing -TimeoutSec 30
 if (($manifest.Headers['Content-Type'] -join ',') -notmatch 'application/json' -or ($manifest.Headers['Cache-Control'] -join ',') -notmatch 'max-age=300') { throw 'Release metadata MIME/cache headers failed.' }
 try { Invoke-WebRequest -Uri "$base/play/$($paths.appPath)" -UseBasicParsing -TimeoutSec 30 | Out-Null; throw 'Unqualified modern asset URL was served.' } catch [System.Net.WebException] { if ([int]$_.Exception.Response.StatusCode -ne 404) { throw } }
+docker @cli eval-file /statefall-tests/custom-flag-fixtures.php
+if ($LASTEXITCODE -ne 0) { throw 'Custom flag fixture setup failed.' }
 $env:STATEFALL_WORDPRESS_URL = $base
 npm run test:wordpress:artifact
 if ($LASTEXITCODE -ne 0) { throw 'Artifact-backed WordPress browser smoke failed.' }

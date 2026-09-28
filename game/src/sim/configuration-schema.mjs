@@ -28,7 +28,11 @@ export function assertAllowedRules(value){
 function assertLayer(layer,path){
   if(!Array.isArray(layer)||layer.length<2||layer.length>32) throw new TypeError(`${path} must be a short flag layer array.`);
   const valid=value=>['string','number','boolean'].includes(typeof value)?(typeof value!=='number'||Number.isFinite(value))&&(typeof value!=='string'||value.length<=200):Array.isArray(value)&&value.length<=20&&value.every(item=>typeof item==='number'&&Number.isFinite(item));
-  for(const value of layer) if(!valid(value)) throw new TypeError(`${path} contains an invalid value.`);
+  for(const [index,value] of layer.entries()){
+    // WordPress emblem layers permit an explicitly absent optional accent color.
+    if(layer[0]==='emb'&&layer.length===7&&index===6&&value===null) continue;
+    if(!valid(value)) throw new TypeError(`${path} contains an invalid value.`);
+  }
 }
 export function assertIdentity(value,path='identity'){
   if(!plain(value)) throw new TypeError(`${path} must be a plain object.`);

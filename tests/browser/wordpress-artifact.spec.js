@@ -1,7 +1,8 @@
 const {test,expect}=require('@playwright/test');
 
-for (const staticHost of [false, true]) {
-test(`installed exact release loads on ${staticHost ? 'static-file host' : 'WordPress'} without missing chunks`,async({page})=>{
+for (const scenario of ['anonymous', 'static-host', 'logged-in-custom-flag']) {
+const staticHost=scenario!=='anonymous', loggedIn=scenario==='logged-in-custom-flag';
+test(`installed exact release loads on ${scenario} without missing chunks`,async({page})=>{
   if (staticHost) await page.route('**/play/releases/**', route => route.fulfill({status:404,contentType:'text/plain',body:'Static host: no physical file at virtual route'}));
   const failures=[],workers=[];
   page.on("worker",worker=>workers.push(worker.url()));
@@ -10,6 +11,15 @@ test(`installed exact release loads on ${staticHost ? 'static-file host' : 'Word
   page.context().on('requestfailed',request=>failures.push(`failed ${request.url()}`));
   page.context().on('response',response=>{if(response.status()>=400||(response.status()>=300&&response.url().includes('/assets/')))failures.push(`${response.status()} ${response.url()}`);});
   await page.addInitScript(()=>{window.__STATEFALL_TEST_MODE__=true;localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));});
+  // Fix only host-side opponent selection randomness; the seeded simulation RNG is unchanged.
+  await page.addInitScript(()=>{Math.random=()=>0.2;});
+  if(loggedIn){
+    await page.goto('/wp-login.php');
+    await page.locator('#user_login').fill('artifact-admin');
+    await page.locator('#user_pass').fill('artifact-password');
+    await page.locator('#wp-submit').click();
+    await expect(page).toHaveURL(/wp-admin/);
+  }
   await page.goto('/play/',{waitUntil:'networkidle'});
   await expect(page.locator('#bootStatus')).toHaveCount(0);
   await expect(page.locator('#gameRoot')).not.toHaveAttribute('inert', '');
@@ -19,7 +29,11 @@ test(`installed exact release loads on ${staticHost ? 'static-file host' : 'Word
   await expect(page.locator('#start')).toBeVisible();
   await expect(page.locator('#sfUser')).toContainText(/Log in|Playing as/);
   await page.locator('#seedIn').fill('PHASECWORDPRESS');
-  await page.locator('#countrySel').selectOption('0');
+  expect(await page.evaluate(()=>window.STATEFALL_WP.nationPool.some(n=>n.flag.layers.some(l=>l[0]==='emb'&&l[6]===null)))).toBe(true);
+  if(loggedIn){
+    expect(await page.evaluate(()=>window.STATEFALL_WP.user?.nation?.flag.layers[1][6])).toBe(null);
+    await expect(page.locator('#countrySel')).toHaveValue('-1');
+  }else await page.locator('#countrySel').selectOption('0');
   await page.locator('#startBtn').click();
   await expect(page.locator('#start')).toBeHidden();
   await expect(page.locator('#myName')).not.toBeEmpty();
