@@ -1,6 +1,8 @@
 const {test,expect}=require('@playwright/test');
 
-test('installed exact release loads through WordPress without missing chunks',async({page})=>{
+for (const staticHost of [false, true]) {
+test(`installed exact release loads on ${staticHost ? 'static-file host' : 'WordPress'} without missing chunks`,async({page})=>{
+  if (staticHost) await page.route('**/play/releases/**', route => route.fulfill({status:404,contentType:'text/plain',body:'Static host: no physical file at virtual route'}));
   const failures=[],workers=[];
   page.on("worker",worker=>workers.push(worker.url()));
   page.on('pageerror',error=>failures.push(error.message));
@@ -8,7 +10,12 @@ test('installed exact release loads through WordPress without missing chunks',as
   page.context().on('requestfailed',request=>failures.push(`failed ${request.url()}`));
   page.context().on('response',response=>{if(response.status()>=400||(response.status()>=300&&response.url().includes('/assets/')))failures.push(`${response.status()} ${response.url()}`);});
   await page.addInitScript(()=>{window.__STATEFALL_TEST_MODE__=true;localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0}));});
-  await page.goto('/play/?browserTest=1',{waitUntil:'networkidle'});
+  await page.goto('/play/',{waitUntil:'networkidle'});
+  await expect(page.locator('#bootStatus')).toHaveCount(0);
+  await expect(page.locator('#gameRoot')).not.toHaveAttribute('inert', '');
+  expect(await page.locator('body').evaluate(el=>getComputedStyle(el).margin)).toBe('0px');
+  expect(await page.evaluate(()=>window.STATEFALL_WP.assets)).toContain('/statefall/releases/');
+  expect(await page.evaluate(()=>window.STATEFALL_WP.assets)).not.toContain('/play/releases/');
   await expect(page.locator('#start')).toBeVisible();
   await expect(page.locator('#sfUser')).toContainText(/Log in|Playing as/);
   await page.locator('#seedIn').fill('PHASECWORDPRESS');
@@ -26,3 +33,5 @@ test('installed exact release loads through WordPress without missing chunks',as
     await page.waitForTimeout(1000);
   expect(failures,failures.join('\n')).toEqual([]);
 });
+
+}

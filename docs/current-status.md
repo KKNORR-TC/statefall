@@ -1,12 +1,12 @@
 # Statefall Current Status
 
-Updated 28 September 2026. **Game 1.10.49 / plugin 1.10.8 is GO for manual publishing after all required local gates passed.** [Complete release record](release-record-1.10.49.md).
+Updated 28 September 2026. **Plugin 1.10.9 is qualified for manual corrective installation with unchanged game 1.10.49. Production acceptance is pending.** [Corrective release record](release-record-plugin-1.10.9.md).
 
-The candidate includes classic artwork, gameplay/replay corrections, capture-front and effects optimizations, startup loading/retry controls and stable WordPress asset URLs. Qualification covers 365 primary browser cases, display scaling, determinism, 1,152 map/difficulty/mode cases, 84 extended campaigns, complete-roster replays, live performance, reproducibility, security and installation of the exact final ZIPs. Approved network limits pass at 11.500 s / 27.103 s worst load-plus-start. Docker is fully stopped.
+The previous plugin 1.10.8 release is on hold after the live site returned 404 for its startup scripts and stylesheet. Approved read-only inspection confirmed the files are available at their physical uploads paths. Plugin 1.10.9 uses those paths, and exact-package tests now cover a host that rejects virtual asset URLs. [Incident](hosting-incident-2026-09-28.md).
 
-Ken approved current artwork for this release and deferred detailed Phase G review. Dense Middle East frame pacing and the approximately 31.58 MB initial download remain documented optimization follow-ups; all required gates pass. This is finite regression coverage, not proof of zero bugs on every device or seed.
+Local verification passed after one development-server startup timeout was investigated and the unchanged display-scaling suite passed on rerun. The failure and rerun are retained in the evidence. Docker is fully stopped. No production changes, push or deployment occurred. Ken remains the installer.
 
-Source and harness checkpoints through 4a7cab9 are local. Final documentation/evidence is checkpointed with the handoff. No push, tag, production access or deployment has occurred. Ken uploads the checksum-verified ZIPs using [the installation guide](installation-handoff-1.10.49.md). The [1.10.48 record](release-record-1.10.48.md) remains historical NO-GO evidence.
+The previous game qualification still applies to the byte-identical game ZIP, including approved artwork and loading budgets. Detailed Phase G review and dense-map frame pacing remain follow-ups.
 
 ## Historical status — 20 September 2026
 

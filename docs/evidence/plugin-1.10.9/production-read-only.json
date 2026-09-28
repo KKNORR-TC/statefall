@@ -1,0 +1,34 @@
+{
+  "inspectedAt": "2026-09-28T19:28:16.095Z",
+  "authorization": "Ken approved read-only production inspection after the release failure report.",
+  "page": "https://worldrts.com/play/",
+  "pageStatus": 200,
+  "release": "1.10.49-2026-09-28-release-performance",
+  "requests": [
+    {
+      "virtualUrl": "https://www.worldrts.com/play/releases/1.10.49-2026-09-28-release-performance/assets/index.0bc4cb417da9.js",
+      "virtualStatus": 404,
+      "physicalUrl": "https://www.worldrts.com/wp-content/uploads/statefall/releases/1.10.49-2026-09-28-release-performance/assets/index.0bc4cb417da9.js",
+      "physicalStatus": 200,
+      "mime": "application/javascript",
+      "bytes": 1594
+    },
+    {
+      "virtualUrl": "https://www.worldrts.com/play/releases/1.10.49-2026-09-28-release-performance/assets/module-preload.0bcb72f8ec0d.js",
+      "virtualStatus": 404,
+      "physicalUrl": "https://www.worldrts.com/wp-content/uploads/statefall/releases/1.10.49-2026-09-28-release-performance/assets/module-preload.0bcb72f8ec0d.js",
+      "physicalStatus": 200,
+      "mime": "application/javascript",
+      "bytes": 1232
+    },
+    {
+      "virtualUrl": "https://www.worldrts.com/play/releases/1.10.49-2026-09-28-release-performance/assets/index.f921c04b0893.css",
+      "virtualStatus": 404,
+      "physicalUrl": "https://www.worldrts.com/wp-content/uploads/statefall/releases/1.10.49-2026-09-28-release-performance/assets/index.f921c04b0893.css",
+      "physicalStatus": 200,
+      "mime": "text/css",
+      "bytes": 12866
+    }
+  ],
+  "writesToProduction": false
+}

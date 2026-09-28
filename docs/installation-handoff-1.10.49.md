@@ -1,5 +1,8 @@
 # Statefall 1.10.49 installation handoff
 
+**Release hold — 28 September 2026:** Ken reported that the installed `/play/` page displays unstyled HTML and does not start. The earlier local GO is superseded by **NO-GO pending diagnosis and a verified correction**. The original local test results remain historical evidence; production acceptance has failed. Read-only inspection subsequently confirmed virtual asset HTTP 404s. Use the [plugin 1.10.9 corrective release](release-record-plugin-1.10.9.md); this original plugin 1.10.8 GO is historical.
+
+
 GO for manual publishing after local qualification. Use the exact ZIPs and SHA-256 values in the accompanying release record. Production installation and post-installation verification remain Ken’s responsibility.
 
 ## Installation order

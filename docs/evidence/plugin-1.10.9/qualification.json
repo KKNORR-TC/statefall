@@ -1,0 +1,49 @@
+{
+  "baseCommit": "b4ce398233273c7a558e922a0b00b696ef0c111b",
+  "plugin": {
+    "version": "1.10.9",
+    "filename": "statefall-scores-1.10.9.zip",
+    "sha256": "c3520f9091873f48e0b9cded7522b701546d69bf14671b5fc7f9a45fa89798bc"
+  },
+  "game": {
+    "version": "1.10.49",
+    "build": "2026-09-28-release-performance",
+    "filename": "statefall-release-1.10.49.zip",
+    "sha256": "bcdcd534e3454939d34cebace3af7184bcc2ad89b95d8df0bd56d2c0a6dfc60a"
+  },
+  "gameUnchanged": true,
+  "source": [
+    {
+      "path": "plugin/statefall-scores/includes/play.php",
+      "sha256": "f80f3b5beadb3ff15a286a078ec3c3a93bae5cbed2ccae22902c4e6482a85d4d"
+    },
+    {
+      "path": "plugin/statefall-scores/readme.txt",
+      "sha256": "f17b46d0bc37265e2694203bdf027ac88a036f3a2d7e3f9725502e3b2aa5edab"
+    },
+    {
+      "path": "plugin/statefall-scores/statefall-scores.php",
+      "sha256": "55dfb68e7a5cffb71e534c5ec233081cca3e1b6f5d618555dee44881bc4d6237"
+    },
+    {
+      "path": "tests/browser/wordpress-artifact.spec.js",
+      "sha256": "68e9144c8b0e055be093f77f0844da41aca1557015b46c9f7ce6e989ae7c0d14"
+    }
+  ],
+  "status": "Qualified for manual corrective plugin installation; live acceptance pending",
+  "primaryBrowser": {
+    "passed": 365,
+    "intentionalProjectSkips": 937
+  },
+  "scaling": {
+    "firstRunPassed": 20,
+    "firstRunFailed": 1,
+    "repeatPassed": 21,
+    "explanation": "Initial local Vite module requests remained pending until the 10-second readiness assertion expired. No HTTP 404 or JavaScript exception was recorded. The unchanged full scaling suite passed on rerun; no timeout or assertion was weakened.",
+    "traceSha256": "aef58856668c50967ab89540b5914294013e49ca71535a33224f4196d76dd235"
+  },
+  "prototypePassed": 1,
+  "exactArtifactBrowserPassed": 2,
+  "dockerStopped": true,
+  "productionWrites": false
+}

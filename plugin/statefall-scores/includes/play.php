@@ -29,8 +29,9 @@ function statefall_release_context($refresh = false, $namedRelease = null) {
     $target = $namedRelease !== null ? $namedRelease : statefall_pointer_target();
     if ($target === 'legacy') $context = ['name' => null, 'manifest' => null, 'dir' => statefall_game_dir(), 'url' => statefall_game_url(), 'runtimeUrl' => statefall_game_url(), 'entry' => 'index.html', 'flags' => 'flags.js'];
     else {
+        // Use physical uploads URLs: static-file requests may never reach WordPress rewrites.
         $manifest = $target ? statefall_release_manifest($target) : null;
-        $context = $manifest ? ['name' => $target, 'manifest' => $manifest, 'dir' => statefall_game_dir() . 'releases/' . $target . '/', 'url' => statefall_game_url() . 'releases/' . rawurlencode($target) . '/', 'runtimeUrl' => home_url('/play/releases/' . rawurlencode($target) . '/'), 'entry' => $manifest['entry'], 'flags' => $manifest['flags']] : null;
+        $context = $manifest ? ['name' => $target, 'manifest' => $manifest, 'dir' => statefall_game_dir() . 'releases/' . $target . '/', 'url' => statefall_game_url() . 'releases/' . rawurlencode($target) . '/', 'runtimeUrl' => statefall_game_url() . 'releases/' . rawurlencode($target) . '/', 'entry' => $manifest['entry'], 'flags' => $manifest['flags']] : null;
     }
     if ($namedRelease !== null) $named[$namedRelease] = $context; else $active = $context;
     return $context;

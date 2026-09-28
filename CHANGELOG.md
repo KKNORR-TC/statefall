@@ -1,5 +1,10 @@
 # Changelog
 
+## Plugin 1.10.9 — Static hosting correction
+
+- Use physical release URLs in uploads for startup scripts, styles, artwork and workers. The virtual /play/releases route returned 404 on the live host even though the installed files existed.
+- Exercise plain /play/ and a static-file host model that rejects virtual asset paths in the exact-package browser gate.
+
 ## Release qualification — 28 September 2026
 
 - Retain loading-budget provenance and qualification history.
