@@ -1,0 +1,347 @@
+
+Running 72 tests using 1 worker
+
+
+
+(node:30528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[2/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[3/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[4/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 1 scaled texture edge: 1333 changed raster pixels in first 2 columns; 96px and 108px overlaps remain Pixi-owned
+
+[5/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[6/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+  1) [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      235 |   test.skip(!evidence.owned,'Pixi WebGL renderer unavailable'); const dpr=Math.min(testInfo.project.use.deviceScaleFactor,2),image=await screenshotPixels(page.locator('.pixi-world'));
+      236 |   const count=(x,y,r,predicate)=>{ let total=0; for(let py=Math.max(0,Math.floor((y-r)*dpr));py<=Math.min(image.height-1,Math.ceil((y+r)*dpr));py++) for(let px=Math.max(0,Math.floor((x-r)*dpr));px<=Math.min(image.width-1,Math.ceil((x+r)*dpr));px++){ const offset=(py*image.width+px)*4; if(predicate(...image.data.slice(offset,offset+4))) total++; } return total; };
+    > 237 |   expect(count(400,280,20,(r,g,b,a)=>r>180&&g<130&&a>0)).toBeGreaterThan(0); expect(count(350,280,4,(r,g,b,a)=>r>g+25&&r>b+15&&a>0),'route center').toBeGreaterThan(0); expect(count(404,276.5,2,(r,g,b,a)=>r>180&&g>180&&b>180&&a>0),'rounded hull corner').toBeGreaterThan(0); expect(count(620,280,22,(r,g,b,a)=>g>130&&r<180&&a>0)).toBeGreaterThan(0); expect(count(760,330,18,(r,g,b,a)=>b>100&&a>0)).toBeGreaterThan(0); expect(count(640,360,5,(r,g,b,a)=>r>120&&g>90&&b<140&&a>0)).toBeGreaterThan(0);
+          |                                                          ^
+      238 |   expect(evidence.rendering.layers.navalLogistics.presentation[0].styles.find(value=>value.stroke==='#fff')).toMatchObject({kind:'polygon',join:'round'});
+      239 |   expect(evidence.rendering.layers.navalLogistics).toMatchObject({owned:true,counts:{transports:{visible:2},merchants:{visible:1},boarding:{visible:1}},labelCount:2});
+      240 | });
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:237:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:41932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[7/72] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+  2) [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+
+    Error: Pixi paints the miter-only merchant bow region at DPR 1
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      250 |   const reference=createCanvas(buttImage.width,buttImage.height),context=reference.getContext('2d'); context.scale(dpr,dpr); context.translate(760,330); const u=4.08; context.scale(u,u); context.lineWidth=1.2; context.strokeStyle='#5a4a30'; const draw=join=>{ context.clearRect(-100,-100,200,200); context.lineJoin=join; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-3); context.lineTo(-8,-3); context.lineTo(-8,3); context.lineTo(3,3); context.closePath(); context.stroke(); return context.getImageData(0,0,reference.width,reference.height).data.slice(); },miter=draw('miter'),rounded=draw('round');
+      251 |   let miterOnly=0,pixiMiter=0; for(let y=Math.floor(324*dpr);y<=Math.ceil(336*dpr);y++) for(let x=Math.floor(792*dpr);x<=Math.ceil(799*dpr);x++){ const i=(y*buttImage.width+x)*4; if(miter[i+3]>32&&rounded[i+3]<16){ miterOnly++; const r=buttImage.data[i],g=buttImage.data[i+1],b=buttImage.data[i+2]; if(r>45&&r<150&&g>25&&g<120&&b<100) pixiMiter++; } }
+    > 252 |   expect(miterOnly,`Canvas reference has a miter-only bow region at DPR ${dpr}`).toBeGreaterThan(0); expect(pixiMiter,`Pixi paints the miter-only merchant bow region at DPR ${dpr}`).toBeGreaterThan(0);
+          |                                                                                                                                                                                       ^
+      253 | });
+      254 |
+      255 | function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:252:183
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:21296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[8/72] [chromium-desktop-scale-1] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[9/72] [chromium-desktop-scale-1] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[10/72] [chromium-desktop-scale-1] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[11/72] [chromium-desktop-scale-1] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[12/72] [chromium-desktop-scale-1] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[13/72] [chromium-desktop-scale-1] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[14/72] [chromium-desktop-scale-1] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[15/72] [chromium-desktop-scale-1] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[16/72] [chromium-desktop-scale-1] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[17/72] [chromium-desktop-scale-1] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[18/72] [chromium-desktop-scale-1] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[19/72] [chromium-desktop-scale-1] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[20/72] [chromium-desktop-scale-1] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[21/72] [chromium-desktop-scale-1] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[22/72] [chromium-desktop-scale-1] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[23/72] [chromium-desktop-scale-1] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[24/72] [chromium-desktop-scale-1] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+(node:15068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[25/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[26/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[27/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[28/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 1.5 scaled texture edge: 3006 changed raster pixels in first 3 columns; 96px and 108px overlaps remain Pixi-owned
+
+[29/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[30/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+  3) [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+
+    Error: expect(received).toMatchObject(expected)
+
+    Matcher error: received value must be a non-null object
+
+    Received has value: undefined
+
+      236 |   const count=(x,y,r,predicate)=>{ let total=0; for(let py=Math.max(0,Math.floor((y-r)*dpr));py<=Math.min(image.height-1,Math.ceil((y+r)*dpr));py++) for(let px=Math.max(0,Math.floor((x-r)*dpr));px<=Math.min(image.width-1,Math.ceil((x+r)*dpr));px++){ const offset=(py*image.width+px)*4; if(predicate(...image.data.slice(offset,offset+4))) total++; } return total; };
+      237 |   expect(count(400,280,20,(r,g,b,a)=>r>180&&g<130&&a>0)).toBeGreaterThan(0); expect(count(350,280,4,(r,g,b,a)=>r>g+25&&r>b+15&&a>0),'route center').toBeGreaterThan(0); expect(count(404,276.5,2,(r,g,b,a)=>r>180&&g>180&&b>180&&a>0),'rounded hull corner').toBeGreaterThan(0); expect(count(620,280,22,(r,g,b,a)=>g>130&&r<180&&a>0)).toBeGreaterThan(0); expect(count(760,330,18,(r,g,b,a)=>b>100&&a>0)).toBeGreaterThan(0); expect(count(640,360,5,(r,g,b,a)=>r>120&&g>90&&b<140&&a>0)).toBeGreaterThan(0);
+    > 238 |   expect(evidence.rendering.layers.navalLogistics.presentation[0].styles.find(value=>value.stroke==='#fff')).toMatchObject({kind:'polygon',join:'round'});
+          |                                                                                                              ^
+      239 |   expect(evidence.rendering.layers.navalLogistics).toMatchObject({owned:true,counts:{transports:{visible:2},merchants:{visible:1},boarding:{visible:1}},labelCount:2});
+      240 | });
+      241 |
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:238:110
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1-5\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1-5\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1-5\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1-5\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-1-5\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:25828) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[31/72] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+  4) [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+
+    Error: Pixi paints the miter-only merchant bow region at DPR 1.5
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      250 |   const reference=createCanvas(buttImage.width,buttImage.height),context=reference.getContext('2d'); context.scale(dpr,dpr); context.translate(760,330); const u=4.08; context.scale(u,u); context.lineWidth=1.2; context.strokeStyle='#5a4a30'; const draw=join=>{ context.clearRect(-100,-100,200,200); context.lineJoin=join; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-3); context.lineTo(-8,-3); context.lineTo(-8,3); context.lineTo(3,3); context.closePath(); context.stroke(); return context.getImageData(0,0,reference.width,reference.height).data.slice(); },miter=draw('miter'),rounded=draw('round');
+      251 |   let miterOnly=0,pixiMiter=0; for(let y=Math.floor(324*dpr);y<=Math.ceil(336*dpr);y++) for(let x=Math.floor(792*dpr);x<=Math.ceil(799*dpr);x++){ const i=(y*buttImage.width+x)*4; if(miter[i+3]>32&&rounded[i+3]<16){ miterOnly++; const r=buttImage.data[i],g=buttImage.data[i+1],b=buttImage.data[i+2]; if(r>45&&r<150&&g>25&&g<120&&b<100) pixiMiter++; } }
+    > 252 |   expect(miterOnly,`Canvas reference has a miter-only bow region at DPR ${dpr}`).toBeGreaterThan(0); expect(pixiMiter,`Pixi paints the miter-only merchant bow region at DPR ${dpr}`).toBeGreaterThan(0);
+          |                                                                                                                                                                                       ^
+      253 | });
+      254 |
+      255 | function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:252:183
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1-5\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1-5\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1-5\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1-5\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-1-5\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:19204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[32/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[33/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[34/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[35/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[36/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[37/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[38/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[39/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[40/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[41/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[42/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[43/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[44/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[45/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[46/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[47/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[48/72] [chromium-desktop-scale-1.5] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+(node:14724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[49/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[50/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[51/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[52/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 2 scaled texture edge: 5346 changed raster pixels in first 4 columns; 96px and 108px overlaps remain Pixi-owned
+
+[53/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[54/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+  5) [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+
+    Error: expect(received).toMatchObject(expected)
+
+    Matcher error: received value must be a non-null object
+
+    Received has value: undefined
+
+      236 |   const count=(x,y,r,predicate)=>{ let total=0; for(let py=Math.max(0,Math.floor((y-r)*dpr));py<=Math.min(image.height-1,Math.ceil((y+r)*dpr));py++) for(let px=Math.max(0,Math.floor((x-r)*dpr));px<=Math.min(image.width-1,Math.ceil((x+r)*dpr));px++){ const offset=(py*image.width+px)*4; if(predicate(...image.data.slice(offset,offset+4))) total++; } return total; };
+      237 |   expect(count(400,280,20,(r,g,b,a)=>r>180&&g<130&&a>0)).toBeGreaterThan(0); expect(count(350,280,4,(r,g,b,a)=>r>g+25&&r>b+15&&a>0),'route center').toBeGreaterThan(0); expect(count(404,276.5,2,(r,g,b,a)=>r>180&&g>180&&b>180&&a>0),'rounded hull corner').toBeGreaterThan(0); expect(count(620,280,22,(r,g,b,a)=>g>130&&r<180&&a>0)).toBeGreaterThan(0); expect(count(760,330,18,(r,g,b,a)=>b>100&&a>0)).toBeGreaterThan(0); expect(count(640,360,5,(r,g,b,a)=>r>120&&g>90&&b<140&&a>0)).toBeGreaterThan(0);
+    > 238 |   expect(evidence.rendering.layers.navalLogistics.presentation[0].styles.find(value=>value.stroke==='#fff')).toMatchObject({kind:'polygon',join:'round'});
+          |                                                                                                              ^
+      239 |   expect(evidence.rendering.layers.navalLogistics).toMatchObject({owned:true,counts:{transports:{visible:2},merchants:{visible:1},boarding:{visible:1}},labelCount:2});
+      240 | });
+      241 |
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:238:110
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-2\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-2\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-2\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-2\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-keeps-Pixi-n-9c895-arding-aligned-at-every-DPR-chromium-desktop-scale-2\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:28820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[55/72] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+  6) [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+
+    Error: Pixi paints the miter-only merchant bow region at DPR 2
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      250 |   const reference=createCanvas(buttImage.width,buttImage.height),context=reference.getContext('2d'); context.scale(dpr,dpr); context.translate(760,330); const u=4.08; context.scale(u,u); context.lineWidth=1.2; context.strokeStyle='#5a4a30'; const draw=join=>{ context.clearRect(-100,-100,200,200); context.lineJoin=join; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-3); context.lineTo(-8,-3); context.lineTo(-8,3); context.lineTo(3,3); context.closePath(); context.stroke(); return context.getImageData(0,0,reference.width,reference.height).data.slice(); },miter=draw('miter'),rounded=draw('round');
+      251 |   let miterOnly=0,pixiMiter=0; for(let y=Math.floor(324*dpr);y<=Math.ceil(336*dpr);y++) for(let x=Math.floor(792*dpr);x<=Math.ceil(799*dpr);x++){ const i=(y*buttImage.width+x)*4; if(miter[i+3]>32&&rounded[i+3]<16){ miterOnly++; const r=buttImage.data[i],g=buttImage.data[i+1],b=buttImage.data[i+2]; if(r>45&&r<150&&g>25&&g<120&&b<100) pixiMiter++; } }
+    > 252 |   expect(miterOnly,`Canvas reference has a miter-only bow region at DPR ${dpr}`).toBeGreaterThan(0); expect(pixiMiter,`Pixi paints the miter-only merchant bow region at DPR ${dpr}`).toBeGreaterThan(0);
+          |                                                                                                                                                                                       ^
+      253 | });
+      254 |
+      255 | function documentWidth(viewport){ return viewport.width>700?viewport.width-300:viewport.width; }
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\desktop-scale.spec.js:252:183
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-2\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-2\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-2\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-2\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\desktop-scale-distinguishe-a4101-ound-endpoints-at-every-DPR-chromium-desktop-scale-2\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:42360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[56/72] [chromium-desktop-scale-2] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[57/72] [chromium-desktop-scale-2] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[58/72] [chromium-desktop-scale-2] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[59/72] [chromium-desktop-scale-2] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[60/72] [chromium-desktop-scale-2] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[61/72] [chromium-desktop-scale-2] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[62/72] [chromium-desktop-scale-2] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[63/72] [chromium-desktop-scale-2] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[64/72] [chromium-desktop-scale-2] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[65/72] [chromium-desktop-scale-2] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[66/72] [chromium-desktop-scale-2] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[67/72] [chromium-desktop-scale-2] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[68/72] [chromium-desktop-scale-2] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[69/72] [chromium-desktop-scale-2] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[70/72] [chromium-desktop-scale-2] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[71/72] [chromium-desktop-scale-2] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[72/72] [chromium-desktop-scale-2] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+  6 failed
+    [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+    [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+    [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+    [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+    [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR 
+    [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:242:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR 
+  9 skipped
+  57 passed (3.8m)

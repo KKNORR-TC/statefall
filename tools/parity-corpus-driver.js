@@ -7,14 +7,14 @@ function digest(S){
 }
 
 function ownTiles(S){
-  const out=[];
-  for(let tile=0;tile<S.W*S.H;tile++) if(S.owner[tile]===S.me.id) out.push(tile);
+  const out=[],size=S.W*S.H,owner=S.owner,id=S.me.id;
+  for(let tile=0;tile<size;tile++) if(owner[tile]===id) out.push(tile);
   return out;
 }
 
 function enemyTiles(S){
-  const out=[];
-  for(let tile=0;tile<S.W*S.H;tile++) if(S.land[tile]&&S.owner[tile]>=0&&S.owner[tile]!==S.me.id) out.push(tile);
+  const out=[],size=S.W*S.H,land=S.land,owner=S.owner,id=S.me.id;
+  for(let tile=0;tile<size;tile++) if(land[tile]&&owner[tile]>=0&&owner[tile]!==id) out.push(tile);
   return out;
 }
 
@@ -35,7 +35,10 @@ function coastWater(S,tile){
   return -1;
 }
 
+const scheduledTicks=new Set([5,15,25,35,45,55,65,75,85,105,125,145,165,185,205,225,245,265,285]);
 function issueScheduled(S,tick,coverage){
+  // Tile scans are read-only; avoid rescanning the entire map on idle ticks.
+  if(!scheduledTicks.has(tick))return;
   const own=ownTiles(S),enemy=enemyTiles(S),border=borderTiles(S);
   if(tick===5) S.issue('focus',.37);
   if(tick===15&&border.length) S.issueClick(border[0],{ratio:34,pick:null,build:null});
@@ -123,10 +126,11 @@ function replayScenario(fixture,boot,{assertions=true}={}){
   S.REPLAY.on=!drafting; S.REPLAY.hashv=fixture.hashv; S.REPLAY.cmds=fixture.cmds; S.REPLAY.i=0;
   S.REPLAY.hashes=fixture.hashes; S.REPLAY.mismatch=false; S.REPLAY.speed=1; S.REPLAY.toTick=fixture.tick;
   const actual=[],errors=[];
-  let pauseDone=false,takeoverDone=false;
+  let pauseDone=false,takeoverDone=false,draftSteps=0;
   while(S.tickN<fixture.tick){
     if(drafting&&S.tickN===0){
-      if(S.draft&&S.draft.order[S.draft.idx]===S.me){
+      if(++draftSteps>700) throw new Error(fixture.name+": replay draft stalled");
+      if(S.draft&&S.draft.order[S.draft.idx]===S.me&&S.players.some(p=>p.kind==='neutral'&&p.alive&&p.tiles>=120)){
         const command=fixture.cmds[S.REPLAY.i];
         if(!command||command.t!==0) throw new Error(`${fixture.name}: no recorded risky-draft pick for the human turn`);
         S.replayApply(command); S.REPLAY.i++;
@@ -140,7 +144,10 @@ function replayScenario(fixture,boot,{assertions=true}={}){
       else { S.REPLAY.on=false; S.CMD.log=S.REPLAY.cmds.slice(0,S.REPLAY.i); }
       takeoverDone=true;
     }
+    const before=S.tickN;
     game.tick();
+    if(S.tickN<=before) throw new Error(fixture.name+": replay stopped advancing at tick "+before);
+    if(S.REPLAY.mismatch) throw new Error(fixture.name+": replay diverged at tick "+S.REPLAY.divTick+": "+S.REPLAY.why);
     if(S.tickN>0&&S.tickN%100===0&&actual.at(-1)?.tick!==S.tickN){
       const expected=fixture.checkpoints.find(value=>value.tick===S.tickN);
       const recorded=S.CMD.hashes.find(value=>value[0]===S.tickN);

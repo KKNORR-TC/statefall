@@ -3,7 +3,7 @@ import {createCanvasRenderer} from './canvas-renderer.mjs';
 const boundedReason=value=>String(value||'').slice(0,160);
 
 export async function createRenderer({stage,metrics,search=location.search}={}){
-  const params=new URLSearchParams(search),query=params.get('renderer'),requested=query||'canvas';
+  const params=new URLSearchParams(search),query=params.get('renderer'),requested=__STATEFALL_DEV_RENDERERS__&&params.get('art')==='classic'?'canvas':query||'canvas';
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let active=createCanvasRenderer({reducedMotion}),fallbackReason=null,fallbackCleanup=null,fallbackPromise=null,replayRequired=false;
   const controller={

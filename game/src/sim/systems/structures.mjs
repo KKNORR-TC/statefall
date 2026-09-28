@@ -22,6 +22,14 @@ export function createStructuresSystem({
   function structAtT(t){ return structures.find(s=>s.t===t); }
   function fortRange(st){ return (st.level||1)>=3?32:(st.level||1)>=2?24:constants.fortRange; }
   function fortStack(t,id){ const x=t%W,y=(t-x)/W; let n=0; for(const st of structures){ if(st.type!=='fort'||st.building||st.owner!==id) continue; const r=fortRange(st); if((st.t%W-x)**2+((st.t-st.t%W)/W-y)**2<=r*r){ n++; if(n>=6) break; } } return n; }
+  // Valid for one synchronous combat pass: forts can be destroyed, but none are built mid-pass.
+  function combatFortQuery(){
+    const forts=structures.filter(st=>st.type==='fort'&&!st.building);
+    return (t,id)=>{ const x=t%W,y=(t-x)/W; let n=0; for(const st of forts){
+      if(st.owner!==id||!struct[st.t]) continue;
+      const r=fortRange(st); if((st.t%W-x)**2+((st.t-st.t%W)/W-y)**2<=r*r){ n++; if(n>=6) break; }
+    } return n; };
+  }
   function fortMult(t,id){ const n=fortStack(t,id); return n?Math.min(64,Math.pow(2,n)):1; }
   function fortified(t,id){ return fortStack(t,id)>0; }
   function commandCover(t){ const x=t%W,y=(t-x)/W; let n=0; for(const c of structures){ if(c.type!=='command'||c.building) continue; if(c.owner!==structOwner[t]&&c.owner!==owner[t]) continue; if((c.t%W-x)**2+((c.t-c.t%W)/W-y)**2<=constants.commandRange*constants.commandRange) n++; } return n; }
@@ -86,5 +94,5 @@ export function createStructuresSystem({
     }
   }
 
-  return Object.freeze({structAtT,fortRange,fortStack,fortMult,fortified,commandCover,coveringSam,repairNeed,repairOne,rebuildLinks,structCounts,crowded,snapBuild,snapToCoast,industrialNear,structCost,addStructure,clearStructures,placeStructure,captureStructure,destroyStructure,upgradeStructure,finishUpgrades,enqueue,cancelQueued,stepBuild});
+  return Object.freeze({structAtT,fortRange,fortStack,combatFortQuery,fortMult,fortified,commandCover,coveringSam,repairNeed,repairOne,rebuildLinks,structCounts,crowded,snapBuild,snapToCoast,industrialNear,structCost,addStructure,clearStructures,placeStructure,captureStructure,destroyStructure,upgradeStructure,finishUpgrades,enqueue,cancelQueued,stepBuild});
 }

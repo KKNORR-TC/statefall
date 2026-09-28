@@ -1,5 +1,6 @@
 import {conservativePaintBounds,paintBoundsIntersectViewport} from './paint-bounds.mjs';
 import {primitiveGraphicsSegments,primitiveIntersectsViewport} from './pre-structure-layer-model.mjs';
+import {UNIT_COLORS} from './unit-art-direction.mjs';
 
 export const MAX_WARSHIP_ENTRIES=4096;
 export const MAX_WARSHIP_WAKE_POINTS=131072;
@@ -43,12 +44,12 @@ function transformedArc(tx,cx,cy,r,start,end,style){
 }
 
 function hullPrimitives(ship,x,y,r,lineCap){
-  const lean=Number(ship.lean),tx=transformFactory(x,y,r,Number(ship.heading),lean),col=ship.color,width=1.2*r/10,white='#e8ecef',dark='#0f1a26',result=[],poly=(values,style)=>result.push(polygon(values.map(([a,b])=>tx(a,b)),style)),box=(a,b,w,h,style)=>poly([[a,b],[a+w,b],[a+w,b+h],[a,b+h]],style),ln=(a,b,c,d,style)=>{ const p=tx(a,b),q=tx(c,d); result.push(line(p.x,p.y,q.x,q.y,style)); };
-  const hull=(values,style={})=>poly(values,{fill:col,stroke:'#fff',width,cap:lineCap,join:'round',...style});
+  const lean=Number(ship.lean),tx=transformFactory(x,y,r,Number(ship.heading),lean),col=ship.color,width=1.2*r/10,white=UNIT_COLORS.ivory,dark=UNIT_COLORS.charcoal,result=[],poly=(values,style)=>result.push(polygon(values.map(([a,b])=>tx(a,b)),style)),box=(a,b,w,h,style)=>poly([[a,b],[a+w,b],[a+w,b+h],[a,b+h]],style),ln=(a,b,c,d,style)=>{ const p=tx(a,b),q=tx(c,d); result.push(line(p.x,p.y,q.x,q.y,style)); };
+  const hull=(values,style={})=>{ poly(values.map(([a,b])=>[a,b+1.25]),{fill:UNIT_COLORS.shadow,alpha:.55,cap:lineCap,join:'round'}); poly(values,{fill:UNIT_COLORS.deep,stroke:UNIT_COLORS.edge,width,cap:lineCap,join:'round',...style}); poly(values.map(([a,b])=>[a*.96,b*.78-.18]),{fill:UNIT_COLORS.highlight,alpha:.9,cap:lineCap,join:'round'}); poly(values.map(([a,b])=>[a*.9,b*.5]),{fill:UNIT_COLORS.navy,cap:lineCap,join:'round'}); };
   if(ship.cls==='warship'){
     hull([[12,0],[5,-3.5],[-9,-3.5],[-11,-2],[-11,2],[-9,3.5],[5,3.5]]); box(-5,-2,7,4,{fill:white}); box(-1,-1.2,2.5,2.4,{fill:white}); ln(5,0,9.5,0,{stroke:white,width:1.4*r/10,cap:lineCap,join:'round'}); box(-8,-1,2,2,{fill:dark});
   }else if(ship.cls==='privateer'){
-    poly([[10,0],[4,-3],[-8,-3],[-9,0],[-8,3],[4,3]],{fill:'#3a2f2a',stroke:col,width:1.4*r/10,cap:lineCap,join:'round'}); poly([[-2,-1.5],[-2,-8],[3,-3.5]],{fill:white}); box(-4,-1,3,2,{fill:'#111'});
+    hull([[10,0],[4,-3],[-8,-3],[-9,0],[-8,3],[4,3]],{stroke:UNIT_COLORS.brass,width:1.4*r/10}); poly([[-2,-1.5],[-2,-8],[3,-3.5]],{fill:white}); box(-4,-1,3,2,{fill:UNIT_COLORS.deep});
   }else if(ship.cls==='sub'||ship.cls==='hunter'){
     hull([[9,0],[5,-2.2],[-7,-2.2],[-9,0],[-7,2.2],[5,2.2]]); box(-2,-4.5,3,2.5,{fill:white}); if(ship.cls==='hunter') result.push(transformedArc(tx,-.5,-5.5,2,Math.PI*1.1,Math.PI*1.9,{stroke:white,width:1.2*r/10,cap:lineCap,join:'round'}));
   }else if(ship.cls==='rship'){
@@ -63,6 +64,7 @@ function hullPrimitives(ship,x,y,r,lineCap){
     for(const cx of [6,-8]){ const pts=[]; for(let i=0;i<32;i++){ const a=TAU*i/32; pts.push(tx(cx+Math.cos(a)*2.2,Math.sin(a)*2.2)); } result.push(polygon(pts,{fill:dark})); }
     for(const values of [[6,-1,11.5,-1],[6,1,11.5,1],[-8,-1,-12,-1],[-8,1,-12,1]]) ln(...values,{stroke:white,width:1.3*r/10,cap:lineCap,join:'round'});
   }
+  box(-7,-3.35,4,.8,{fill:col});
   const pip=2*r/Number(ship.hpMax),pipWidth=Math.max(1,pip-1),pipY=y-r*1.5,pipTx=leanTransformFactory(x,y,lean);
   for(let i=0;i<Math.ceil(Number(ship.hp));i++){ const pipX=x-r+i*pip; result.push(polygon([[pipX,pipY],[pipX+pipWidth,pipY],[pipX+pipWidth,pipY+2],[pipX,pipY+2]].map(([a,b])=>pipTx(a,b)),{fill:'#fff',alpha:1})); }
   return result;

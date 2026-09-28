@@ -43,6 +43,10 @@ function assertDeepFrozenAndTryMutations(value,seen=new Set()){
     assert.ok(production.presentation().state.actors.players.every(player=>!Object.hasOwn(player,'labelPos')),'authoritative players must not own label positions');
     const labelCanonical=production.serializeCanonical(),labelRuntime=JSON.stringify(production.runtimeCheckpoint());
     const labelPositions=production.queries.playerLabelPositions();
+    assert.equal(production.queries.nearestPort(0,0),null);
+    assert.throws(()=>production.queries.nearestPort(-1,0));
+    assert.throws(()=>production.queries.nearestPort(0,-1));
+    assert.throws(()=>production.queries.nearestPort(0,NaN));
     assert.ok(labelPositions.some(Boolean),'presentation label query returned no positions');
     assert.throws(()=>{ labelPositions[0][0]=999; },TypeError);
     assert.equal(production.serializeCanonical(),labelCanonical,'label layout query changed canonical state');
@@ -93,6 +97,37 @@ function assertDeepFrozenAndTryMutations(value,seen=new Set()){
     assert.throws(()=>containerEvent.args[1].set('escape',4),/immutable/);
     assert.deepEqual([...containerEvent.args[0]],[1,2]);
     assert.equal(containerEvent.args[1].get('safe').value,3);
+
+
+    // High-frequency presentation events must not traverse a player's garrison.
+    let garrisonReads=0;
+    const eventPlayer={id:7,color:'#123456',peakTroops:1200,goldEarned:345,
+      get areas(){ garrisonReads++; return Array.from({length:3000},(_,id)=>({id,troops:id,tiles:1})); }};
+    direct.compatibility.emitEventForDiagnostics('tileCaptured',123,eventPlayer);
+    direct.compatibility.emitEventForDiagnostics('playerAccrued',eventPlayer,.4);
+    direct.compatibility.emitEventForDiagnostics('attackStarted',eventPlayer,2);
+    const compactEvents=direct.drainEvents();
+    assert.equal(garrisonReads,0,'visual events copied the complete garrison graph');
+    assert.deepEqual(compactEvents.map(e=>e.args),[
+      [123,{id:7,color:'#123456'}],[{id:7,peakTroops:1200,goldEarned:345},.4],[{id:7},2]
+    ]);
+    eventPlayer.color='#ffffff';eventPlayer.peakTroops=9999;
+    assert.equal(compactEvents[0].args[1].color,'#123456');
+    assert.equal(compactEvents[1].args[0].peakTroops,1200);
+    compactEvents.forEach(event=>assertDeepFrozenAndTryMutations(event));
+    eventPlayer.name='Snapshot';eventPlayer.flag=[['h','#ffffff','#000000']];
+    direct.compatibility.emitEventForDiagnostics('tileCaptured',124,eventPlayer);
+    direct.compatibility.emitEventForDiagnostics('tileCaptured',125,eventPlayer);
+    direct.compatibility.emitEventForDiagnostics('invasion',eventPlayer,123,false);
+    const repeatedEvents=direct.drainEvents();
+    assert.equal(repeatedEvents[0].args[1],repeatedEvents[1].args[1],'identical tile events rebuilt player snapshots');
+    assert.notEqual(repeatedEvents[0].args[1],compactEvents[0].args[1],'changed colors reused stale snapshots');
+    assert.equal(garrisonReads,0,'invasion event copied the complete garrison graph');
+    assert.deepEqual(repeatedEvents[2].args,[{id:7,name:'Snapshot',flag:[['h','#ffffff','#000000']]},123,false]);
+    eventPlayer.flag[0][1]='#123456';
+    assert.equal(repeatedEvents[2].args[0].flag[0][1],'#ffffff');
+    repeatedEvents.forEach(event=>assertDeepFrozenAndTryMutations(event));
+
 
     const left=createEngine(diagnostics({...options,settings:{...options.settings,seed:'INTERLEAVED'}}));
     const right=createEngine(diagnostics({...options,settings:{...options.settings,seed:'INTERLEAVED'}}));

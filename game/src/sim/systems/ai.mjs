@@ -25,7 +25,7 @@ export function createAiSystem({
   function nearestTo(p,list,t){ let best=-1,bd=1e12; const x=t%W,y=(t-x)/W; for(const c of list){ const d=(c%W-x)**2+((c-c%W)/W-y)**2; if(d<bd){bd=d;best=c;} } return best; }
   function botReact(p){
     const L=botLevel(p); if(L<3||!p.threats||!p.threats.length) return false; const th=p.threats[p.threats.length-1]; const own=landCombat.ownTilesOf(p.id); if(!own.length) return false;
-    const near=(type,R)=>{ const c=own.filter(t=>!struct[t]&&!structureOps.crowded(t)&&(!definitions[type].coast||landCombat.isCoast(t))&&((t%W-th.t%W)**2+((t-t%W)/W-(th.t-th.t%W)/W)**2)<=R*R); if(!c.length) return false; return structureOps.placeStructure(p,type,nearestTo(p,c,th.t)); };
+    const near=(type,R)=>{ const c=own.filter(t=>!struct[t]&&((t%W-th.t%W)**2+((t-t%W)/W-(th.t-th.t%W)/W)**2)<=R*R&&(!definitions[type].coast||landCombat.isCoast(t))&&!structureOps.crowded(t)); if(!c.length) return false; return structureOps.placeStructure(p,type,nearestTo(p,c,th.t)); };
     const has=(type,R)=>structures.some(st=>st.owner===p.id&&st.type===type&&((st.t%W-th.t%W)**2+((st.t-st.t%W)/W-(th.t-th.t%W)/W)**2)<=R*R);
     let done=false;
     if(th.kind==='missile'){ if(!has('sam',30)&&p.gold>=definitions.sam.cost+100) done=near('sam',14); else if(L>=4&&!has('shield',12)&&p.gold>=definitions.shield.cost+200&&structures.some(st=>st.owner===p.id&&(st.type==='silo'||st.type==='city')&&((st.t%W-th.t%W)**2+((st.t-st.t%W)/W-(th.t-th.t%W)/W)**2)<=144)) done=near('shield',8); }
@@ -39,7 +39,7 @@ export function createAiSystem({
   function botPlaceSmart(p,type,own){
     const L=botLevel(p); if(L<1) return -1;
     const dist=(a,b)=>(a%W-b%W)**2+((a-a%W)/W-(b-b%W)/W)**2;
-    if(type==='sam'||type==='shield'){ const assets=structures.filter(st=>st.owner===p.id&&(st.type==='silo'||st.type==='city'||st.type==='airfield'||st.type==='command')); const uncovered=assets.filter(a=>!structures.some(st=>st.owner===p.id&&st.type===type&&dist(st.t,a.t)<=(type==='sam'?900:100))); if(!uncovered.length) return -1; const a=pick(uncovered); const c=own.filter(t=>!struct[t]&&!structureOps.crowded(t)&&dist(t,a.t)<=(type==='sam'?200:60)); return c.length?nearestTo(p,c,a.t):-1; }
+    if(type==='sam'||type==='shield'){ const assets=structures.filter(st=>st.owner===p.id&&(st.type==='silo'||st.type==='city'||st.type==='airfield'||st.type==='command')); const uncovered=assets.filter(a=>!structures.some(st=>st.owner===p.id&&st.type===type&&dist(st.t,a.t)<=(type==='sam'?900:100))); if(!uncovered.length) return -1; const a=pick(uncovered); const c=own.filter(t=>!struct[t]&&dist(t,a.t)<=(type==='sam'?200:60)&&!structureOps.crowded(t)); return c.length?nearestTo(p,c,a.t):-1; }
     if(type==='shore'||type==='battery'){ const foesPorts=structures.filter(st=>st.type==='port'&&st.owner!==p.id&&players[st.owner].kind!=='neutral'&&!diplomacy.atPeace(p.id,st.owner)); const foeShips=warships.filter(w=>w.owner!==p.id&&!diplomacy.atPeace(p.id,w.owner)&&(w.cls==='cruiser'||w.cls==='battleship')); const refs=[...foesPorts.map(x=>x.t),...foeShips.map(w=>idx(Math.floor(w.x),Math.floor(w.y)))]; const coast=own.filter(t=>landCombat.isCoast(t)&&!struct[t]&&!structureOps.crowded(t)); if(!coast.length) return -1; if(!refs.length) return pick(coast); const r=pick(refs); return nearestTo(p,coast,r); }
     return -1;
   }

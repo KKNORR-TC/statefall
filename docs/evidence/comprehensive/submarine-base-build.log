@@ -1,0 +1,22 @@
+
+> statefall@1.10.46 build:game
+> vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 77 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/assets/terrain-raster-worker-CLeriLB5.js    8.84 kB
+../dist/index.html                                 19.14 kB │ gzip:   5.61 kB
+../dist/assets/index.DJ-PSlvI.css                  12.58 kB │ gzip:   3.22 kB
+../dist/assets/index.BhKqPFja.js                  815.08 kB │ gzip: 264.47 kB
+✓ built in 974ms
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+copied 8 pages to dist/howto
+flags.js 18128 bytes
+dist/release.json 24 files sha256 f0e1c250a749ad32b066996581e1ffa7eb8d9da71ce61f934e247bd8b5111133

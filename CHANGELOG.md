@@ -1,5 +1,115 @@
 # Changelog
 
+## Unreleased — Qualification and documentation
+
+- Add optional cold-network performance observations at 25 Mbps and 10 Mbps without removing existing release gates.
+- Trace the historical 0.9 MB limits, record measured startup and a proposed replacement policy, and reconcile current classic-art status with historical modernization evidence.
+- Document local checkpoint boundaries; candidate remains NO-GO and tested game/plugin ZIPs are unchanged.
+
+## 1.10.49 — Release performance fixes
+
+- Remove repeated coordinate work and direction branching from capture fronts while preserving tile insertion order and random-number consumption.
+- Avoid Canvas state writes for offscreen effects; pixel-equivalence checks include screen-edge overlap.
+- Isolate changing development Pixi support graphics into a render group to reduce GPU-upload stalls; production remains classic Canvas.
+- Adopt Ken-approved cold-network startup gates: 15 seconds at 25 Mbps and 40 seconds at 10 Mbps, with all other release limits retained.
+
+## Plugin 1.10.8 — Stable asset URLs
+
+- Prevent WordPress canonical redirects from appending slashes to game asset URLs, which breaks relative imports, artwork and workers in split builds.
+- Verify the current plugin ZIP by version and checksum during release qualification.
+
+## 1.10.48 — Classic production candidate
+
+- Include the classic terrain, full unit roster and building upgrade artwork in the production game by default; keep coastal test controls and development bridges out of the release. Require plugin 1.10.8 for correct immutable asset URLs.
+- Preserve scores rejected by an expired WordPress nonce and retry after refresh; permanent score validation and signature failures remain non-retryable.
+- Bind artifact verification to the newly built ZIP checksum/version/build instead of a stale 1.10.11 package; check release-relative artwork and worker paths through WordPress.
+
+## 1.10.47 — Upgrade audit and visual tiers
+
+- Add distinct classic artwork for level II ports and airfields, and level II/III bastions; fit cruise battleships with visible deck launchers.
+- Fix instant battleship refits ordered at tick zero, show accurate refit timing, and display six hangar slots for upgraded airfields.
+- Audit upgrade ownership, costs, timers, limits and unlocks with regression coverage.
+- Keep ship-center right-click orders accessible where upgraded port artwork overlaps newly launched ships.
+
+## 1.10.46 — Complete classic roster and simulation qualification
+
+- Show submarine-base prerequisites in build menus and placement previews, offer construction from coastal water, and display the actual port upgrade timer.
+
+- Fix replay catch-up timer races and defer obscured battlefield painting during loading.
+- Advance classic smoke lifetimes independently of frame rate and composite full-resolution attack fronts off the display thread.
+
+- Saved-game catch-up updates its loading progress without rasterizing obscured battles or rebuilding hidden sidebar lists; live controls and terrain refresh when loading completes.
+
+- Classic terrain now builds in a bounded background worker with camera overscan, copied inputs, timeout recovery and synchronous fallback. Offscreen smoke/spark draws are culled without changing visible pixels. Worker timing samples are bounded.
+- Checkpoint restoration accepts previously allocated garrison origins retained by attacks and transports after area merges, while rejecting malformed and never-issued IDs atomically.
+
+- Add fixed-camera, eight-direction artwork for all 16 mobile unit types and complete the 20-building classic roster. Blend direction changes and interpolate moving support units. Classic art remains an opt-in development preview.
+- Repair trucks return home after completing repairs or exhausting repair funds. Exhausted Risky drafts skip unavailable human picks. Surviving upgraded buildings retain their ground after bombardment.
+- Keep ship, aircraft, and map calculations identical across browser engines using portable historical math; preserve historical Node reference replay bytes rather than rounding checksums.
+- Bound high-frequency tile-capture, attack-start and HUD event payloads so fragmented garrison fronts do not repeatedly copy entire player graphs. Keep event snapshots immutable.
+- Index fragmented garrison areas, batch exact-order combat troop totals, narrow fort queries to the active combat pass, and check AI placement distance before building spacing. Add eager-reference and cache-invalidation regressions.
+- Reduce replay checkpoint stalls with identical-output SHA-256 arithmetic and byte-validated typed-buffer serialization caching. Optimize fog boundaries and garrison traversal without changing their results.
+- Avoid quadratic polygon closure on fragmented attack fronts and repeated full-area scans in the garrison sidebar. Preserve rendered pixels and exact labels with browser/reference regressions.
+- Add reusable Cartesian simulation, extended campaign, full-roster, and artwork qualification harnesses with canonical replay verification and stall watchdogs.
+
+## 1.10.45 — Smooth credits playback
+
+- Spread accelerated credits replay over individual timer callbacks instead of blocking the UI with up to 15 simulation ticks per burst. Adjust presentation interpolation to the credits playback rate; retain ordered replay and exact target completion.
+
+## 1.10.44 — Credits replay setup
+
+- Restore recorded country identity and match settings after the credits reset, avoiding canonical divergence at the first checkpoint.
+- Reset before loading saved credits and suppress the local sail-loop controller during replay.
+
+## 1.10.43 — Traveling vision and returning fog
+
+- Friendly transports, merchants, trucks, traveling aircraft and spy planes reveal nearby terrain; radar ships retain direct sight under jamming.
+- Terrain fog returns over two simulation seconds after sight leaves, pauses with the match, and clears immediately on reacquisition. Entity visibility and targeting still use current authoritative sight.
+
+## 1.10.42 — Owned transport visibility
+
+- Keep player-owned troop transports and their traveled routes visible through fog in both Canvas and Pixi; foreign transports retain fog checks. No terrain reveal or simulation changes.
+
+## 1.10.41 — River water color
+
+- Replace pale green river highlights in the zoomed-out terrain raster with muted blue-gray water; preserve river topology and gameplay.
+
+## 1.10.40 — Naval menus and test resources
+
+- Skip drawing newly launched ships until their first positioned naval update, preventing the battleship-build rendering freeze.
+- Restore water/ship menus through the validated nearest-port query; resolve port artwork at right-click time and select a directly clicked friendly ship.
+- Start the local coastal test scene in existing Billionaire mode for ample player troops and gold; performance stress tests retain standard resources.
+
+## 1.10.39 — Medium-zoom attack rendering
+
+- Merge uniform territory interiors into row runs and visit only frontier-adjacent cells for attack contours. This removes the Path2D bottleneck during medium-zoom attacks without changing simulation rules.
+
+## 1.10.38 — Command and camera stalls
+
+- Bulk-copy trusted in-memory rollback graphs instead of encoding and decoding save checkpoints for every command; retain external checkpoint validation and rollback semantics.
+- Add a bounded overscan cache for local candidate scenery so small camera pans reuse the terrain image.
+
+## 1.10.37 — Smooth candidate turns
+
+- Interpolate destroyer headings over the shortest angular path between simulation updates and use a full-sector eased directional-art blend.
+
+## 1.10.36 — Directional destroyer candidate
+
+- Add eight fixed-camera destroyer views with aligned hull anchors and short heading crossfades; replace the oversized wake with a narrow stern trail. Add a local Sail loop control issuing ordinary movement commands, with all eight headings verified in a real lap.
+
+## 1.10.35 — Candidate live play
+
+- Separate live fog/ownership overlays from detailed scenery, scope site invalidation to the viewport, and skip unused full-map raster updates at tactical zoom. Replace square territory edges and attack tiles with continuous contours in the local candidate.
+
+## 1.10.34 — Coastal ground study
+
+- Refine the opt-in battlefield coast with interpolated shoreline contours, shallows, worn foundations and visible-land service roads. Cache static scenery and invalidate on fog, ownership, sites and camera changes. Simulation and default artwork remain unchanged.
+
+## 1.10.33 — Local classic battlefield candidate
+
+- Add an opt-in Canvas sprite-art study in the real game, with a commanded coastal example, authored military sprites, cosmetic terrain detail, faction recoloring, and close inspection zoom. Default artwork and simulation baseline remain unchanged.
+- Candidate review only; no deployment or final-art approval.
+
 ## 1.10.32 - 2026-09-20
 
 - Translated approved Terrain Direction 02 into a deterministic shared 4x terrain source with discrete strategic/operational ownership, Canvas high-quality image smoothing, Pixi linear sampling, and bounded static/composite caching. Ken approved candidate commit `27a2389` as the final in-game F2 terrain on 2026-09-20 by stating `approved proceed`; terrain-affected Canvas goldens are accepted locally. No Phase G row, package, release, or deployment is approved.

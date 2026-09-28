@@ -34,7 +34,6 @@ async function configureTestPage(page) {
   attachErrorCollectors(page);
   await page.addInitScript(() => {
     window.__STATEFALL_TEST_MODE__ = true;
-    Object.defineProperty(Performance.prototype, 'now', {value: () => 1_000});
     localStorage.setItem('statefall-audio', JSON.stringify({master: 0, sfx: 0, alert: 0, amb: 0, music: 0}));
   });
 }
@@ -46,6 +45,8 @@ test.beforeEach(async ({page}) => {
 test.afterEach(async ({page}) => {
   expect(page.__statefallFailures, page.__statefallFailures.join('\n')).toEqual([]);
 });
+
+async function freezeVisualTime(page){ await page.evaluate(async()=>{await window.__STATEFALL_TEST__.terrainRasterSettled();Object.defineProperty(Performance.prototype,'now',{value:()=>1_000,configurable:true});window.__STATEFALL_TEST__.freezePresentation();}); }
 
 async function startFixedMatch(page, {map = 'random', seed = 'PHASE0CANVAS', mode, controlled = false} = {}) {
   await page.goto(`${GAME_URL}&case=${encodeURIComponent(seed)}`, {waitUntil: 'load'});
@@ -88,7 +89,7 @@ function tamperFirstCheckpoint(replay) {
 }
 
 test('launches a fixed-seed match, renders the map, and supports camera zoom', async ({page}, testInfo) => {
-  await startFixedMatch(page);
+  await startFixedMatch(page,{controlled:true});
 
   const initial = await page.evaluate(() => window.__STATEFALL_TEST__.snapshot());
   expect(initial.seed).toBe('PHASE0CANVAS');
@@ -116,7 +117,7 @@ test('launches a fixed-seed match, renders the map, and supports camera zoom', a
   await expect.poll(() => page.evaluate(() => window.__STATEFALL_TEST__.snapshot().camera.scale)).toBeGreaterThan(initial.camera.scale);
 
   if (testInfo.project.name === 'chromium-desktop' && process.platform === 'win32') {
-    await page.evaluate(() => window.__STATEFALL_TEST__.freezePresentation());
+    await freezeVisualTime(page);
     await expect(page.locator('#map')).toHaveScreenshot('current-map.png', {animations: 'disabled'});
   }
 
@@ -144,7 +145,7 @@ test('all map buttons launch useful maps and match the strategic/close visual ma
       expect(state.players, map).toBeGreaterThan(1);
 
       if (process.platform === 'win32') {
-        await mapPage.evaluate(async() => { window.__STATEFALL_TEST__.setCamera(0.9, 'world'); await window.__STATEFALL_TEST__.terrainRasterSettled(); window.__STATEFALL_TEST__.freezePresentation(); });
+        await mapPage.evaluate(async() => { window.__STATEFALL_TEST__.setCamera(0.9, 'world'); await window.__STATEFALL_TEST__.terrainRasterSettled(); Object.defineProperty(Performance.prototype,'now',{value:()=>1_000,configurable:true}); window.__STATEFALL_TEST__.freezePresentation(); });
         await expect(mapPage.locator('#map')).toHaveScreenshot(`maps/${map}-strategic.png`, {animations: 'disabled'});
         await mapPage.evaluate(async() => { window.__STATEFALL_TEST__.setCamera(4, 'player'); await window.__STATEFALL_TEST__.terrainRasterSettled(); });
         await expect(mapPage.locator('#map')).toHaveScreenshot(`maps/${map}-close.png`, {animations: 'disabled'});
@@ -249,7 +250,7 @@ test('dense late-game fixture exposes strategic visual layers', async ({page}, t
   expect(scene.hiddenTiles).toBeGreaterThan(0);
   await expect(page.locator('#notices')).toContainText('Eastern front under bombardment');
   if(testInfo.project.name === 'chromium-desktop' && process.platform === 'win32'){
-    await page.evaluate(() => window.__STATEFALL_TEST__.freezePresentation());
+    await freezeVisualTime(page);
     await expect(page.locator('#stage')).toHaveScreenshot('dense-late-game.png',{animations:'disabled'});
   }
 });

@@ -1,0 +1,77 @@
+{
+  "name": "campaign-atoll-superhard-SOAK5A",
+  "options": {
+    "map": "atoll",
+    "diff": "superhard",
+    "seed": "SOAK5A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "fog": true,
+    "garrison": true
+  },
+  "ticks": 676,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 676,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 14,
+  "observed": {
+    "maxStructures": 107,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 10,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 11.082000000000107,
+  "maxTickMs": 171.5507,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 171.5507,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 600,
+      "ms": 124.72200000000021,
+      "structures": 100,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 118.54250000000002,
+      "structures": 50,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 116.62920000000008,
+      "structures": 14,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 115.38300000000004,
+      "structures": 29,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 106.76150000000007,
+      "structures": 76,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 5853.2496,
+  "replay": "PASS"
+}

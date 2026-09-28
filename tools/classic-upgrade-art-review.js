@@ -1,0 +1,14 @@
+const fs=require('fs'),assert=require('node:assert/strict'),{chromium}=require('playwright');
+(async()=>{const browser=await chromium.launch();try{const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4173/?browserTest=1');
+const result=await page.evaluate(async()=>{
+const {createClassicBattlefield}=await import('/src/rendering/classic-battlefield.mjs'),art=await createClassicBattlefield(),c=document.createElement('canvas');c.width=1200;c.height=1120;const ctx=c.getContext('2d');ctx.fillStyle='#17272d';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#e6e4d5';ctx.font='bold 26px system-ui';ctx.fillText('STATEFALL · UPGRADE SILHOUETTES',30,40);
+const hashes=[],rows=[['port',[1,2]],['airfield',[1,2]],['fort',[1,2,3]]];
+for(const [row,[type,levels]]of rows.entries()){for(const [i,level]of levels.entries()){const x=200+i*390,y=230+row*230;art.paintStructure(ctx,type,x,y,72,'#5799da',level);ctx.fillStyle='#e6e4d5';ctx.font='bold 19px system-ui';ctx.textAlign='center';ctx.fillText(type.toUpperCase()+' · '+['','I','II','III'][level],x,y+56);
+const probe=document.createElement('canvas');probe.width=256;probe.height=256;art.paintStructure(probe.getContext('2d'),type,128,190,72,'#5799da',level);hashes.push([type,level,probe.toDataURL()]);
+const cam={x:0,y:0,s:10},st={type,t:10*720+10,level};if(art.pickStructure(105,105,[st],cam,null,720)!==st)throw Error('upgraded selection lost '+type+level);
+}}
+for(const [i,cruise]of [false,true].entries()){const x=200+i*390,y=950;art.paintShip(ctx,'battleship',x,y,0,63,'#5799da',10,10,{cruise});ctx.fillStyle='#e6e4d5';ctx.fillText(cruise?'BATTLESHIP · MISSILE REFIT':'BATTLESHIP · STANDARD',x,1030);}
+const variants=[];for(const heading of [0,.4,Math.PI/2,Math.PI,Math.PI*1.5]){const pair=[];for(const cruise of [false,true]){const p=document.createElement('canvas');p.width=p.height=200;art.paintShip(p.getContext('2d'),'battleship',100,100,heading,45,'#5799da',10,10,{cruise});pair.push(p.toDataURL());}variants.push(pair[0]!==pair[1]);}
+const result={image:c.toDataURL(),distinctBuildings:hashes.every(([type,level,hash],i)=>hashes.every(([t,l,h],j)=>i===j||type!==t||hash!==h)),refitHeadings:variants,diagnostics:art.diagnostics()};art.destroy();return result;});
+assert.deepEqual(errors,[]);assert.ok(result.distinctBuildings);assert.ok(result.refitHeadings.every(Boolean));fs.mkdirSync('docs/evidence/upgrades',{recursive:true});fs.writeFileSync('docs/evidence/upgrades/art-tiers.png',Buffer.from(result.image.split(',')[1],'base64'));delete result.image;fs.writeFileSync('docs/evidence/upgrades/art-tiers.json',JSON.stringify(result,null,2));console.log('Upgrade art PASS: distinct tiers, selectable upgraded structures, five refit headings');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

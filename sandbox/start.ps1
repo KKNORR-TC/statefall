@@ -13,7 +13,7 @@ function Test-DockerReady {
 }
 
 if (-not (Test-DockerReady)) {
-    Start-Process -FilePath 'C:\Program Files\Docker\Docker\Docker Desktop.exe'
+    Start-Process -FilePath 'C:\Program Files\Docker\Docker\Docker Desktop.exe' -WindowStyle Hidden
     $ready = $false
     for ($i = 0; $i -lt 60; $i++) {
         Start-Sleep -Seconds 5

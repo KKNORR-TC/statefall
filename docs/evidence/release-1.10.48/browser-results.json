@@ -1,0 +1,74 @@
+[
+  {
+    "name": "front-path-browser",
+    "code": 0,
+    "started": "2026-09-28T14:10:30.225Z",
+    "ended": "2026-09-28T14:10:38.570Z"
+  },
+  {
+    "name": "classic-worker-browser",
+    "code": 0,
+    "started": "2026-09-28T14:10:38.570Z",
+    "ended": "2026-09-28T14:10:43.215Z"
+  },
+  {
+    "name": "sprite-culling-browser",
+    "code": 0,
+    "started": "2026-09-28T14:10:43.216Z",
+    "ended": "2026-09-28T14:10:48.764Z"
+  },
+  {
+    "name": "catchup-timer-browser",
+    "code": 0,
+    "started": "2026-09-28T14:10:48.764Z",
+    "ended": "2026-09-28T14:10:56.437Z"
+  },
+  {
+    "name": "roster-cache-stress",
+    "code": 0,
+    "started": "2026-09-28T14:10:56.471Z",
+    "ended": "2026-09-28T14:10:57.968Z"
+  },
+  {
+    "name": "roster-replay-browser",
+    "code": 0,
+    "started": "2026-09-28T14:10:57.968Z",
+    "ended": "2026-09-28T14:11:30.538Z"
+  },
+  {
+    "name": "late-atoll",
+    "code": 0,
+    "started": "2026-09-28T14:11:30.539Z",
+    "ended": "2026-09-28T14:12:13.948Z"
+  },
+  {
+    "name": "late-europe",
+    "code": 0,
+    "started": "2026-09-28T14:12:13.948Z",
+    "ended": "2026-09-28T14:13:00.703Z"
+  },
+  {
+    "name": "late-africa",
+    "code": 0,
+    "started": "2026-09-28T14:13:00.703Z",
+    "ended": "2026-09-28T14:14:53.394Z"
+  },
+  {
+    "name": "late-mideast",
+    "code": 1,
+    "started": "2026-09-28T14:14:53.395Z",
+    "ended": "2026-09-28T14:17:43.943Z"
+  },
+  {
+    "name": "performance",
+    "code": 1,
+    "started": "2026-09-28T14:17:43.944Z",
+    "ended": "2026-09-28T14:17:55.405Z"
+  },
+  {
+    "name": "summary",
+    "code": 1,
+    "started": "2026-09-28T14:17:55.405Z",
+    "ended": "2026-09-28T14:17:55.517Z"
+  }
+]

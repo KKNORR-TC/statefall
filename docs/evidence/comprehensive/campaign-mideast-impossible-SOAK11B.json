@@ -1,0 +1,174 @@
+{
+  "name": "campaign-mideast-impossible-SOAK11B",
+  "options": {
+    "map": "mideast",
+    "diff": "impossible",
+    "seed": "SOAK11B",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "continueMatches": true,
+    "endgame": true,
+    "billionaire": true,
+    "instant": true,
+    "fog": true,
+    "garrison": true
+  },
+  "ticks": 6000,
+  "ended": false,
+  "endings": [],
+  "alive": true,
+  "commands": 240,
+  "observed": {
+    "maxStructures": 967,
+    "maxShips": 0,
+    "maxAir": 74,
+    "maxAttacks": 16,
+    "maxTrucks": 1
+  },
+  "p95TickMs": 65.41790000000037,
+  "maxTickMs": 304.34010000000126,
+  "slowTicks": [
+    {
+      "tick": 3617,
+      "ms": 304.34010000000126,
+      "structures": 682,
+      "ships": 0,
+      "aircraft": 3
+    },
+    {
+      "tick": 3606,
+      "ms": 271.86099999999715,
+      "structures": 681,
+      "ships": 0,
+      "aircraft": 3
+    },
+    {
+      "tick": 3631,
+      "ms": 271.2658999999985,
+      "structures": 682,
+      "ships": 0,
+      "aircraft": 3
+    },
+    {
+      "tick": 5400,
+      "ms": 269.26459999999497,
+      "structures": 897,
+      "ships": 0,
+      "aircraft": 60
+    },
+    {
+      "tick": 5089,
+      "ms": 248.49349999999686,
+      "structures": 852,
+      "ships": 0,
+      "aircraft": 52
+    },
+    {
+      "tick": 6000,
+      "ms": 244.34410000001662,
+      "structures": 967,
+      "ships": 0,
+      "aircraft": 73
+    },
+    {
+      "tick": 5873,
+      "ms": 243.81260000000475,
+      "structures": 952,
+      "ships": 0,
+      "aircraft": 71
+    },
+    {
+      "tick": 5349,
+      "ms": 239.2601999999897,
+      "structures": 889,
+      "ships": 0,
+      "aircraft": 60
+    },
+    {
+      "tick": 5457,
+      "ms": 237.92299999999523,
+      "structures": 903,
+      "ships": 0,
+      "aircraft": 61
+    },
+    {
+      "tick": 5371,
+      "ms": 234.11549999999988,
+      "structures": 892,
+      "ships": 0,
+      "aircraft": 61
+    },
+    {
+      "tick": 4800,
+      "ms": 224.73429999999644,
+      "structures": 821,
+      "ships": 0,
+      "aircraft": 42
+    },
+    {
+      "tick": 5100,
+      "ms": 224.01209999999264,
+      "structures": 853,
+      "ships": 0,
+      "aircraft": 52
+    },
+    {
+      "tick": 5626,
+      "ms": 222.71339999999327,
+      "structures": 931,
+      "ships": 0,
+      "aircraft": 63
+    },
+    {
+      "tick": 5496,
+      "ms": 220.72090000000026,
+      "structures": 910,
+      "ships": 0,
+      "aircraft": 62
+    },
+    {
+      "tick": 5700,
+      "ms": 220.31159999998636,
+      "structures": 938,
+      "ships": 0,
+      "aircraft": 66
+    },
+    {
+      "tick": 5684,
+      "ms": 219.20010000000184,
+      "structures": 937,
+      "ships": 0,
+      "aircraft": 67
+    },
+    {
+      "tick": 5433,
+      "ms": 218.35510000000068,
+      "structures": 898,
+      "ships": 0,
+      "aircraft": 61
+    },
+    {
+      "tick": 5800,
+      "ms": 216.60269999998854,
+      "structures": 943,
+      "ships": 0,
+      "aircraft": 70
+    },
+    {
+      "tick": 5900,
+      "ms": 211.5634999999893,
+      "structures": 958,
+      "ships": 0,
+      "aircraft": 71
+    },
+    {
+      "tick": 4500,
+      "ms": 211.045100000003,
+      "structures": 780,
+      "ships": 0,
+      "aircraft": 33
+    }
+  ],
+  "elapsedMs": 308530.3722,
+  "replay": "PASS"
+}

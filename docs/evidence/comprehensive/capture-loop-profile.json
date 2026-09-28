@@ -1,0 +1,12 @@
+{
+  "map": "mideast",
+  "difficulty": "impossible",
+  "seed": "SOAK11B",
+  "ticks": 4500,
+  "recordOnly": true,
+  "beforeMs": 138891.001,
+  "afterMs": 92608.3613,
+  "canonical": "500a1aef4011f65f987830b5fecbaf9f7ce3142561c0c8ee51600f172adc06e2",
+  "matchingCommandsAndState": true,
+  "scope": "Isolated intermediate diagnostic; full final-source campaign results are in the fingerprinted qualification summary."
+}

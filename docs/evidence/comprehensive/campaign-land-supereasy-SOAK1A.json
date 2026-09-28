@@ -1,0 +1,42 @@
+{
+  "name": "campaign-land-supereasy-SOAK1A",
+  "options": {
+    "map": "land",
+    "diff": "supereasy",
+    "seed": "SOAK1A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "noCap": true,
+    "bots": true
+  },
+  "ticks": 96,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 96,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 5,
+  "observed": {
+    "maxStructures": 0,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 4,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 4.9862999999999715,
+  "maxTickMs": 60.039199999999994,
+  "slowTicks": [
+    {
+      "tick": 30,
+      "ms": 60.039199999999994,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 904.1255,
+  "replay": "PASS"
+}

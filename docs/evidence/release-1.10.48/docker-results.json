@@ -1,0 +1,51 @@
+[
+    {
+        "name":  "sandbox-start",
+        "exit":  0,
+        "started":  "2026-09-28T13:58:25.6323093Z",
+        "ended":  "2026-09-28T13:58:57.6948721Z",
+        "log":  ".artifacts\\release-sandbox-start.log"
+    },
+    {
+        "name":  "sandbox-status-running",
+        "exit":  0,
+        "started":  "2026-09-28T13:58:57.7404532Z",
+        "ended":  "2026-09-28T13:58:58.8512270Z",
+        "log":  ".artifacts\\release-sandbox-status-running.log"
+    },
+    {
+        "name":  "sandbox-verify",
+        "exit":  0,
+        "started":  "2026-09-28T13:58:58.8532374Z",
+        "ended":  "2026-09-28T13:59:07.3349730Z",
+        "log":  ".artifacts\\release-sandbox-verify.log"
+    },
+    {
+        "name":  "sandbox-security",
+        "exit":  0,
+        "started":  "2026-09-28T13:59:07.3384826Z",
+        "ended":  "2026-09-28T13:59:46.1284454Z",
+        "log":  ".artifacts\\release-sandbox-security.log"
+    },
+    {
+        "name":  "artifacts",
+        "exit":  0,
+        "started":  "2026-09-28T13:59:46.1311811Z",
+        "ended":  "2026-09-28T14:00:58.3786497Z",
+        "log":  ".artifacts\\release-artifacts.log"
+    },
+    {
+        "name":  "sandbox-stop",
+        "exit":  0,
+        "started":  "2026-09-28T14:00:58.3816528Z",
+        "ended":  "2026-09-28T14:01:13.7047130Z",
+        "log":  ".artifacts\\release-sandbox-stop.log"
+    },
+    {
+        "name":  "sandbox-status-stopped",
+        "exit":  0,
+        "started":  "2026-09-28T14:01:23.7211831Z",
+        "ended":  "2026-09-28T14:01:24.3902318Z",
+        "log":  ".artifacts\\release-sandbox-status-stopped.log"
+    }
+]

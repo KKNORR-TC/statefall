@@ -29,7 +29,7 @@ async function canvasPixels(page,selector){
 function brightPixelsAt(image,item){
   let bright=0; const radius=Math.ceil((item.radius||12)*(item.pop||1));
   for(let y=Math.max(0,Math.floor(item.y-radius));y<=Math.min(image.height-1,Math.ceil(item.y+radius));y++) for(let x=Math.max(0,Math.floor(item.x-radius));x<=Math.min(image.width-1,Math.ceil(item.x+radius));x++){
-    const offset=(y*image.width+x)*4,r=image.data[offset],g=image.data[offset+1],b=image.data[offset+2]; if(r>210&&g>210&&b>210) bright++;
+    const offset=(y*image.width+x)*4,r=image.data[offset],g=image.data[offset+1],b=image.data[offset+2]; if(r>165&&g>160&&b>140) bright++;
   }
   return bright;
 }
@@ -81,7 +81,7 @@ test('Pixi owns every complete visible structure with stable tile alignment and 
   expect(initial.rendering.layers.structures.textureBytesEstimate).toBe(initial.rendering.layers.structures.textureCount*64*64*4);
   const image=await screenshotPixels(page.locator('.pixi-world'));
   for(const icon of initial.rendering.layers.structures.instances){
-    expect(brightPixelsAt(image,icon),`structure ${icon.type} at tile ${icon.tile} must contain its Canvas-generated white glyph`).toBeGreaterThan(0);
+    expect(brightPixelsAt(image,icon),`structure ${icon.type} at tile ${icon.tile} must contain its Canvas-generated ivory detail`).toBeGreaterThan(0);
   }
   const byTile=new Map(initial.expected.map(item=>[item.tile,item]));
   expect(initial.rendering.layers.structures.instances.map(item=>item.tile)).toEqual(initial.expected.map(item=>item.tile));

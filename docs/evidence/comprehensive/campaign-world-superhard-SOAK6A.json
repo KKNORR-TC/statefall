@@ -1,0 +1,68 @@
+{
+  "name": "campaign-world-superhard-SOAK6A",
+  "options": {
+    "map": "world",
+    "diff": "superhard",
+    "seed": "SOAK6A",
+    "countryIdx": 0,
+    "ticks": 6000
+  },
+  "ticks": 594,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 594,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 24,
+  "observed": {
+    "maxStructures": 125,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 9,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 9.424199999999928,
+  "maxTickMs": 181.03769999999997,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 181.03769999999997,
+      "structures": 9,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 113.82950000000005,
+      "structures": 51,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 107.75340000000006,
+      "structures": 84,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 106.48069999999996,
+      "structures": 28,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 98.35640000000012,
+      "structures": 113,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3907.8228,
+  "replay": "PASS"
+}

@@ -1,4 +1,5 @@
 import {primitiveGraphicsSegments,primitiveIntersectsViewport} from './pre-structure-layer-model.mjs';
+import {UNIT_COLORS} from './unit-art-direction.mjs';
 
 export const MAX_AIRCRAFT_ENTRIES=4096;
 export const MAX_AIRCRAFT_PRIMITIVES=32768;
@@ -44,7 +45,12 @@ function applyCanvasState(context,state){
   context.globalAlpha=state.globalAlpha; context.lineJoin=state.lineJoin; context.lineCap=state.lineCap; context.setLineDash(state.lineDash); context.lineDashOffset=state.lineDashOffset; context.lineWidth=state.lineWidth; context.strokeStyle=state.strokeStyle; context.fillStyle=state.fillStyle;
 }
 
-export function paintAircraftCanvas(context,input,{onlySemantic=null}={}){
+function materialGradient(context,top,bottom){
+  if(typeof context.createLinearGradient!=='function') return UNIT_COLORS.navy;
+  const gradient=context.createLinearGradient(0,top,0,bottom); gradient.addColorStop(0,UNIT_COLORS.highlight); gradient.addColorStop(.4,UNIT_COLORS.navy); gradient.addColorStop(1,UNIT_COLORS.deep); return gradient;
+}
+
+export function paintAircraftCanvas(context,input,{onlySemantic=null,drawBody=null}={}){
   const {camera,fighterPatrol,fighterHp,aircraft}=validatedInput(input,{requireIds:false}),state=inheritedState(input),order=[]; applyCanvasState(context,state);
   for(const craft of aircraft){
     if(!craft.owned&&!craft.visible) continue;
@@ -55,12 +61,10 @@ export function paintAircraftCanvas(context,input,{onlySemantic=null}={}){
       else context.setLineDash([]);
     }
     if(SKIPPED.has(craft.state)) continue;
-    if(!onlySemantic||onlySemantic==='aircraft-silhouette'){
-      order.push('aircraft-silhouette'); context.save(); context.translate(px,py); context.rotate(Number(craft.heading)); const u=Math.max(4,camera.scale*2.2)/10*(craft.type==='bomber'&&craft.pull?1+Number(craft.pull)*.25:1); context.scale(u,u); context.fillStyle=craft.color; context.strokeStyle='#fff'; context.lineWidth=1.1;
-      if(craft.type==='carrier'){ context.beginPath(); context.moveTo(11,0); context.lineTo(6,-3); context.lineTo(-8,-3); context.lineTo(-11,-1); context.lineTo(-11,1); context.lineTo(-8,3); context.lineTo(6,3); context.closePath(); context.fill(); context.stroke(); context.beginPath(); context.moveTo(1,-3); context.lineTo(-3,-11); context.lineTo(-7,-11); context.lineTo(-4,-3); context.moveTo(1,3); context.lineTo(-3,11); context.lineTo(-7,11); context.lineTo(-4,3); context.closePath(); }
-      else if(craft.type==='fighter'){ context.beginPath(); context.moveTo(10,0); context.lineTo(1,-2); context.lineTo(-5,-8); context.lineTo(-7,-8); context.lineTo(-5,-2); context.lineTo(-9,-2); context.lineTo(-10,-4); context.lineTo(-10,4); context.lineTo(-9,2); context.lineTo(-5,2); context.lineTo(-7,8); context.lineTo(-5,8); context.lineTo(1,2); context.closePath(); }
-      else { context.beginPath(); context.moveTo(8,0); context.lineTo(-2,-3); context.lineTo(-10,-9); context.lineTo(-6,-2); context.lineTo(-7,0); context.lineTo(-6,2); context.lineTo(-10,9); context.lineTo(-2,3); context.closePath(); }
-      context.fill(); context.stroke(); context.restore();
+    if((!onlySemantic||onlySemantic==='aircraft-silhouette')&&!drawBody?.(context,craft,camera)){
+      order.push('aircraft-silhouette'); context.save(); context.translate(px,py); context.rotate(Number(craft.heading)); const u=Math.max(4,camera.scale*2.2)/10*(craft.type==='bomber'&&craft.pull?1+Number(craft.pull)*.25:1),fighter=[[10,0],[1,-2],[-5,-8],[-7,-8],[-5,-2],[-9,-2],[-10,-4],[-10,4],[-9,2],[-5,2],[-7,8],[-5,8],[1,2]],bomber=[[8,0],[-2,-3],[-10,-9],[-6,-2],[-7,0],[-6,2],[-10,9],[-2,3]],carrier=[[11,0],[6,-3],[-8,-3],[-11,-1],[-11,1],[-8,3],[6,3]],upper=[[1,-3],[-3,-11],[-7,-11],[-4,-3]],lower=[[1,3],[-3,11],[-7,11],[-4,3]],shapes=craft.type==='fighter'?[fighter]:craft.type==='bomber'?[bomber]:[carrier,upper,lower],trace=points=>{ context.beginPath(); for(let i=0;i<points.length;i++) i?context.lineTo(points[i][0],points[i][1]):context.moveTo(points[i][0],points[i][1]); context.closePath(); }; context.scale(u,u);
+      context.save(); context.translate(1.8/u,2.8/u); context.fillStyle=UNIT_COLORS.shadow; context.globalAlpha=.62; for(const points of shapes){ trace(points); context.fill(); } context.restore(); context.fillStyle=materialGradient(context,-10,10); context.strokeStyle=UNIT_COLORS.edge; context.lineWidth=1.1; for(const points of shapes){ trace(points); context.fill(); context.stroke(); }
+      context.fillStyle='rgba(217,215,199,.68)'; trace([[9,0],[3,-1.2],[-7,-1],[-9,0],[-7,1],[3,1.2]]); context.fill(); context.fillStyle=UNIT_COLORS.deep; context.beginPath(); context.arc(3.8,0,1.7,0,Math.PI*2); context.fill(); context.fillStyle=craft.color; context.fillRect(-6,-1.1,4.2,2.2); context.restore();
     }
     if(craft.type==='fighter'&&craft.owned){
       state.fillStyle=Number(craft.hp)<=2?'#ff9a9a':'#fff';
@@ -100,10 +104,10 @@ export function createAircraftModel(){
       if(!craft.owned&&!craft.visible){ counts.hidden++; continue; }
       if(patrol){ const stroke=craft.hovered?'rgba(191,230,255,.95)':'rgba(191,230,255,.35)',width=craft.hovered?2:1; canvasState.strokeStyle=stroke; canvasState.lineWidth=width; canvasState.lineDash=[]; if(add(entry,'aircraft-patrol-ring',[circle(camera.x+Number(craft.targetX)*camera.scale,camera.y+Number(craft.targetY)*camera.scale,fighterPatrol*camera.scale,{stroke,width,dash:[5,5],phase:0,cap:canvasState.lineCap,join:canvasState.lineJoin})])) counts.patrolRings++; }
       if(SKIPPED.has(craft.state)){ counts.skipped++; continue; }
-      const radius=Math.max(4,camera.scale*2.2),pullScale=craft.type==='bomber'&&craft.pull?1+Number(craft.pull)*.25:1,u=radius/10*pullScale,style={fill:craft.color,stroke:'#fff',width:1.1*u,cap:canvasState.lineCap,join:canvasState.lineJoin,dash:Object.freeze(canvasState.lineDash.slice()),phase:-canvasState.lineDashOffset},heading=Number(craft.heading),shape=[];
-      if(craft.type==='fighter') shape.push(polygon(transform(px,py,heading,u,[[10,0],[1,-2],[-5,-8],[-7,-8],[-5,-2],[-9,-2],[-10,-4],[-10,4],[-9,2],[-5,2],[-7,8],[-5,8],[1,2]]),style));
-      else if(craft.type==='bomber') shape.push(polygon(transform(px,py,heading,u,[[8,0],[-2,-3],[-10,-9],[-6,-2],[-7,0],[-6,2],[-10,9],[-2,3]]),style));
-      else { shape.push(polygon(transform(px,py,heading,u,[[11,0],[6,-3],[-8,-3],[-11,-1],[-11,1],[-8,3],[6,3]]),style)); const upper=transform(px,py,heading,u,[[1,-3],[-3,-11],[-7,-11],[-4,-3]]),lower=transform(px,py,heading,u,[[1,3],[-3,11],[-7,11],[-4,3]]); shape.push(polygon(upper,{fill:craft.color}),polyline(upper,{stroke:'#fff',width:1.1*u,cap:canvasState.lineCap,join:canvasState.lineJoin,dash:style.dash,phase:style.phase}),polygon(lower,style)); }
+      const radius=Math.max(4,camera.scale*2.2),pullScale=craft.type==='bomber'&&craft.pull?1+Number(craft.pull)*.25:1,u=radius/10*pullScale,style={fill:UNIT_COLORS.navy,stroke:UNIT_COLORS.edge,width:1.1*u,cap:canvasState.lineCap,join:canvasState.lineJoin,dash:Object.freeze(canvasState.lineDash.slice()),phase:-canvasState.lineDashOffset},heading=Number(craft.heading),fighter=[[10,0],[1,-2],[-5,-8],[-7,-8],[-5,-2],[-9,-2],[-10,-4],[-10,4],[-9,2],[-5,2],[-7,8],[-5,8],[1,2]],bomber=[[8,0],[-2,-3],[-10,-9],[-6,-2],[-7,0],[-6,2],[-10,9],[-2,3]],carrier=[[11,0],[6,-3],[-8,-3],[-11,-1],[-11,1],[-8,3],[6,3]],upper=[[1,-3],[-3,-11],[-7,-11],[-4,-3]],lower=[[1,3],[-3,11],[-7,11],[-4,3]],outlines=craft.type==='fighter'?[fighter]:craft.type==='bomber'?[bomber]:[carrier,upper,lower],shape=[];
+      for(const points of outlines) shape.push(polygon(transform(px+2,py+3,heading,u,points),{fill:UNIT_COLORS.shadow,alpha:.62}));
+      for(const points of outlines){ shape.push(polygon(transform(px,py,heading,u,points),{...style,fill:UNIT_COLORS.highlight})); shape.push(polygon(transform(px,py,heading,u,points.map(([a,b])=>[a*.96,b*.82+.25])),{fill:UNIT_COLORS.navy})); }
+      shape.push(polygon(transform(px,py,heading,u,[[9,0],[3,-1.2],[-7,-1],[-9,0],[-7,1],[3,1.2]]),{fill:'rgba(217,215,199,.68)'})); shape.push(circle(...Object.values(transform(px,py,heading,u,[[3.8,0]])[0]),2.1*u,{fill:UNIT_COLORS.deep})); shape.push(polygon(transform(px,py,heading,u,[[-6,-1.1],[-1.8,-1.1],[-1.8,1.1],[-6,1.1]]),{fill:craft.color}));
       add(entry,'aircraft-silhouette',shape);
       let hpPips=0;
       if(craft.type==='fighter'&&craft.owned){ canvasState.fillStyle=Number(craft.hp)<=2?'#ff9a9a':'#fff'; const pw=2*radius/fighterHp,pips=[]; for(let i=0;i<Number(craft.hp);i++) pips.push(rect(px-radius+i*pw,py-radius*1.6,Math.max(1,pw-1),2,{fill:canvasState.fillStyle,alpha:1})); hpPips=pips.length; if(add(entry,'aircraft-hp',pips)) counts.hpPips+=hpPips; }

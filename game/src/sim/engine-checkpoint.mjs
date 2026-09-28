@@ -1,3 +1,4 @@
+import {copyRollbackGraph} from './rollback-copy.mjs';
 import {encodeGraph,decodeGraph} from './graph-codec.mjs';
 import {ownAuthorityValue} from './authority-value.mjs';
 import {BOOLEAN_SETTING_NAMES,DIFFICULTY_IDS,MAP_IDS,RULE_IDS,validateSettingsCandidate} from './configuration-schema.mjs';
@@ -92,6 +93,8 @@ function validateSemantics(state,runtime,canonicalCompatibility,W,H,tickMs){
   const fail=message=>{ throw new TypeError(`Invalid checkpoint authority: ${message}.`); },tileCount=W*H;
   const validPlayer=id=>Number.isInteger(id)&&id>=0&&id<state.actors.players.length;
   const validTile=tile=>Number.isInteger(tile)&&tile>=0&&tile<tileCount;
+  // Origins are historical return hints: their areas may disappear while forces travel or fight.
+  const validOrigin=id=>integer(id)&&id>0&&id<state.garrison.nextAreaId;
   const settings=state.rules.settings;
   if(!DIFFICULTIES.has(state.match.difficulty)) fail('unsupported difficulty');
   try{ validateSettingsCandidate(settings,settings); }catch(error){ fail(error.message); }
@@ -182,8 +185,8 @@ function validateSemantics(state,runtime,canonicalCompatibility,W,H,tickMs){
   for(const value of state.actors.trucks) actor('trucks',value,[['owner',validPlayer],['target',target=>structures.has(target)],['home',home=>structures.has(home)],['path',array],['pos',value=>finite(value)&&value>=0],['x',number],['y',number],['hdg',number],['state',text]]);
   for(const value of state.actors.shells) actor('shells',value,[['owner',validPlayer],['x',number],['y',number],['kind',text],['trail',array]]);
   if(uidIds.size&&state.identity.uidSeq<Math.max(...uidIds)) fail('UID cursor precedes an actor UID');
-  for(const attack of state.actors.attacks){ if(!(attack.front instanceof Set)||[...attack.front].some(tile=>!validTile(tile))||attack.target!==-1&&!validPlayer(attack.target)||attack.origin!==null&&attack.origin!==undefined&&!areaIds.has(attack.origin)) fail('invalid attack references'); }
-  for(const transport of state.actors.transports) if(transport.target!==-1&&!validPlayer(transport.target)||!validTile(transport.seed)||(transport.origin!==null&&transport.origin!==undefined&&!areaIds.has(transport.origin))||(transport.attacker!=null&&!structures.has(transport.attacker)&&!state.actors.warships.includes(transport.attacker))) fail('invalid transport references');
+  for(const attack of state.actors.attacks){ if(!(attack.front instanceof Set)||[...attack.front].some(tile=>!validTile(tile))||attack.target!==-1&&!validPlayer(attack.target)||attack.origin!==null&&attack.origin!==undefined&&!validOrigin(attack.origin)) fail('invalid attack references'); }
+  for(const transport of state.actors.transports) if(transport.target!==-1&&!validPlayer(transport.target)||!validTile(transport.seed)||(transport.origin!==null&&transport.origin!==undefined&&!validOrigin(transport.origin))||(transport.attacker!=null&&!structures.has(transport.attacker)&&!state.actors.warships.includes(transport.attacker))) fail('invalid transport references');
   for(const missile of state.actors.missiles) if(!validTile(missile.from)) fail('invalid missile origin');
   for(const interceptor of state.actors.interceptors) if(!state.actors.missiles.includes(interceptor.target)) fail('invalid interceptor target');
   for(const link of state.actors.links) if(!structures.has(link.a)||!structures.has(link.b)||link.a===link.b||!validPlayer(link.owner)) fail('invalid structure link');
@@ -344,7 +347,7 @@ export function createEngineCheckpointManager({engineState,runtime,W,H,tickMs,ca
     onRestore();
   }
   function restoreCheckpoint(checkpoint){ installCheckpoint(prepareCheckpoint(checkpoint)); }
-  function captureRollback(){ return decodeGraph(checkpoint().payload); }
+  function captureRollback(){ return copyRollbackGraph({state:captureState(),runtime:runtime.checkpoint(),canonicalCompatibility:captureCanonicalCompatibility()}); }
   function restoreRollback(decoded){ installCheckpoint(decoded); }
   return Object.freeze({checkpoint,validateCheckpoint:value=>(prepareCheckpoint(value),true),restoreCheckpoint,captureRollback,restoreRollback});
 }

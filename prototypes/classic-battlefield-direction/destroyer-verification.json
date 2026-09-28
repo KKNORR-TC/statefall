@@ -1,0 +1,20 @@
+{
+  "orders": 25,
+  "smoothing": {
+    "wrap": 3.141592653589793,
+    "subTickChanges": 297,
+    "frames": 391
+  },
+  "headings": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "errors": [],
+  "rotationCheck": "all artwork rotations are zero"
+}

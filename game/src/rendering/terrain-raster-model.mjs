@@ -3,7 +3,7 @@ const DETAIL_LEVELS=new Set(['strategic','operational']);
 const MAX_WORLD_DIMENSION=2048;
 const MAX_SOURCE_PIXELS=8_000_000;
 export const TERRAIN_PIXELS_PER_TILE=4;
-export const TERRAIN_STYLE_REVISION='direction-02-f2';
+export const TERRAIN_STYLE_REVISION='direction-02-f2-rivers';
 export const TERRAIN_FILTER='canvas-high-pixi-linear';
 
 function validArray(value,length,name){
@@ -39,7 +39,7 @@ export function createTerrainRasterModel({clock=()=>0,pixelsPerTile=TERRAIN_PIXE
     worldWidth,worldHeight,pixelWidth,pixelHeight,pixelsPerTile,styleRevision:TERRAIN_STYLE_REVISION,bytes:pixels?.byteLength||0,
      sourceBytes:pixels?.byteLength||0,staticBytes:underpaint?.byteLength||0,
      modelRasterRetainedBytes:(pixels?.byteLength||0)+(underpaint?.byteLength||0),
-     modelInputBytesEstimate:(staticInput?[staticInput.land,staticInput.river,staticInput.rough].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0)+(dynamicInput?[dynamicInput.owner,dynamicInput.suppression,dynamicInput.pick,dynamicInput.fog].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0),
+     modelInputBytesEstimate:(staticInput?[staticInput.land,staticInput.river,staticInput.rough].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0)+(dynamicInput?[dynamicInput.owner,dynamicInput.suppression,dynamicInput.pick,dynamicInput.fog,dynamicInput.fogOpacity].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0),
      workerPeakBytesEstimate:(pixels?.byteLength||0)*3+(underpaint?.byteLength||0)+(staticInput?[staticInput.land,staticInput.river,staticInput.rough].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0)+(dynamicInput?[dynamicInput.owner,dynamicInput.suppression,dynamicInput.pick,dynamicInput.fog].reduce((sum,value)=>sum+(value?.byteLength||value?.length||0),0):0),
      detailLevel:dynamicInput?.detailLevel||null,filter:TERRAIN_FILTER,filterPolicy:{canvas:'imageSmoothingEnabled with imageSmoothingQuality=high',pixi:'bilinear/linear texture sampling'}
   });
@@ -69,7 +69,7 @@ export function createTerrainRasterModel({clock=()=>0,pixelsPerTile=TERRAIN_PIXE
       }
       if(landCoverage<.62&&landCoverage>.02){ const shelf=(.62-landCoverage)/.60; r=mix(r,48,shelf*.38); g=mix(g,99,shelf*.42); b=mix(b,96,shelf*.38); }
       if(coastDistance<.20){ const key=1-coastDistance/.20,wet=landCoverage>.5; r=mix(r,wet?16:214,key*(wet?.70:.54)); g=mix(g,wet?42:208,key*(wet?.70:.54)); b=mix(b,wet?43:174,key*(wet?.70:.54)); }
-      if(riverCoverage>.07){ const edge=Math.max(0,Math.min(1,(riverCoverage-.07)/.45)),center=Math.max(0,Math.min(1,(riverCoverage-.52)/.40)); r=mix(r,67,edge*.58); g=mix(g,123,edge*.62); b=mix(b,123,edge*.62); r=mix(r,126,center*.68); g=mix(g,170,center*.68); b=mix(b,161,center*.68); }
+      if(riverCoverage>.07){ const edge=Math.max(0,Math.min(1,(riverCoverage-.07)/.45)),center=Math.max(0,Math.min(1,(riverCoverage-.52)/.40)); r=mix(r,38,edge*.78); g=mix(g,76,edge*.82); b=mix(b,91,edge*.82); r=mix(r,24,center*.80); g=mix(g,53,center*.80); b=mix(b,70,center*.80); }
       if(landCoverage<.25&&((hash(tileX,tileY,19)+px+py*3)%173===0)){ r+=10; g+=15; b+=13; }
       const offset=(py*pixelWidth+px)*4; underpaint[offset]=clamp(r); underpaint[offset+1]=clamp(g); underpaint[offset+2]=clamp(b); underpaint[offset+3]=255;
     }
@@ -84,10 +84,10 @@ export function createTerrainRasterModel({clock=()=>0,pixelsPerTile=TERRAIN_PIXE
       pick[tile]=input.pickArea>=0&&input.areaOf&&input.areaOf[tile]===input.pickArea?1:0;
       fog[tile]=input.fog?input.fog[tile]?1:0:1;
     }
-    return {owner:copyArray(input.owner),teams:copyArray(input.teams),colors:input.colors.map(rgb),suppression,pick,fog,suppressTicks:input.suppressTicks,myId:input.myId,highlightId:input.highlightId,detailLevel:input.detailLevel};
+    return {owner:copyArray(input.owner),teams:copyArray(input.teams),colors:input.colors.map(rgb),suppression,pick,fog,fogOpacity:input.fogOpacity?copyArray(input.fogOpacity):null,suppressTicks:input.suppressTicks,myId:input.myId,highlightId:input.highlightId,detailLevel:input.detailLevel};
   }
   function dynamicEqual(a,b){
-    return a&&a.suppressTicks===b.suppressTicks&&a.myId===b.myId&&a.highlightId===b.highlightId&&a.detailLevel===b.detailLevel&&sameArray(a.owner,b.owner)&&sameArray(a.teams,b.teams)&&sameArray(a.suppression,b.suppression)&&sameArray(a.pick,b.pick)&&sameArray(a.fog,b.fog)&&a.colors.length===b.colors.length&&a.colors.every((value,index)=>sameArray(value,b.colors[index]));
+    return a&&a.suppressTicks===b.suppressTicks&&a.myId===b.myId&&a.highlightId===b.highlightId&&a.detailLevel===b.detailLevel&&sameArray(a.owner,b.owner)&&sameArray(a.teams,b.teams)&&sameArray(a.suppression,b.suppression)&&sameArray(a.pick,b.pick)&&sameArray(a.fog,b.fog)&&((!a.fogOpacity&&!b.fogOpacity)||sameArray(a.fogOpacity,b.fogOpacity))&&a.colors.length===b.colors.length&&a.colors.every((value,index)=>sameArray(value,b.colors[index]));
   }
   function composite(state){
     const started=clock(),next=new Uint8ClampedArray(underpaint),ownershipAlpha=state.detailLevel==='strategic'?.64:.47;
@@ -108,7 +108,7 @@ export function createTerrainRasterModel({clock=()=>0,pixelsPerTile=TERRAIN_PIXE
            if(state.fog[tile]&&state.highlightId>=0){ if(owner===state.highlightId){ r=r*.96+42; g=g*.96+42; b=b*.96+42; } else { r*=.55; g*=.55; b*=.55; } }
          }else if(state.fog[tile]&&state.suppression[tile]){ r*=.6; g*=.6; b*=.6; }
       }
-      if(!state.fog[tile]){ const gray=r*.3+g*.59+b*.11,noise=((hash(px,py,29)&31)/31-.5)*5; r=mix(r,gray,.78)*.43+noise; g=mix(g,gray,.78)*.43+noise; b=mix(b,gray,.78)*.47+noise; }
+      if(!state.fog[tile]){ const amount=state.fogOpacity?state.fogOpacity[tile]/255:1,gray=r*.3+g*.59+b*.11,noise=((hash(px,py,29)&31)/31-.5)*5; r=mix(r,mix(r,gray,.78)*.43+noise,amount); g=mix(g,mix(g,gray,.78)*.43+noise,amount); b=mix(b,mix(b,gray,.78)*.47+noise,amount); }
       next[offset]=clamp(r); next[offset+1]=clamp(g); next[offset+2]=clamp(b);
     }
     const changed=!pixels||!sameArray(pixels,next); pixels=next; dynamicInput=state; stats.compositeBuild++; count(state.detailLevel==='strategic'?'strategic-composite':'operational-composite');
@@ -121,7 +121,7 @@ export function createTerrainRasterModel({clock=()=>0,pixelsPerTile=TERRAIN_PIXE
       if(!Number.isSafeInteger(sourcePixels)||sourcePixels>maxSourcePixels) throw new RangeError('terrain source allocation exceeds cap');
       for(const key of STATIC_KEYS) validArray(input[key],length,key);
       for(const key of ['owner','shelled']) validArray(input[key],length,key);
-      if(input.fog) validArray(input.fog,length,'fog'); if(input.areaOf) validArray(input.areaOf,length,'areaOf');
+      if(input.fogOpacity) validArray(input.fogOpacity,length,'fogOpacity'); if(input.fog) validArray(input.fog,length,'fog'); if(input.areaOf) validArray(input.areaOf,length,'areaOf');
       if(!Array.isArray(input.colors)||!Array.isArray(input.teams)||!Number.isFinite(input.tick)||!(input.suppressTicks>0)||!DETAIL_LEVELS.has(input.detailLevel)) throw new TypeError('invalid terrain dynamic input');
       const staticChanged=!staticEqual(input); let elapsed=0; if(staticChanged) elapsed+=buildStatic(input);
       const state=dynamicSnapshot(input,length);

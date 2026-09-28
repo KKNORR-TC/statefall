@@ -32,12 +32,12 @@ test('Pixi owns the bounded naval-logistics prefix in exact legacy order with ta
     ['transport-route','transport-wake','transport-hull','transport-hp','transport-troops'],
     ['merchant-wake','merchant-hull-cargo'],['boarding-line']
   ]);
-  expect(result.rendering.layers.navalLogistics.presentation[0].styles.find(value=>value.stroke==='#fff')).toMatchObject({kind:'polygon',join:'round'});
-  expect(result.rendering.layers.navalLogistics.presentation[2].styles.find(value=>value.stroke==='#5a4a30')).toMatchObject({kind:'polygon',join:'miter'});
+  expect(result.rendering.layers.navalLogistics.presentation[0].styles.find(value=>value.stroke==='#929b98')).toMatchObject({kind:'polygon',join:'round'});
+  expect(result.rendering.layers.navalLogistics.presentation[2].styles.find(value=>value.stroke==='#c2a66e')).toMatchObject({kind:'polygon',join:'miter'});
   expect(result.rendering.layers.navalLogistics.presentation[3].styles[0]).toMatchObject({kind:'line',cap:'round'});
   expect(result.rendering.layers.navalLogistics.resources.map(value=>value.childCount)).toEqual([4,5,2,1]);
   const pixi=await pixels(page.locator('.pixi-world'));
-  expect(matches(pixi,400,280,18,(r,g,b,a)=>r>180&&g<130&&b<150&&a>0)).toBeGreaterThan(0);
+  expect(matches(pixi,400,280,18,(r,g,b,a)=>r>180&&g>175&&b>155&&a>0)).toBeGreaterThan(0);
   expect(matches(pixi,620,280,22,(r,g,b,a)=>g>130&&r<180&&a>0)).toBeGreaterThan(0);
   expect(matches(pixi,760,330,18,(r,g,b,a)=>b>100&&a>0)).toBeGreaterThan(0);
   expect(matches(pixi,640,360,5,(r,g,b,a)=>r>120&&g>90&&b<130&&a>0)).toBeGreaterThan(0);
@@ -113,12 +113,12 @@ for(const failure of [{kind:'naval-container',reason:'container-resource',create
 });
 
 test('naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2',async({page},testInfo)=>{
-  test.skip(!testInfo.project.name.startsWith('chromium-desktop-scale-'),'DPR evidence runs in desktop-scale projects'); await start(page);
+  test.skip(!testInfo.project.name.startsWith('chromium-desktop-scale-'),'DPR evidence runs in desktop-scale projects'); await start(page); await page.evaluate(()=>window.__STATEFALL_TEST__.setCamera(10,'player'));
   const state=await page.evaluate(fixtureInPage),result=await page.evaluate(value=>window.__STATEFALL_TEST__.exerciseNavalLogistics(value),state); test.skip(!result.owned,'Pixi WebGL renderer unavailable');
-  const image=await pixels(page.locator('.pixi-world')),dpr=await page.evaluate(()=>window.devicePixelRatio);
-  expect(matches(image,Math.round(400*dpr),Math.round(280*dpr),Math.ceil(18*dpr),(r,g,b,a)=>r>180&&g<130&&a>0)).toBeGreaterThan(0);
-  expect(matches(image,Math.round(350*dpr),Math.round(280*dpr),Math.ceil(2*dpr),(r,g,b,a)=>r>170&&g<130&&a>0),'route center remains painted at each DPR').toBeGreaterThan(0);
-  expect(matches(image,Math.round(404*dpr),Math.round(276.5*dpr),Math.ceil(2*dpr),(r,g,b,a)=>r>180&&g>180&&b>180&&a>0),'rounded transport hull corner remains painted at each DPR').toBeGreaterThan(0);
+  const image=await pixels(page.locator('.pixi-world')),dpr=await page.evaluate(()=>window.devicePixelRatio),u=await page.evaluate(()=>Math.max(4,window.__STATEFALL_TEST__.snapshot().camera.scale*2)/10);
+  expect(matches(image,Math.round((400-5*u)*dpr),Math.round((280-3*u)*dpr),Math.ceil(Math.max(2,u)*dpr),(r,g,b,a)=>r>g+30&&r>b+20&&a>0)).toBeGreaterThan(0);
+  expect(matches(image,Math.round(350*dpr),Math.round(280*dpr),Math.ceil(8*dpr),(r,g,b,a)=>r>g+25&&r>b+15&&a>0),'route center remains painted at each DPR').toBeGreaterThan(0);
+  expect(matches(image,Math.round((400+4*u)*dpr),Math.round((280-3.5*u)*dpr),Math.ceil(2*dpr),(r,g,b,a)=>r>110&&g>120&&b>115&&Math.abs(r-g)<30&&a>0),'rounded transport hull corner remains painted at each DPR').toBeGreaterThan(0);
   expect(result.rendering.layers.navalLogistics).toMatchObject({counts:{transports:{visible:2},merchants:{visible:1},boarding:{visible:1}},labelCount:2});
 });
 

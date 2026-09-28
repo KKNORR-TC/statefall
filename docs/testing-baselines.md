@@ -1,5 +1,9 @@
 # Testing Baselines
 
+**Current candidate update:** 1.10.49 / plugin 1.10.8 is now undergoing qualification for the approved GO objective. See [the current release record](release-record-1.10.49.md). References to 1.10.48 below describe the prior candidate. No publication has occurred.
+
+Updated 28 September 2026: game 1.10.48 / plugin 1.10.8 is the current local candidate, with classic Canvas artwork enabled for production packaging. It is NO-GO; see [the release record](release-record-1.10.48.md) and [budget reassessment](performance-budget-reassessment.md). Production has not been accessed or changed. Earlier observations below remain historical evidence, not current release certification.
+
 _Originally recorded 14 September 2026; reconciled through Phase F2 terrain acceptance on 20 September 2026._
 
 Phase F2 terrain qualification distinguishes Worker compute latency from synchronous main-thread responsiveness. Its source-bound raw evidence covers terrain-only Canvas/Pixi framebuffer parity at DPR 1/1.5/2, authoritative topology input alignment, sustained 10 Hz suppression convergence, named raw responsiveness samples, the configured browser matrix, and the Direction 02 prototype suite. Technical evidence plus Ken's named `approved proceed` decision on 2026-09-20 accepted candidate commit `27a2389` as the in-game F2 terrain. This is local visual-baseline acceptance, not release or deployment authorization.

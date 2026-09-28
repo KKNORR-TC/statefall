@@ -1,0 +1,20 @@
+{
+  "status": "proposal-only-existing-gates-unchanged",
+  "generatedAt": "2026-09-28T16:30:24.411Z",
+  "evidence": "docs/evidence/release-1.10.48/performance-reassessment.json",
+  "requiredGatePassed": false,
+  "proposal": [
+    {
+      "scenario": "desktop-broadband-25mbps",
+      "maxMs": 15000,
+      "observedMaxMs": 11415.199999988079,
+      "withinProposedTarget": true
+    },
+    {
+      "scenario": "desktop-constrained-10mbps",
+      "maxMs": 40000,
+      "observedMaxMs": 26929.899999976158,
+      "withinProposedTarget": true
+    }
+  ]
+}

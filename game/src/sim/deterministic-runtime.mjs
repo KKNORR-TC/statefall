@@ -131,7 +131,7 @@ function replaceRecord(target,source){
   Object.assign(target,source);
 }
 
-export function serializeCanonicalV1(root,{derivedProperties=()=>null,canonicalAlias=()=>null}={}){
+export function serializeCanonicalV1(root,{derivedProperties=()=>null,canonicalAlias=()=>null,typedValues=()=>null,stringify=JSON.stringify}={}){
   let nextId=1;
   const seen=new Map();
   const normalize=input=>{
@@ -152,6 +152,8 @@ export function serializeCanonicalV1(root,{derivedProperties=()=>null,canonicalA
     const id=nextId++;
     seen.set(value,id);
     if(ArrayBuffer.isView(value)){
+      const cached=typedValues(value);
+      if(cached) return {$id:id,$typed:value.constructor.name,$values:cached};
       const values=new Array(value.length);
       for(let index=0;index<value.length;index++) values[index]=value[index];
       return {$id:id,$typed:value.constructor.name,$values:values};
@@ -179,7 +181,7 @@ export function serializeCanonicalV1(root,{derivedProperties=()=>null,canonicalA
     }
     return result;
   };
-  return JSON.stringify(normalize(root));
+  return stringify(normalize(root));
 }
 
 export function createDeterministicRuntime({tickMs=100}={}){

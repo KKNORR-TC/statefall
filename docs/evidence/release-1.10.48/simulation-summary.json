@@ -1,0 +1,77 @@
+{
+  "generated": "2026-09-28T14:17:55.484Z",
+  "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+  "matrix": {
+    "expected": 1152,
+    "completed": 1152,
+    "passed": 1152,
+    "failures": [],
+    "missing": [],
+    "totalRecordedTicks": 345600,
+    "totalCommands": 19078,
+    "historicalAttemptsAllRevisions": 10301
+  },
+  "campaigns": {
+    "expected": 84,
+    "completed": 84,
+    "passed": 83,
+    "failures": [
+      {
+        "id": "mideast-impossible-SOAK11B",
+        "error": "watchdog timeout\n{\"progressTick\":1000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n{\"progressTick\":2000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n{\"progressTick\":3000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n{\"progressTick\":4000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n{\"progressTick\":5000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n{\"progressTick\":6000,\"map\":\"mideast\",\"diff\":\"impossible\"}\n"
+      }
+    ],
+    "missing": [],
+    "totalRecordedTicks": 335212,
+    "totalCommands": 5540,
+    "historicalAttemptsAllRevisions": 598,
+    "reached6000Ticks": 46,
+    "endedEarlier": 37,
+    "endings": [
+      "Overrun",
+      "Team victory",
+      "Defeat"
+    ],
+    "actorPeaks": {
+      "maxStructures": 1400,
+      "maxShips": 46,
+      "maxAir": 47,
+      "maxAttacks": 30,
+      "maxTrucks": 1
+    }
+  },
+  "rosterBrowser": [
+    {
+      "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+      "browser": "chromium",
+      "tick": 2100,
+      "replay": "PASS",
+      "renderPurity": "PASS",
+      "errors": []
+    },
+    {
+      "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+      "browser": "firefox",
+      "tick": 2100,
+      "replay": "PASS",
+      "renderPurity": "PASS",
+      "errors": []
+    },
+    {
+      "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+      "browser": "webkit",
+      "tick": 2100,
+      "replay": "PASS",
+      "renderPurity": "PASS",
+      "errors": []
+    }
+  ],
+  "scope": "12 maps x 6 difficulties x 16 named profiles; 84 extended campaigns with explicit actual durations. Not exhaustive seeds, binary-option combinations, hardware, or arbitrary action sequences.",
+  "optimizationParity": {
+    "referenceFingerprint": "590604a32c1ec5d9548e79a86965ed8834f8fa8ff9f984f70eba8ee03d1db17a",
+    "compared": 1152,
+    "missingReference": [],
+    "mismatches": []
+  },
+  "pass": false
+}

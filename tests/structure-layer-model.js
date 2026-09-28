@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict');
 
 (async()=>{
-  const {MAX_STRUCTURE_POOL,MAX_STRUCTURE_SPRITES,STRUCTURE_ANTIALIAS_MARGIN,createBoundedPool,structureBasePaintBounds,structureTextureKey,structureVisual}=await import('../game/src/rendering/structure-layer-model.mjs');
+  const {MAX_STRUCTURE_POOL,MAX_STRUCTURE_SPRITES,STRUCTURE_AMBIENT_TYPES,STRUCTURE_AMBIENT_ZOOM_CUTOFF,STRUCTURE_ANTIALIAS_MARGIN,STRUCTURE_DISH_PERIOD_MS,createBoundedPool,structureAirDefenseArt,structureAmbientDish,structureBasePaintBounds,structureTextureKey,structureTilePhase,structureVisual}=await import('../game/src/rendering/structure-layer-model.mjs');
   const camera={x:-100,y:-50,scale:2},viewport={width:800,height:600},tile=25*720+100;
   assert.deepEqual(structureVisual({tile,building:false,pop:1},camera,viewport,null),{x:101,y:1,radius:6,scale:1,alpha:1});
   assert.equal(structureVisual({tile},{...camera,scale:0.89},viewport,null),null);
@@ -21,6 +21,24 @@ const assert=require('node:assert/strict');
   assert.equal(structureVisual({tile:edgeTile,type:'city',pop:1.35},{x:-21-edgeExtent-.001,y:-1,scale:2},{width:100,height:100},null,100),null,'a base beyond the conservative painted extent may be culled');
   assert.notEqual(structureTextureKey('city','#ABCDEF'),structureTextureKey('city','#123456'));
   assert.equal(structureTextureKey('city','#ABCDEF'),structureTextureKey('city','#abcdef'));
+  assert.deepEqual(STRUCTURE_AMBIENT_TYPES,['radar','lradar','sam']);
+  assert.deepEqual(['radar','lradar','sam'].map(type=>structureAirDefenseArt(type).role),['compact-radar','long-range-array','launcher-tracker'],'the air-defense family must retain three distinct silhouettes');
+  assert.equal(structureAirDefenseArt('radar').family,'air-defense-02'); assert.equal(structureAirDefenseArt('city'),null);
+  assert.equal(STRUCTURE_AMBIENT_ZOOM_CUTOFF,1.2); assert.equal(STRUCTURE_DISH_PERIOD_MS,6800);
+  const dishCamera={x:-100,y:-50,scale:2},dish=structureAmbientDish({tile,type:'radar'},dishCamera,600,{mapWidth:720});
+  assert.equal(dish.motionMode,'moving'); assert.equal(dish.phase,structureTilePhase(tile));
+  assert.equal(dish.role,'compact-radar'); assert.equal(dish.pivotX,103.4); assert.equal(dish.pivotY,-3.3200000000000003,'dish rotation must attach to the prototype-derived mast instead of the tile center');
+  assert.deepEqual(structureAmbientDish({tile,type:'radar'},dishCamera,600,{mapWidth:720}),dish,'same tile and time must produce identical geometry');
+  assert.notEqual(structureAmbientDish({tile:tile+1,type:'radar'},dishCamera,600,{mapWidth:720}).phase,dish.phase,'tile phase must stagger equal structures');
+  assert.notEqual(structureAmbientDish({tile,type:'radar'},dishCamera,700,{mapWidth:720}).angle,dish.angle,'normal presentation time must advance the dish');
+  const reducedDish=structureAmbientDish({tile,type:'radar'},dishCamera,600,{mapWidth:720,reducedMotion:true});
+  assert.deepEqual(structureAmbientDish({tile,type:'radar'},dishCamera,1200,{mapWidth:720,reducedMotion:true}),reducedDish,'reduced motion must remain static across time');
+  assert.equal(reducedDish.motionMode,'static');
+  assert.equal(structureAmbientDish({tile,type:'sam',suppressed:true},dishCamera,600,{mapWidth:720}).motionMode,'static');
+  assert.equal(structureAmbientDish({tile,type:'lradar'},dishCamera,600,{mapWidth:720,quality:'low'}).motionMode,'static');
+  assert.equal(structureAmbientDish({tile,type:'city'},dishCamera,600,{mapWidth:720}),null);
+  assert.equal(structureAmbientDish({tile,type:'radar',building:true},dishCamera,600,{mapWidth:720}),null);
+  assert.equal(structureAmbientDish({tile,type:'radar'},{...dishCamera,scale:1.19},600,{mapWidth:720}),null);
 
   let next=0,destroyed=0;
   const pool=createBoundedPool({maximum:3,idleMaximum:2,create:()=>({id:++next}),destroy:()=>destroyed++});

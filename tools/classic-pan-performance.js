@@ -1,0 +1,7 @@
+const fs=require('node:fs'),assert=require('node:assert/strict'),{chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();try{const p=await b.newPage({viewport:{width:1600,height:1000}});await p.goto('http://127.0.0.1:4173/?art=classic&scene=coast');await p.waitForFunction(()=>window.__STATEFALL_CLASSIC__);
+await p.evaluate(()=>{window.panFrames=[];window.panBefore=window.__STATEFALL_CLASSIC__.diagnostics().terrainRefreshes;let last=performance.now();window.collectPan=true;function frame(now){window.panFrames.push(now-last);last=now;if(window.collectPan)requestAnimationFrame(frame);}requestAnimationFrame(frame);});
+await p.mouse.move(700,600);await p.mouse.down();for(let i=0;i<80;i++){await p.mouse.move(700+180*Math.sin(i/15),600+80*Math.cos(i/15));await p.waitForTimeout(16);}await p.mouse.up();
+const result=await p.evaluate(()=>{window.collectPan=false;const a=window.panFrames.sort((a,b)=>a-b);return {frames:a.length,p95Ms:a[Math.floor(a.length*.95)],maxMs:a.at(-1),terrainRebuilds:window.__STATEFALL_CLASSIC__.diagnostics().terrainRefreshes-window.panBefore};});
+assert.ok(result.terrainRebuilds>0&&result.terrainRebuilds<25,'drag must pan while reusing cached terrain');fs.writeFileSync('prototypes/classic-battlefield-direction/pan-performance.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

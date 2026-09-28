@@ -37,6 +37,23 @@ const {pathToFileURL}=require('node:url');
     assert.equal(left.system.targetHidden(left.players[1],11*W+17),false,'AI targeting incorrectly used local-player fog');
     assert.equal(right.state.fog.vis,null,'visibility buffer leaked to another instance');
 
+    // Moving friendly actors reveal direct sight, including newly launched path-only transports.
+    for(const [collection,actor] of [
+      ['transports',{owner:0,path:[10*W+28],pos:0}],
+      ['traders',{owner:0,x:28.5,y:10.5}],
+      ['trucks',{owner:0,x:28.5,y:10.5}],
+      ['aircraft',{owner:0,x:28.5,y:10.5,type:'bomber',state:'out'}],
+      ['planes',{owner:0,x:28.5,y:10.5,phase:'out'}],
+      ['warships',{owner:0,x:28.5,y:10.5,cls:'rship'}]
+    ]){
+      const moving=make();moving.state.actors[collection].push(actor);
+      moving.state.actors.structures.push({type:'jammer',owner:1,t:10*W+28,building:false});
+      moving.system.computeVision();assert.equal(moving.system.visAt(28,10),true,collection+' must reveal its position even under jamming');
+      assert.equal(moving.system.visAt(29,10),true,collection+' must reveal nearby terrain');
+      actor.owner=1;moving.system.computeVision();assert.equal(moving.system.visAt(28,10),false,collection+' enemy must not grant sight');
+      moving.players[0].rel[1]={type:'ally'};moving.system.computeVision();assert.equal(moving.system.visAt(28,10),true,collection+' allied vision is shared');
+      moving.state.actors[collection].length=0;moving.system.computeVision();assert.equal(moving.system.visAt(28,10),false,'vacated sight is not retained by gameplay');
+    }
     const airfield={type:'airfield',owner:0,t:11*W+5,building:false},site={type:'satellite',owner:0,t:11*W+6,building:false};
     left.state.actors.structures.push(airfield,site);
     assert.equal(left.system.callPlane(left.players[0],11*W+20),true);

@@ -1,0 +1,63 @@
+{
+  "name": "campaign-random-impossible-SOAK0A",
+  "options": {
+    "map": "random",
+    "diff": "impossible",
+    "seed": "SOAK0A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "teams": 3,
+    "fog": true
+  },
+  "ticks": 423,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 423,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 18,
+  "observed": {
+    "maxStructures": 53,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 9,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 11.84640000000013,
+  "maxTickMs": 167.11890000000005,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 167.11890000000005,
+      "structures": 5,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 128.0992000000001,
+      "structures": 34,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 106.98450000000025,
+      "structures": 50,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 100.71630000000005,
+      "structures": 18,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3932.9718000000003,
+  "replay": "PASS"
+}

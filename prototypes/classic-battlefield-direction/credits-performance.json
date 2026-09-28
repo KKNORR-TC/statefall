@@ -1,0 +1,33 @@
+{
+  "frames": 303,
+  "elapsed": 6008.900000017882,
+  "p95": 33.399999999999636,
+  "max": 133.30000000000018,
+  "stalls": 2,
+  "status": {
+    "ready": true,
+    "tick": 203,
+    "paused": false,
+    "lastCommand": null,
+    "replay": {
+      "on": true,
+      "commands": 11,
+      "applied": 11,
+      "targetTick": 1200,
+      "mismatch": false,
+      "why": null,
+      "divTick": null,
+      "speed": 15,
+      "finalVerified": false,
+      "verifiedEvidence": false,
+      "finished": false
+    },
+    "catchup": {
+      "status": "idle",
+      "target": 0,
+      "framePending": false,
+      "framesScheduled": 0,
+      "framesRun": 0
+    }
+  }
+}

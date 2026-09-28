@@ -14,7 +14,7 @@ const {pathToFileURL}=require('node:url');
       import(pathToFileURL(path.join(root,'systems','structures.mjs')).href)
     ]);
     const W=24,H=12;
-    const definitions={city:{label:'City',cost:120},factory:{label:'Factory',cost:110},port:{label:'Port',cost:160,coast:true},fort:{label:'Bastion',cost:90},sam:{label:'SAM site',cost:220},silo:{label:'Missile silo',cost:420},command:{label:'Missile command',cost:350},troopcmd:{label:'Troop command',cost:400},shield:{label:'Shield generator',cost:900}};
+    const definitions={airfield:{label:'Airfield',cost:600},subbase:{label:'Submarine base',cost:450,coast:true},city:{label:'City',cost:120},factory:{label:'Factory',cost:110},port:{label:'Port',cost:160,coast:true},fort:{label:'Bastion',cost:90},sam:{label:'SAM site',cost:220},silo:{label:'Missile silo',cost:420},command:{label:'Missile command',cost:350},troopcmd:{label:'Troop command',cost:400},shield:{label:'Shield generator',cost:900}};
     const make=()=>{
       const settings={instant:false};
       const state=createAuthoritativeState({tileCount:W*H,settings,allowed:Object.keys(definitions)});
@@ -25,12 +25,33 @@ const {pathToFileURL}=require('node:url');
       state.setPlayerId(0);
       const events=[];
       const system=createStructuresSystem({W,H,engineState:state,settings,allowed:state.rules.allowed,getMe:()=>state.actors.players[0],botBuildDelay:()=>6000+runtime.random()*6000,
-        definitions,buildTicks:{city:0,factory:2,port:2,fort:0,sam:2,silo:2,command:2,troopcmd:2,shield:2},upgrades:{port:{cost:500,ticks:3}},guns:{},shield:{hp:10},levelShield:{hp:6},
+        definitions,buildTicks:{city:0,factory:2,port:2,fort:0,sam:2,silo:2,command:2,troopcmd:2,shield:2},upgrades:{port:{cost:500,ticks:3},airfield:{cost:600,ticks:4},fort:{cost:200,ticks:2,max:3,cost3:400,ticks3:3}},guns:{},shield:{hp:10},levelShield:{hp:6},
         constants:{fortRange:16,commandRange:45,samRange:40,linkRange:34,linkMaxPerFactory:4,linkMaxPerCity:3,linkMaxPerPort:2,structSpacing:3,cityPop:300},
         ownership:{isCoast:t=>t%W===0||t%W===W-1},mechanics:{pausedBlock:()=>false,garrisonOn:()=>false,addTroopsAt(){},domeRadius:()=>12,shipLabel:cls=>cls},
         queuedShipPath:()=>[1,2],launchQueuedShip:(st,job,p)=>events.push(['launch',st,job,p]),effects:{incrementStat:name=>events.push(['stat',name]),puff:(...args)=>events.push(['puff',...args]),scorch:(...args)=>events.push(['scorch',...args]),flash:value=>events.push(['flash',value]),wreck:value=>events.push(['wreck',value])}});
       return {state,runtime,system,events};
     };
+
+    for(const instant of [false,true])for(const type of ['port','airfield','fort']){
+      const f=make(),p=f.state.actors.players[0];f.state.rules.settings.instant=instant;
+      const st=f.system.addStructure({type,owner:0,t:120,building:false});const cost=type==='port'?500:type==='airfield'?600:200,duration=type==='port'?3:type==='airfield'?4:2;
+      st.building=true;assert.equal(f.system.upgradeStructure(p,st),false);st.building=false;
+      assert.equal(f.system.upgradeStructure(f.state.actors.players[1],st),false);
+      p.gold=cost-1;assert.equal(f.system.upgradeStructure(p,st),false);p.gold=5000;
+      assert.equal(f.system.upgradeStructure(p,st),true);assert.equal(p.gold,5000-cost);assert.equal(f.system.upgradeStructure(p,st),false);
+      f.state.setClock(duration-1,(duration-1)*100);f.system.finishUpgrades();assert.equal(st.level,undefined,'upgrade must finish only at its deadline');
+      f.state.setClock(duration,duration*100);f.system.finishUpgrades();assert.equal(st.level,2);assert.equal(st.upgrading,false);
+      if(type==='port')assert.equal(st.gunHp,4);if(type==='airfield')assert.equal(st.lshield,6);
+      if(type==='fort'){assert.equal(f.system.fortRange(st),24);const gold=p.gold;assert.equal(f.system.upgradeStructure(p,st),true);assert.equal(p.gold,gold-400);f.state.setClock(duration+3,(duration+3)*100);f.system.finishUpgrades();assert.equal(st.level,3);assert.equal(f.system.fortRange(st),32);}
+      assert.equal(f.system.upgradeStructure(p,st),false,'maximum tier cannot upgrade again');
+    }
+    const combat=make();
+    for(let i=0;i<8;i++)combat.system.addStructure({type:'fort',owner:i%2,t:25+i*3,building:i===7,level:1+i%3});
+    for(let i=0;i<100;i++)combat.system.addStructure({type:'city',owner:0,t:150+i,building:false});
+    const fortQuery=combat.system.combatFortQuery();
+    for(let t=0;t<W*H;t++)for(let id=0;id<2;id++)assert.equal(fortQuery(t,id),combat.system.fortStack(t,id));
+    combat.system.destroyStructure(25);
+    for(let t=0;t<W*H;t++)for(let id=0;id<2;id++)assert.equal(fortQuery(t,id),combat.system.fortStack(t,id),'destroyed fort remained in combat coverage');
 
     const left=make(),right=make(),p0=left.state.actors.players[0],p1=left.state.actors.players[1];
     assert.notEqual(left.system,right.system);

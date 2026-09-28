@@ -1,0 +1,38 @@
+[
+  {
+    "browser": "chromium",
+    "differences": 0,
+    "terrainDifferences": 0,
+    "offscreenDifferences": 0,
+    "frontTiles": 147908,
+    "times": [
+      91.09999999403954,
+      103.7000000178814,
+      83.40000000596046
+    ]
+  },
+  {
+    "browser": "firefox",
+    "differences": 0,
+    "terrainDifferences": 0,
+    "offscreenDifferences": 0,
+    "frontTiles": 147908,
+    "times": [
+      405,
+      394,
+      382
+    ]
+  },
+  {
+    "browser": "webkit",
+    "differences": 0,
+    "terrainDifferences": 0,
+    "offscreenDifferences": 0,
+    "frontTiles": 147908,
+    "times": [
+      221,
+      166,
+      162
+    ]
+  }
+]

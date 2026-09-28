@@ -44,11 +44,15 @@ const {pathToFileURL}=require('node:url');
     assert.equal(left.state.actors.attacks[0].troops,30);
     assert.equal(right.state.actors.attacks.length,0,'landing leaked to another instance');
 
+    const heavyCase=make(),heavyPort={type:'port',owner:0,t:heavyCase.a,building:false,level:1};heavyCase.state.actors.structures.push(heavyPort);
+    assert.equal(heavyCase.system.launchTransport(heavyCase.players[0],1,10,heavyCase.b,null),true);assert.equal(heavyCase.state.actors.transports.at(-1).heavy,false);
+    heavyPort.level=2;assert.equal(heavyCase.system.launchTransport(heavyCase.players[0],1,10,heavyCase.b,null),true);assert.equal(heavyCase.state.actors.transports.at(-1).heavy,true);assert.equal(heavyCase.state.actors.transports.at(-1).hp,4);
     const port={type:'port',owner:0,t:left.a,building:false,level:1}; left.state.actors.structures.push(port);
     const target=left.system.waterNeighbor(left.b);
     assert.equal(left.system.orderWarship(left.players[0],target,'scout'),true);
     const ship=left.state.actors.warships[0];
     assert.equal(ship.id,1); assert.equal(ship.owner,0); assert.equal(right.state.actors.warships.length,0,'warship leaked to another instance');
+    ship.refit=1;left.state.setClock(1,100);left.system.stepNaval();assert.equal(ship.cruise,true,'refit becomes cruise capability at deadline');assert.equal(ship.refit,0);
     left.selected.add(ship); ship.hp=0; left.system.stepNaval();
     assert.equal(left.selected.size,0,'presentation selection cleanup was not injected');
     console.log('Naval browser-free pathing, transport, ordering, cleanup, and instance isolation contracts PASS');

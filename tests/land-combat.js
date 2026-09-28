@@ -15,7 +15,8 @@ const {pathToFileURL}=require('node:url');
       import(pathToFileURL(path.join(root,'systems','logistics.mjs')).href)
     ]);
     const W=10,H=6;
-    const make=(garrison=false)=>{
+    const make=(garrison=false,eager=false)=>{
+      let deferredLosses=0,combatActive=false;
       const settings={garrison};
       const state=createAuthoritativeState({tileCount:W*H,settings});
       const runtime=createDeterministicRuntime(); runtime.seed('LAND-COMBAT');
@@ -26,7 +27,7 @@ const {pathToFileURL}=require('node:url');
       const captures=[];
       const random=()=>runtime.random();
       let logistics;
-      const garrisonOps={gOn:(...args)=>logistics.gOn(...args),areaById:(...args)=>logistics.areaById(...args),areaAt:(...args)=>logistics.areaAt(...args),areaTouching:(...args)=>logistics.areaTouching(...args),syncTroops:(...args)=>logistics.syncTroops(...args),addTroopsAt:(...args)=>logistics.addTroopsAt(...args),takeTroopsFrom:(...args)=>logistics.takeTroopsFrom(...args),loseTroopsAt:(...args)=>logistics.loseTroopsAt(...args),densityAt:(...args)=>logistics.densityAt(...args)};
+      const garrisonOps={gOn:(...args)=>logistics.gOn(...args),areaById:(...args)=>logistics.areaById(...args),areaAt:(...args)=>logistics.areaAt(...args),areaTouching:(...args)=>logistics.areaTouching(...args),syncTroops:(...args)=>{if(eager&&combatActive&&args[0].id===1)return;return logistics.syncTroops(...args);},addTroopsAt:(...args)=>logistics.addTroopsAt(...args),takeTroopsFrom:(...args)=>logistics.takeTroopsFrom(...args),loseTroopsAt:(...args)=>{if(args[3])deferredLosses++;if(eager)args.length=3;return logistics.loseTroopsAt(...args);},densityAt:(...args)=>logistics.densityAt(...args)};
       const system=createLandCombatSystem({W,H,engineState:state,settings,random,rnd:(a,b)=>a+random()*(b-a),getMe:()=>state.actors.players[0],constants:{suppressCost:0.5,wallToll:15,conquestGold:0.12,conquestEarly:3,conquestEarlyTicks:4800,provokeTicks:400},
         diplomacy:{atPeace:()=>false,relation:()=>null,markHostile(){},isProvokedBy:(p,id,margin)=>p.grudge[id]!=null&&state.clock.tickN-p.grudge[id]<400-margin},
         garrison:garrisonOps,
@@ -34,7 +35,7 @@ const {pathToFileURL}=require('node:url');
         effects:{tileCaptured:(t,p)=>captures.push([t,p])}});
       logistics=createLogisticsSystem({W,H,engineState:state,settings,getMe:()=>state.actors.players[0],truck:{max:4,speed:.4,repairTicks:80,costPip:15,reserve:150},provokeTicks:400,carrierCapacity:1500,landCombat:system,structures:{repairNeed:()=>0,repairOne(){}},diplomacy:{atPeace:()=>false,inConflict:()=>true},naval:{seaRisk:()=>0,reinforceArea:()=>false},air:{idleAircraft:()=>null,launchParadrop:()=>false},mechanics:{areaLabel:()=>'',structureLabel:()=>''}});
       for(let t=0;t<W*H;t++) system.setOwner(t,t%W<2?0:1);
-      return {state,runtime,system,captures};
+      return {state,runtime,system:{...system,stepAttacks(){combatActive=true;try{return system.stepAttacks();}finally{combatActive=false;}}},captures,deferredLossCount:()=>deferredLosses};
     };
     const left=make(),right=make();
     assert.notEqual(left.system,right.system);
@@ -73,6 +74,42 @@ const {pathToFileURL}=require('node:url');
     assert.equal(area.troops,55); assert.equal(garrison.state.actors.players[0].troops,55);
     garrison.system.addTroopsAt(garrison.state.actors.players[0],0,5);
     assert.equal(area.troops,60); assert.equal(garrison.state.actors.players[0].troops,60);
+
+    // Compare batched combat against an eager, per-tile summation oracle.
+    // Missing area mappings deliberately exercise reads of the global fallback.
+    const batch=make(true),eager=make(true,true);
+    for(const game of [batch,eager]){
+      const [attacker,defender]=game.state.actors.players; defender.kind='bot';
+      attacker.areas=[{id:100,owner:0,tiles:12,troops:900}];attacker.troops=900;
+      defender.areas=[];
+      game.state.garrison.areaOf=new Int32Array(W*H).fill(-1);
+      for(let t=0;t<W*H;t++){
+        if(game.state.map.owner[t]===0)game.state.garrison.areaOf[t]=100;
+        else {defender.areas.push({id:t+1,owner:1,tiles:1,troops:1+t/100});if(t%4)game.state.garrison.areaOf[t]=t+1;}
+      }
+      game.system.syncTroops(defender);
+      assert.equal(game.system.launchAttack(attacker,1,500,null,attacker.areas[0]),true);
+    }
+    for(let tick=0;tick<20;tick++){
+      batch.system.stepAttacks();eager.system.stepAttacks();
+      assert.deepEqual(batch.state.map.owner,eager.state.map.owner);
+      assert.deepEqual(batch.state.actors.players,eager.state.actors.players,'batched garrison total changed floating-point results');
+      assert.deepEqual(batch.state.actors.attacks,eager.state.actors.attacks);
+      assert.equal(batch.runtime.rngDraws,eager.runtime.rngDraws);
+    }
+    assert.ok(batch.deferredLossCount()>0,'combat still summed all garrison areas for every local loss');
+
+    const emptyBatch=make(true),emptyEager=make(true,true);
+    for(const game of [emptyBatch,emptyEager]){
+      const [attacker,defender]=game.state.actors.players;defender.kind='bot';defender.areas=[];
+      attacker.areas=[{id:100,owner:0,tiles:12,troops:900}];attacker.troops=900;
+      // Newly acquired tiles can still refer to another nation's previous area.
+      game.state.garrison.areaOf=new Int32Array(W*H).fill(100);
+      assert.equal(game.system.launchAttack(attacker,1,500,null,attacker.areas[0]),true);
+      game.system.stepAttacks();
+    }
+    assert.deepEqual(emptyBatch.state.actors.players,emptyEager.state.actors.players,'an empty garrison lost its global fallback troop pool');
+    assert.deepEqual(emptyBatch.state.map.owner,emptyEager.state.map.owner);
 
     const reclaim=make(); reclaim.system.setOwner(11,-1); reclaim.state.setClock(10,1000);
     for(let tick=10;tick<=400&&reclaim.state.map.owner[11]<0;tick+=10){ reclaim.state.setClock(tick,tick*100); reclaim.system.reclaimLand(); }

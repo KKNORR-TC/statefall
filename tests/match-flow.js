@@ -64,6 +64,18 @@ const {pathToFileURL}=require('node:url');
     draftLeft.flow.draftAdvance();
     assert.equal(draftLeft.state.draft.draft.idx,1);
 
+    const exhausted=fixture('Exhausted draft',[.99,.99]);
+    exhausted.flow.startDraft();
+    assert.equal(exhausted.state.draft.draft.order[0],exhausted.human);
+    for(let tick=0;tick<60&&exhausted.state.draft.draft;tick++) exhausted.flow.advanceDraft();
+    assert.equal(exhausted.state.draft.draft,null,'an empty human draft turn must not freeze the match');
+    assert.equal(exhausted.state.lifecycle.paused,false);
+    const waiting=fixture('Waiting draft',[.99,.99]);
+    waiting.neutral.tiles=120;
+    waiting.flow.startDraft();
+    for(let tick=0;tick<12;tick++) waiting.flow.advanceDraft();
+    assert.equal(waiting.state.draft.draft.idx,0,'a valid human pick must still wait for input');
+
     const canonicalState=createAuthoritativeState({tileCount:1}),runtime=createDeterministicRuntime({tickMs:100});
     canonicalState.actors.players.push(player(0,'Canonical','human',1)); canonicalState.setPlayerId(0); canonicalState.map.land[0]=1; canonicalState.map.owner[0]=0; canonicalState.map.landCount=1;
     const oracle=createStateOracle({engineState:canonicalState,runtime,W:1,H:1,ports:{replayDiverged(){} }});

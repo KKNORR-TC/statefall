@@ -1,0 +1,24 @@
+{
+  "before": {
+    "elapsedMs": 6204.2,
+    "frames": 164,
+    "p95Ms": 66.8,
+    "maxMs": 350,
+    "stallsOver50ms": 18,
+    "ticks": 720
+  },
+  "after": {
+    "elapsedMs": 6012.2,
+    "frames": 319,
+    "p95Ms": 16.8,
+    "maxMs": 283.4,
+    "stallsOver50ms": 2,
+    "ticks": 244
+  },
+  "requestedSpeed": 15,
+  "viewport": {
+    "width": 1600,
+    "height": 1000
+  },
+  "replayMismatch": false
+}

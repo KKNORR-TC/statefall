@@ -1,0 +1,107 @@
+
+Running 78 tests using 1 worker
+
+(node:35752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/78] [chromium-desktop] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[2/78] [chromium-desktop] › tests\browser\canvas.spec.js:91:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[3/78] [chromium-desktop] › tests\browser\canvas.spec.js:133:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[4/78] [chromium-desktop] › tests\browser\canvas.spec.js:160:1 › major modes launch individually and expose their defining state
+[5/78] [chromium-desktop] › tests\browser\canvas.spec.js:195:1 › real pointer targeting and context interaction use the expected tile
+[6/78] [chromium-desktop] › tests\browser\canvas.spec.js:239:1 › dense late-game fixture exposes strategic visual layers
+[7/78] [chromium-desktop] › tests\browser\canvas.spec.js:258:1 › loads and plays the historical replay fixture in the browser
+[8/78] [chromium-desktop] › tests\browser\canvas.spec.js:279:1 › 8x watch stops and finalizes exactly at the replay target
+[9/78] [chromium-desktop] › tests\browser\canvas.spec.js:290:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[10/78] [chromium-desktop] › tests\browser\canvas.spec.js:316:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[11/78] [chromium-desktop] › tests\browser\canvas.spec.js:335:1 › browser replay payload includes strong final evidence for a short save
+[12/78] [chromium-desktop] › tests\browser\canvas.spec.js:350:1 › credits replay reset clears setup scratch before rebuilding the match
+[13/78] [chromium-desktop] › tests\browser\canvas.spec.js:359:1 › rejects malformed and unsupported replay commands before configuration
+[14/78] [chromium-desktop] › tests\browser\canvas.spec.js:380:1 › invalid replay settings leave start state usable and allow a successful retry
+[15/78] [chromium-desktop] › tests\browser\canvas.spec.js:401:1 › invalid start configuration reports the error without hiding the start card
+[16/78] [chromium-desktop] › tests\browser\canvas.spec.js:417:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[17/78] [chromium-desktop] › tests\browser\canvas.spec.js:435:1 › resizes without document overflow and keeps the Canvas usable
+[18/78] [chromium-desktop] › tests\browser\canvas.spec.js:462:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[19/78] [chromium-desktop] › tests\browser\canvas.spec.js:511:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+(node:23596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[20/78] [firefox-desktop] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[21/78] [firefox-desktop] › tests\browser\canvas.spec.js:91:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[22/78] [firefox-desktop] › tests\browser\canvas.spec.js:133:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[23/78] [firefox-desktop] › tests\browser\canvas.spec.js:160:1 › major modes launch individually and expose their defining state
+[24/78] [firefox-desktop] › tests\browser\canvas.spec.js:195:1 › real pointer targeting and context interaction use the expected tile
+[25/78] [firefox-desktop] › tests\browser\canvas.spec.js:239:1 › dense late-game fixture exposes strategic visual layers
+[26/78] [firefox-desktop] › tests\browser\canvas.spec.js:258:1 › loads and plays the historical replay fixture in the browser
+[27/78] [firefox-desktop] › tests\browser\canvas.spec.js:279:1 › 8x watch stops and finalizes exactly at the replay target
+[28/78] [firefox-desktop] › tests\browser\canvas.spec.js:290:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[29/78] [firefox-desktop] › tests\browser\canvas.spec.js:316:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[30/78] [firefox-desktop] › tests\browser\canvas.spec.js:335:1 › browser replay payload includes strong final evidence for a short save
+[31/78] [firefox-desktop] › tests\browser\canvas.spec.js:350:1 › credits replay reset clears setup scratch before rebuilding the match
+[32/78] [firefox-desktop] › tests\browser\canvas.spec.js:359:1 › rejects malformed and unsupported replay commands before configuration
+[33/78] [firefox-desktop] › tests\browser\canvas.spec.js:380:1 › invalid replay settings leave start state usable and allow a successful retry
+[34/78] [firefox-desktop] › tests\browser\canvas.spec.js:401:1 › invalid start configuration reports the error without hiding the start card
+[35/78] [firefox-desktop] › tests\browser\canvas.spec.js:417:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[36/78] [firefox-desktop] › tests\browser\canvas.spec.js:435:1 › resizes without document overflow and keeps the Canvas usable
+[37/78] [firefox-desktop] › tests\browser\canvas.spec.js:462:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[38/78] [firefox-desktop] › tests\browser\canvas.spec.js:511:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+(node:42984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[39/78] [webkit-desktop] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[40/78] [webkit-desktop] › tests\browser\canvas.spec.js:91:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[41/78] [webkit-desktop] › tests\browser\canvas.spec.js:133:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[42/78] [webkit-desktop] › tests\browser\canvas.spec.js:160:1 › major modes launch individually and expose their defining state
+[43/78] [webkit-desktop] › tests\browser\canvas.spec.js:195:1 › real pointer targeting and context interaction use the expected tile
+[44/78] [webkit-desktop] › tests\browser\canvas.spec.js:239:1 › dense late-game fixture exposes strategic visual layers
+[45/78] [webkit-desktop] › tests\browser\canvas.spec.js:258:1 › loads and plays the historical replay fixture in the browser
+[46/78] [webkit-desktop] › tests\browser\canvas.spec.js:279:1 › 8x watch stops and finalizes exactly at the replay target
+[47/78] [webkit-desktop] › tests\browser\canvas.spec.js:290:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[48/78] [webkit-desktop] › tests\browser\canvas.spec.js:316:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[49/78] [webkit-desktop] › tests\browser\canvas.spec.js:335:1 › browser replay payload includes strong final evidence for a short save
+[50/78] [webkit-desktop] › tests\browser\canvas.spec.js:350:1 › credits replay reset clears setup scratch before rebuilding the match
+[51/78] [webkit-desktop] › tests\browser\canvas.spec.js:359:1 › rejects malformed and unsupported replay commands before configuration
+[52/78] [webkit-desktop] › tests\browser\canvas.spec.js:380:1 › invalid replay settings leave start state usable and allow a successful retry
+[53/78] [webkit-desktop] › tests\browser\canvas.spec.js:401:1 › invalid start configuration reports the error without hiding the start card
+[54/78] [webkit-desktop] › tests\browser\canvas.spec.js:417:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[55/78] [webkit-desktop] › tests\browser\canvas.spec.js:435:1 › resizes without document overflow and keeps the Canvas usable
+[56/78] [webkit-desktop] › tests\browser\canvas.spec.js:462:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[57/78] [webkit-desktop] › tests\browser\canvas.spec.js:511:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+(node:36064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[58/78] [chromium-reduced-motion] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[59/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:91:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[60/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:133:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[61/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:160:1 › major modes launch individually and expose their defining state
+[62/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:195:1 › real pointer targeting and context interaction use the expected tile
+[63/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:239:1 › dense late-game fixture exposes strategic visual layers
+[64/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:258:1 › loads and plays the historical replay fixture in the browser
+[65/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:279:1 › 8x watch stops and finalizes exactly at the replay target
+[66/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:290:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[67/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:316:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[68/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:335:1 › browser replay payload includes strong final evidence for a short save
+[69/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:350:1 › credits replay reset clears setup scratch before rebuilding the match
+[70/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:359:1 › rejects malformed and unsupported replay commands before configuration
+[71/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:380:1 › invalid replay settings leave start state usable and allow a successful retry
+[72/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:401:1 › invalid start configuration reports the error without hiding the start card
+[73/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:417:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[74/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:435:1 › resizes without document overflow and keeps the Canvas usable
+[75/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:462:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[76/78] [chromium-reduced-motion] › tests\browser\canvas.spec.js:511:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+(node:36988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[77/78] [chromium-source-contract] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+(node:13224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[78/78] [chromium-built-contract] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+  27 skipped
+  51 passed (2.1m)

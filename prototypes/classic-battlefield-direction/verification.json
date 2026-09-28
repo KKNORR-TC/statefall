@@ -1,0 +1,125 @@
+{
+  "checks": [
+    "eight commanded buildings",
+    "commanded destroyer",
+    "render and RNG purity",
+    "compare changes pixels",
+    "three zoom bands",
+    "factory menu",
+    "25 simulation ticks",
+    "no browser errors"
+  ],
+  "art": {
+    "frames": 4,
+    "trees": 35,
+    "visibleTiles": 4380,
+    "spriteDraws": 155,
+    "unitDraws": {
+      "warship": 141,
+      "fighter": 141
+    },
+    "shipHeading": 3,
+    "shipDisplayAngle": 2.4528326603312696,
+    "shipBlend": 0.04169345034727978,
+    "overlayRefreshes": 4,
+    "terrainRefreshes": 4,
+    "groundCacheBytes": 9322624,
+    "terrainCacheBytes": 9322624,
+    "enabled": true,
+    "loaded": true,
+    "cacheEntries": 28,
+    "sourceBytes": 7508992,
+    "terrainP95Ms": 56.599999994039536,
+    "home": {
+      "x": 536,
+      "y": 177,
+      "tile": 127976
+    },
+    "structures": [
+      {
+        "type": "port",
+        "t": 127985
+      },
+      {
+        "type": "battery",
+        "t": 131580
+      },
+      {
+        "type": "factory",
+        "t": 125094
+      },
+      {
+        "type": "city",
+        "t": 132290
+      },
+      {
+        "type": "radar",
+        "t": 120780
+      },
+      {
+        "type": "sam",
+        "t": 135176
+      },
+      {
+        "type": "engcmd",
+        "t": 138772
+      },
+      {
+        "type": "airfield",
+        "t": 120762
+      }
+    ],
+    "ships": 1,
+    "loop": null,
+    "destroyers": [
+      {
+        "id": 1,
+        "x": 555.3832582436012,
+        "y": 178.7123757153253,
+        "heading": 2.4528326603312696,
+        "pos": 8.4,
+        "pathLength": 9
+      }
+    ]
+  },
+  "status": {
+    "ready": true,
+    "tick": 28,
+    "paused": true,
+    "lastCommand": {
+      "t": 2,
+      "k": "menu",
+      "a": [
+        {
+          "act": "fpatrol"
+        },
+        127976,
+        [],
+        -1,
+        50,
+        0,
+        0
+      ]
+    },
+    "replay": {
+      "on": false,
+      "commands": 0,
+      "applied": 0,
+      "targetTick": 0,
+      "mismatch": false,
+      "why": null,
+      "divTick": null,
+      "speed": 1,
+      "finalVerified": false,
+      "verifiedEvidence": false,
+      "finished": false
+    },
+    "catchup": {
+      "status": "idle",
+      "target": 0,
+      "framePending": false,
+      "framesScheduled": 0,
+      "framesRun": 0
+    }
+  }
+}

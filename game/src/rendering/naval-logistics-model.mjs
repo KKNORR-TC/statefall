@@ -1,5 +1,6 @@
 import {conservativePaintBounds,paintBoundsIntersectViewport} from './paint-bounds.mjs';
 import {primitiveGraphicsSegments,primitiveIntersectsViewport} from './pre-structure-layer-model.mjs';
+import {UNIT_COLORS} from './unit-art-direction.mjs';
 
 export const MAX_NAVAL_ENTITIES=4096;
 export const MAX_NAVAL_PATH_POINTS=131072;
@@ -37,16 +38,23 @@ function labelBounds(label){
 
 function hullPrimitives(kind,x,y,r,heading,color){
   const u=r/10,width=1.2*u;
+  const layered=(values,{stroke=UNIT_COLORS.edge}={})=>[
+    polygon(transformPoints(values.map(([a,b])=>[a,b+1.25]),x,y,u,heading),{fill:UNIT_COLORS.shadow,alpha:.55,join:'round'}),
+    polygon(transformPoints(values,x,y,u,heading),{fill:UNIT_COLORS.deep,stroke,width,join:'round'}),
+    polygon(transformPoints(values.map(([a,b])=>[a*.96,b*.78-.18]),x,y,u,heading),{fill:UNIT_COLORS.highlight,alpha:.9}),
+    polygon(transformPoints(values.map(([a,b])=>[a*.9,b*.5]),x,y,u,heading),{fill:UNIT_COLORS.navy})
+  ];
   if(kind==='merchant'){
-    const hull=polygon(transformPoints([[8,0],[3,-3],[-8,-3],[-8,3],[3,3]],x,y,u,heading),{fill:'#d9c9a3',stroke:'#5a4a30',width,join:'miter'});
-    const cargo1=polygon(transformPoints([[-6,-2],[-2,-2],[-2,2],[-6,2]],x,y,u,heading),{fill:color});
+    const hull=layered([[8,0],[3,-3],[-8,-3],[-8,3],[3,3]],{stroke:UNIT_COLORS.brass}); hull[0].join='miter'; hull[1].join='miter';
+    const cargo1=polygon(transformPoints([[-6,-2],[-2,-2],[-2,2],[-6,2]],x,y,u,heading),{fill:UNIT_COLORS.navyLight});
     const cargo2=polygon(transformPoints([[-1,-2],[2,-2],[2,2],[-1,2]],x,y,u,heading),{fill:color});
-    return [hull,cargo1,cargo2];
+    return [...hull,cargo1,cargo2];
   }
-  const hull=polygon(transformPoints([[9,0],[4,-3.5],[-8,-3.5],[-9,0],[-8,3.5],[4,3.5]],x,y,u,heading),{fill:color,stroke:'#fff',width,join:'round'});
-  const cargo1=polygon(transformPoints([[-6,-2],[-1,-2],[-1,2],[-6,2]],x,y,u,heading),{fill:'#e8ecef'});
-  const cargo2=polygon(transformPoints([[0,-2],[3,-2],[3,2],[0,2]],x,y,u,heading),{fill:'#e8ecef'});
-  return [hull,cargo1,cargo2];
+  const hull=layered([[9,0],[4,-3.5],[-8,-3.5],[-9,0],[-8,3.5],[4,3.5]],{stroke:UNIT_COLORS.edge});
+  const cargo1=polygon(transformPoints([[-6,-2],[-1,-2],[-1,2],[-6,2]],x,y,u,heading),{fill:UNIT_COLORS.ivory});
+  const cargo2=polygon(transformPoints([[0,-2],[3,-2],[3,2],[0,2]],x,y,u,heading),{fill:UNIT_COLORS.ivory});
+  const iff=polygon(transformPoints([[-7,-3.4],[-3,-3.4],[-3,-2.6],[-7,-2.6]],x,y,u,heading),{fill:color});
+  return [...hull,cargo1,cargo2,iff];
 }
 
 function wakePrimitives(wake,camera,speed){

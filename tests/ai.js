@@ -15,7 +15,8 @@ const {pathToFileURL}=require('node:url');
     ]);
     const W=6,H=4;
     const definitions=Object.fromEntries(['city','factory','port','sam','fort','shore','battery','shield','airfield','subbase','troopcmd','engcmd','silo','bertha','command'].map(type=>[type,{cost:type==='sam'?220:100,coast:type==='shore'||type==='battery'||type==='port'||type==='subbase'}]));
-    const make=()=>{
+    const make=(width=6,height=4)=>{
+      const W=width,H=height;let crowdedChecks=0;
       const settings={noCap:false};
       const state=createAuthoritativeState({tileCount:W*H,settings,allowed:[],difficulty:'hard'});
       const runtime=createDeterministicRuntime(); runtime.seed('AI-CONTRACT');
@@ -31,11 +32,22 @@ const {pathToFileURL}=require('node:url');
       const system=createAiSystem({W,H,engineState:state,settings,allowed:state.rules.allowed,random,rnd,pick,getMe:()=>human,profiles:DIFFICULTY_PROFILES,definitions,
         ships:{hunter:{cost:300},warship:{cost:200}},constants:{warshipCost:200,nukeCost:280,linkRange:34,provokeTicks:400,cruise:{cost:400,ticks:300}},
         landCombat:{ownTilesOf,coastTilesOf:()=>[],isCoast:()=>false,maxTroops:()=>100,density:p=>p.troops/Math.max(1,p.tiles),gOn:()=>false,areaById:()=>null,takeTroopsFrom:()=>0,launchAttack:(p,target,troops,seed)=>{ calls.push({kind:'attack',p,target,troops,seed}); return true; }},
-        structures:{crowded:()=>false,placeStructure:(p,type,t)=>{ calls.push({kind:'build',p,type,t}); return true; },upgradeStructure:()=>false},
+        structures:{crowded:()=>{crowdedChecks++;return false;},placeStructure:(p,type,t)=>{ calls.push({kind:'build',p,type,t}); return true; },upgradeStructure:()=>false},
         diplomacy:{relation:()=>null,atPeace:()=>false,setRelation:()=>{},breakRelation:()=>false,inConflict:()=>false},missiles:{launchMissile:()=>false},naval:{waterNeighbor:()=>-1,orderWarship:()=>false},
         air:{airfieldsOf:()=>[],idleAircraft:()=>null,launchFighter:()=>false,botAir:(p,now)=>calls.push({kind:'air',p,now})},logistics:{reinforceArea:()=>false},fog:{targetHidden:()=>false},effects:{log:(...args)=>events.push(['log',...args]),sound:(...args)=>events.push(['sound',...args])}});
-      return {state,runtime,system,bot,neutral,human,calls,events};
+      return {state,runtime,system,bot,neutral,human,calls,events,crowdedChecks:()=>crowdedChecks};
     };
+
+    const placement=make(160,100),center=50*160+80;
+    placement.state.map.owner.fill(0);placement.bot.gold=1000;
+    placement.system.noteThreat(0,center,'missile',2);
+    assert.equal(placement.system.botReact(placement.bot),true);
+    assert.equal(placement.calls.find(call=>call.kind==='build').t,center);
+    assert.ok(placement.crowdedChecks()<900,'local reaction checked building spacing across the whole territory');
+    placement.state.actors.structures.push({type:'city',owner:0,t:center});
+    const beforeSmart=placement.crowdedChecks();
+    assert.equal(placement.system.botPlaceSmart(placement.bot,'sam',Array.from({length:16000},(_,t)=>t)),center);
+    assert.ok(placement.crowdedChecks()-beforeSmart<900,'local defense placement checked distant tiles');
 
     assert.equal(DIFFICULTY_PROFILES.impossible.brain,5);
     const left=make(),right=make();

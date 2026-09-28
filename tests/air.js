@@ -37,6 +37,9 @@ const {pathToFileURL}=require('node:url');
       return {state,players,system,events};
     };
 
+    const gate=make(),locked={type:'airfield',owner:0,t:164,building:false,level:1,aq:[]};gate.state.actors.structures.push(locked);
+    assert.equal(gate.system.hangarMax(locked),4);assert.equal(gate.system.buyAircraft(gate.players[0],locked,'carrier'),false);assert.equal(gate.players[0].gold,3000);
+    locked.level=2;assert.equal(gate.system.hangarMax(locked),6);assert.equal(gate.system.buyAircraft(gate.players[0],locked,'carrier'),true);assert.equal(gate.players[0].gold,2500);
     const left=make(),right=make();
     const field={type:'airfield',owner:0,t:4*W+4,building:false,level:2,aq:[]};
     left.state.actors.structures.push(field);

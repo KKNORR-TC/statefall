@@ -1,0 +1,223 @@
+{
+  "v": 1,
+  "hashv": 2,
+  "game": "1.10.45",
+  "seed": "CLASSICCOAST01",
+  "settings": {
+    "troops": 120,
+    "gold": 100,
+    "bots": false,
+    "teams": 0,
+    "noCap": false,
+    "map": "random",
+    "quick": false,
+    "fog": true,
+    "instant": true,
+    "risky": false,
+    "endgame": true,
+    "billionaire": true,
+    "garrison": false,
+    "pauseBuild": true,
+    "seed": "CLASSICCOAST01",
+    "customBots": null,
+    "diff": "supereasy",
+    "country": 0,
+    "customFlag": null,
+    "allowed": [
+      "city",
+      "factory",
+      "port",
+      "sam",
+      "silo",
+      "fort",
+      "command",
+      "shield",
+      "battery",
+      "shore",
+      "bertha",
+      "airfield",
+      "flightops",
+      "subbase",
+      "troopcmd",
+      "engcmd",
+      "radar",
+      "lradar",
+      "satellite",
+      "jammer",
+      "scout",
+      "sub",
+      "hunter",
+      "rship",
+      "privateer",
+      "warship",
+      "cruiser",
+      "battleship",
+      "missile"
+    ]
+  },
+  "cmds": [
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        127985,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "port"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        131580,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "battery"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        125094,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "factory"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        132290,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "city"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        120780,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "radar"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        135176,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "sam"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        138772,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "engcmd"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "click",
+      "a": [
+        120762,
+        {
+          "ratio": 50,
+          "pick": null,
+          "build": "airfield"
+        }
+      ]
+    },
+    {
+      "t": 0,
+      "k": "menu",
+      "a": [
+        {
+          "act": "warship",
+          "cls": "warship"
+        },
+        127994,
+        [],
+        -1,
+        50,
+        0,
+        0
+      ]
+    },
+    {
+      "t": 1,
+      "k": "menu",
+      "a": [
+        {
+          "act": "buyf"
+        },
+        120762,
+        [],
+        120762,
+        50,
+        0,
+        0
+      ]
+    },
+    {
+      "t": 2,
+      "k": "menu",
+      "a": [
+        {
+          "act": "fpatrol"
+        },
+        127976,
+        [],
+        -1,
+        50,
+        0,
+        0
+      ]
+    }
+  ],
+  "hashes": [],
+  "requiresCanonicalCheckpoints": true,
+  "result": "test",
+  "tick": 3,
+  "when": 1790483468819,
+  "finalHash": "ded096cb",
+  "finalDigest": {
+    "version": "statefall-authoritative-state/v1",
+    "sha256": "0863d19717a3abfea55f5167f56a2ece9ff6d1ff70f39552487d1bfd1db0a99d"
+  },
+  "final": {
+    "tick": 3,
+    "legacyHash": "ded096cb",
+    "canonical": {
+      "version": "statefall-authoritative-state/v1",
+      "sha256": "0863d19717a3abfea55f5167f56a2ece9ff6d1ff70f39552487d1bfd1db0a99d"
+    },
+    "rngDraws": 26405,
+    "commandCount": 11,
+    "replayCursor": null
+  }
+}

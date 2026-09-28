@@ -1,0 +1,87 @@
+{
+  "maps": [
+    "random",
+    "land",
+    "islands_l",
+    "islands_m",
+    "islands_s",
+    "atoll",
+    "world",
+    "europe",
+    "americas",
+    "africa",
+    "asia",
+    "mideast"
+  ],
+  "difficulties": [
+    "supereasy",
+    "easy",
+    "normal",
+    "hard",
+    "superhard",
+    "impossible"
+  ],
+  "modes": {
+    "standard": {},
+    "quick": {
+      "quick": true
+    },
+    "risky": {
+      "risky": true
+    },
+    "endgame": {
+      "endgame": true
+    },
+    "fog": {
+      "fog": true
+    },
+    "garrisons": {
+      "garrison": true
+    },
+    "fogGarrisons": {
+      "fog": true,
+      "garrison": true
+    },
+    "instant": {
+      "instant": true
+    },
+    "billionaire": {
+      "billionaire": true
+    },
+    "equalBots": {
+      "bots": true
+    },
+    "noCap": {
+      "noCap": true
+    },
+    "pausedOrders": {
+      "pauseBuild": true
+    },
+    "teams2": {
+      "teams": 2
+    },
+    "teams3": {
+      "teams": 3
+    },
+    "teams4": {
+      "teams": 4
+    },
+    "combined": {
+      "endgame": true,
+      "fog": true,
+      "garrison": true,
+      "instant": true,
+      "billionaire": true,
+      "bots": true,
+      "noCap": true,
+      "pauseBuild": true,
+      "teams": 3
+    }
+  },
+  "cases": 1152,
+  "grid": {
+    "width": 720,
+    "height": 414
+  },
+  "scope": "Named modes Cartesian matrix; does not claim exhaustive binary option combinations"
+}

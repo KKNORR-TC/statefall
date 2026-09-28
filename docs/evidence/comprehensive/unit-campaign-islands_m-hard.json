@@ -1,0 +1,70 @@
+{
+  "options": {
+    "seed": "CLASSICCOAST01",
+    "map": "islands_m",
+    "diff": "hard",
+    "countryIdx": 0,
+    "endgame": true,
+    "instant": true,
+    "billionaire": true,
+    "fog": true
+  },
+  "ticks": 2100,
+  "commands": 45,
+  "observed": {
+    "structures": [
+      "port",
+      "airfield",
+      "city",
+      "factory",
+      "sam",
+      "silo",
+      "fort",
+      "command",
+      "shield",
+      "battery",
+      "shore",
+      "bertha",
+      "flightops",
+      "engcmd",
+      "troopcmd",
+      "radar",
+      "lradar",
+      "jammer",
+      "satellite",
+      "subbase"
+    ],
+    "ships": [
+      "rship",
+      "privateer",
+      "scout",
+      "warship",
+      "cruiser",
+      "battleship",
+      "sub",
+      "hunter"
+    ],
+    "aircraft": [
+      "fighter",
+      "bomber",
+      "carrier"
+    ],
+    "activeAircraft": [
+      "fighter",
+      "bomber",
+      "carrier"
+    ],
+    "transports": [
+      "normal",
+      "heavy"
+    ],
+    "spy": true,
+    "merchant": true,
+    "truck": false,
+    "missile": true,
+    "shell": true
+  },
+  "p95TickMs": 8.549599999999373,
+  "maxTickMs": 167.7256,
+  "replay": "PASS"
+}

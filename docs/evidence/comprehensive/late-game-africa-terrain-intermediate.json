@@ -1,0 +1,50 @@
+{
+  "fingerprint": "4571072e15d0ce63622ea80671e99aae9ca4e2b907a1becc03b2ccbdb8b73dd9",
+  "fixture": "docs/evidence/comprehensive/campaign-africa-impossible-SOAK9B-replay.json",
+  "pass": false,
+  "elapsedMs": 12020.100000005972,
+  "frames": 136,
+  "ticks": 116,
+  "p95Ms": 149.89999999999418,
+  "p99Ms": 166.70000000001164,
+  "maxMs": 200,
+  "stallsOver50ms": 116,
+  "status": {
+    "ready": true,
+    "tick": 6116,
+    "paused": true,
+    "lastCommand": {
+      "t": 5970,
+      "k": "click",
+      "a": [
+        68881,
+        {
+          "ratio": 60,
+          "pick": null,
+          "build": null
+        }
+      ]
+    },
+    "replay": {
+      "on": false,
+      "commands": 240,
+      "applied": 240,
+      "targetTick": 6000,
+      "mismatch": false,
+      "why": null,
+      "divTick": null,
+      "speed": 1,
+      "finalVerified": true,
+      "verifiedEvidence": true,
+      "finished": false
+    },
+    "catchup": {
+      "status": "idle",
+      "target": 6000,
+      "framePending": false,
+      "framesScheduled": 992,
+      "framesRun": 992
+    }
+  },
+  "errors": []
+}

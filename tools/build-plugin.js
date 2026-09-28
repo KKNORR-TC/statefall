@@ -20,4 +20,5 @@ const archive = zip(walk(source).sort((a, b) => a.path.localeCompare(b.path)));
 fs.mkdirSync(output, {recursive: true});
 const target = path.join(output, `statefall-scores-${match[1]}.zip`);
 fs.writeFileSync(target, archive);
+fs.writeFileSync(path.join(output,'plugin-candidate.json'),JSON.stringify({version:match[1],filename:path.basename(target),sha256:sha256(archive)},null,2)+'\n');
 console.log(`${path.relative(root, target)} sha256 ${sha256(archive)}`);

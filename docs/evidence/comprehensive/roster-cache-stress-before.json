@@ -1,0 +1,48 @@
+{
+  "times": [
+    478.2000000178814,
+    286.5,
+    289.90000000596046,
+    283.7999999821186,
+    265.09999999403954,
+    278.80000001192093,
+    268.19999998807907,
+    297.40000000596046
+  ],
+  "diagnostics": {
+    "frames": 0,
+    "trees": 0,
+    "visibleTiles": 0,
+    "spriteDraws": 2048,
+    "unitDraws": {
+      "warship": 128,
+      "battleship": 128,
+      "cruiser": 128,
+      "scout": 128,
+      "sub": 128,
+      "hunter": 128,
+      "rship": 128,
+      "privateer": 128,
+      "transport": 128,
+      "heavytransport": 128,
+      "merchant": 128,
+      "fighter": 128,
+      "bomber": 128,
+      "carrier": 128,
+      "spy": 128,
+      "truck": 128
+    },
+    "shipHeading": 4,
+    "shipDisplayAngle": 3.241592653589793,
+    "shipBlend": 0.04450597174087351,
+    "overlayRefreshes": 0,
+    "terrainRefreshes": 0,
+    "groundCacheBytes": 0,
+    "terrainCacheBytes": 0,
+    "enabled": true,
+    "loaded": true,
+    "cacheEntries": 256,
+    "sourceBytes": 67108864,
+    "terrainP95Ms": 0
+  }
+}

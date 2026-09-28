@@ -50,7 +50,12 @@ function validate(input,{strict=true}={}){
   return {camera,viewport,...values};
 }
 
-export function advanceGlobalEffectsPresentation(input,advance=true,{visibleWreckSources=null}={}){
+export function advanceGlobalEffectsPresentation(input,advance=true,{visibleWreckSources=null,steps=1}={}){
+  if(!Number.isInteger(steps)||steps<0||steps>15)throw new RangeError('Invalid presentation steps');
+  if(advance&&steps!==1){
+    if(!steps)return advanceGlobalEffectsPresentation(input,false,{visibleWreckSources});
+    let current=input,result;for(let i=0;i<steps;i++){result=advanceGlobalEffectsPresentation(current,true,{visibleWreckSources});current=result.next;}return result;
+  }
   const {scorches,sparks,puffs,fragments,tracers,wrecks,flashes}=arrays(input);
   if(!advance) return Object.freeze({frame:Object.freeze({scorches:Object.freeze(scorches.slice()),sparks:Object.freeze(sparks.slice()),puffs:Object.freeze(puffs.slice()),fragments:Object.freeze(fragments.slice()),tracers:Object.freeze(tracers.slice()),wrecks:Object.freeze(wrecks.slice()),flashes:Object.freeze(flashes.slice())}),next:{scorches,sparks,puffs,fragments,tracers,wrecks,flashes}});
   for(const value of scorches){ if(!finite(value.age)) throw new TypeError('invalid scorch presentation source'); value.age++; }
@@ -78,11 +83,12 @@ function shipPrimitives(wk,px,py,r,alpha){
   return out;
 }
 
-export function paintGlobalEffectsCanvas(context,input,{drawShip=null,onlyCategory=null}={}){
+export function paintGlobalEffectsCanvas(context,input,{drawShip=null,onlyCategory=null,roundSparks=false,cullOffscreen=false}={}){
   const value=validate(input,{strict:false}),state=inheritedState(input),order=[],s=value.camera.scale,x=n=>value.camera.x+Number(n)*s,y=n=>value.camera.y+Number(n)*s,visible=item=>item.visible!==false; applyState(context,state);
+  const offscreen=(px,py,r)=>cullOffscreen&&(px+r<-2||py+r<-2||px-r>value.viewport.width+2||py-r>value.viewport.height+2);
   if(!onlyCategory||onlyCategory==='scorches') for(const sc of value.scorches){ if(!visible(sc)) continue; state.fillStyle=`rgba(10,8,6,${.45*Math.max(0,1-Number(sc.age)/1800)})`; context.fillStyle=state.fillStyle; context.beginPath(); context.arc(x(sc.x),y(sc.y),Number(sc.r)*s,0,TAU); context.fill(); order.push('scorch'); }
-  if(!onlyCategory||onlyCategory==='sparks') for(const sp of value.sparks){ const alpha=1-Number(sp.age)/6; if(alpha<=0) continue; context.globalAlpha=alpha; state.fillStyle='#fff'; context.fillStyle=state.fillStyle; context.fillRect(x(sp.x),y(sp.y),Math.max(1,s),Math.max(1,s)); order.push('spark'); } context.globalAlpha=1; state.globalAlpha=1;
-  if(!onlyCategory||onlyCategory==='puffs') for(const pf of value.puffs){ if(!visible(pf)) continue; state.fillStyle=`rgba(${pf.color??pf.col},${.5*Math.max(0,1-Number(pf.age)/Number(pf.life))})`; context.fillStyle=state.fillStyle; context.beginPath(); context.arc(x(pf.x),y(pf.y),Number(pf.r)*s,0,TAU); context.fill(); order.push('puff'); }
+  if(!onlyCategory||onlyCategory==='sparks') for(const sp of value.sparks){ const alpha=1-Number(sp.age)/6; if(alpha<=0) continue; state.fillStyle='#fff'; if(offscreen(x(sp.x)+s*.5,y(sp.y)+s*.5,Math.max(1,s)))continue; context.globalAlpha=alpha; context.fillStyle=state.fillStyle; if(roundSparks){context.globalAlpha=alpha*.45;context.beginPath();context.arc(x(sp.x)+s*.5,y(sp.y)+s*.5,Math.max(1,s*.28),0,TAU);context.fill();}else context.fillRect(x(sp.x),y(sp.y),Math.max(1,s),Math.max(1,s)); order.push('spark'); } context.globalAlpha=1; state.globalAlpha=1;
+  if(!onlyCategory||onlyCategory==='puffs') for(const pf of value.puffs){ if(!visible(pf)) continue; state.fillStyle=`rgba(${pf.color??pf.col},${.5*Math.max(0,1-Number(pf.age)/Number(pf.life))})`; if(offscreen(x(pf.x),y(pf.y),Number(pf.r)*s))continue; context.fillStyle=state.fillStyle; context.beginPath(); context.arc(x(pf.x),y(pf.y),Number(pf.r)*s,0,TAU); context.fill(); order.push('puff'); }
   if(!onlyCategory||onlyCategory==='fragments') for(const fr of value.fragments){ context.globalAlpha=Math.max(0,1-Number(fr.age)/Number(fr.life)); state.fillStyle=fr.color??fr.col; context.fillStyle=state.fillStyle; if(fr.bomb){ context.beginPath(); context.arc(x(fr.x),y(fr.y)+Number(fr.age)*s*.4,Math.max(1,s*.5),0,TAU); context.fill(); order.push('bomb'); }else{ context.beginPath(); context.moveTo(x(fr.x),y(fr.y)); context.lineTo(x(Number(fr.x)-Number(fr.vx)*2),y(Number(fr.y)-Number(fr.vy)*2)); state.strokeStyle=fr.color??fr.col; state.lineWidth=1.5; context.strokeStyle=state.strokeStyle; context.lineWidth=state.lineWidth; context.stroke(); order.push('fragment'); } } context.globalAlpha=1; state.globalAlpha=1;
   if(!onlyCategory||onlyCategory==='tracers') for(const tr of value.tracers){ const alpha=Math.max(0,1-Number(tr.age)/9); state.strokeStyle=`rgba(${tr.color??tr.col},${alpha*.7})`; state.lineWidth=1; context.strokeStyle=state.strokeStyle; context.lineWidth=1; context.beginPath(); context.moveTo(x(tr.x0),y(tr.y0)); context.lineTo(x(tr.x1),y(tr.y1)); context.stroke(); order.push('tracer'); }
   if(!onlyCategory||onlyCategory==='wrecks') for(const wk of value.wrecks){ if(!visible(wk)) continue; const px=x(wk.x),py=y(wk.y); if(wk.kind==='ship'){ const k=Number(wk.age)/40,r=Math.max(4,s*(wk.cls==='battleship'?4:2.6)); context.globalAlpha=Math.max(0,1-k); if(typeof drawShip==='function'){ context.save(); context.translate(px,py); context.rotate(Number(wk.hdg??wk.heading)+Number(wk.spin)*Number(wk.age)); context.scale(1,Math.max(.2,1-k*.6)); context.translate(-px,-py); drawShip(wk.cls==='trader'||wk.cls==='transport'?'transport':wk.cls,px,py,0,r,wk.col??wk.color,null,null,context); context.restore(); } context.globalAlpha=1; state.strokeStyle=`rgba(230,240,255,${.6*Math.max(0,1-k)})`; state.lineWidth=1.5; context.strokeStyle=state.strokeStyle; context.lineWidth=1.5; context.beginPath(); context.arc(px,py,r*(.8+k*2.2),0,TAU); context.stroke(); order.push('ship-wreck'); }

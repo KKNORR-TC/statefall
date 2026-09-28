@@ -1,0 +1,19 @@
+
+Running 3 tests using 1 worker
+
+
+
+(node:41460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/3] [chromium-desktop] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+
+(node:42744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/3] [firefox-desktop] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+
+(node:17060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/3] [webkit-desktop] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+  3 passed (6.9s)

@@ -1,0 +1,50 @@
+{
+  "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+  "fixture": "docs/evidence/comprehensive/campaign-atoll-impossible-SOAK5B-replay.json",
+  "pass": true,
+  "elapsedMs": 12000.399999994042,
+  "frames": 714,
+  "ticks": 120,
+  "p95Ms": 16.700000000004366,
+  "p99Ms": 16.80000000000291,
+  "maxMs": 133.40000000000146,
+  "stallsOver50ms": 1,
+  "status": {
+    "ready": true,
+    "tick": 6120,
+    "paused": true,
+    "lastCommand": {
+      "t": 5880,
+      "k": "click",
+      "a": [
+        50196,
+        {
+          "ratio": 60,
+          "pick": null,
+          "build": null
+        }
+      ]
+    },
+    "replay": {
+      "on": false,
+      "commands": 139,
+      "applied": 139,
+      "targetTick": 6000,
+      "mismatch": false,
+      "why": null,
+      "divTick": null,
+      "speed": 1,
+      "finalVerified": true,
+      "verifiedEvidence": true,
+      "finished": false
+    },
+    "catchup": {
+      "status": "idle",
+      "target": 6000,
+      "framePending": false,
+      "framesScheduled": 362,
+      "framesRun": 362
+    }
+  },
+  "errors": []
+}

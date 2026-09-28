@@ -1,0 +1,108 @@
+{
+  "name": "campaign-europe-impossible-SOAK7A",
+  "options": {
+    "map": "europe",
+    "diff": "impossible",
+    "seed": "SOAK7A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "endgame": true,
+    "fog": true,
+    "instant": true,
+    "garrison": true,
+    "teams": 2
+  },
+  "ticks": 504,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 504,
+      "title": "Team victory"
+    }
+  ],
+  "alive": true,
+  "commands": 16,
+  "observed": {
+    "maxStructures": 132,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 8,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 32.320100000000025,
+  "maxTickMs": 184.2246,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 184.2246,
+      "structures": 23,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 138.60590000000002,
+      "structures": 79,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 128.91889999999967,
+      "structures": 132,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 122.4346999999998,
+      "structures": 102,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 121.43460000000005,
+      "structures": 53,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 5,
+      "ms": 58.696999999999946,
+      "structures": 1,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 325,
+      "ms": 57.34400000000005,
+      "structures": 85,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 235,
+      "ms": 53.945300000000316,
+      "structures": 62,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 275,
+      "ms": 53.16690000000017,
+      "structures": 72,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 295,
+      "ms": 51.321699999999964,
+      "structures": 78,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 8889.7032,
+  "replay": "PASS"
+}

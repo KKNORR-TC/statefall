@@ -1,0 +1,63 @@
+{
+  "name": "campaign-europe-superhard-SOAK7A",
+  "options": {
+    "map": "europe",
+    "diff": "superhard",
+    "seed": "SOAK7A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "noCap": true,
+    "bots": true
+  },
+  "ticks": 458,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 458,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 20,
+  "observed": {
+    "maxStructures": 113,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 9,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 6.858500000000049,
+  "maxTickMs": 156.606,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 156.606,
+      "structures": 9,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 114.67800000000011,
+      "structures": 60,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 100.32100000000003,
+      "structures": 32,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 90.00860000000011,
+      "structures": 95,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3417.5603,
+  "replay": "PASS"
+}

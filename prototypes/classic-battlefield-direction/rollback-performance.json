@@ -1,0 +1,20 @@
+{
+  "previousRollback": {
+    "elapsedMs": 10010.90000000596,
+    "frames": 276,
+    "ticks": 61,
+    "p95Ms": 33.399999999999636,
+    "maxMs": 466.6999999999989,
+    "framesOver50ms": 13,
+    "orders": 14
+  },
+  "directRollback": {
+    "elapsedMs": 10009.50000000596,
+    "frames": 585,
+    "ticks": 98,
+    "p95Ms": 16.700000000000728,
+    "maxMs": 283.2999999999993,
+    "framesOver50ms": 1,
+    "orders": 26
+  }
+}

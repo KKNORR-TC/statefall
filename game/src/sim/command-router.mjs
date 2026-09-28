@@ -1,3 +1,4 @@
+import * as portableMath from "./strict-math.mjs";
 import {assertCommand,assertCommandArguments,assertCommandKind,assertMenuAction} from './command-schema.mjs';
 import {ownAuthorityValue} from './authority-value.mjs';
 
@@ -94,7 +95,7 @@ export function createCommandRouter({
     if(data.act==='plane') actions.callPlane(actor,tile);
     else if(data.act==='fpatrol') actions.launchFighter(actor,tile);
     else if(data.act==='bstrike'){ const ownerId=map.owner[tile]; if(ownerId>=0&&actions.atPeace(actor.id,ownerId)) fail(`You're at peace with ${players[ownerId].name}.`); else actions.launchBomber(actor,tile); }
-    else if(data.act==='recallnear') aircraft.filter(value=>value.owner===actor.id&&value.type==='fighter'&&['out','patrol'].includes(value.state)&&Math.hypot(value.tx-(tile%constants.W+.5),value.ty-((tile-tile%constants.W)/constants.W+.5))<=air.fighter.patrol+6).forEach(actions.recallAircraft);
+    else if(data.act==='recallnear') aircraft.filter(value=>value.owner===actor.id&&value.type==='fighter'&&['out','patrol'].includes(value.state)&&portableMath.hypot(value.tx-(tile%constants.W+.5),value.ty-((tile-tile%constants.W)/constants.W+.5))<=air.fighter.patrol+6).forEach(actions.recallAircraft);
     else if(data.act==='upgrade') actions.upgradeStructure(actor,site);
     else if(data.act==='buyf') actions.buyAircraft(actor,site,'fighter');
     else if(data.act==='buyb') actions.buyAircraft(actor,site,'bomber');
@@ -107,9 +108,9 @@ export function createCommandRouter({
         if(vessel.cls!=='battleship'||vessel.cruise||vessel.refit) continue;
         const inRange=structures.some(value=>value.type==='port'&&(value.level||1)>=2&&!value.building&&value.owner===actor.id&&((value.t%constants.W+.5-vessel.x)**2+((value.t-value.t%constants.W)/constants.W+.5-vessel.y)**2)<=constants.linkRange*constants.linkRange);
         if(!inRange||actor.gold<cruise.cost) continue;
-        actor.gold-=cruise.cost; vessel.refit=clock.tickN+(settings.instant?0:cruise.ticks); count++;
+        actor.gold-=cruise.cost; vessel.refit=Math.max(1,clock.tickN+(settings.instant?0:cruise.ticks)); count++;
       }
-      if(count){ log(`${count} battleship${count>1?'s':''} refitting with cruise missiles — ${cruise.ticks/10} s.`,true); sound('build'); }
+      if(count){ log(`${count} battleship${count>1?'s':''} refitting with cruise missiles — ${settings.instant?'instant':cruise.ticks/10+' s'}.`,true); sound('build'); }
       else fail('No battleship in range of a level II port, or not enough gold.');
     }
     else if(data.act==='move'){ const count=actions.moveShips(tile,selectedShips); if(count) log(`${count} ship${count>1?'s':''} under way.`,true); else fail('No sea route to that spot.'); }

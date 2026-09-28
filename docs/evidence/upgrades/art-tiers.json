@@ -1,0 +1,30 @@
+{
+  "distinctBuildings": true,
+  "refitHeadings": [
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "diagnostics": {
+    "frames": 0,
+    "trees": 0,
+    "visibleTiles": 0,
+    "spriteDraws": 26,
+    "sourceBuilds": 12,
+    "unitDraws": {
+      "battleship": 12
+    },
+    "overlayRefreshes": 0,
+    "terrainRefreshes": 0,
+    "groundCacheBytes": 0,
+    "terrainCacheBytes": 0,
+    "enabled": true,
+    "loaded": true,
+    "cacheEntries": 12,
+    "sourceBytes": 2886656,
+    "sourceBudget": 67108864,
+    "terrainP95Ms": 0
+  }
+}

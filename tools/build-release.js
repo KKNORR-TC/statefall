@@ -26,4 +26,5 @@ const archive=releaseZip(files,{version:metadata.version,build:metadata.build,mi
 fs.mkdirSync(output,{recursive:true});
 const target=path.join(output,`statefall-release-${metadata.version}.zip`);
 fs.writeFileSync(target,archive);
+fs.writeFileSync(path.join(output,'release-candidate.json'),JSON.stringify({version:metadata.version,build:metadata.build,filename:path.basename(target),sha256:sha256(archive)},null,2)+'\n');
 console.log(`${path.relative(root,target)} sha256 ${sha256(archive)}`);

@@ -17,5 +17,14 @@ const assert=require('node:assert/strict');
   assert.throws(()=>model.build(input,{categoryEntries:2}),/category-cap/); assert.throws(()=>model.build(input,{entries:9}),/entry-cap/); assert.throws(()=>model.build(input,{trailPoints:5}),/trail-point-cap/); assert.throws(()=>model.build(input,{primitives:1}),/primitive-cap/); assert.throws(()=>model.build(input,{segments:1}),/segment-cap/);
   const duplicate=model.build({...input,sparks:[input.sparks[0],input.sparks[0]]}),sparkEntries=duplicate.entries.filter(value=>value.category==='sparks'); assert.equal(sparkEntries[0].key.split(':')[1],sparkEntries[1].key.split(':')[1]); assert.deepEqual(sparkEntries.map(value=>value.key.split(':').at(-1)),['0','1']);
   const operations=[],context={...input.inheritedCanvasState,setLineDash(value){ this.lineDash=value.slice(); },beginPath(){},arc(...args){ operations.push(['arc',...args,this.globalAlpha,this.fillStyle,this.strokeStyle,this.lineWidth]); },fill(){ operations.push(['fill',this.globalAlpha,this.fillStyle]); },stroke(){ operations.push(['stroke',this.globalAlpha,this.strokeStyle,this.lineWidth]); },fillRect(...args){ operations.push(['fillRect',...args,this.globalAlpha,this.fillStyle]); },moveTo(){},lineTo(){},save(){},restore(){},translate(){},rotate(){},scale(){},closePath(){}}; const uncapped={...input,sparks:Array.from({length:effects.MAX_GLOBAL_EFFECT_CATEGORY_ENTRIES+1},(_,index)=>({...input.sparks[0],source:{index}}))},uncappedBefore=JSON.stringify(uncapped),order=paintGlobalEffectsCanvas(context,uncapped); assert.equal(order.filter(value=>value==='spark').length,effects.MAX_GLOBAL_EFFECT_CATEGORY_ENTRIES+1); assert.equal(JSON.stringify(uncapped),uncappedBefore,'direct Canvas fallback is pure and uncapped'); assert.equal(context.globalAlpha,1); assert.equal(context.fillStyle,'#fff');
+  // Culling must preserve actual pixels and inherited Canvas state, including edge overlap.
+  const {createCanvas}=require('canvas');
+  for(const roundSparks of [false,true]){
+    const sample={...input,sparks:[...input.sparks,{x:-1,y:40,age:1},{x:-1000,y:-1000,age:2}],puffs:[...input.puffs,{x:101,y:30,r:4,age:1,life:20,col:'80,80,80'},{x:1000,y:1000,r:3,age:1,life:20,col:'90,90,90'}]};
+    const contexts=[createCanvas(100,100).getContext('2d'),createCanvas(100,100).getContext('2d')];
+    contexts.forEach((ctx,i)=>paintGlobalEffectsCanvas(ctx,sample,{roundSparks,cullOffscreen:i===1}));
+    assert.deepEqual(contexts[0].getImageData(0,0,100,100).data,contexts[1].getImageData(0,0,100,100).data,'offscreen culling must preserve overlapping edge pixels');
+    for(const key of ['fillStyle','strokeStyle','globalAlpha','lineWidth'])assert.equal(contexts[0][key],contexts[1][key],key+' after offscreen effects');
+  }
   model.reset(); assert.equal(model.diagnostics().identitySerial,0); console.log('Global effects layer model contracts PASS');
 })().catch(error=>{ console.error(error); process.exitCode=1; });

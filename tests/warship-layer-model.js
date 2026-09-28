@@ -17,7 +17,7 @@ const assert=require('node:assert/strict');
     assert.ok(order.includes('hull-details-hp')); assert.ok(entry.items.find(value=>value.semantic==='hull-details-hp').primitives.some(value=>value.fill==='#fff'),'HP uses ceil pips after exact hull details');
   }
   assert.equal(scene.entries.find(value=>value.cls==='sub').items.some(value=>value.semantic==='wake'),false);
-  assert.ok(scene.entries.find(value=>value.cls==='sub').items.find(value=>value.semantic==='hull-details-hp').primitives.every(value=>value.alpha===.7),'submarine alpha is scoped to hull and HP');
+  { const primitives=scene.entries.find(value=>value.cls==='sub').items.find(value=>value.semantic==='hull-details-hp').primitives; assert.equal(primitives[0].alpha,.55*.7); assert.ok(primitives.slice(1).every(value=>value.alpha>0&&value.alpha<=.7),'submarine depth stack and HP retain scoped translucency'); }
   assert.ok(scene.entries.find(value=>value.cls==='battleship').items.find(value=>value.semantic==='hull-details-hp').primitives.filter(value=>value.fill==='#fff').length>=12,'fractional HP uses ceil pips');
   assert.deepEqual(scene.canvasStrokeState,{lineJoin:'miter',lineCap:'round',globalAlpha:1,lineDash:[],lineDashOffset:0},'visible surface wake hands round caps to retained shells');
 

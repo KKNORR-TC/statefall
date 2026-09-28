@@ -1,4 +1,5 @@
 import {primitiveGraphicsSegments,primitiveIntersectsViewport} from './pre-structure-layer-model.mjs';
+import {UNIT_COLORS} from './unit-art-direction.mjs';
 
 export const MAX_MISSILE_ENTRIES=8192;
 export const MAX_MISSILE_TRAIL_SAMPLES=262144;
@@ -70,8 +71,9 @@ export function paintMissilesCanvas(context,input,{onlySemantic=null}={}){
     if(!onlySemantic||onlySemantic==='missile-body'){
       order.push('missile-body'); context.save(); context.translate(x,y); context.rotate(missile.cruise?Math.atan2(targetY-y,targetX-x):Math.atan2(next[1]-current[1],next[0]-current[0])); if(missile.cruise) context.scale(.65,.65);
       context.fillStyle='rgba(255,180,80,.55)'; context.beginPath(); context.moveTo(-6,0); context.lineTo(-18,-3); context.lineTo(-14,0); context.lineTo(-18,3); context.closePath(); context.fill();
-      context.fillStyle='#e8ecef'; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-2.5); context.lineTo(-6,-2.5); context.lineTo(-6,2.5); context.lineTo(3,2.5); context.closePath(); context.fill();
-      context.fillStyle='#e35d5d'; context.beginPath(); context.moveTo(-6,-2.5); context.lineTo(-9,-5); context.lineTo(-6,0); context.lineTo(-9,5); context.lineTo(-6,2.5); context.fill(); context.restore();
+      context.fillStyle=UNIT_COLORS.ivory; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-2.5); context.lineTo(-6,-2.5); context.lineTo(-6,2.5); context.lineTo(3,2.5); context.closePath(); context.fill();
+      context.fillStyle='#f4f0d7'; context.beginPath(); context.moveTo(5,-2.1); context.lineTo(-5,-2.1); context.lineTo(-5,-1); context.lineTo(3,-1); context.closePath(); context.fill();
+      context.fillStyle=UNIT_COLORS.hostile; context.beginPath(); context.moveTo(-6,-2.5); context.lineTo(-9,-5); context.lineTo(-6,0); context.lineTo(-9,5); context.lineTo(-6,2.5); context.fill(); context.restore();
     }
     if(!onlySemantic||onlySemantic==='missile-target-warning'){
       order.push('missile-target-warning'); context.strokeStyle=`rgba(255,107,107,${.35+.35*Math.sin(now/150)})`; context.lineWidth=1.5; context.setLineDash([6,6]); context.beginPath(); context.arc(targetX,targetY,(missile.cruise?cruiseRadius:nukeRadius)*camera.scale,0,Math.PI*2); context.stroke(); context.setLineDash([]);
@@ -110,8 +112,9 @@ export function createMissileModel(){
       const head=screen(current),targetPoint=screen(target),analyticHeading=Math.atan2(next[1]-current[1],next[0]-current[0]),heading=cruise?Math.atan2(targetPoint.y-head.y,targetPoint.x-head.x):analyticHeading,scale=cruise?.65:1;
       add(entry,'missile-body',[
         polygon(rotate(head.x,head.y,heading,scale,[[-6,0],[-18,-3],[-14,0],[-18,3]]),{fill:'rgba(255,180,80,.55)',alpha:1,cap:'round',join:lineJoin}),
-        polygon(rotate(head.x,head.y,heading,scale,[[8,0],[3,-2.5],[-6,-2.5],[-6,2.5],[3,2.5]]),{fill:'#e8ecef',alpha:1,cap:'round',join:lineJoin}),
-        polygon(rotate(head.x,head.y,heading,scale,[[-6,-2.5],[-9,-5],[-6,0],[-9,5],[-6,2.5]]),{fill:'#e35d5d',alpha:1,cap:'round',join:lineJoin})
+        polygon(rotate(head.x,head.y,heading,scale,[[8,0],[3,-2.5],[-6,-2.5],[-6,2.5],[3,2.5]]),{fill:UNIT_COLORS.ivory,alpha:1,cap:'round',join:lineJoin}),
+        polygon(rotate(head.x,head.y,heading,scale,[[5,-2.1],[-5,-2.1],[-5,-1],[3,-1]]),{fill:'#f4f0d7',alpha:1,cap:'round',join:lineJoin}),
+        polygon(rotate(head.x,head.y,heading,scale,[[-6,-2.5],[-9,-5],[-6,0],[-9,5],[-6,2.5]]),{fill:UNIT_COLORS.hostile,alpha:1,cap:'round',join:lineJoin})
       ]);
       const radius=(cruise?cruiseRadius:nukeRadius)*camera.scale,pulse=.35+.35*Math.sin(now/150);
       add(entry,'missile-target-warning',[circle(targetPoint.x,targetPoint.y,radius,{stroke:`rgba(255,107,107,${pulse})`,alpha:1,width:1.5,dash:[6,6],phase:0,cap:'round',join:lineJoin})]);

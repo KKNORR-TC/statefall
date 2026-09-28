@@ -1,0 +1,359 @@
+{
+  "fingerprint": "590604a32c1ec5d9548e79a86965ed8834f8fa8ff9f984f70eba8ee03d1db17a",
+  "fixture": "docs/evidence/comprehensive/campaign-mideast-impossible-SOAK11B-replay.json",
+  "pass": false,
+  "error": "TimeoutError: page.waitForFunction: Timeout 240000ms exceeded.",
+  "status": {
+    "ready": true,
+    "tick": 5175,
+    "paused": false,
+    "lastCommand": null,
+    "replay": {
+      "on": true,
+      "commands": 240,
+      "applied": 208,
+      "targetTick": 6000,
+      "mismatch": false,
+      "why": null,
+      "divTick": null,
+      "speed": 1,
+      "finalVerified": false,
+      "verifiedEvidence": true,
+      "finished": false
+    },
+    "catchup": {
+      "status": "running",
+      "target": 6000,
+      "framePending": true,
+      "framesScheduled": 943,
+      "framesRun": 942
+    }
+  },
+  "progress": [
+    {
+      "elapsedMs": 20026,
+      "ready": true,
+      "tick": 2375,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 96,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 179,
+        "framesRun": 178
+      }
+    },
+    {
+      "elapsedMs": 40205,
+      "ready": true,
+      "tick": 3021,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 122,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 278,
+        "framesRun": 277
+      }
+    },
+    {
+      "elapsedMs": 60101,
+      "ready": true,
+      "tick": 3243,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 131,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 344,
+        "framesRun": 343
+      }
+    },
+    {
+      "elapsedMs": 80269,
+      "ready": true,
+      "tick": 3458,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 140,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 412,
+        "framesRun": 411
+      }
+    },
+    {
+      "elapsedMs": 100325,
+      "ready": true,
+      "tick": 3664,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 148,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 477,
+        "framesRun": 476
+      }
+    },
+    {
+      "elapsedMs": 120321,
+      "ready": true,
+      "tick": 3898,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 156,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 546,
+        "framesRun": 545
+      }
+    },
+    {
+      "elapsedMs": 140314,
+      "ready": true,
+      "tick": 4178,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 168,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 619,
+        "framesRun": 618
+      }
+    },
+    {
+      "elapsedMs": 160265,
+      "ready": true,
+      "tick": 4396,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 177,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 684,
+        "framesRun": 683
+      }
+    },
+    {
+      "elapsedMs": 180262,
+      "ready": true,
+      "tick": 4610,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 185,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 748,
+        "framesRun": 747
+      }
+    },
+    {
+      "elapsedMs": 200386,
+      "ready": true,
+      "tick": 4809,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 194,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 811,
+        "framesRun": 810
+      }
+    },
+    {
+      "elapsedMs": 220334,
+      "ready": true,
+      "tick": 4989,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 201,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 876,
+        "framesRun": 875
+      }
+    },
+    {
+      "elapsedMs": 240231,
+      "ready": true,
+      "tick": 5172,
+      "paused": false,
+      "lastCommand": null,
+      "replay": {
+        "on": true,
+        "commands": 240,
+        "applied": 208,
+        "targetTick": 6000,
+        "mismatch": false,
+        "why": null,
+        "divTick": null,
+        "speed": 1,
+        "finalVerified": false,
+        "verifiedEvidence": true,
+        "finished": false
+      },
+      "catchup": {
+        "status": "running",
+        "target": 6000,
+        "framePending": true,
+        "framesScheduled": 942,
+        "framesRun": 941
+      }
+    }
+  ],
+  "errors": []
+}

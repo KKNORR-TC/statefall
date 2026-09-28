@@ -10,6 +10,13 @@ function sf_rejected($name, $contains) {
     sf_assert(statefall_active_release() === $before, $name . ' changed the active pointer');
 }
 
+$candidate = json_decode(file_get_contents('/statefall-artifacts/release-candidate.json'), true);
+sf_assert(is_array($candidate) && preg_match('/^\d+\.\d+\.\d+$/D', $candidate['version'] ?? ''), 'Current candidate metadata is missing or invalid');
+sf_assert(($candidate['filename'] ?? '') === 'statefall-release-' . $candidate['version'] . '.zip', 'Unexpected current ZIP filename');
+$exactRelease = $candidate['version'] . '-' . $candidate['build'];
+sf_assert(statefall_canonical_release_name($exactRelease) === $exactRelease, 'Invalid current release name');
+$exactZip = '/statefall-artifacts/' . $candidate['filename'];
+sf_assert(is_file($exactZip) && hash_file('sha256', $exactZip) === ($candidate['sha256'] ?? ''), 'Current ZIP checksum mismatch');
 $root = statefall_game_dir();
 sf_assert(strpos($root, '/wp-content/uploads/') !== false, 'Tests must use disposable artifact WordPress uploads.');
 if (is_dir(statefall_releases_dir())) statefall_rrmdir_contents(statefall_releases_dir(), '');
@@ -90,13 +97,13 @@ sf_assert(count($releases) === 6, 'retention must keep active plus five inactive
 sf_assert(!is_dir(statefall_releases_dir() . '9.0.1-fixture-1'), 'oldest inactive release was not pruned');
 sf_assert(is_dir(statefall_releases_dir() . statefall_active_release()), 'active release was pruned');
 sf_assert(statefall_restore_version('9.0.4-fixture-4') === true, 'final rollback failed');
-  sf_assert(statefall_install_package('/statefall-artifacts/statefall-release-1.10.11.zip', 'statefall-release-1.10.11.zip') === true, 'exact production game ZIP did not install');
-  sf_assert(statefall_active_release() === '1.10.11-2026-09-18-phase-d2' && statefall_release_complete(statefall_active_release()), 'exact production game ZIP is incomplete');
+  sf_assert(statefall_install_package($exactZip, $candidate['filename']) === true, 'exact production game ZIP did not install');
+  sf_assert(statefall_active_release() === $exactRelease && statefall_release_complete(statefall_active_release()), 'exact production game ZIP is incomplete');
 sf_assert(get_option('statefall_phase_b_data_marker') === 'preserve-me', 'unrelated WordPress data changed');
-  sf_assert(statefall_game_path() === statefall_releases_dir() . '1.10.11-2026-09-18-phase-d2/index.html', 'runtime entry path is wrong');
-  sf_assert(statefall_flags_path() === statefall_releases_dir() . '1.10.11-2026-09-18-phase-d2/flags.js', 'runtime flags path is wrong');
+  sf_assert(statefall_game_path() === statefall_releases_dir() . $exactRelease . '/index.html', 'runtime entry path is wrong');
+  sf_assert(statefall_flags_path() === statefall_releases_dir() . $exactRelease . '/flags.js', 'runtime flags path is wrong');
 $info = statefall_installed_info(); sf_assert($info['keyMatch'] === true, 'exact release signing-key metadata does not match the site key');
 ob_start(); statefall_admin_game(); $admin = ob_get_clean();
-  sf_assert(stripos($admin, 'game package') !== false && strpos($admin, '1.10.11-2026-09-18-phase-d2') !== false, 'admin release UI is incompatible');
+  sf_assert(stripos($admin, 'game package') !== false && strpos($admin, $exactRelease) !== false, 'admin release UI is incompatible');
 
 echo "PASS manifest install, validation, activation, rollback, reinstall, staging, retention and data preservation\n";

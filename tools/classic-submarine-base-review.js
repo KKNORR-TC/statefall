@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),playwright=require('playwright');
+(async()=>{for(const browserName of ['chromium','firefox','webkit']){const b=await playwright[browserName].launch();try{const p=await b.newPage({viewport:{width:1600,height:1000}}),errors=[];p.on('pageerror',e=>errors.push(e.message));
+await p.route('**/src/legacy-game.js*',async route=>{const r=await route.fetch();let body=await r.text();body=body.replace('    snapshot,',`    submarineProbe(){const port=structures.find(s=>s.owner===me().id&&s.type==='port'),sites=[];for(let t=0;t<W*H;t++){const d=(t%W-port.t%W)**2+(Math.floor(t/W)-Math.floor(port.t/W))**2;if(d>=144&&d<=900&&land[t]&&owner[t]===me().id&&snapBuild(me().id,t,'subbase',0)===t){const water=[t-1,t+1,t-W,t+W].find(n=>n>=0&&n<W*H&&!land[n]);if(water!==undefined)sites.push({t,water});}}return {port:JSON.parse(JSON.stringify(port)),site:sites[0],bases:structures.filter(s=>s.owner===me().id&&s.type==='subbase').map(s=>({t:s.t,building:s.building})),width:W};},
+    snapshot,`);await route.fulfill({response:r,body});});
+await p.addInitScript(()=>window.__STATEFALL_TEST_MODE__=true);await p.goto('http://127.0.0.1:4173/?art=classic&scene=coast&browserTest=1');await p.waitForFunction(()=>window.__STATEFALL_CLASSIC__);
+const read=()=>p.evaluate(()=>window.__STATEFALL_TEST__.submarineProbe());let state=await read();assert.ok(state.site);
+const menu=async t=>{await p.keyboard.press('Escape');await p.evaluate(({t,W})=>window.__STATEFALL_TEST__.setCameraOrigin(600-(t%W+.5)*10,450-(Math.floor(t/W)+.5)*10,10),{t,W:state.width});const box=await p.locator('#map').boundingBox();await p.mouse.click(box.x+600,box.y+450,{button:'right'});await p.locator('#ctx').waitFor({state:'visible'});};
+await menu(state.site.t);const build=p.locator('#ctx [data-type="subbase"]');assert.equal(await build.isDisabled(),true,'level-I port must show a locked submarine base');assert.match(await build.innerText(),/level II port/i);
+await menu(state.port.t);assert.match(await p.locator('#ctx [data-act="upgrade"]').innerText(),/60 s/);await p.locator('#ctx [data-act="upgrade"]').click();
+await menu(state.site.water);assert.equal(await build.isDisabled(),true,'upgrade in progress must not unlock base');
+await p.keyboard.press('Escape');await p.evaluate(()=>window.__STATEFALL_TEST__.advance(600));state=await read();assert.equal(state.port.level,2);
+await menu(state.site.water);assert.equal(await build.isDisabled(),false,'completed nearby upgrade unlocks coastal construction');await build.click();state=await read();assert.equal(state.bases.length,1);assert.equal(state.bases[0].building,false);
+assert.deepEqual(errors,[]);console.log(browserName+' submarine base PASS: locked prerequisite, accurate upgrade timer, completed upgrade, real coastal build command');
+}finally{await b.close();}}})().catch(e=>{console.error(e);process.exitCode=1;});

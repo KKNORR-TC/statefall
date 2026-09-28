@@ -1,0 +1,49 @@
+
+> statefall@1.10.47 test:build-reproducibility
+> node tests/build-reproducibility.js
+
+
+> statefall@1.10.47 build:game
+> vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 77 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/assets/terrain-raster-worker-CLeriLB5.js    8.84 kB
+../dist/index.html                                 19.13 kB │ gzip:   5.61 kB
+../dist/assets/index.DJ-PSlvI.css                  12.58 kB │ gzip:   3.22 kB
+../dist/assets/index.CY970GwQ.js                  815.34 kB │ gzip: 264.53 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 999ms
+copied 8 pages to dist/howto
+flags.js 18128 bytes
+dist/release.json 24 files sha256 19183fa39ac5b129dc28f87c1decb12ded2e189163e56d9e0f78202233790087
+
+> statefall@1.10.47 build:game
+> vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 77 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/assets/terrain-raster-worker-CLeriLB5.js    8.84 kB
+../dist/index.html                                 19.13 kB │ gzip:   5.61 kB
+../dist/assets/index.DJ-PSlvI.css                  12.58 kB │ gzip:   3.22 kB
+../dist/assets/index.CY970GwQ.js                  815.34 kB │ gzip: 264.53 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 975ms
+copied 8 pages to dist/howto
+flags.js 18128 bytes
+dist/release.json 24 files sha256 19183fa39ac5b129dc28f87c1decb12ded2e189163e56d9e0f78202233790087
+Build reproducibility PASS (25 files)

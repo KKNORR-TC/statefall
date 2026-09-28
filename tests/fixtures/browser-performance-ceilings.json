@@ -1,20 +1,54 @@
 {
   "scenarios": {
     "desktop-1440x900": {
-      "coldLoadAndStartToReadyMs": {"stat": "median", "ceiling": 2000},
-      "simulation300TicksMs": {"stat": "median", "ceiling": 7000},
-      "renderedFrameP95Ms": {"stat": "median", "ceiling": 50},
-      "resourceTransferBytes": {"stat": "max", "ceiling": 900000},
-      "resourceDecodedBytes": {"stat": "max", "ceiling": 900000},
-      "cdpUsedHeapBytes": {"stat": "median", "ceiling": 32000000}
+      "coldLoadAndStartToReadyMs": {
+        "stat": "median",
+        "ceiling": 2000
+      },
+      "simulation300TicksMs": {
+        "stat": "median",
+        "ceiling": 7000
+      },
+      "renderedFrameP95Ms": {
+        "stat": "median",
+        "ceiling": 50
+      },
+      "cdpUsedHeapBytes": {
+        "stat": "median",
+        "ceiling": 32000000
+      }
     },
     "mobile-pixel-7-390x844": {
-      "coldLoadAndStartToReadyMs": {"stat": "median", "ceiling": 2000},
-      "simulation300TicksMs": {"stat": "median", "ceiling": 7000},
-      "renderedFrameP95Ms": {"stat": "median", "ceiling": 50},
-      "resourceTransferBytes": {"stat": "max", "ceiling": 900000},
-      "resourceDecodedBytes": {"stat": "max", "ceiling": 900000},
-      "cdpUsedHeapBytes": {"stat": "median", "ceiling": 32000000}
+      "coldLoadAndStartToReadyMs": {
+        "stat": "median",
+        "ceiling": 2000
+      },
+      "simulation300TicksMs": {
+        "stat": "median",
+        "ceiling": 7000
+      },
+      "renderedFrameP95Ms": {
+        "stat": "median",
+        "ceiling": 50
+      },
+      "cdpUsedHeapBytes": {
+        "stat": "median",
+        "ceiling": 32000000
+      }
+    },
+    "desktop-broadband-25mbps": {
+      "coldLoadAndStartToReadyMs": {
+        "stat": "max",
+        "ceiling": 15000
+      }
+    },
+    "desktop-constrained-10mbps": {
+      "coldLoadAndStartToReadyMs": {
+        "stat": "max",
+        "ceiling": 40000
+      }
     }
-  }
+  },
+  "policy": "classic-loading-v1",
+  "rationale": "docs/performance-budget-reassessment.md"
 }

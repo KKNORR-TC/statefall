@@ -38,6 +38,14 @@ try{
   const poison=new Proxy({}, {get(){ throw new Error('browser global read'); }});
   Object.defineProperties(global,{window:{value:poison,writable:true,configurable:true},document:{value:poison,writable:true,configurable:true},navigator:{value:poison,writable:true,configurable:true}});
 
+  for(const instant of [false,true])for(const tick of [0,5]){
+    const f=createInstance();f.engineState.rules.settings.instant=instant;f.engineState.setClock(tick,tick*100);
+    const vessel={id:20,owner:0,hp:10,cls:'battleship',x:.5,y:.5},port={type:'port',owner:0,t:0,level:1,building:false};f.engineState.actors.warships.push(vessel);f.engineState.actors.structures.push(port);
+    f.router.issueMenu({act:'refit'},0,[20],-1,50,0,0);assert.equal(vessel.refit,undefined,'level I port must not unlock refit');assert.equal(f.players[0].gold,1000);
+    port.level=2;f.router.issueMenu({act:'refit'},0,[20],-1,50,0,0);assert.ok(vessel.refit>0,'accepted refit must not collide with zero/no-refit sentinel');assert.equal(vessel.refit,Math.max(1,tick+(instant?0:1)));assert.equal(f.players[0].gold,999);
+    f.router.issueMenu({act:'refit'},0,[20],-1,50,0,0);assert.equal(f.players[0].gold,999,'pending refit cannot charge twice');
+    const replay=createInstance();replay.engineState.rules.settings.instant=instant;replay.engineState.setClock(tick,tick*100);const replayShip={id:20,owner:0,hp:10,cls:'battleship',x:.5,y:.5};replay.engineState.actors.warships.push(replayShip);replay.engineState.actors.structures.push({...port});replay.router.replayApply(f.runtime.commands.log.at(-2));assert.equal(replayShip.refit,vessel.refit,'refit replay deadline differs');assert.equal(replay.players[0].gold,f.players[0].gold,'refit replay cost differs');
+  }
   const first=createInstance(),second=createInstance();
   first.router.issue('focus',.4);
   first.router.issueFor(1,'focus',.7);

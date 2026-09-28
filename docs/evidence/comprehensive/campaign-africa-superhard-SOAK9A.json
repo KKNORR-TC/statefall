@@ -1,0 +1,91 @@
+{
+  "name": "campaign-africa-superhard-SOAK9A",
+  "options": {
+    "map": "africa",
+    "diff": "superhard",
+    "seed": "SOAK9A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "fog": true,
+    "garrison": true
+  },
+  "ticks": 779,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 779,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 32,
+  "observed": {
+    "maxStructures": 166,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 10,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 24.579600000000028,
+  "maxTickMs": 207.94400000000007,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 207.94400000000007,
+      "structures": 9,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 160.19170000000008,
+      "structures": 39,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 600,
+      "ms": 153.72690000000011,
+      "structures": 140,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 129.09480000000008,
+      "structures": 18,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 700,
+      "ms": 120.43059999999969,
+      "structures": 157,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 116.85570000000007,
+      "structures": 66,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 110.32559999999967,
+      "structures": 104,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 210,
+      "ms": 51.42139999999995,
+      "structures": 19,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 10104.3738,
+  "replay": "PASS"
+}

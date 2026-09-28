@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+(async()=>{const {createFogTransition}=await import('../game/src/rendering/fog-transition.mjs'),fade=createFogTransition(),vis=new Uint8Array([1,0]);
+assert.deepEqual(Array.from(fade.update(vis,0)),[0,255]);vis[0]=0;
+assert.equal(fade.update(vis,1)[0],0);
+const halfway=fade.update(vis,11)[0];assert.ok(halfway>100&&halfway<150);
+assert.equal(fade.update(vis,11)[0],halfway,'paused frames do not advance fog');
+assert.equal(fade.update(vis,21)[0],255);
+vis[0]=1;assert.equal(fade.update(vis,22)[0],0,'reacquisition clears immediately');
+vis[0]=0;fade.update(vis,23);fade.reset();assert.equal(fade.update(vis,0)[0],255,'reset clears visual history');
+assert.equal(fade.update(null,1),null);
+assert.deepEqual(Array.from(vis),[0,0],'presentation never mutates visibility');
+console.log('Fog fade timing, pause, reacquisition and reset PASS');
+})().catch(e=>{console.error(e);process.exitCode=1;});

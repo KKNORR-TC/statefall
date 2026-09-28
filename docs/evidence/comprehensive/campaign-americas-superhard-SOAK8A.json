@@ -1,0 +1,48 @@
+{
+  "name": "campaign-americas-superhard-SOAK8A",
+  "options": {
+    "map": "americas",
+    "diff": "superhard",
+    "seed": "SOAK8A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "risky": true
+  },
+  "ticks": 250,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 250,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 14,
+  "observed": {
+    "maxStructures": 24,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 6,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 6.457899999999995,
+  "maxTickMs": 163.0059,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 163.0059,
+      "structures": 12,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 101.42629999999997,
+      "structures": 23,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 1936.7453999999998,
+  "replay": "PASS"
+}

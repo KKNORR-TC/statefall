@@ -74,9 +74,9 @@ export function createMatchFlow({
   function draftStep(){
     if(!draft.draft) return;
     const player=draft.draft.order[draft.draft.idx];
-    if(player===getMe()) return;
     const free=players.filter(value=>value.kind==='neutral'&&value.alive&&value.tiles>=120);
     if(!free.length){ draftAdvance(); return; }
+    if(player===getMe()) return;
     let country=null;
     if(player.tiles>0){
       const {r}=borderOwners(player);

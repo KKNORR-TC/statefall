@@ -39,8 +39,8 @@ export function createLandCombatSystem({
   }
   function maxTroops(p){ if(p.kind==='neutral') return 60+p.tiles*0.15; return 120+p.tiles*0.34+p.cities*400; }
   function density(p){ return p.troops/Math.max(1,p.tiles); }
-  const gOn=(...args)=>garrison.gOn(...args),areaById=(...args)=>garrison.areaById(...args),areaAt=(...args)=>garrison.areaAt(...args),areaTouching=(...args)=>garrison.areaTouching(...args);
-  const syncTroops=(...args)=>garrison.syncTroops(...args),addTroopsAt=(...args)=>garrison.addTroopsAt(...args),takeTroopsFrom=(...args)=>garrison.takeTroopsFrom(...args),loseTroopsAt=(...args)=>garrison.loseTroopsAt(...args),densityAt=(...args)=>garrison.densityAt(...args);
+  const gOn=p=>garrison.gOn(p),areaById=id=>garrison.areaById(id),areaAt=t=>garrison.areaAt(t),areaTouching=(p,target)=>garrison.areaTouching(p,target);
+  const syncTroops=p=>garrison.syncTroops(p),addTroopsAt=(p,t,n)=>garrison.addTroopsAt(p,t,n),takeTroopsFrom=(p,a,n)=>garrison.takeTroopsFrom(p,a,n),loseTroopsAt=(p,t,n,deferSync,localArea)=>garrison.loseTroopsAt(p,t,n,deferSync,localArea),densityAt=(p,t)=>garrison.densityAt(p,t);
   function frontierOf(att,target,areaId){
     const f=new Set();
     for(let y=0;y<H;y++)for(let x=0;x<W;x++){
@@ -66,12 +66,12 @@ export function createLandCombatSystem({
     if(p===getMe()) sound('attack');
     return true;
   }
-  function tileCost(a,def,t){
-    const dloc=(def&&t!=null&&gOn(def))?densityAt(def,t):null;
+  function tileCost(a,def,t,forts,localDensity){
+    const dloc=localDensity!==undefined?localDensity:(def&&t!=null&&gOn(def))?densityAt(def,t):null;
     const terr=t!=null?0.65+0.7*rough[t]:1;
     if(def==null) return 0.38*terr;
     const d=Math.min(8,dloc!=null?dloc:density(def));
-    return terr*(def.kind==='neutral'?0.3+d*1.2:0.38+d*2.8)*(a.naval?1.4:1)*(players[a.owner].kind==='neutral'?1.5:1)*(t!=null&&shelled[t]>clock.tickN?constants.suppressCost:(t!=null?mechanics.fortMult(t,def.id):1));
+    return terr*(def.kind==='neutral'?0.3+d*1.2:0.38+d*2.8)*(a.naval?1.4:1)*(players[a.owner].kind==='neutral'?1.5:1)*(t!=null&&shelled[t]>clock.tickN?constants.suppressCost:(t!=null?(forts===undefined?mechanics.fortMult(t,def.id):forts?Math.min(64,Math.pow(2,forts)):1):1));
   }
   function absorbRemnant(def,p,force,front){
     if(!force&&(def===getMe()||def.tiles>=25)) return; if(def.tiles<=0||!def.alive) return;
@@ -86,41 +86,53 @@ export function createLandCombatSystem({
     mechanics.structCounts(def);
   }
   function stepAttacks(){
+    const fortStack=mechanics.combatFortQuery?mechanics.combatFortQuery():mechanics.fortStack,localPlayer=getMe();
     for(const a of attacks){
       a.age++;
-      const p=players[a.owner],def=a.target>=0?players[a.target]:null;
+      const p=players[a.owner],def=a.target>=0?players[a.target]:null,defGarrison=!!def&&gOn(def);
       if(!p.alive){ a.dead=true; continue; }
       const unit=tileCost(a,def,null),strength=a.troops/Math.max(1,a.front.size*unit);
       const pace=Math.min(3,Math.max(0.25,0.3+0.4*Math.sqrt(strength)));
       const take=Math.max(1,Math.ceil(a.front.size*0.22*pace));
-      let n=0;
+      // Local losses do not read the national total. Preserve the original ordered
+      // sum before a global fallback read and before leaving this attack.
+      let n=0,needsTroopSync=false;
       const it=Array.from(a.front);
-      for(let i=0;i<it.length;i++){ const j=i+Math.floor(random()*(it.length-i)); [it[i],it[j]]=[it[j],it[i]]; }
+      for(let i=0;i<it.length;i++){ const j=i+Math.floor(random()*(it.length-i)); const swap=it[i];it[i]=it[j];it[j]=swap; }
       for(const t of it){
         if(n>=take) break;
-        { const x=t%W,y=(t-x)/W; let k=0; for(const [dx,dy] of N4){ if(inb(x+dx,y+dy)&&owner[idx(x+dx,y+dy)]===p.id) k++; } if(k===0&&a.took){ a.front.delete(t); continue; } if(k===1&&a.took&&random()<0.4) continue; }
+        const x=t%W,y=(t-x)/W;
+        { let k=0;if(x<W-1&&owner[t+1]===p.id)k++;if(x>0&&owner[t-1]===p.id)k++;if(y<H-1&&owner[t+W]===p.id)k++;if(y>0&&owner[t-W]===p.id)k++; if(k===0&&a.took){ a.front.delete(t); continue; } if(k===1&&a.took&&random()<0.4) continue; }
         a.front.delete(t);
         if(owner[t]!==a.target||!land[t]) continue;
-        let cost=def?tileCost(a,def,t):0;
-        if(def){ const pool=gOn(def)?(areaAt(t)?areaAt(t).troops:def.troops):def.troops; const base=0.38*(0.65+0.7*rough[t]); const cap=base+Math.max(0,pool)*1.5/Math.max(1,a.front.size); cost=Math.min(cost,Math.max(base,cap)); if(def.kind!=='neutral'&&!(shelled[t]>clock.tickN)){ const forts=mechanics.fortStack(t,def.id); if(forts) cost+=constants.wallToll*Math.pow(2,forts-1); } }
+        const localGarrison=defGarrison?areaAt(t):null;
+        if(needsTroopSync&&!localGarrison){ syncTroops(def); needsTroopSync=false; }
+        const tileForts=def&&!(shelled[t]>clock.tickN)?fortStack(t,def.id):undefined;
+        const localDensity=defGarrison?(def.areas&&localGarrison?localGarrison.troops/Math.max(1,localGarrison.tiles):density(def)):undefined;
+        let cost=def?tileCost(a,def,t,tileForts,localDensity):0;
+        if(def){ const pool=defGarrison?(localGarrison?localGarrison.troops:def.troops):def.troops; const base=0.38*(0.65+0.7*rough[t]); const cap=base+Math.max(0,pool)*1.5/Math.max(1,a.front.size); cost=Math.min(cost,Math.max(base,cap)); if(def.kind!=='neutral'&&!(shelled[t]>clock.tickN)){ const forts=tileForts; if(forts) cost+=constants.wallToll*Math.pow(2,forts-1); } }
         if(a.troops<cost){ a.dead=true; break; }
         a.troops-=cost; a.spent=(a.spent||0)+cost;
-        if(def){ if(gOn(def)) loseTroopsAt(def,t,cost*0.55); else def.troops=Math.max(0,def.troops-cost*0.55); if(def.kind==='neutral'&&p.kind!=='neutral'){ def.grudge[p.id]=clock.tickN; if(!diplomacy.isProvokedBy(def,p.id,1)) def.warned=false; } }
-        setOwner(t,p.id); n++; a.took=(a.took||0)+1; tileCaptured(t,p); if(def) diplomacy.markHostile(p.id,def.id); if(def===getMe()) sound('invaded');
+        if(def){ if(defGarrison){ const defer=!!localGarrison&&!!def.areas?.length;loseTroopsAt(def,t,cost*0.55,defer,localGarrison);if(defer)needsTroopSync=true; } else def.troops=Math.max(0,def.troops-cost*0.55); if(def.kind==='neutral'&&p.kind!=='neutral'){ def.grudge[p.id]=clock.tickN; if(!diplomacy.isProvokedBy(def,p.id,1)) def.warned=false; } }
+        setOwner(t,p.id); n++; a.took=(a.took||0)+1; tileCaptured(t,p); if(def&&n===1) diplomacy.markHostile(p.id,def.id); if(def===localPlayer) sound('invaded');
         if(struct[t]) mechanics.captureStructure(t,p);
-        const x=t%W,y=(t-x)/W;
-        for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const m=idx(x+dx,y+dy); if(land[m]&&owner[m]===a.target) a.front.add(m); }
+        // Preserve east/west/south/north insertion order without a branch-heavy loop.
+        if(x<W-1&&land[t+1]&&owner[t+1]===a.target)a.front.add(t+1);
+        if(x>0&&land[t-1]&&owner[t-1]===a.target)a.front.add(t-1);
+        if(y<H-1&&land[t+W]&&owner[t+W]===a.target)a.front.add(t+W);
+        if(y>0&&land[t-W]&&owner[t-W]===a.target)a.front.add(t-W);
       }
+      if(needsTroopSync) syncTroops(def);
       if(a.front.size===0) a.dead=true;
-      if(def&&def.alive&&def.tiles>0&&n>0&&(def.tiles<25||def.troops<1)){ if(def.troops<1&&def.tiles>=25) log(`${def.name} has no army left — ${p.name} takes the rest.`,p===getMe()||def===getMe()); absorbRemnant(def,p,def.troops<1,a.front); }
+      if(def&&def.alive&&def.tiles>0&&n>0&&(def.tiles<25||def.troops<1)){ if(def.troops<1&&def.tiles>=25) log(`${def.name} has no army left — ${p.name} takes the rest.`,p===localPlayer||def===localPlayer); absorbRemnant(def,p,def.troops<1,a.front); }
       if(def&&def.tiles<=0&&def.alive){
         def.alive=false;
-        if(p===getMe()){ sound('conquered'); getMe().kills=(getMe().kills||0)+1; conquest(def); }
-        if(def===getMe()&&p.kind!=='neutral') fell(p);
+        if(p===localPlayer){ sound('conquered'); localPlayer.kills=(localPlayer.kills||0)+1; conquest(def); }
+        if(def===localPlayer&&p.kind!=='neutral') fell(p);
         if(def.kind!=='neutral'){ def.killedBy=p.id; def.diedAt=clock.tickN; badge(def,p); }
-        if(def.kind==='neutral'&&p.kind!=='neutral'){ const early=1+(constants.conquestEarly-1)*Math.max(0,1-clock.tickN/constants.conquestEarlyTicks); const g=Math.round(a.startTiles*constants.conquestGold*early); p.gold+=g; if(p===getMe()) plunder(def,g,early); }
+        if(def.kind==='neutral'&&p.kind!=='neutral'){ const early=1+(constants.conquestEarly-1)*Math.max(0,1-clock.tickN/constants.conquestEarlyTicks); const g=Math.round(a.startTiles*constants.conquestGold*early); p.gold+=g; if(p===localPlayer) plunder(def,g,early); }
         else if(def.kind!=='neutral'&&p.kind!=='neutral'){ const g=Math.floor(def.gold); def.gold=0; if(g>0){ p.gold+=g; treasury(p,def,g); } }
-        log(p.kind==='neutral'?`${def.name} overextended and was conquered by ${p.name}.`:`${p.name} wiped out ${def.name}.`,p===getMe()||def===getMe());
+        log(p.kind==='neutral'?`${def.name} overextended and was conquered by ${p.name}.`:`${p.name} wiped out ${def.name}.`,p===localPlayer||def===localPlayer);
       }
     }
     engineState.retainActors('attacks',a=>{ if(a.dead){ const p=players[a.owner]; const back=Math.max(0,a.troops-(a.target<0?0:(a.spent||0)*0.1)); if(gOn(p)){ const ar=a.origin!=null?areaById(a.origin):null; if(ar&&ar.owner===p.id){ ar.troops+=back; syncTroops(p); } else addTroopsAt(p,a.landAt!=null&&owner[a.landAt]===p.id?a.landAt:null,back); } else p.troops+=back; return false; } return true; });

@@ -1,3 +1,4 @@
+import * as portableMath from "../strict-math.mjs";
 const N4=[[1,0],[-1,0],[0,1],[0,-1]];
 const noop=()=>{};
 
@@ -12,7 +13,28 @@ export function createLogisticsSystem({
   const log=effects.log||noop;
 
   function gOn(p){ return settings.garrison&&p&&p.kind!=='neutral'; }
-  function areaById(id){ for(const p of players){ if(!p.areas) continue; for(const a of p.areas) if(a.id===id) return a; } return null; }
+  // Derived lookup only; authoritative area objects remain the source of truth.
+  const areaIndex=new Map(); let indexedAreaBuffer;
+  function indexAreas(){
+    areaIndex.clear(); indexedAreaBuffer=garrison.areaOf;
+    for(let playerIndex=0;playerIndex<players.length;playerIndex++){
+      const player=players[playerIndex],areas=player.areas;
+      if(!areas)continue;
+      for(let index=0;index<areas.length;index++){
+        const area=areas[index],id=area.id;
+        if(!areaIndex.has(id))areaIndex.set(id,{area,player,playerIndex,areas,index});
+      }
+    }
+  }
+  function areaById(id){
+    let entry=areaIndex.get(id);
+    if(indexedAreaBuffer!==garrison.areaOf||!entry||
+      players[entry.playerIndex]!==entry.player||entry.player.areas!==entry.areas||
+      entry.areas[entry.index]!==entry.area||entry.area.id!==id){
+      indexAreas();entry=areaIndex.get(id);
+    }
+    return entry?entry.area:null;
+  }
   function areaAt(t){ if(!settings.garrison||!garrison.areaOf||t<0||garrison.areaOf[t]<0) return null; return areaById(garrison.areaOf[t]); }
   function areaTouching(p,target){
     const count={}; for(let y=0;y<H;y++)for(let x=0;x<W;x++){ const t=idx(x,y); if(owner[t]!==p.id) continue; const id=garrison.areaOf[t]; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const n=idx(x+dx,y+dy); if(land[n]&&owner[n]===target){ count[id]=(count[id]||0)+1; break; } } }
@@ -21,16 +43,24 @@ export function createLogisticsSystem({
   function syncTroops(p){ if(gOn(p)&&p.areas) p.troops=p.areas.reduce((s,a)=>s+a.troops,0); }
   function addTroopsAt(p,t,n){ if(!gOn(p)||!p.areas||!p.areas.length){ p.troops+=n; return; } const a=(t!=null&&areaAt(t))||p.areas[0]; if(a.owner!==p.id){ p.areas[0].troops+=n; } else a.troops+=n; syncTroops(p); }
   function takeTroopsFrom(p,a,n){ if(!gOn(p)||!a){ const k=Math.min(n,p.troops); p.troops-=k; return k; } const k=Math.min(n,a.troops); a.troops-=k; syncTroops(p); return k; }
-  function loseTroopsAt(p,t,n){ if(!gOn(p)||!p.areas||!p.areas.length){ p.troops=Math.max(0,p.troops-n); return; } const a=areaAt(t)||p.areas[0]; a.troops=Math.max(0,a.troops-n); syncTroops(p); }
+  function loseTroopsAt(p,t,n,deferSync=false,localArea){ if(!gOn(p)||!p.areas||!p.areas.length){ p.troops=Math.max(0,p.troops-n); return; } const a=(localArea===undefined?areaAt(t):localArea)||p.areas[0]; a.troops=Math.max(0,a.troops-n); if(!deferSync) syncTroops(p); }
   function densityAt(p,t){ if(!gOn(p)||!p.areas) return landCombat.density(p); const a=areaAt(t); return a?a.troops/Math.max(1,a.tiles):landCombat.density(p); }
 
   function rebuildAreas(){
     if(!settings.garrison) return; if(!garrison.areaOf) garrison.areaOf=new Int32Array(W*H).fill(-1);
+    const previousAreaOf=garrison.areaOf;
     const old={}; for(const p of players){ if(!gOn(p)||!p.areas) continue; for(const a of p.areas) old[a.id]=a; }
     const seen=new Uint8Array(W*H),q=new Int32Array(W*H),newAreaOf=new Int32Array(W*H).fill(-1),usedIds=new Set();
+    // Bucket seeds once in tile order; player and flood-fill order remain unchanged.
+    const firstOwned=[],lastOwned=[],nextOwned=new Int32Array(W*H);
+    for(const p of players) if(gOn(p)){ firstOwned[p.id]=-1;lastOwned[p.id]=-1; }
+    for(let t=0;t<W*H;t++){ const id=owner[t];if(id<0||firstOwned[id]===undefined)continue;
+      if(lastOwned[id]>=0)nextOwned[lastOwned[id]]=t;else firstOwned[id]=t;
+      lastOwned[id]=t;nextOwned[t]=-1;
+    }
     for(const p of players){ if(!gOn(p)) continue; const areas=[];
-      for(let t0=0;t0<W*H;t0++){ if(owner[t0]!==p.id||seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; const tally={}; let n=0,sx=0,sy=0; const id=garrison.nextAreaId++;
-        while(h<tl){ const c=q[h++]; n++; sx+=c%W; sy+=(c-c%W)/W; newAreaOf[c]=id; const o=garrison.areaOf[c]; if(o>=0) tally[o]=(tally[o]||0)+1; const x=c%W,y=(c-x)/W; for(const [dx,dy] of N4){ if(!inb(x+dx,y+dy)) continue; const m=idx(x+dx,y+dy); if(!seen[m]&&owner[m]===p.id){ seen[m]=1; q[tl++]=m; } } }
+      for(let t0=firstOwned[p.id];t0>=0;t0=nextOwned[t0]){ if(seen[t0]) continue; let h=0,tl=0; q[tl++]=t0; seen[t0]=1; const tally={}; let n=0,sx=0,sy=0; const id=garrison.nextAreaId++;
+        while(h<tl){ const c=q[h++]; n++; sx+=c%W; sy+=(c-c%W)/W; newAreaOf[c]=id; const o=previousAreaOf[c]; if(o>=0) tally[o]=(tally[o]||0)+1; const x=c%W,y=(c-x)/W; for(let direction=0;direction<4;direction++){ if(direction===0?x===W-1:direction===1?x===0:direction===2?y===H-1:y===0) continue; const m=direction===0?c+1:direction===1?c-1:direction===2?c+W:c-W; if(!seen[m]&&owner[m]===p.id){ seen[m]=1; q[tl++]=m; } } }
         let troops=0,bestOld=-1,bestN=0; for(const k in tally){ const oa=old[k]; if(oa) troops+=oa.troops*tally[k]/Math.max(1,oa.tiles); if(tally[k]>bestN&&old[k]&&old[k].owner===p.id){ bestN=tally[k]; bestOld=+k; } }
         let useId=id; if(bestOld>=0&&!usedIds.has(bestOld)){ useId=bestOld; garrison.nextAreaId--; } usedIds.add(useId); for(let i=0;i<tl;i++) newAreaOf[q[i]]=useId;
         areas.push({id:useId,owner:p.id,tiles:n,troops,cx:sx/n,cy:sy/n,coast:false}); }
@@ -38,7 +68,7 @@ export function createLogisticsSystem({
       const have=areas.reduce((s,a)=>s+a.troops,0); if(areas.length&&p.troops>have+0.5) areas[0].troops+=p.troops-have;
       for(const a of areas) a.troops=Math.max(0,a.troops); p.areas=areas; p.troops=areas.reduce((s,a)=>s+a.troops,0); }
     garrison.areaOf=newAreaOf;
-    for(let t=0;t<W*H;t+=2) if(garrison.areaOf[t]>=0&&land[t]&&landCombat.isCoast(t)){ const a=areaById(garrison.areaOf[t]); if(a) a.coast=true; }
+    for(let t=0;t<W*H;t+=2) if(newAreaOf[t]>=0&&land[t]&&landCombat.isCoast(t)){ const a=areaById(newAreaOf[t]); if(a) a.coast=true; }
   }
 
   function areaThreats(p){
@@ -69,10 +99,10 @@ export function createLogisticsSystem({
   function stepTrucks(){
     for(const tr of trucks){ const p=players[tr.owner];
       if(!structures.includes(tr.target)||!structures.includes(tr.home)){ tr.dead=true; continue; }
-      const drive=()=>{ tr.pos+=truck.speed; const i=Math.min(tr.path.length-1,Math.floor(tr.pos)),t=tr.path[i]; if(owner[t]!==p.id){ tr.dead=true; if(p===getMe()) log('A repair truck was lost on captured ground.',true); return false; } const nx=t%W+.5,ny=(t-t%W)/W+.5; if(Math.abs(nx-tr.x)+Math.abs(ny-tr.y)>0.01) tr.hdg=Math.atan2(ny-tr.y,nx-tr.x); tr.x=nx; tr.y=ny; return tr.pos>=tr.path.length-1; };
+      const drive=()=>{ tr.pos+=truck.speed; const i=Math.min(tr.path.length-1,Math.floor(tr.pos)),t=tr.path[i]; if(owner[t]!==p.id){ tr.dead=true; if(p===getMe()) log('A repair truck was lost on captured ground.',true); return false; } const nx=t%W+.5,ny=(t-t%W)/W+.5; if(Math.abs(nx-tr.x)+Math.abs(ny-tr.y)>0.01) tr.hdg=portableMath.atan2(ny-tr.y,nx-tr.x); tr.x=nx; tr.y=ny; return tr.pos>=tr.path.length-1; };
       const goHome=()=>{ tr.state='home'; const back=landPath(p,tr.target.t,tr.home.t); if(back){ tr.path=back; tr.pos=0; } else tr.dead=true; };
       if(tr.state==='out'){ if(drive()){ tr.state='work'; tr.workAt=clock.tickN+truck.repairTicks; } }
-      else if(tr.state==='work'){ if(repairNeed(tr.target)<=0){ goHome; continue; } if(tr.target.flash&&tr.target.flash+150>clock.tickN) tr.workAt=Math.max(tr.workAt,clock.tickN+truck.repairTicks); if(tr.workAt<=clock.tickN){ if(p.gold<truck.costPip){ goHome; continue; } p.gold-=truck.costPip; repairOne(tr.target); tr.workAt=clock.tickN+truck.repairTicks; if(repairNeed(tr.target)<=0&&p===getMe()) log(`Repair truck restored the ${mechanics.structureLabel(tr.target.type).toLowerCase()}.`,true); } }
+      else if(tr.state==='work'){ if(repairNeed(tr.target)<=0){ goHome(); continue; } if(tr.target.flash&&tr.target.flash+150>clock.tickN) tr.workAt=Math.max(tr.workAt,clock.tickN+truck.repairTicks); if(tr.workAt<=clock.tickN){ if(p.gold<truck.costPip){ goHome(); continue; } p.gold-=truck.costPip; repairOne(tr.target); tr.workAt=clock.tickN+truck.repairTicks; if(repairNeed(tr.target)<=0&&p===getMe()) log(`Repair truck restored the ${mechanics.structureLabel(tr.target.type).toLowerCase()}.`,true); } }
       else if(tr.state==='home'){ if(drive()) tr.dead=true; }
     }
     engineState.retainActors('trucks',value=>!value.dead&&players[value.owner].alive);

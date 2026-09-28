@@ -1,0 +1,198 @@
+{
+  "generated": "2026-09-27T11:46:35.725Z",
+  "status": "PASS",
+  "simulationFingerprint": "590604a32c1ec5d9548e79a86965ed8834f8fa8ff9f984f70eba8ee03d1db17a",
+  "sourceDigest": "faddf21319fbedf7b3240d37b870ab4f442481311b20305961931b3c86c05955",
+  "sourceFiles": 131,
+  "buildManifestSha256": "a48d6e3e289ec1fc1c08cce3951760d859e6c1396a01f41785c6b50758029019",
+  "matrix": {
+    "passed": 1152,
+    "expected": 1152
+  },
+  "campaigns": {
+    "passed": 84,
+    "expected": 84
+  },
+  "optimizationParity": {
+    "referenceFingerprint": "ff1d815d909c6dd1ef6c189f9ddfeed3f396123466b0f3909b79be1d463fc8bb",
+    "compared": 1152,
+    "missingReference": [],
+    "mismatches": []
+  },
+  "lateGame": {
+    "atoll": {
+      "pass": true,
+      "frames": 715,
+      "ticks": 120,
+      "p95Ms": 16.700000000004366,
+      "maxMs": 116.59999999999854
+    },
+    "europe": {
+      "pass": true,
+      "frames": 710,
+      "ticks": 120,
+      "p95Ms": 16.799999999999272,
+      "maxMs": 133.40000000000146
+    },
+    "africa": {
+      "pass": true,
+      "frames": 650,
+      "ticks": 120,
+      "p95Ms": 33.30000000000291,
+      "maxMs": 166.70000000001164
+    },
+    "mideast": {
+      "pass": true,
+      "frames": 382,
+      "ticks": 119,
+      "p95Ms": 66.80000000001746,
+      "maxMs": 233.39999999999418
+    }
+  },
+  "browserCanvasBuild": {
+    "passed": 51,
+    "projectSpecificSkips": 27
+  },
+  "gates": [
+    {
+      "name": "late-atoll",
+      "status": "PASS",
+      "started": "2026-09-27T11:13:57.018Z",
+      "finished": "2026-09-27T11:14:36.399Z"
+    },
+    {
+      "name": "late-europe",
+      "status": "PASS",
+      "started": "2026-09-27T11:14:36.399Z",
+      "finished": "2026-09-27T11:15:17.713Z"
+    },
+    {
+      "name": "late-africa",
+      "status": "PASS",
+      "started": "2026-09-27T11:15:17.713Z",
+      "finished": "2026-09-27T11:16:55.695Z"
+    },
+    {
+      "name": "attack",
+      "status": "PASS",
+      "started": "2026-09-27T11:16:55.695Z",
+      "finished": "2026-09-27T11:17:53.625Z"
+    },
+    {
+      "name": "credits-perf",
+      "status": "PASS",
+      "started": "2026-09-27T11:17:53.625Z",
+      "finished": "2026-09-27T11:18:03.722Z"
+    },
+    {
+      "name": "pan",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:03.723Z",
+      "finished": "2026-09-27T11:18:08.446Z"
+    },
+    {
+      "name": "sprite-cache",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:08.447Z",
+      "finished": "2026-09-27T11:18:09.782Z"
+    },
+    {
+      "name": "roster-browser",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:09.783Z",
+      "finished": "2026-09-27T11:18:36.480Z"
+    },
+    {
+      "name": "menus",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:36.481Z",
+      "finished": "2026-09-27T11:18:40.354Z"
+    },
+    {
+      "name": "fog",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:40.354Z",
+      "finished": "2026-09-27T11:18:44.963Z"
+    },
+    {
+      "name": "credits-replay",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:44.963Z",
+      "finished": "2026-09-27T11:18:51.937Z"
+    },
+    {
+      "name": "fronts",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:51.937Z",
+      "finished": "2026-09-27T11:18:59.323Z"
+    },
+    {
+      "name": "worker",
+      "status": "PASS",
+      "started": "2026-09-27T11:18:59.323Z",
+      "finished": "2026-09-27T11:19:03.404Z"
+    },
+    {
+      "name": "sprite-culling",
+      "status": "PASS",
+      "started": "2026-09-27T11:19:03.405Z",
+      "finished": "2026-09-27T11:19:08.222Z"
+    },
+    {
+      "name": "catchup-timer",
+      "status": "PASS",
+      "started": "2026-09-27T11:19:08.223Z",
+      "finished": "2026-09-27T11:19:14.934Z"
+    },
+    {
+      "name": "heavy-africa",
+      "status": "PASS",
+      "started": "2026-09-27T11:19:14.935Z",
+      "finished": "2026-09-27T11:22:36.151Z"
+    },
+    {
+      "name": "heavy-mideast",
+      "status": "PASS",
+      "started": "2026-09-27T11:22:36.151Z",
+      "finished": "2026-09-27T11:28:00.959Z"
+    },
+    {
+      "name": "matrix",
+      "status": "PASS",
+      "started": "2026-09-27T11:28:00.959Z",
+      "finished": "2026-09-27T11:39:50.186Z"
+    },
+    {
+      "name": "soaks",
+      "status": "PASS",
+      "started": "2026-09-27T11:28:00.965Z",
+      "finished": "2026-09-27T11:43:13.734Z"
+    },
+    {
+      "name": "verify-fast",
+      "status": "PASS",
+      "started": "2026-09-27T11:28:00.971Z",
+      "finished": "2026-09-27T11:29:56.966Z"
+    },
+    {
+      "name": "build-repro",
+      "status": "PASS",
+      "started": "2026-09-27T11:28:00.984Z",
+      "finished": "2026-09-27T11:28:09.276Z"
+    },
+    {
+      "name": "canvas-build",
+      "status": "PASS",
+      "started": "2026-09-27T11:43:13.735Z",
+      "finished": "2026-09-27T11:45:22.501Z"
+    },
+    {
+      "name": "summary",
+      "status": "PASS",
+      "started": "2026-09-27T11:45:22.501Z",
+      "finished": "2026-09-27T11:45:22.604Z"
+    }
+  ],
+  "scope": "12 maps x 6 difficulties x 16 named profiles; 84 extended campaigns with explicit actual durations. Not exhaustive seeds, binary-option combinations, hardware, or arbitrary action sequences.",
+  "release": "Local development qualification only. No production access, push, deployment or Docker artifact release."
+}

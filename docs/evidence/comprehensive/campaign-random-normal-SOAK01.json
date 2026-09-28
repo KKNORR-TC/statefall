@@ -1,0 +1,25 @@
+{
+  "name": "campaign-random-normal-SOAK01",
+  "options": {
+    "map": "random",
+    "diff": "normal",
+    "seed": "SOAK01",
+    "countryIdx": 0,
+    "ticks": 3600
+  },
+  "ticks": 3600,
+  "ended": false,
+  "alive": true,
+  "commands": 52,
+  "observed": {
+    "maxStructures": 153,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 8,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 4.418300000000272,
+  "maxTickMs": 124.98319999999967,
+  "elapsedMs": 16715.111,
+  "replay": "PASS"
+}

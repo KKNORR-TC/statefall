@@ -1,0 +1,56 @@
+{
+  "name": "campaign-americas-normal-SOAK8A",
+  "options": {
+    "map": "americas",
+    "diff": "normal",
+    "seed": "SOAK8A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "fog": true,
+    "garrison": true
+  },
+  "ticks": 355,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 355,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 15,
+  "observed": {
+    "maxStructures": 13,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 6,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 9.333799999999997,
+  "maxTickMs": 173.54399999999998,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 173.54399999999998,
+      "structures": 8,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 127.86789999999996,
+      "structures": 12,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 119.31419999999991,
+      "structures": 10,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3226.3867,
+  "replay": "PASS"
+}

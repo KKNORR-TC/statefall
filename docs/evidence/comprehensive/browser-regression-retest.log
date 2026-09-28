@@ -1,0 +1,24 @@
+
+Running 7 tests using 1 worker
+
+
+
+(node:26244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/7] [chromium-desktop] › tests\browser\pixi-global-effects.spec.js:43:1 › production renderPass retains one legacy fog decision for air-wreck smoke and replay
+[2/7] [chromium-desktop] › tests\browser\pixi-global-effects.spec.js:45:1 › real effect adapters feed all feasible categories without simulation mutation
+[3/7] [chromium-desktop] › tests\browser\pixi-global-effects.spec.js:47:1 › global effects ownership requires floating text and reset recovery is clean
+[4/7] [chromium-desktop] › tests\browser\pixi-global-effects.spec.js:49:1 › 1800-frame all-category color/cull/pan/quality/motion churn plateaus within submission ceilings
+[chromium-desktop] › tests\browser\pixi-global-effects.spec.js:49:1 › 1800-frame all-category color/cull/pan/quality/motion churn plateaus within submission ceilings
+pixi E13 global effects churn: mean 1.501 ms, p95 3.500 ms, p99 5.400 ms, max 395.300 ms
+
+[5/7] [chromium-desktop] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology final-render uses frame-start world camera and one late advancement
+[6/7] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+[chromium-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+pixi E11 support churn: mean 3.504 ms, p95 4.400 ms, p99 19.400 ms, max 889.800 ms
+
+[7/7] [chromium-desktop] › tests\browser\pixi-warships.spec.js:91:1 › 1800-frame class, color, state, selection, fire, HP, wake, cull, and reorder churn plateaus
+[chromium-desktop] › tests\browser\pixi-warships.spec.js:91:1 › 1800-frame class, color, state, selection, fire, HP, wake, cull, and reorder churn plateaus
+pixi E6 warship churn (local synchronous CPU/render-submission; excludes GPU, compositor, display presentation, and input latency): mean 4.300 ms, p95 5.000 ms, p99 21.000 ms, max 2214.700 ms; heap advisory-only: browser GC timing and performance.memory are nondeterministic; GPU unknown: Pixi/WebGL does not expose reliable allocation bytes
+
+  7 passed (49.3s)

@@ -2,7 +2,7 @@ import {createCamera} from './camera.mjs';
 import {createViewport} from './viewport.mjs';
 import {createRenderer} from './renderer-factory.mjs';
 
-const stage=document.getElementById('stage'),canvas=document.getElementById('map'),camera=createCamera();
+const stage=document.getElementById('stage'),canvas=document.getElementById('map'),camera=createCamera({maxScale:__STATEFALL_DEV_RENDERERS__&&new URLSearchParams(location.search).get('art')==='classic'?28:12});
 let renderer=null;
 const viewport=createViewport({element:stage,canvas,onResize:(next,previous)=>{
   camera.preserveResizeCenter(previous.cssWidth,previous.cssHeight,next.cssWidth,next.cssHeight);

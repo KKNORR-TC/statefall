@@ -1,0 +1,41 @@
+{
+  "scope": "Captured Chromium diagnostics; final pass/fail and timings are in late-game reports.",
+  "before": {
+    "africaCatchupTimeoutMs": 240000,
+    "lastCapturedTick": 1546,
+    "profileSelfMs": {
+      "attackFrontClosePath": 175738
+    },
+    "profileInclusiveMs": {
+      "areaLabels": 64066
+    },
+    "live": {
+      "frames": 44,
+      "elapsedMs": 12108.5,
+      "ticks": 44,
+      "p95Ms": 316.6,
+      "maxMs": 350
+    },
+    "liveProfileSelfMs": {
+      "ownershipClosePath": 7233
+    }
+  },
+  "fixes": [
+    "Fill and clipping paths rely on implicit polygon closure; separate stroked edges are unchanged.",
+    "Sidebar region/direction groups and numbering are computed in one ordered pass."
+  ],
+  "verification": [
+    "Three-engine exact pixel comparison for fronts, coastlines and ownership",
+    "Original sidebar-label reference and 5000-area operation-count regression"
+  ],
+  "middleEastCatchup": {
+    "beforeTimeoutMs": 240000,
+    "beforeTick": 5178,
+    "profileSelfMs": {
+      "canvasFill": 44750,
+      "globalEffectsPainter": 17750,
+      "attackFrontPainter": 6970
+    },
+    "fix": "During modal resume catch-up, keep aging effects and updating progress but defer obscured-world rasterization and sidebar/map refresh until ready."
+  }
+}

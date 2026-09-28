@@ -1,0 +1,1660 @@
+{
+  "at": "2026-09-28T14:15:04.525Z",
+  "head": "09ed1844d046582f696bb4aad5866f3d4d60bb2e",
+  "scope": "Tracked and untracked non-ignored workspace inputs, excluding docs; generated .artifacts and dist are ignored. Existing uncommitted work is intentional and preserved.",
+  "files": [
+    {
+      "path": ".github/workflows/verify.yml",
+      "sha256": "0e8bcbf28a41d804226728f0aa39e0b4d24c2d2527f4113bce17943ed0c20d4c"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "b0c5818ea55bc5d335cf2d3099a9e26abefd27669a7d75333f16d84af99f4b4f"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "d5b43fd07d789ae271eb09ecd0eb3962ba80c2e6c4a1fb49f1643b02ada48ec3"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "245504296805b558eee7d4e394c7f6c2ae658791febd5b4789456756c025cb38"
+    },
+    {
+      "path": "README.md",
+      "sha256": "a7f3b609258c81ce2a474518b46c5be813ecf89daecdde1f1a39b973b8ce2160"
+    },
+    {
+      "path": "game/index.html",
+      "sha256": "6710bbc274b41396dc67beba55c382577ec56776253582841c9f63de9f088672"
+    },
+    {
+      "path": "game/src/audio/audio-state.js",
+      "sha256": "bbb11a609870f80f057504950e8274e481c6042418afd9b63a6a1826ac6a1ff0"
+    },
+    {
+      "path": "game/src/config/build.js",
+      "sha256": "0552501d7326470749964407f08a5512967d6ed046e8c97f61bc35df4c60ecf8"
+    },
+    {
+      "path": "game/src/config/flags.mjs",
+      "sha256": "cb5fa08802c8d63facbc10605d25c286cb841b698d508a89d0c8cb163b06fdff"
+    },
+    {
+      "path": "game/src/config/maps.js",
+      "sha256": "b7be67505207d85576fff310fe26395acdceb7fa0d337056cdc2f24ae266c81e"
+    },
+    {
+      "path": "game/src/config/signing.js",
+      "sha256": "177775c5230a533b7da8dc117da3bc0be174a9449ea3d79d2826f7784b9e2853"
+    },
+    {
+      "path": "game/src/help-contract.mjs",
+      "sha256": "e28b8db03850ba34a6c755c04a37cf8c564e2c475cb25b9d4cde3359719367aa"
+    },
+    {
+      "path": "game/src/help-pages/about.html",
+      "sha256": "d3c8bf79242db6838dcf3bd08453e9796959858566b4e247a5533f5624f41533"
+    },
+    {
+      "path": "game/src/help-pages/about/index.html",
+      "sha256": "d3c8bf79242db6838dcf3bd08453e9796959858566b4e247a5533f5624f41533"
+    },
+    {
+      "path": "game/src/help-pages/air.html",
+      "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+    },
+    {
+      "path": "game/src/help-pages/air/index.html",
+      "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+    },
+    {
+      "path": "game/src/help-pages/basics.html",
+      "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+    },
+    {
+      "path": "game/src/help-pages/basics/index.html",
+      "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+    },
+    {
+      "path": "game/src/help-pages/build.html",
+      "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+    },
+    {
+      "path": "game/src/help-pages/build/index.html",
+      "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+    },
+    {
+      "path": "game/src/help-pages/garrisons.html",
+      "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+    },
+    {
+      "path": "game/src/help-pages/garrisons/index.html",
+      "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+    },
+    {
+      "path": "game/src/help-pages/modes.html",
+      "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+    },
+    {
+      "path": "game/src/help-pages/modes/index.html",
+      "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+    },
+    {
+      "path": "game/src/help-pages/ships.html",
+      "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+    },
+    {
+      "path": "game/src/help-pages/ships/index.html",
+      "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+    },
+    {
+      "path": "game/src/help-pages/systems.html",
+      "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+    },
+    {
+      "path": "game/src/help-pages/systems/index.html",
+      "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+    },
+    {
+      "path": "game/src/help-pages/tabs.json",
+      "sha256": "b2a774d3611bdf64ddec26c915d7220c17615af453b1ab27c6bd750e6e26cac9"
+    },
+    {
+      "path": "game/src/integration/local-platform.js",
+      "sha256": "ef1806aaa7a67df23069ed81c6e5eb4c7884e168e3449ae5282eb381c23fb060"
+    },
+    {
+      "path": "game/src/integration/platform.js",
+      "sha256": "efb0bc262422f2b5b3c2490d081ee7f4ca94cb36b9d8cf64d4c823f274aef608"
+    },
+    {
+      "path": "game/src/integration/wordpress-platform.js",
+      "sha256": "424310cbfed953f11c617bb5a8aef179468d7c2dd5f65d882034ecb5430c365f"
+    },
+    {
+      "path": "game/src/legacy-game.js",
+      "sha256": "5a97f8b033a6aa1cada53c10a9e89a84f7a756820aa24546536f407033875c00"
+    },
+    {
+      "path": "game/src/main.js",
+      "sha256": "3b85fd5afc4cec8fd71358e5b75d08667af795b6cfba47c9db4743802f2430ca"
+    },
+    {
+      "path": "game/src/multiplayer/proof-capability.mjs",
+      "sha256": "c0e686e8234c121fb0f477374ce6e2d2b1e888b9fce0365eceb14fd96378b278"
+    },
+    {
+      "path": "game/src/multiplayer/proof-engine.mjs",
+      "sha256": "7e77a611efcacd233b9c514e2793c99293a0594f5237afe2e73132aed08dd669"
+    },
+    {
+      "path": "game/src/multiplayer/relay-websocket-client.mjs",
+      "sha256": "a74f4a41fb1bbf2f9e13d5026b4f6d9a80ead7ed0e9f5a2291a3bd824ef5dd2f"
+    },
+    {
+      "path": "game/src/multiplayer/relay/lockstep-client.mjs",
+      "sha256": "5f55a80589792790aa7d26efd8e214201e513cf1a2160937e2fc650a9c107563"
+    },
+    {
+      "path": "game/src/multiplayer/relay/room.mjs",
+      "sha256": "1f7380c647e0c8aebad37a3e0ea63b635912fd19ecec45b60817f8d7e4685c7e"
+    },
+    {
+      "path": "game/src/multiplayer/room-configuration.mjs",
+      "sha256": "e28961811a1672fd517590f347e5383aca32c5b7ce3026547018f8c952dddc0d"
+    },
+    {
+      "path": "game/src/rendering/aircraft-layer-model.mjs",
+      "sha256": "e3263b67d228181c61ab3836a99a4bb00b88ba84f7fba9ec270b231db221caa1"
+    },
+    {
+      "path": "game/src/rendering/area-labels.mjs",
+      "sha256": "2414ab44511deb9746a6948593239beddd65fa2a990d400318cbaddf3c892121"
+    },
+    {
+      "path": "game/src/rendering/atlas-manifest.mjs",
+      "sha256": "fb455a24d57aa81ef01a3950ca51805d27f7f68a4d295cde15f8381dbcf291cc"
+    },
+    {
+      "path": "game/src/rendering/camera.mjs",
+      "sha256": "0f200342de05b983c1f0aef6fe6200c624c9b82d46cb14a3a68a353f84bcecae"
+    },
+    {
+      "path": "game/src/rendering/canvas-renderer.mjs",
+      "sha256": "3c7b06154091023e2cf4db85acb357810d6153bfb32a0a5a820a9ba2f01be8a6"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/airfield-level2.png",
+      "sha256": "f926d13cd4f05bfdb6b802fcfda799378350e8a3db15ed9fde0db92c5a120fe1"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/battleship-directions.png",
+      "sha256": "af2bda4d2b9c333637304854d46a9854b0fc3860b9f0f6cf5ec271afb81c3598"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/bomber-directions.png",
+      "sha256": "6d760fbd84e629caf1764f4b79249b215ec796941e512154dee7c9f736a59383"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/carrier-directions.png",
+      "sha256": "5b6fcc352aad4a5016030173ebac23890c688e8b44afa1eac7b92a38f33f72fc"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/cruiser-directions.png",
+      "sha256": "daf59419580bc9aacccb25c405383c6b0ca85a61fafe5734616095de82ff8f58"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/destroyer-directions.png",
+      "sha256": "5a155189d1042e97b5888a5b5acee20925232c6fa988ce40c71855212519d420"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/directional-metadata.json",
+      "sha256": "dc5e01e2e889762b6534df7c2d6b13c214e1c4a33bee6022edae969174ac7a5f"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fighter-directions.png",
+      "sha256": "fcb1f0b75a2b7ac768806e74e16a8a6806fe28596112bee5bcbfa01c23176b4b"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fort-level2.png",
+      "sha256": "d429a5aa35e7e535ac2625733f4fef5e1fc3a09b5be8934f03f2bca6342f9c00"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fort-level3.png",
+      "sha256": "7cf3439f61bf281d73022404fd734972d9357a9d2e79c7393ff5cce41df36b40"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/generated-roster.json",
+      "sha256": "594837ac23505fd7b100d8aee636fe4e6f24ac1a0ae0bee72fba5c0be2803643"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/heavytransport-directions.png",
+      "sha256": "645ded3679730ed65238be9dd0297e68de41dff1f4e4bc20255cbeb7b6769ff1"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/hunter-directions.png",
+      "sha256": "11d0da833ad7dc78c6c67174e45d3de45c73a2eceaca8e760aec3288f07bae57"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/merchant-directions.png",
+      "sha256": "5e823437e875b78747b689fb0ef16b2f461c79ed2223ad2aec495e077dede737"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/port-level2.png",
+      "sha256": "b44347e8b5c72f2b6c7a71deb81d86cad679d25510ec04d22b16094b13083d0c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/privateer-directions.png",
+      "sha256": "a42aa3bdf4d4ca89a3adae2846c73da04f8edebdaca8a715d591573af859bd9c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/rship-directions.png",
+      "sha256": "6549c7c3512c1950d6a5b562ab6e37f82eb2784a954466d19b2ff8192ab60021"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/scout-directions.png",
+      "sha256": "1964cb5764e78e835c006f29b8979714c46e3e173e3754402ec3f477dfaac2d7"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/spy-directions.png",
+      "sha256": "d5a5d867d14edbfc09aa509a1d69ef18b3bca2518e9bcf78603e75b4eecbc397"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/structure-metadata.json",
+      "sha256": "232f9eba48bc0ad5cb039668762defb2d68d115650a585d2d17ee41b01792d0c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/structures-complete.png",
+      "sha256": "45ba61bdf63a7451a09fe12663a2cd5371c6216982c9aecdd899ab6d5dba7a55"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/sub-directions.png",
+      "sha256": "97cc85df9f8abe8e9c0fa9cdc304b925933bfa97c80ce86a82ba41f53633fb55"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/terrain.png",
+      "sha256": "af88715515f5505ff119d4446ee7eee32d396eec33c8d99ed048fa5cb3a7118c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/transport-directions.png",
+      "sha256": "fb3cd1c7c95fbda31883ebc8ede27e65ab88435875d7d0e02b51e8ab1cc7903c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/truck-directions.png",
+      "sha256": "50991a73a8cb645851d8850b41b3abeb3855544eba970f3728b60e2abf2ca595"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/units.png",
+      "sha256": "829137a6340d48e21d4c238bc2701174e74c14841a11d285e622c056e1500ffb"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/upgrade-metadata.json",
+      "sha256": "9a0f6a987b057d75db7b7795fa02f2498d27aca0edd6348db48917135315d473"
+    },
+    {
+      "path": "game/src/rendering/classic-battlefield.mjs",
+      "sha256": "a8ba1aaac20afe3e2baa3ef5a9b09343ad6761830b65e41a4cef9491dade4063"
+    },
+    {
+      "path": "game/src/rendering/classic-terrain-client.mjs",
+      "sha256": "6d040ffb4d34e82ecd6fd267b16bbde99353b9fce4aef70cdcde854dcfa45a7b"
+    },
+    {
+      "path": "game/src/rendering/classic-terrain-worker.mjs",
+      "sha256": "132cff0967ddd05d89a21c019a068086bec907289a9a45e37a843f95c3fde651"
+    },
+    {
+      "path": "game/src/rendering/floating-text-layer-model.mjs",
+      "sha256": "5df07df0a9881041a2ac20838177af64c8a32d38ee9781701d3a0f6d49625db4"
+    },
+    {
+      "path": "game/src/rendering/fog-transition.mjs",
+      "sha256": "9fc4500c9c614f189a893b07a3dad0f7c5760b622aebced6d1158ef00119fe74"
+    },
+    {
+      "path": "game/src/rendering/global-effects-layer-model.mjs",
+      "sha256": "081b87fe3996473cf66c13fac8e8f82a956315d51f28dd1cf533428b1b47a2e7"
+    },
+    {
+      "path": "game/src/rendering/interaction-overlay-layer-model.mjs",
+      "sha256": "d4060d1692e6932c036ff0d908632a8a86a732d157e8557c1cb28927781dd906"
+    },
+    {
+      "path": "game/src/rendering/map-label-layer-model.mjs",
+      "sha256": "2e420eb60cf9372da33e80aff05ed21a11826e2243d1e823e2c270a09b4e60c3"
+    },
+    {
+      "path": "game/src/rendering/missile-layer-model.mjs",
+      "sha256": "eaf04f52a0dec92ca9cd40caaf17646128ea8889f5d5f6ac6120a8ca6a3101c0"
+    },
+    {
+      "path": "game/src/rendering/nation-overlay-layer-model.mjs",
+      "sha256": "fb817467f89726452326a35a130a5eb5eaf65c57c16a3fd32fe9d362d65fceda"
+    },
+    {
+      "path": "game/src/rendering/naval-logistics-model.mjs",
+      "sha256": "7d9ba79a50d38c6e3f1787211688be9cacec8a86c37199672b9363c67262c33c"
+    },
+    {
+      "path": "game/src/rendering/notification-overlay-layer-model.mjs",
+      "sha256": "acd7a62587762227d1b3c4b04e0a7206a36bbe4a1a9599b3f0a6a50f2e4d015b"
+    },
+    {
+      "path": "game/src/rendering/paint-bounds.mjs",
+      "sha256": "fc3f719a0b3f366deaefc79ca99c172eb30c1dafcc68f081ec809c04821bfd36"
+    },
+    {
+      "path": "game/src/rendering/pixi-atlas-registry.mjs",
+      "sha256": "57b529347c804ff9b7133479e6a62b6c2e2785473480114569d78afbb9afe697"
+    },
+    {
+      "path": "game/src/rendering/pixi-hybrid-renderer.mjs",
+      "sha256": "19ebde33861b33ef3b16190c4e24a947e14086d7fb472d8f5f1f54a5ea0c1b9a"
+    },
+    {
+      "path": "game/src/rendering/pre-structure-layer-model.mjs",
+      "sha256": "78fc6656f91604f0ab8df36e1e0decb1b1b4fef956caa0ecf6e13cbb664685d0"
+    },
+    {
+      "path": "game/src/rendering/presentation-step-clock.mjs",
+      "sha256": "bdcc3a8caccdcfe5a9c5e9e3d2b712182fa36e6267345cbc80964f969e992ba8"
+    },
+    {
+      "path": "game/src/rendering/projectile-layer-model.mjs",
+      "sha256": "a0fbaf2bf063fc30967c528947345e8db4e9149e658c7ffb6c98a13babb20452"
+    },
+    {
+      "path": "game/src/rendering/renderer-factory-production.mjs",
+      "sha256": "156f9950e660a70d3cc17019171f3880f61d40c02d1823b61e392154279661c6"
+    },
+    {
+      "path": "game/src/rendering/renderer-factory.mjs",
+      "sha256": "ad700565a58274eb90d951095f12a2d85384794b9f034a9738be2cea2346d553"
+    },
+    {
+      "path": "game/src/rendering/runtime.mjs",
+      "sha256": "cebc283307a748d6cfb8e7d0fc2e9039a392637ae3091d14943befe135f3ff7a"
+    },
+    {
+      "path": "game/src/rendering/structure-layer-model.mjs",
+      "sha256": "3fdb762d3be11eb990ac2ad525a1d91b66dda9eabf61baae4c9c2554bbd48de5"
+    },
+    {
+      "path": "game/src/rendering/support-actor-layer-model.mjs",
+      "sha256": "710165dc0f74f7cd8587a54dd6e2c4ae1fcdac98a056500747889f489cfceda6"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-client.mjs",
+      "sha256": "4edfffde14b72659118087dfcb9c9dfb21b8fc166573ede8ad71bf18d3667240"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-model.mjs",
+      "sha256": "80e49aad20e0c353fd6c6b344dd44aeb60a178139420ac332b02af1e8098e514"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-worker.mjs",
+      "sha256": "76e33493c2eb06eb18bf7e126e99c016767e3d0d351dbec0456a736dbb95854e"
+    },
+    {
+      "path": "game/src/rendering/unit-art-direction.mjs",
+      "sha256": "964ef122496175bce0c11b9b68878020f20d0114db9269cdd43076b265d0f85a"
+    },
+    {
+      "path": "game/src/rendering/viewport.mjs",
+      "sha256": "7fda0f721d8c795eb6c2287eb7b0897d021f41dcce519155339b152e0dae2f84"
+    },
+    {
+      "path": "game/src/rendering/warship-layer-model.mjs",
+      "sha256": "319feb010e113882ba8221d0f6087d3435d21ded325c59243ce2461c6224f871"
+    },
+    {
+      "path": "game/src/rendering/world-annotation-layer-model.mjs",
+      "sha256": "4d5111533fd468c627a944a6d73b4d31242163b3df06620b3dfe676ef353647f"
+    },
+    {
+      "path": "game/src/sim/authoritative-state.mjs",
+      "sha256": "bccb04de82dc48c16f311e36e7d40f661f9ed48039c5fdcfb7b7c4112fcb7be1"
+    },
+    {
+      "path": "game/src/sim/authority-value.mjs",
+      "sha256": "fa4bbf215b55993e5ecbe780e462d2ee55808812e29f596b884e642b33ce3d59"
+    },
+    {
+      "path": "game/src/sim/canonical-typed-cache.mjs",
+      "sha256": "2481a915d23f883a7b8a51de3801ae6d25cd9f638e7e95a3929ebc748a0b186f"
+    },
+    {
+      "path": "game/src/sim/command-router.mjs",
+      "sha256": "70fd8094d9e6429cfbd5980c43c0ecf4da82dadb675aed9dddfe9e6858ebdf63"
+    },
+    {
+      "path": "game/src/sim/command-schema.mjs",
+      "sha256": "76e7f3bd4841a0d29968ff53b8747549a443a32a0c709960309605dcda06aff2"
+    },
+    {
+      "path": "game/src/sim/compatibility-effects.mjs",
+      "sha256": "68ba6bc8be2587427ec50bc47d91de597f2be766f0498f7f61d883a56efbbf14"
+    },
+    {
+      "path": "game/src/sim/configuration-schema.mjs",
+      "sha256": "9c4ee8322e0a9b60740cb4cb8dfab31d0b34765116bf01ddd8d2e7b7d6a36150"
+    },
+    {
+      "path": "game/src/sim/deterministic-runtime.mjs",
+      "sha256": "835e3e0aa58465797b956a249c08354d8bcd3fa8895e62c54e48a0aeab6ff69b"
+    },
+    {
+      "path": "game/src/sim/engine-checkpoint.mjs",
+      "sha256": "2ac0963d5992454a357323517023fb51ad488b602437cf974cb909ed39c2fb0f"
+    },
+    {
+      "path": "game/src/sim/engine.mjs",
+      "sha256": "c590527e807f0f9d5a789786f8832cc74882d784b799319d162d435bc2453bd4"
+    },
+    {
+      "path": "game/src/sim/geometry.mjs",
+      "sha256": "9f3c1d0e73a0dfccf2a6fe2f7a2c7e4fd503d46c73fa8073634288181c683f2d"
+    },
+    {
+      "path": "game/src/sim/graph-codec.mjs",
+      "sha256": "92e14db8f59483a5f3da806b2dc4b96a883273b4f4d9959380484e6a7125be49"
+    },
+    {
+      "path": "game/src/sim/map-generation.mjs",
+      "sha256": "329a3a497ce2e93f060371dba04b98f52c2501ace0c31022f0dfd749e5794615"
+    },
+    {
+      "path": "game/src/sim/match-flow.mjs",
+      "sha256": "7886f4f83a3a40428052bdde5c65bf5fc53d40564803621f657247e65ef2b366"
+    },
+    {
+      "path": "game/src/sim/replay-constraints.json",
+      "sha256": "1a0174ef129b22f489176cac3245f67654318339e7e7d8e6ff30338c2003820e"
+    },
+    {
+      "path": "game/src/sim/replay-schema.mjs",
+      "sha256": "3abbab626eeaba622ce860193072e58711e2c5703972b3b661c91ddb757a87c9"
+    },
+    {
+      "path": "game/src/sim/rollback-copy.mjs",
+      "sha256": "e3e0d8cba75709cdab78013d4eccc7228fea43375f01711468dbe304fdb1b701"
+    },
+    {
+      "path": "game/src/sim/rules.mjs",
+      "sha256": "502872f9e3c284cb1879a8d9f1b600291cbe3f774fe257ec8d4e46ea124d9487"
+    },
+    {
+      "path": "game/src/sim/sha256.mjs",
+      "sha256": "4cf81502519cddcfa7ad21ed749fb1079347546b3b8db1c527ba587d5beae09f"
+    },
+    {
+      "path": "game/src/sim/simulation-ports.mjs",
+      "sha256": "309a8b3bdeed9c0bccde4538f1fab859d61cfc9cc4a8ffe8497a3511a746ed22"
+    },
+    {
+      "path": "game/src/sim/state-oracle.mjs",
+      "sha256": "2fdec9bd092c7f73b7a8c709d7d13f191088b8e6eddb2cbf6baf97bfcbcbb5bf"
+    },
+    {
+      "path": "game/src/sim/state-reset.mjs",
+      "sha256": "68ae5084c809a820b3774facb8c614fbd25b518321dc0f7242dfd31e3f5ca627"
+    },
+    {
+      "path": "game/src/sim/strict-math.mjs",
+      "sha256": "e205e54e83f1043c6280cd88abae77a4b686ef843a8fa239bda1da6da695c1f8"
+    },
+    {
+      "path": "game/src/sim/systems/ai.mjs",
+      "sha256": "287a365ec50d404e27613671bacd7c1d864ca9d249ae325c98fcde0d295eea10"
+    },
+    {
+      "path": "game/src/sim/systems/air.mjs",
+      "sha256": "3b719f7f451f81f25eaa6fd020f74f0650a0c7b1b80c4bb727e4f2c49adf3154"
+    },
+    {
+      "path": "game/src/sim/systems/diplomacy.mjs",
+      "sha256": "11021991330ca567c86404943bb6620d921bd040332b226c9dbb5428001a3f7f"
+    },
+    {
+      "path": "game/src/sim/systems/economy.mjs",
+      "sha256": "22897b1706facd0b916193788219c1ecbfa3cf5df41cb5c925504c2326feb125"
+    },
+    {
+      "path": "game/src/sim/systems/fog.mjs",
+      "sha256": "06dd26fe16f46fd3441d6cfb0814a775d7280942a96c12e1a04d0d874e466c99"
+    },
+    {
+      "path": "game/src/sim/systems/land-combat.mjs",
+      "sha256": "9fba7918e5e3dd574463b532524faf2442effc07b86c84576492156342b94fca"
+    },
+    {
+      "path": "game/src/sim/systems/logistics.mjs",
+      "sha256": "836885c5268fda0370f079c1c94ca462cfc9ed42eb42b91f3c4363987eb44987"
+    },
+    {
+      "path": "game/src/sim/systems/missiles.mjs",
+      "sha256": "7f553376fb1c784f16053ef6f8ea859cab91e6779c65d63e8242eb2e1d68c5af"
+    },
+    {
+      "path": "game/src/sim/systems/naval.mjs",
+      "sha256": "c1bf817fafc3428f356e2b68c05fd1c988dfd87aa3e6e491e07f779af8fec726"
+    },
+    {
+      "path": "game/src/sim/systems/structures.mjs",
+      "sha256": "c44fe024011d69652be08ed18f9bebeaed4bc24bb3f2373b16ef9c3f8337f2dd"
+    },
+    {
+      "path": "game/src/sim/world-loop.mjs",
+      "sha256": "b6d8788549ae99e31a316e728866c2486bfb5f57e4488722a092e411c6dd4b34"
+    },
+    {
+      "path": "game/src/sim/world-setup.mjs",
+      "sha256": "7cad3790fc7bde7979b2533cdfb32f36fb6613e5ccc85ddb5cdb6d79ffaac3c9"
+    },
+    {
+      "path": "game/src/styles.css",
+      "sha256": "28e7b73d7337289c4e06e68c96593b4a9430b269ad052d09d7f10a0c4ff4bf44"
+    },
+    {
+      "path": "game/src/utils/storage.js",
+      "sha256": "e4b9d7f9df4534f97926e231e9bf92bb5572ef0819af774d22eeb6066f64332f"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "88f73aed34b09bcbe137d78084c76d3c970879e76873a1974476c5098aa98ac8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8c6220683b7ac67fae3ebcc8656549cdc98e776c7064cad37a0c47c056c3ed74"
+    },
+    {
+      "path": "playwright.config.js",
+      "sha256": "297651294eb5a1a61d09028685e5241f3608ca8caf1ae029f0c1c12df0b530d5"
+    },
+    {
+      "path": "playwright.wordpress.config.js",
+      "sha256": "b8ee235ce3073785ebbb4a3d019abeaf8d9c44d14187f9da53c960cc6e231980"
+    },
+    {
+      "path": "plugin/statefall-scores/assets/board.css",
+      "sha256": "fe89c4e298d6b537aa963f1d7dc49be3b0d4d5f45dd1c8581925bd8e779d499a"
+    },
+    {
+      "path": "plugin/statefall-scores/assets/nation.js",
+      "sha256": "a3a66fabcdc586726d4573b6602be5c07e5042c9cecf9b9a0bbb9b47b1c2b86d"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/admin.php",
+      "sha256": "f91dc76fbc3f9eb4f5e91b316c3d1a43637d65bdf4538b88be04ac83b6d1f4f1"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/moderate.php",
+      "sha256": "565766d7445e831400842c473d74d98a1c42419f4208b6094bf985a79332aa48"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/music.php",
+      "sha256": "2e5ee2aa6be33fc9fb55eaeba60af6797f1457477624f2e10c13c08ca7694113"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/nations.php",
+      "sha256": "48eed52f1fc6fca50e8669640ed839786cc3713f5f67ff30d531f0927b1bbf52"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/packages.php",
+      "sha256": "19e2ec982183817826e686cd95a9dd13e7fe027a64206026c77be55a5b5b5011"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/play.php",
+      "sha256": "8dae7fb7327b1669ea7383bdaeb2e7fb24d4d1b33dd280d68ca512434d8d91a1"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/players.php",
+      "sha256": "85f5dbf9600de87c59309a540521fab3d46aeba02f48cb7c6a9b9479e648dde8"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/reports.php",
+      "sha256": "168cdeea4748864800a46cd310b4febb3a51f188ce9b408724e185f6511cf9c5"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/rest.php",
+      "sha256": "1a8dcbd586e1522688d7078681693ceb86a81a310f979b0fc4003ec5b3cc47c1"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/saves.php",
+      "sha256": "b3827b2565a78d03413eb93d3b38c637d3c40377e8dfd61dd80067ac120dad76"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/score.php",
+      "sha256": "9ed26839ecbbe398e3ef7c5bc8a601455003c25a26f3f8833717242d08e4e9a9"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/shortcodes.php",
+      "sha256": "f1618e1ee3657b59ce2561059f974b9faae831b26187edcacf757e32aa86b2d0"
+    },
+    {
+      "path": "plugin/statefall-scores/includes/trophies.php",
+      "sha256": "640ec1d860d52b27d0dd27594a5c9e90b015f023c3b9d2d0f5d01c0d6ebb49d3"
+    },
+    {
+      "path": "plugin/statefall-scores/readme.txt",
+      "sha256": "1cd2152248fa736edf5e4a027d17290977e596ed6683a32054c89d0ebf123e32"
+    },
+    {
+      "path": "plugin/statefall-scores/statefall-scores.php",
+      "sha256": "b04e67b9c32c63182e5421696f1ff40fae1872b31a131878ca980a85935d2799"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/PROMPT.md",
+      "sha256": "3806cecaf79a59e7794385564b4f22eef10949c85f7e05ff5114294dc207aeb2"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/README.md",
+      "sha256": "c25eb7085ffe851fb4a81a819b721afb6022e401cc54b013799b3c1727ee7ba6"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/asset-prompts.json",
+      "sha256": "59ccb4e82a7cabfbeaca684e715caae920237770c4b6c5fd70e4a17bef312a87"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-10.png",
+      "sha256": "0afa59f370f989dbebc5fb20865cb37767454ef23783f6b2a7bcdefa81b10095"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-24.png",
+      "sha256": "dc136e273c8c978b87806a37980f0f218134f8b551cfc550823d3ce0b295d187"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-5.png",
+      "sha256": "2c4d9e1a550361e51d422c9e1b9376dcc2f46882042dc3d8ac0b69ce4b11954e"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/battlefield-concept-01.png",
+      "sha256": "cbe6c02f0a11371e31c8311ba7796e81eb8303cfd1e4d146a66b06e33aa52a0d"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/commanded-example-replay.json",
+      "sha256": "5b6ed2cc80d7a7ce00239c58f8e148c72a38d7b1a7c055627c95bc77a82afe36"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/credits-performance-comparison.json",
+      "sha256": "47ac2d84fd671635ee0fa24d422906b4566420a2b04692db6e172aea5da0833a"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/credits-performance.json",
+      "sha256": "111f10387008f7f068e23c8b367192dde39a1462e8cf2886dfa74b1e8294926a"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-headings.png",
+      "sha256": "483a92504fdeb6ba564a830f7a98784e2d6daea8fe1ddc58a921b771d5d22e45"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-loop.png",
+      "sha256": "757d86050c071aa570346fb18ed8af0a2cdf1b3a55befee14c1998ca8d25ad64"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-prompt.txt",
+      "sha256": "6281ec6910312bf0cb576c02b71d24f581ee2f766dbf25d8f346bd7062ac0c78"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-verification.json",
+      "sha256": "47374f4c01ec5001a456dc9e1eaebb1c750c79760c1e697825029eb4291b7850"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/in-game-example.png",
+      "sha256": "57410a57462e64995296816433d55b4bc3ab636a732002ed7c077e6a8735106e"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/live-territory.png",
+      "sha256": "8e06f03db68f01cfb3317189985102f758f9bfe82388ce03f6f0aaf9cf120940"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/live-verification.json",
+      "sha256": "3ca04584ca2471b3fe7dca069eeeb12f0143a3162181fe146d61cf7d6a149939"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/medium-attack-performance.json",
+      "sha256": "42aeced2d0b8e1147e9742aeab0fc93de76c3a205c9cf3aa132fba8e0088bac1"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/pan-performance.json",
+      "sha256": "b0eaa858204b256b359c74e023bed8025118a6d89f9d5b9dde37ae81e3870859"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/replay-after.json",
+      "sha256": "595052c935b84287d81c60aeecd9e9aea1408d4bba120cc9ca02903d5f41b0d0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/replay-before.json",
+      "sha256": "595052c935b84287d81c60aeecd9e9aea1408d4bba120cc9ca02903d5f41b0d0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-10.png",
+      "sha256": "1a371d550cd8f68f2b6f53609c131291e84f77d57578f613974232dc5e612ea0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-2.2.png",
+      "sha256": "21a82673fe1ec866a4b2aa961be2304b58d25b6579d2839fb251612d39c0d32d"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-4.png",
+      "sha256": "b7e6e11e3a6917f61c8cf62f4bd021e38841940b1d9b677dd87c357b579a767e"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-before.png",
+      "sha256": "19c4826da3a55920a9251b94deb3395ac92ab6a0a9363109de20a5bc9b8d1ec6"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/rollback-performance.json",
+      "sha256": "763d3ec18563c52ed1a6a78c9fbdc06266936ed5eed08bfed5887f50962d36e0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/study-01-before-terrain.png",
+      "sha256": "c3f9aac681532762f8b77973c3da0d52e51d88c7a5340d0a69ac12265583156c"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/verification.json",
+      "sha256": "ffd50430643283303e768fc13e6a21df7984bdc0bc0f1fea7b9ab59c9c80065e"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/README.md",
+      "sha256": "edeafffd9db5b85d98b2bdeb541ef9383d3512e4cdd23fc5f93a6f34467a93cc"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js",
+      "sha256": "318416a59deee91ec338f78f1f1e08b2f72b6258d2bec05a2f59712744682729"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-desktop-win32.png",
+      "sha256": "e087c3ca66e8d37eb6a986468b389b1bb49fdd2c770da0f3feec961397305838"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-mobile-win32.png",
+      "sha256": "f34f240852e7791e1ac32e01cc36944e7a43f36110e0eeeda168d13186765804"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/index.html",
+      "sha256": "f87ec132b164e78912a413d562316b74b42f70a67daef9e5e3f1a8f2721aff11"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/playwright.config.js",
+      "sha256": "3c20a3e154737619d19382addb49ad37ded655d52e41ac0fcb70d242c4b7f983"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/scene.js",
+      "sha256": "b2ed0d844696b69be2b1e583f160042c380628f50b1fdf47a646e524e4370f9e"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/styles.css",
+      "sha256": "ef99056b0a358902a7a35477bd5f5537d83d04553c4d98d8793168224f0af472"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/DECISIONS.md",
+      "sha256": "fd0725270a9b16e921fdfb5d027c9f4d0116c443158724286183d99376a97d0c"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/README.md",
+      "sha256": "6b70c315f79d96bc4aa2f9221902cb7c8f7eeb87ab47e2c44e52b1227fffd7db"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/playwright.config.js",
+      "sha256": "9cf8b918321f1ca07edfc6beec8e855103876044bc9a3a8e8176e3066f5d6ea4"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/styles.css",
+      "sha256": "f3c7ccc450ddcd3290150b62ac6dd412c435405b486dd2a4fb1ac689968e94d3"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.html",
+      "sha256": "f6504e66c95574bc23bcc99b9cfa2f4304ee9759c272fadb458b6bb052b87d80"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.js",
+      "sha256": "16c25a7fe392abb1174e4f44a146d544b7a899d27ea4e5ca7212ce3a7475f6c3"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.spec.js",
+      "sha256": "27672e4f7c3d2e04f635bb6798360a55b10049b396982d14fe9089a8fc1adfe1"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.spec.js-snapshots/terrain-direction-chromium-desktop-win32.png",
+      "sha256": "db8fbc5efba3f002db23fb87f7b69cf67c785687b8303a7e0ab2334c6cfc8988"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.html",
+      "sha256": "581589f59700ccbf0b009e9f5e09b94af7dbbcc3aa6d16b56378c9e3693c400d"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.js",
+      "sha256": "1d6d53eda26a468097b438966f7c591c893f9e49c857a98f5f674660142c9e05"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.spec.js",
+      "sha256": "e9a7b65569a2de4dbfd8d2fa7020c6b7c1de301b6845d9ca966705e8f4b91d7d"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.spec.js-snapshots/unit-direction-chromium-desktop-win32.png",
+      "sha256": "46471b1c25c5424bea30be053cd55a8b0f1c5aa3459892c10e349dede0671e00"
+    },
+    {
+      "path": "sandbox/.artifact-htaccess",
+      "sha256": "6ae3f54cff708c05e4a47f0949814ef79affdcb383944521702811e4b5c6980f"
+    },
+    {
+      "path": "sandbox/.artifact-uploads.ini",
+      "sha256": "ecd1529fc532aa623a8c9de3b11bce053cbf3b5453b20caeff955f122e861ad5"
+    },
+    {
+      "path": "sandbox/.env.example",
+      "sha256": "dfd208bea092ef9bb3c026ea7d103d92e43e2930fcb1f61d57822953c8d41c2a"
+    },
+    {
+      "path": "sandbox/README.md",
+      "sha256": "68b47b523594c396d4a258a501fbe06b31570300b6e8266fa96c6e7d8cb852b5"
+    },
+    {
+      "path": "sandbox/compose.yaml",
+      "sha256": "4683bf98c00a513f7727e9d838ecf75de7bbf2a2497b5a70366457c5faf1c54b"
+    },
+    {
+      "path": "sandbox/mu-plugin.php",
+      "sha256": "89cf0a0703b8190f3678fb0d735039e98800393fb137692e1f9a3ac11fc09651"
+    },
+    {
+      "path": "sandbox/reset-database.ps1",
+      "sha256": "498ef87d4edd72d18779e465696e8a8ec0f63cc48ff6deb4d70733111961effb"
+    },
+    {
+      "path": "sandbox/security-regression.ps1",
+      "sha256": "8ba909d7221dcf152b527442d957079530398f2a9dd8b6840096d68e82fd8546"
+    },
+    {
+      "path": "sandbox/start.ps1",
+      "sha256": "d6818bd33af1e0d28a9d79dfc344b6a6e0fe8ffc33ac30e9e46058f5835a0035"
+    },
+    {
+      "path": "sandbox/status.ps1",
+      "sha256": "31a2d884878f4f38fca72aa85a4ab66f2b3f3026fd7529ba052284f25bcfa511"
+    },
+    {
+      "path": "sandbox/stop.ps1",
+      "sha256": "b287020abd75946015250a06fd5f40be2624e8c278fbd68340968f6167919d39"
+    },
+    {
+      "path": "sandbox/verify-artifacts.ps1",
+      "sha256": "bf1b3b6f08d98db590a93feaad3e7645dde55c45363b0754449fb66d6d9ba78b"
+    },
+    {
+      "path": "sandbox/verify.ps1",
+      "sha256": "4990a2f36a1cd12b2743e3c698b973f7047a9c68f35ad13954d27b1f9dcf48a9"
+    },
+    {
+      "path": "tests/adversarial-boundaries.js",
+      "sha256": "6971238484373fc35eca23b5f752c0caa7d3ca00cac33b90006ed8447ce848e5"
+    },
+    {
+      "path": "tests/ai.js",
+      "sha256": "a2174e918fc695db004899f3020cbe4eaa7b0674a58338d3b6bdcfcb02702a92"
+    },
+    {
+      "path": "tests/air.js",
+      "sha256": "5140c78a75cd0588a54b1e3472f814665a30c7705975f4d2970c8474572f73dd"
+    },
+    {
+      "path": "tests/aircraft-layer-model.js",
+      "sha256": "6e58e4be96435a12c1d1d12ee7663cdee3acd68a1f2634615f920a9b49df5310"
+    },
+    {
+      "path": "tests/area-labels.js",
+      "sha256": "61aaa0f968b270ba9d14acd16fe2f66b55165078c40d007e317820b2911cb1a7"
+    },
+    {
+      "path": "tests/atlas-manifest.js",
+      "sha256": "4cc4b9fad659a28523d83feb9f07de38a186509e0cf9d39a83d882b39749a11e"
+    },
+    {
+      "path": "tests/authoritative-state.js",
+      "sha256": "f330cab806145209aaa0b5805d2c417cbe75d726bac5edb110263fe5de2130c9"
+    },
+    {
+      "path": "tests/browser-server.js",
+      "sha256": "49497fc8dd6edfdfddbac99cb1fdbe058b260e1bf23983f1b52fe864e92d08e1"
+    },
+    {
+      "path": "tests/browser/build-contract.spec.js",
+      "sha256": "f9cbd11ded93d8ed872031a577936957ba96c13eca5c057f8d954f8a7df556ad"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js",
+      "sha256": "36014b1e7799be5d9884b5e184b3491bc9f8c07d2789b457b51702e6add37748"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png",
+      "sha256": "caa3997fb3556f8771415a393c99dfcbc648b8c09e6688a3407ef25e20e54c14"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/dense-late-game-chromium-desktop-win32.png",
+      "sha256": "b6e286ff71e59e3d4b2592ca0e14d238e204819f300dc59411b4c427a78df2e8"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-close-chromium-desktop-win32.png",
+      "sha256": "7a315f064bacfcdec053591cb0a8d7205c8339d1f28b654253e94550fb6b42ca"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-strategic-chromium-desktop-win32.png",
+      "sha256": "9212e4ddedd07181bb7ca2428cf7ccce42c284ddcf7e66cf251c981b3ea1b045"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-close-chromium-desktop-win32.png",
+      "sha256": "468412a3a1e5216f5bfc2255b9370a6d1c8bc735a92972f3e251958dd1d63772"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-strategic-chromium-desktop-win32.png",
+      "sha256": "6057bd66e0a8b71c737869441512a0c6ea155ddd3e8552dd1163dea7631ed964"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-close-chromium-desktop-win32.png",
+      "sha256": "e196aba8c579538af2cf332e590806efc966d580b76fc46d623fc39b9e318b13"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-strategic-chromium-desktop-win32.png",
+      "sha256": "83c9f6e27fb621283e77d0884247ff19ed157c2a495c0cdb60015e30a7d7138c"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-close-chromium-desktop-win32.png",
+      "sha256": "20fdee40d57da621f966f0cf47655d61a37adbc440575c097620caa061bca386"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-strategic-chromium-desktop-win32.png",
+      "sha256": "2a160c70c4e172a64e2aa5b6f09b101372136ce00f1d0f84408fac339fd05a05"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-close-chromium-desktop-win32.png",
+      "sha256": "fb80eec06c4c814994ef6540edcb6958c695fc60c41d18c9ba483197f4f9ca23"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-strategic-chromium-desktop-win32.png",
+      "sha256": "526bdf1499e78b6d6406286254d2a327ca338bfa0e6f0ec60adc76af2ae40e19"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-close-chromium-desktop-win32.png",
+      "sha256": "c108d1265053049be8fd090885220bc69440cedcffd1f916f3ef5b59f2f07f69"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-strategic-chromium-desktop-win32.png",
+      "sha256": "38b905b2f169752978f60a8b9e708cc14a2f0a5e9a632fc84de8615c76414f3d"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-close-chromium-desktop-win32.png",
+      "sha256": "3a8c5f58b9b6bd9282d3a1c5a6dc3696df6851d25a5ae5eab22d45a8a4a1c8c8"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-strategic-chromium-desktop-win32.png",
+      "sha256": "5992ce1ecc6cd5154730e8cdc1cff0942f578756cf83d0fe27a008c020c6b908"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-close-chromium-desktop-win32.png",
+      "sha256": "b0e27c326e353653c8ff30eb1158bbdaefed015385b3a736fd94fed6c32aedec"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-strategic-chromium-desktop-win32.png",
+      "sha256": "080c84955d4c2d195ad9c0f28cac6926bfd69142a653f947582651a464884194"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-land-close-chromium-desktop-win32.png",
+      "sha256": "263361bd38ec187b7ba3c0bef5f2175fee9c0ac2a141a0efc049544fcfc5b6fd"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-land-strategic-chromium-desktop-win32.png",
+      "sha256": "32fcb3caf7fc14a6829b1ddb85f1af580dedcc77e1531073f1bbeadd53461906"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-close-chromium-desktop-win32.png",
+      "sha256": "838da8ef8466331fee0bb10375495e9dc2a195720e2b14886df65fb017b19852"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-strategic-chromium-desktop-win32.png",
+      "sha256": "19c688f8c79b1e64e71da60a64abf56ac4fa1b9ec0c15cad31b246da88a3f96b"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-random-close-chromium-desktop-win32.png",
+      "sha256": "43cfcc7d5095fd638e84675d86fad3e31fd925433c4c051df7358d262753dbdc"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-random-strategic-chromium-desktop-win32.png",
+      "sha256": "fbe712aff1611dd84f928f78c81b0cb386053b65b56ec900d24a9a5b3ff06c4d"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-world-close-chromium-desktop-win32.png",
+      "sha256": "7b9e3afb6630c19b35087eae4590114efeeda597bc746de655b1e36c4483cea1"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-world-strategic-chromium-desktop-win32.png",
+      "sha256": "6a765c504e85a46a2a6026273f0adba2f23e1eaf371d372d04632b8b6aa2c855"
+    },
+    {
+      "path": "tests/browser/desktop-scale.spec.js",
+      "sha256": "a01380bd9f8cdbe747d756916e4880d32a3ee927827f6a1fe22f7abe01410d12"
+    },
+    {
+      "path": "tests/browser/deterministic-math.spec.js",
+      "sha256": "940608f2d64337bb012a06c49dd1e2676be6e9aba44e51eda8f350a03fa4897b"
+    },
+    {
+      "path": "tests/browser/phase-g-all-units.spec.js",
+      "sha256": "57b1453ad4f54dc67b2b80c329c90a4cfd1f7f615ad2f1891baf96b572e40502"
+    },
+    {
+      "path": "tests/browser/phase-g-projectiles.spec.js",
+      "sha256": "ead5704e1bdc025ca13142dd6dc22270c2e802780e064cf6f4706553285c1b0b"
+    },
+    {
+      "path": "tests/browser/phase-g-radar-sam.spec.js",
+      "sha256": "20cb48284b0e7dc560ef28b060ca8d61974627f79e0e806118520bbb6274d78d"
+    },
+    {
+      "path": "tests/browser/pixi-aircraft.spec.js",
+      "sha256": "369ff10c6ac8a5dcd0231e7ca56e5ecc16bba334ef7abaafd2c285ca0a9ab2ef"
+    },
+    {
+      "path": "tests/browser/pixi-atlas.spec.js",
+      "sha256": "a3a38674308a08ba532fc17869b36cf6124c96e984d36925a89aa9e8e55f4d36"
+    },
+    {
+      "path": "tests/browser/pixi-floating-text.spec.js",
+      "sha256": "6f9da4f7ea0d98258bf426e65115d12851e3db93ea8071219cc7f7193eec34e8"
+    },
+    {
+      "path": "tests/browser/pixi-global-effects.spec.js",
+      "sha256": "d0069ef1fb04cd03d61af827a7b05c0f6df1857eb1a36d5dccd4dfe81f355201"
+    },
+    {
+      "path": "tests/browser/pixi-interaction-overlays.spec.js",
+      "sha256": "0d52d70c462a4c141f17bd0a33cc9f0d876d99f8595b7df157de8bce82b1383d"
+    },
+    {
+      "path": "tests/browser/pixi-map-labels.spec.js",
+      "sha256": "95d3e1df74ab460597557a49bdec252f5933edfa37d1aef8d6005c5892749764"
+    },
+    {
+      "path": "tests/browser/pixi-missiles.spec.js",
+      "sha256": "12fe6c03856eec673ccc44b8fb4df558a5f4cadcabf5a61e23fd3d49fea76da4"
+    },
+    {
+      "path": "tests/browser/pixi-nation-overlays.spec.js",
+      "sha256": "61214bf440abbd51cdf2dedc79a53bec1fafa79a54819596eb08496246b86c3e"
+    },
+    {
+      "path": "tests/browser/pixi-naval-logistics.spec.js",
+      "sha256": "f3b286979fc6d7f8a131acf2129ff9b0bd7e91f87477182fc0f0f5645722c19b"
+    },
+    {
+      "path": "tests/browser/pixi-notifications.spec.js",
+      "sha256": "90f1df66858fdf135baf0ea54a42c78371b2fc7c82eb7eb87a7b1a75c5f8851b"
+    },
+    {
+      "path": "tests/browser/pixi-projectiles.spec.js",
+      "sha256": "ad72aa804f1406f59eb47a0a32532c854fdc642d5810ff02f17d6322898eddb6"
+    },
+    {
+      "path": "tests/browser/pixi-structures.spec.js",
+      "sha256": "183846c0408ca3f0d017a0d2758b8eb64dd48fa5fc8bd9467fc9bb793af9bb62"
+    },
+    {
+      "path": "tests/browser/pixi-support-actors.spec.js",
+      "sha256": "a36bb357f25191906ed60c903829cbfc7f826a1dfd8d393454783ace370ca712"
+    },
+    {
+      "path": "tests/browser/pixi-warships.spec.js",
+      "sha256": "8dbd04ab6a5e86f62dda94330091566ae9f62f22ba8596fadc34b3cd1d185ac9"
+    },
+    {
+      "path": "tests/browser/pixi-world-annotations.spec.js",
+      "sha256": "a830025a9b2ed2f7bc5481f53088c1c913bc539508d0c58a8f31a74ba3298151"
+    },
+    {
+      "path": "tests/browser/platform.spec.js",
+      "sha256": "1ba474c3eaf76cd09ccae552f6c747595ac850adc0102eef9ecccff35098e29d"
+    },
+    {
+      "path": "tests/browser/relay-websocket.spec.js",
+      "sha256": "1ad546e695e339fd2b3de70d1cbc9e9f8396aed442713848b0aa2542c3478c33"
+    },
+    {
+      "path": "tests/browser/renderer-foundation.spec.js",
+      "sha256": "21aea58c33e1082e129ecc9cf430f56d22ea0eca27b1c8689e36a685b8e17f84"
+    },
+    {
+      "path": "tests/browser/score-retry.spec.js",
+      "sha256": "fc3b1bba4e653919e793de0d0c123dce442f0ec6142e79af593dfeee2f40c2f9"
+    },
+    {
+      "path": "tests/browser/terrain-raster.spec.js",
+      "sha256": "cf1cbede7872a39ca251a483206816d6610e34f67eb8175562ae89f1b3feabd8"
+    },
+    {
+      "path": "tests/browser/wordpress-artifact.spec.js",
+      "sha256": "598e1bd2a9a92ed16963ebe1264b886c32b86fa19aaf78317e73d3c1bdd0a73d"
+    },
+    {
+      "path": "tests/build-package-fixtures.js",
+      "sha256": "52ba6ba2438b7d57552e8bdf57df0409b4c64cb8f27dd0ac94716e8b8139adb4"
+    },
+    {
+      "path": "tests/build-reproducibility.js",
+      "sha256": "004d642ed886eb08926b023781ad4388c110265399e0c06fbead29c4395f98a9"
+    },
+    {
+      "path": "tests/canonical-typed-cache.js",
+      "sha256": "d5dad635e21709003dd8d3be07cb36d99f8df9c176c990d706d0babe27066c37"
+    },
+    {
+      "path": "tests/checkpoint-origins.js",
+      "sha256": "f0732010b30f42d1cee8ad21f33624589f357f38a3e36f50f9d167b7aee85d24"
+    },
+    {
+      "path": "tests/classic-terrain-client.js",
+      "sha256": "1209aa1114c1316ef03d834a57a83062c6b7fc1637e58da04b6738d2a6bb47f6"
+    },
+    {
+      "path": "tests/command-router.js",
+      "sha256": "29f242e7dc133706ad4d7a5a5aeebcec6b4247ae0015ad0630558799dc8cabd9"
+    },
+    {
+      "path": "tests/compatibility-effects.js",
+      "sha256": "02f456aa2b851f4257544adbec98eed57ec8a6568c10668cb9b71689e50b4e42"
+    },
+    {
+      "path": "tests/deterministic-runtime.js",
+      "sha256": "ddfc994eb36642501630b0b8caf63755a59dab35413e32d3d8ea9cda47be5a1d"
+    },
+    {
+      "path": "tests/diplomacy.js",
+      "sha256": "efc55fe9019ed65a8a0855d16c7c01276c5cf5c23b4fcc68321a4608475367f7"
+    },
+    {
+      "path": "tests/economy.js",
+      "sha256": "fadeadbc9016b0a93cc512171c8590609d37e1944d2ea5d611c22cb91ba5c256"
+    },
+    {
+      "path": "tests/engine-isolation.js",
+      "sha256": "699640988c95422d6590f280f884269abf20f5fb90a226cf6361c6e41dd6dd5b"
+    },
+    {
+      "path": "tests/engine.js",
+      "sha256": "072baefa1076710715d48ac9a7aa1de9a0568c1614878bf5099b8390819926b5"
+    },
+    {
+      "path": "tests/fixtures/browser-performance-ceilings.json",
+      "sha256": "60aaa25fccb2c707df30b707c0969874187f0ec45a7fa39a7f8fc6c60ca6f895"
+    },
+    {
+      "path": "tests/fixtures/phase-d-parity-corpus-ad30188.json",
+      "sha256": "c081ed5defaa9844410882d5cf9f17ef3a87146a925e574f865839e81c81dcdb"
+    },
+    {
+      "path": "tests/fixtures/replays/public-v1.10.7-focus.json",
+      "sha256": "cb217545e16b0da5c55e9bf486a5e699397f872972783a685d71d8c6a4514021"
+    },
+    {
+      "path": "tests/fixtures/simulation-baselines-v1.10.8.json",
+      "sha256": "8f9bdc61eb50ef5ddcd3dd03103bf78f38348f43177e23a8f0c0f0982272005a"
+    },
+    {
+      "path": "tests/floating-text-layer-model.js",
+      "sha256": "776628602759e33fee4e641a4035ccdd490932e2c5b9d141f2281b4471714b7b"
+    },
+    {
+      "path": "tests/fog-transition.js",
+      "sha256": "70dea2924109740c89530db12fb4495b2f32701ffb436f5405dec0fe55440e8d"
+    },
+    {
+      "path": "tests/fog.js",
+      "sha256": "a867ea29dd64fc7f02d635f37bbe954c1040abdd7870f2282197dee297650d7e"
+    },
+    {
+      "path": "tests/global-effects-layer-model.js",
+      "sha256": "a25cd153b8090b4fab2402630f0137fbb945c33f40bb62a3893db81254b2044f"
+    },
+    {
+      "path": "tests/harness-hardening.js",
+      "sha256": "486c543bcb809b0963eaabdbd7cca28dc5ce9fa87a71a71b663c1809d976e6c3"
+    },
+    {
+      "path": "tests/help-contract.js",
+      "sha256": "27bb057fede6404b82ff3fce46ce97daf075f45a737172f3334f044b10f978cb"
+    },
+    {
+      "path": "tests/interaction-overlay-layer-model.js",
+      "sha256": "86f253885118f81721b0e116f8c9d7a93189cc179d5a55b54f3089b3911ee340"
+    },
+    {
+      "path": "tests/land-combat.js",
+      "sha256": "268f94accb35c68362bd000944b80fadadca04cc11248dcdccaa47a3b2a3b953"
+    },
+    {
+      "path": "tests/logistics.js",
+      "sha256": "871bffec76850eea9842ea227a409e3211ab09180e1308c5dd304080d17f56da"
+    },
+    {
+      "path": "tests/map-generation.js",
+      "sha256": "3aa8eb3d932b7541fc3f72d87e7f1e9926556d5c0541501d28077af9828a2fd9"
+    },
+    {
+      "path": "tests/map-label-layer-model.js",
+      "sha256": "a3d87b3abb59eccdcbbc26f05851cdb748ca2f6f5c2256c58eab565cca38476e"
+    },
+    {
+      "path": "tests/match-flow.js",
+      "sha256": "4eb51dc8fa7ab8f1e12dd264b9d271ce67648413e733c5cacc2cf0cddcf06b28"
+    },
+    {
+      "path": "tests/missile-layer-model.js",
+      "sha256": "948d34c481f4c6e11c3a3f36340d04768c3d869bed6f9b15c6bd495a44c1865c"
+    },
+    {
+      "path": "tests/missiles.js",
+      "sha256": "46e32f24656427f49a2c94b77a82594eb1c841663844e38282f1fb02c8a91790"
+    },
+    {
+      "path": "tests/multiplayer-relay.js",
+      "sha256": "4bc290f8d712f7d909b55ab26029f8e9c1bf04d101db7b0eda510f4bb72f624e"
+    },
+    {
+      "path": "tests/nation-overlay-layer-model.js",
+      "sha256": "8c71a479d3e81d4873450e6117254e0de5834b8688a5895319a43452fc2bc457"
+    },
+    {
+      "path": "tests/naval-logistics-model.js",
+      "sha256": "33c3a1715e8ae644c7263111155dc1e9e4152a7558b104df1e1042909790668d"
+    },
+    {
+      "path": "tests/naval.js",
+      "sha256": "405eedb38f6ed8e33c9ee30329ad7d1826abe5e33b96c4e07c92da7714c8a981"
+    },
+    {
+      "path": "tests/notification-overlay-layer-model.js",
+      "sha256": "e4fb33f05d34896fdadd929b90db0d3a52fbf0519c843ef2e667da0832a3f5c9"
+    },
+    {
+      "path": "tests/phase-d-parity-corpus.js",
+      "sha256": "fbf175938a2fc4e4436134a4eb946dce88573f8d2fec239052aab8081c19f4c9"
+    },
+    {
+      "path": "tests/phase-e-hardware-harness.js",
+      "sha256": "1db77c4350a8d77201452337c4e76be3c00f3eae58c073fde9a1b00c8668c5a7"
+    },
+    {
+      "path": "tests/phase-f1-source-evidence.js",
+      "sha256": "f35c02790cdf7928d8c5f9c04cbae5ce740ed4974cc81cee2f142021d0b130a5"
+    },
+    {
+      "path": "tests/php/exact-score-key.php",
+      "sha256": "0c497908039e7b8670174f74889debf48e6ee3084b5ca4d3ba69fb639e349b3d"
+    },
+    {
+      "path": "tests/php/package-integration.php",
+      "sha256": "e6816b467d68e47a0cc2115f4fb99215f7f35807c6a486f7ccad5ef07989aabb"
+    },
+    {
+      "path": "tests/pre-structure-layer-model.js",
+      "sha256": "86e8989dadfdc85513ae3bde92bfe9873bb096c93c3a2619dab989a144d54a87"
+    },
+    {
+      "path": "tests/presentation-step-clock.js",
+      "sha256": "7c62ee6a6818198228baf89871eb2a24ec356c3389d278c6d5c145ec700a02b7"
+    },
+    {
+      "path": "tests/projectile-layer-model.js",
+      "sha256": "5ee35611ec8361a92584095856ea79466638cf233d9a80b31474de095b9abce0"
+    },
+    {
+      "path": "tests/renderer-independence.js",
+      "sha256": "915cff94c39f3b362ee0bb138337cc820d6cb0b049561d0ad343cc2a101aa8e7"
+    },
+    {
+      "path": "tests/rendering-contract.js",
+      "sha256": "3ba0ec646dab340acc1f373469ed6b943137f238e6baa048e509c41f2f513467"
+    },
+    {
+      "path": "tests/replaycheck.js",
+      "sha256": "f9764180324913234899d28dc5ff1e2bdc66740fb807fdf01395a4f625759eda"
+    },
+    {
+      "path": "tests/restart-replay.js",
+      "sha256": "359700ee9fcdb86f880e8a043e74ff408bb32db7b035eb29903d08a32e79a340"
+    },
+    {
+      "path": "tests/rollback-copy.js",
+      "sha256": "5972d97459230e391b6f02835692b8a1ac991183be6bf2b83e64a98b274443bf"
+    },
+    {
+      "path": "tests/rules-geometry.js",
+      "sha256": "405f4cf4d062ee83b56b84adb043483951fb6b5167d4b1eddf32069f33593d43"
+    },
+    {
+      "path": "tests/security.js",
+      "sha256": "8a3f0663d08b07819dd789727d4094097087bd3ad614ff19ff7c2d2f035f813b"
+    },
+    {
+      "path": "tests/seeded-tier-order.js",
+      "sha256": "0b6d2ba6a24914836a131c6b8a11271d974b2ff3a149bcf314919c85ab99c767"
+    },
+    {
+      "path": "tests/sha256.js",
+      "sha256": "03a0ab097e55cbae84fc1e67bcdd21686d1488b9e0fbf34c6006ad62008409ec"
+    },
+    {
+      "path": "tests/simulation-ports.js",
+      "sha256": "0b75e01daba92aa38990178c8624de4cfdb2a51d43143ee1a60e353d00555112"
+    },
+    {
+      "path": "tests/smoke.js",
+      "sha256": "c8c896abbd9292555b6842e6d4e6cb21e0bebcee2b1b7c56d7c7f4330aa7a2b5"
+    },
+    {
+      "path": "tests/state-oracle.js",
+      "sha256": "b2b44d38f97366d454a3d3dbedc3e38c8e7f2a5e0b88cdef4218f00bf4f944ce"
+    },
+    {
+      "path": "tests/strict-math.js",
+      "sha256": "ad520182ac07a5f6eb862d82e155a64c4322ea5d86c20d590e42b8a790155330"
+    },
+    {
+      "path": "tests/structure-layer-model.js",
+      "sha256": "10942d571820a66c4e66ce6f762870817f76977f505125aafb806018daec744d"
+    },
+    {
+      "path": "tests/structures.js",
+      "sha256": "fc66d40c553535c48d504a941d4962db47a2cc50f9b5911e02d3d1a312cce2cd"
+    },
+    {
+      "path": "tests/support-actor-layer-model.js",
+      "sha256": "da77329a3126246494412cddf43ca626abe3e615169ff51fa3ed403b74f7b8d6"
+    },
+    {
+      "path": "tests/terrain-raster-client.js",
+      "sha256": "3ba786d6bf8a99125f8c9d97e43534b4cbb24fc1f679dfae7aa1978f6f0c3e4d"
+    },
+    {
+      "path": "tests/terrain-raster-model.js",
+      "sha256": "f8fd2c76a827a3b8f6a72ff9ca5adf456aea994062b44823831cbd88a5ce4550"
+    },
+    {
+      "path": "tests/tools/simulation-baselines.js",
+      "sha256": "ee936ffc30745ccce7ef564d69255ce62e02a31261fa4a5f22ce6a960f1fc9c7"
+    },
+    {
+      "path": "tests/tools/state-oracle.js",
+      "sha256": "09d88b972d558a1e58ca9d19c563964ab485cc0df15b3c095286bfc3b100a3c1"
+    },
+    {
+      "path": "tests/trailer-smoke.js",
+      "sha256": "6e4ff8a832217c1489c9dcdd186b253187e0eea94697ef6dc869d460b12b8ad8"
+    },
+    {
+      "path": "tests/warship-layer-model.js",
+      "sha256": "363abc53dacbba28d176e2434695760fa6ad37f3e8960477d1d192efe237219b"
+    },
+    {
+      "path": "tests/world-annotation-layer-model.js",
+      "sha256": "3df9708695afe3aa1e3d72e1f9f8fa964c45f7efad295b9035613c1bf91fed16"
+    },
+    {
+      "path": "tests/world-loop.js",
+      "sha256": "c67f056c021d18885d4cd38e782dc977ef95b7b3bf5fad08a0798496999c9f0e"
+    },
+    {
+      "path": "tests/world-setup.js",
+      "sha256": "1f66a6ddcae8df2635fae161916d1bf287d0bae1c937c0c1e006f3fe7093a7b3"
+    },
+    {
+      "path": "tools/browser-performance.js",
+      "sha256": "b07576c2c18cb570e719f3787dae9cff4340b938bbb7e631ebb1bec6b70b0e82"
+    },
+    {
+      "path": "tools/browser-server.js",
+      "sha256": "665c7ea65767a4ff1bb52e441729fa99537c727169cb78faddc83d2b01341f52"
+    },
+    {
+      "path": "tools/build-flags.js",
+      "sha256": "33b08b48430bf07342524505fc9a2d51de87f17d45eccb84160bc8d326b75904"
+    },
+    {
+      "path": "tools/build-howto.js",
+      "sha256": "8cd1552678c7c958fdbfcf295e56dbdead2e47836f7afdb7d6e9c8cc8154949b"
+    },
+    {
+      "path": "tools/build-plugin.js",
+      "sha256": "a1fdf574d5a2e1ede58b06bca1843e08530fb878ed3e10600757df429a319666"
+    },
+    {
+      "path": "tools/build-previous-plugin.js",
+      "sha256": "1a65d026455e3cb63a2088e8d5699801588c7c82d7f4a867fefd54bcf96cc691"
+    },
+    {
+      "path": "tools/build-release.js",
+      "sha256": "4d05ddc4d1c03db13b7bc4d0197140dcd746d50d742884db2173bdef407b7bbc"
+    },
+    {
+      "path": "tools/check-game-syntax.js",
+      "sha256": "f8b8e3f9e0b13704a3d09f8c1e707b18ac17bb2ed84486f1744a0259c74e1534"
+    },
+    {
+      "path": "tools/classic-attack-performance.js",
+      "sha256": "486e8a2c2b60896992ad85528075e86a729fd9dd7ce4ac221b7bff30fd81d2d3"
+    },
+    {
+      "path": "tools/classic-battlefield-review.js",
+      "sha256": "9b4db5836d30a967c1772155a0f3e1d70248e7b7988acb4643730d74c0d96062"
+    },
+    {
+      "path": "tools/classic-credits-performance.js",
+      "sha256": "944248c6f2e7dc8a7398c8ca7a43e5d6c9678a7e4572f41249194cdf1ebb8f6e"
+    },
+    {
+      "path": "tools/classic-credits-replay-review.js",
+      "sha256": "2dde447412e2fef414b3c6fb94be1c5fd4160e1d209be109a62b7dafa7513f19"
+    },
+    {
+      "path": "tools/classic-destroyer-review.js",
+      "sha256": "69abd6b2cf5ef83236c82b5ab1a326e061cab598edfec3dc0f1272fd398e4796"
+    },
+    {
+      "path": "tools/classic-live-review.js",
+      "sha256": "c6bb47811d4db66cac5c94e704b1db11dc15847cb28028428a3f5cd64602f877"
+    },
+    {
+      "path": "tools/classic-loop-performance.js",
+      "sha256": "706928d62ddbf5db3d5a6805633c80570317d13baae6bf22a6252b1a8d431ded"
+    },
+    {
+      "path": "tools/classic-naval-menu-review.js",
+      "sha256": "b1a0342da72e348e1a8c6ebf14de404213998fec82189c48d07ef56b70d6ef89"
+    },
+    {
+      "path": "tools/classic-pan-performance.js",
+      "sha256": "81413b3564c64dd78dc0c41d54e34683d0c10702ca031cff45af625cbb46e6b8"
+    },
+    {
+      "path": "tools/classic-submarine-base-review.js",
+      "sha256": "ca7a04c7c05ff83d12994e7422714261aef4e385e8392d26306f71225c0f0e36"
+    },
+    {
+      "path": "tools/classic-transport-fog-review.js",
+      "sha256": "707cb604fa0959a6920445ab37bb3a9e446cfd0b1fa4bd5701d27af9cf2b7e40"
+    },
+    {
+      "path": "tools/classic-upgrade-art-review.js",
+      "sha256": "8ebbb3bc261f15e5a848df2e672a921f0874ff4bb4299005da62f69eb8e9b037"
+    },
+    {
+      "path": "tools/classic-upgrade-game-review.js",
+      "sha256": "342e072da3168678eb058fbc222983f6e973bb3ad1bf5bcbe1a961c3292d6bc9"
+    },
+    {
+      "path": "tools/determinism.js",
+      "sha256": "3f6512cc7a1747dcfc91e4bcef3fe40f084e00f87abe6a566808951ef474b695"
+    },
+    {
+      "path": "tools/dist-server.js",
+      "sha256": "3b6e16552f55d5f32951b28f05b74682b1c19f2c6ba4edfe20cccb3c4c1b0621"
+    },
+    {
+      "path": "tools/finalize-game-build.js",
+      "sha256": "f3288c62e98f1b60ed5eab871648eb5a77548e388a322dd95830d9ce1c857c3f"
+    },
+    {
+      "path": "tools/generate-parity-corpus.js",
+      "sha256": "a4d9988b76dfcc49031d9a5d89a827754c85f7887ade9efc92df106f1750ebfc"
+    },
+    {
+      "path": "tools/harness.js",
+      "sha256": "8debd045fb211046269f052b601ac0c871d82709937d68acef38328e92f7e7c7"
+    },
+    {
+      "path": "tools/kenbot.js",
+      "sha256": "d51af5e4577a548709cdc93ccb3fb3bd8d576e8874552a38809ec1956eb970a2"
+    },
+    {
+      "path": "tools/package-zip.js",
+      "sha256": "099d49f652c581d5010b5cc3f4404d6541ac03bb0eeeb0b1c0387c7ef6fcc12e"
+    },
+    {
+      "path": "tools/parity-corpus-driver.js",
+      "sha256": "ae74268a9ee6bb12c92e49e92aa6df4968bb585549497a0927cd57893bbc3abf"
+    },
+    {
+      "path": "tools/phase-e-browser-matrix.js",
+      "sha256": "1a125631b4cbc850595078ec92714823f39602d2cbc84ee402ce2f909b8aa9f0"
+    },
+    {
+      "path": "tools/phase-e-hardware-qualification.js",
+      "sha256": "5c1169dd9ca5bdbf6bc21f31ee5ea3bbd2ab428a53be988a37e35374cca7225b"
+    },
+    {
+      "path": "tools/phase-e-qualification-contract.js",
+      "sha256": "21243ee583a24366a040195916b3336ee1f2726be355fbb1fa1dfb631f9582da"
+    },
+    {
+      "path": "tools/phase-f1-review.js",
+      "sha256": "95f2ba39a4d1342fa170914dd5e1907bceb6d213998b799faf73c0480f15074f"
+    },
+    {
+      "path": "tools/phase-f2-browser-matrix.js",
+      "sha256": "a273eee3e0a349bd436088bd07343c17d28f1d6e32900d7bea7b614e4418688c"
+    },
+    {
+      "path": "tools/phase-f2-technical.js",
+      "sha256": "b4e869282483323e523deef72b5b5bb8e7e98053e0b6cd85c1639f00f43906c1"
+    },
+    {
+      "path": "tools/phase-g-all-units-review.js",
+      "sha256": "323a69c0fd3eb19b0f9997065731bf3f9798ca4d69631668fade5af2645b2bc9"
+    },
+    {
+      "path": "tools/phase-g-projectiles-review.js",
+      "sha256": "d6f9d4f3814341f53a7dd57090c61aaef4790f7d88df723a23921639282b8df5"
+    },
+    {
+      "path": "tools/phase-g-radar-sam-review.js",
+      "sha256": "e666297dc6c10c55cf8f03502cbf7a3b7d9b71c164a4d4409f93aa090abd7220"
+    },
+    {
+      "path": "tools/qualification/README.md",
+      "sha256": "46df4eef4f9b671a6fae85f0a9ee8ff31969ab48f159fdae4df99fbf97129939"
+    },
+    {
+      "path": "tools/qualification/atlas-metadata.js",
+      "sha256": "ecd85c4accd250626e8e1899a231303a32bab70c3411666891a1d948a4126198"
+    },
+    {
+      "path": "tools/qualification/catchup-timer-browser.js",
+      "sha256": "e0725f1984b85555baafa10ace23f35a7b86d1e02c1348244cdac32ca47e7ea6"
+    },
+    {
+      "path": "tools/qualification/classic-worker-browser.js",
+      "sha256": "2f39571bc9417596a71afec8adecf96b6040490992ff1ea85a8931cbcac176a1"
+    },
+    {
+      "path": "tools/qualification/fingerprint.js",
+      "sha256": "3e143a9780b90275bf1a05b0701030b0ba41bb226963b8c1cdac9d2b8faadb83"
+    },
+    {
+      "path": "tools/qualification/front-path-browser.js",
+      "sha256": "6ef2b3c900742950332adb6a264083f9cda9fc12ccfb7459a46399996cc2ae3d"
+    },
+    {
+      "path": "tools/qualification/late-game-browser.js",
+      "sha256": "83844f274d574e66b3b9860caa6d5c0667dfe8cbcca2b0d8bb0226056d22d975"
+    },
+    {
+      "path": "tools/qualification/match-campaign.js",
+      "sha256": "8882c85c3c236b005554140d34f5087d241a2c71d2b098cdbdf8b3376c825d4e"
+    },
+    {
+      "path": "tools/qualification/matrix.js",
+      "sha256": "94943aae29fc3f433ec1efe88ee7f0b8fb16ba3d52b63fb9407158683c5c8a8b"
+    },
+    {
+      "path": "tools/qualification/roster-art.js",
+      "sha256": "64ae07f5ac60e725323616fd956a63db082a13a583d1d897ac8252c5dc82903b"
+    },
+    {
+      "path": "tools/qualification/roster-cache-stress.js",
+      "sha256": "2d3483f993b8a5a87c80fca6a17bd12716e6dd89829564a7bc4e7f1311b5abf9"
+    },
+    {
+      "path": "tools/qualification/roster-replay-browser.js",
+      "sha256": "055a89b06252259a24764fbec5d446cb33226c5549a8f2e2d52bb0b221ab1626"
+    },
+    {
+      "path": "tools/qualification/soak-matrix.js",
+      "sha256": "12a3724907c4b527d60bd20fab4dc9f26db34ba4ef95200bef020a548042b379"
+    },
+    {
+      "path": "tools/qualification/sprite-culling-browser.js",
+      "sha256": "443185ed1982cc8b3204b916e4951aec0584deec5951133f48c93350bfc649f9"
+    },
+    {
+      "path": "tools/qualification/summarize.js",
+      "sha256": "a832dcc7d3c1675150369974d85158621c9f48b4cac979f0a6bae5e02f999a9e"
+    },
+    {
+      "path": "tools/qualification/unit-campaign.js",
+      "sha256": "55aa365b73096fdbbfdaab73097469efcc324bab66ac0f968a9e5a8607b73d61"
+    },
+    {
+      "path": "tools/relay-websocket-server.mjs",
+      "sha256": "ff9afca686751a3827739aa4246105d93f3f2a1a0bf445f7ae209ec3be98958e"
+    },
+    {
+      "path": "tools/release-metadata.js",
+      "sha256": "43de2ed1cd3bd1b8cad1584a6a3461e99c43fc1fd697ade2506f271499d5ef06"
+    },
+    {
+      "path": "tools/replaycheck.js",
+      "sha256": "121d7d34f934f641994859c8ca4935be4754b59f3b0f3f11afddb447337739df"
+    },
+    {
+      "path": "tools/source-evidence-manifest.js",
+      "sha256": "5cdff3d1e6d7b9d946891c52045f834ba7b24fb5b9c8531f6f5d022311dafd02"
+    },
+    {
+      "path": "tools/trailer-capture.js",
+      "sha256": "dbaecb17f2f896420b844b14c3ab00774d3547e5f967879e98c3ae6c36615231"
+    },
+    {
+      "path": "tools/trailer.js",
+      "sha256": "e2f243c91a2c8f95a2d1b9011164ecd113496460c04f2d282c3226312d0a16a9"
+    },
+    {
+      "path": "tools/trailer2.js",
+      "sha256": "a8ccf8134a8e54c798c09a786f19440cb0a09061b2949615bd4c3634fc62b13b"
+    },
+    {
+      "path": "vite.config.js",
+      "sha256": "6d4f62d81b5bc33307c732374159f9dc1e18ec4b6e9e1b5cadfd362c5247ba4d"
+    }
+  ],
+  "digest": "16f2a0ad96aee3b95e4a7af775dfd580ca667f15e0e3fb3356d4ccbeda7bea46"
+}

@@ -32,12 +32,12 @@ const crypto=require('node:crypto');
     bytes:width*height*ppt*ppt*4,sourceBytes:width*height*ppt*ppt*4,staticBytes:width*height*ppt*ppt*4,modelRasterRetainedBytes:width*height*ppt*ppt*8,modelInputBytesEstimate:length*12,workerPeakBytesEstimate:width*height*ppt*ppt*16+length*12,
     detailLevel:'operational',filter:TERRAIN_FILTER,filterPolicy:{canvas:'imageSmoothingEnabled with imageSmoothingQuality=high',pixi:'bilinear/linear texture sampling'}
   });
-  assert.equal(crypto.createHash('sha256').update(first.pixels).digest('hex'),'7aff966d4f8dccfe3a3edb978931172f9c27a59d603d9ce824fca8038a433665');
+  assert.equal(crypto.createHash('sha256').update(first.pixels).digest('hex'),'03bb5b74cfe4c3905ae45efb5216ff9aa9643e048ec62929b2fc749e705f426e');
   const subpixels=new Set(); for(let sy=0;sy<ppt;sy++) for(let sx=0;sx<ppt;sx++) subpixels.add(sourcePixel(first.pixels,2,3,sx,sy).join(','));
   assert(subpixels.size>4,'terrain tiles contain genuine non-repeated subpixel detail');
   assert.notDeepEqual(sourcePixel(first.pixels,0,0),sourcePixel(first.pixels,1,0),'deep and shelf/coastal water differ');
   assert(luminance(sourcePixel(first.pixels,1,1,0,0))>luminance(sourcePixel(first.pixels,1,1,2,2)),'pale coastal keyline differs from dark wetline/interior');
-  assert(distance(sourcePixel(first.pixels,3,2),[126,170,161])<distance(sourcePixel(first.pixels,2,2),[126,170,161]),'river center is stronger than river edge');
+  assert(distance(sourcePixel(first.pixels,3,2),[24,53,70])<distance(sourcePixel(first.pixels,2,2),[24,53,70]),'river center is stronger than river edge');
   assert.notDeepEqual(sourcePixel(first.pixels,2,3),sourcePixel(first.pixels,5,3),'bilinear relief/contour treatment varies continuously');
 
   const neutralOwner=new Int16Array(length).fill(-1),neutral=model.update({...base,owner:neutralOwner}),neutralPixel=sourcePixel(neutral.pixels,2,2),operational=model.update(base),operationalPixel=sourcePixel(operational.pixels,2,2),strategic=model.update({...base,detailLevel:'strategic'}),strategicPixel=sourcePixel(strategic.pixels,2,2),political=[217,72,95];
@@ -55,6 +55,13 @@ const crypto=require('node:crypto');
   const picked=model.update({...base,pickArea:4}); assert(luminance(sourcePixel(picked.pixels,2,2))>luminance(sourcePixel(suppressed.pixels,2,2)),'pick area semantics retained');
   const highlighted=model.update({...base,highlightId:0}),highlightedAgain=model.update({...base,highlightId:0}); assert.equal(highlightedAgain.changed,false,'fixed highlight does not pulse/rebuild'); assert.notDeepEqual(sourcePixel(highlighted.pixels,2,2),sourcePixel(suppressed.pixels,2,2),'player highlight semantics retained');
   const hidden=2*width+5,tileBytes=(pixels,x,y)=>{ const bytes=[]; for(let sy=0;sy<ppt;sy++){ const start=(((y*ppt+sy)*pixelWidth+x*ppt)*4); bytes.push(...pixels.slice(start,start+ppt*4)); } return bytes; },visibleBytes=pixels=>tileBytes(pixels,4,2),hiddenBytes=pixels=>tileBytes(pixels,5,2);
+  const fadeFog=new Uint8Array(length).fill(1);fadeFog[2*width+2]=0;
+  const fadeOpacity=new Uint8Array(length),fadeBase={...base,fog:fadeFog,shelled:noSuppression,owner:neutralOwner,fogOpacity:fadeOpacity};
+  const clearFade=luminance(sourcePixel(model.update(fadeBase).pixels,2,2));
+  fadeOpacity[2*width+2]=128;const partialFade=luminance(sourcePixel(model.update(fadeBase).pixels,2,2));
+  fadeOpacity[2*width+2]=255;const darkFade=luminance(sourcePixel(model.update(fadeBase).pixels,2,2));
+  assert.ok(clearFade>partialFade&&partialFade>darkFade,'terrain darkens gradually as presentation fog returns');
+  assert.equal(fadeFog[2*width+2],0,'fading terrain never grants current sight');
   const privateBase=model.update({...base,shelled:noSuppression,pickArea:-1,highlightId:-1}),hiddenSuppression=new Uint32Array(length); hiddenSuppression[hidden]=130;
   assert.deepEqual(visibleBytes(model.update({...base,shelled:hiddenSuppression,pickArea:-1,highlightId:-1}).pixels),visibleBytes(privateBase.pixels),'hidden suppression cannot affect adjacent visible pixels');
   const hiddenArea=new Int16Array(length).fill(-1); hiddenArea[hidden]=7;

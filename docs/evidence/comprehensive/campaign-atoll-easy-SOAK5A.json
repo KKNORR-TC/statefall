@@ -1,0 +1,122 @@
+{
+  "name": "campaign-atoll-easy-SOAK5A",
+  "options": {
+    "map": "atoll",
+    "diff": "easy",
+    "seed": "SOAK5A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "endgame": true,
+    "fog": true,
+    "instant": true,
+    "garrison": true,
+    "teams": 2
+  },
+  "ticks": 1227,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 1227,
+      "title": "Defeat"
+    }
+  ],
+  "alive": true,
+  "commands": 9,
+  "observed": {
+    "maxStructures": 50,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 8,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 12.979399999999941,
+  "maxTickMs": 171.45510000000002,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 171.45510000000002,
+      "structures": 10,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 900,
+      "ms": 133.99509999999964,
+      "structures": 38,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 117.70429999999988,
+      "structures": 14,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 1100,
+      "ms": 115.07949999999983,
+      "structures": 43,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 600,
+      "ms": 114.48769999999968,
+      "structures": 27,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 800,
+      "ms": 114.26099999999997,
+      "structures": 32,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 700,
+      "ms": 112.0637999999999,
+      "structures": 32,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 1200,
+      "ms": 112.03719999999976,
+      "structures": 48,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 111.78399999999988,
+      "structures": 11,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 111.26650000000018,
+      "structures": 21,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 102.30679999999984,
+      "structures": 22,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 1000,
+      "ms": 99.47230000000036,
+      "structures": 41,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 10925.0166,
+  "replay": "PASS"
+}

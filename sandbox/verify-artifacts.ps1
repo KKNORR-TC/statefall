@@ -29,18 +29,24 @@ docker @compose exec -T artifact-wordpress rm -rf /var/www/html/wp-content/plugi
 if ($LASTEXITCODE -ne 0) { throw 'Could not clear the disposable artifact plugin directory.' }
 docker @cli core install "--url=$base" '--title=Statefall Artifact Tests' '--admin_user=artifact-admin' '--admin_password=artifact-password' '--admin_email=artifact@example.invalid' '--skip-email'
 if ($LASTEXITCODE -ne 0) { throw 'Fresh artifact WordPress installation failed.' }
-$plugin = Join-Path $PSScriptRoot '..\.artifacts\statefall-scores-1.10.7.zip'
+$pluginCandidate = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\.artifacts\plugin-candidate.json') -Raw | ConvertFrom-Json
+$pluginSource = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\plugin\statefall-scores\statefall-scores.php') -Raw
+$pluginVersion = [regex]::Match($pluginSource,'Version:\s*([^\s]+)').Groups[1].Value
+if ($pluginCandidate.version -ne $pluginVersion -or $pluginCandidate.filename -ne "statefall-scores-$pluginVersion.zip") { throw 'Plugin candidate does not match repository version.' }
+$plugin = Join-Path $PSScriptRoot ('..\.artifacts\' + $pluginCandidate.filename)
+if ((Get-FileHash -LiteralPath $plugin -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pluginCandidate.sha256) { throw 'Plugin ZIP checksum changed.' }
+$pluginArchive = '/statefall-artifacts/' + $pluginCandidate.filename
 if (-not (Test-Path -LiteralPath $plugin)) { throw 'Built plugin ZIP was not found.' }
 docker @cli plugin install '/statefall-artifacts/statefall-scores-1.10.6.zip' --activate
 if ($LASTEXITCODE -ne 0) { throw 'Exact previous plugin 1.10.6 fresh installation failed.' }
 docker @cli option update statefall_upgrade_data_marker 'from-1.10.6'
 docker @cli user create upgrade-user 'upgrade-user@example.invalid' '--role=subscriber' '--user_pass=artifact-upgrade-password'
 if ($LASTEXITCODE -ne 0) { throw 'Could not create previous-version preservation data.' }
-docker @cli plugin install '/statefall-artifacts/statefall-scores-1.10.7.zip' --force --activate
+docker @cli plugin install $pluginArchive --force --activate
 if ($LASTEXITCODE -ne 0) { throw 'Exact plugin ZIP upgrade from 1.10.6 failed.' }
 $upgradeMarker = docker @cli option get statefall_upgrade_data_marker
 $upgradeUser = docker @cli user get upgrade-user --field=ID
-if ($LASTEXITCODE -ne 0 -or $upgradeMarker.Trim() -ne 'from-1.10.6' -or [int]$upgradeUser -le 0) { throw 'The 1.10.6 to 1.10.7 upgrade did not preserve data.' }
+if ($LASTEXITCODE -ne 0 -or $upgradeMarker.Trim() -ne 'from-1.10.6' -or [int]$upgradeUser -le 0) { throw 'The upgrade from 1.10.6 to the current plugin did not preserve data.' }
 docker @cli option update permalink_structure '/%postname%/'
 $permalinkStructure = docker @cli option get permalink_structure
 if ($LASTEXITCODE -ne 0 -or $permalinkStructure.Trim() -ne '/%postname%/') { throw 'Could not configure artifact WordPress permalinks.' }
@@ -52,16 +58,24 @@ docker @cli eval-file /statefall-tests/package-integration.php
 if ($LASTEXITCODE -ne 0) { throw 'Package integration tests failed.' }
 docker @cli eval-file /statefall-tests/exact-score-key.php
 if ($LASTEXITCODE -ne 0) { throw 'Exact artifact score signing-key tests failed.' }
-docker @cli plugin install '/statefall-artifacts/statefall-scores-1.10.7.zip' --force --activate
+docker @cli plugin install $pluginArchive --force --activate
 if ($LASTEXITCODE -ne 0) { throw 'Exact plugin ZIP upgrade failed.' }
 $marker = docker @cli option get statefall_phase_b_data_marker
 if ($LASTEXITCODE -ne 0 -or $marker.Trim() -ne 'preserve-me') { throw 'Plugin ZIP upgrade did not preserve data.' }
 
 $paths = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '..\.artifacts\package-fixtures\paths.json')) | ConvertFrom-Json
 $play = Invoke-WebRequest -Uri "$base/play/" -UseBasicParsing -TimeoutSec 30
-if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch "GAME_VERSION='1\.10\.11'") { throw 'Private exact-game HTML failed.' }
+$candidate = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\.artifacts\release-candidate.json') -Raw | ConvertFrom-Json
+$buildSource = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\game\src\config\build.js') -Raw
+$expectedVersion = [regex]::Match($buildSource,"GAME_VERSION='([^']+)'").Groups[1].Value
+$expectedBuild = [regex]::Match($buildSource,"GAME_BUILD='([^']+)'").Groups[1].Value
+if ($candidate.version -ne $expectedVersion -or $candidate.build -ne $expectedBuild -or $candidate.filename -ne "statefall-release-$expectedVersion.zip") { throw 'Artifact candidate does not match the repository build.' }
+$zipPath = Join-Path $PSScriptRoot ('..\.artifacts\' + $candidate.filename)
+if ((Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $candidate.sha256) { throw 'Exact game ZIP checksum changed.' }
+$versionPattern = "GAME_VERSION='" + [regex]::Escape($expectedVersion) + "',\s*GAME_BUILD='" + [regex]::Escape($expectedBuild) + "'"
+if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch $versionPattern) { throw 'Private exact-game HTML does not match the candidate.' }
 if (($play.Headers['Cache-Control'] -join ',') -notmatch 'no-cache|no-store') { throw 'Play HTML is not private/uncached.' }
-$exactBase = "$base/play/releases/1.10.11-2026-09-18-phase-d2/"
+$exactBase = "$base/play/releases/$($candidate.version)-$($candidate.build)/"
 $exactManifest = Invoke-RestMethod -Uri ($exactBase + 'release.json') -TimeoutSec 30
 $exactChunks = @($exactManifest.files | Where-Object { $_.path -match '^assets/.+\.js$' })
 $exactChunk = if ($exactChunks.Count) { $exactChunks[0] } else { $null }

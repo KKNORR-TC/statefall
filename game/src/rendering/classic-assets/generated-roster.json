@@ -1,0 +1,89 @@
+[
+  {
+    "id": "cruiser",
+    "path": "C:/Users/ken/.codex/generated_images/01a0e07c-5645-7d21-bcf2-ed3e1315abac/exec-d82d1d79-ebec-4aa5-9ce4-cf5a1b1739c7.png",
+    "prompt": null,
+    "specification": "Original exact prompt was not retained. Production specification: transparent eight-direction atlas, fixed elevated camera, upright modernized 1996 military RTS miniature, weathered steel and blue team trim. Four columns, two rows: E, SE, S, SW / W, NW, N, NE. No water or baked ground shadow."
+  },
+  {
+    "id": "battleship",
+    "path": "C:/Users/ken/.codex/generated_images/01a0e07c-5645-7d21-bcf2-ed3e1315abac/exec-86758dda-d7b8-4c83-8ab9-1796b41f3728.png",
+    "prompt": null,
+    "specification": "Original exact prompt was not retained. Production specification: transparent eight-direction atlas, fixed elevated camera, upright modernized 1996 military RTS miniature, weathered steel and blue team trim. Four columns, two rows: E, SE, S, SW / W, NW, N, NE. No water or baked ground shadow."
+  },
+  {
+    "id": "scout",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-455d74e1-1964-471e-90b9-b9aca9e0f894.png",
+    "prompt": null,
+    "specification": "Original exact prompt was not retained. Production specification: transparent eight-direction atlas, fixed elevated camera, upright modernized 1996 military RTS miniature, weathered steel and blue team trim. Four columns, two rows: E, SE, S, SW / W, NW, N, NE. No water or baked ground shadow."
+  },
+  {
+    "id": "sub",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-16b5e724-1f6b-4a11-b076-b06807761557.png",
+    "prompt": null,
+    "specification": "Original exact prompt was not retained. Production specification: transparent eight-direction atlas, fixed elevated camera, upright modernized 1996 military RTS miniature, weathered steel and blue team trim. Four columns, two rows: E, SE, S, SW / W, NW, N, NE. No water or baked ground shadow."
+  },
+  {
+    "id": "hunter",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-8b8371c3-0b13-4c8d-9f14-35849e6845c5.png",
+    "prompt": null,
+    "specification": "Original exact prompt was not retained. Production specification: transparent eight-direction atlas, fixed elevated camera, upright modernized 1996 military RTS miniature, weathered steel and blue team trim. Four columns, two rows: E, SE, S, SW / W, NW, N, NE. No water or baked ground shadow."
+  },
+  {
+    "id": "rship",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-725fbf9b-1547-40be-9ae5-2365e4935860.png",
+    "prompt": "Production transparent game sprite atlas of RADAR PICKET SHIP: medium narrow hull, two conspicuous large white-gray radomes, a tall rectangular lattice radar mast, small bridge, no guns. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, hull center at cell center, generous transparent margins and no overlap. Row one bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "privateer",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-270b45ac-d080-4c9a-9cc3-abbfb35b81fa.png",
+    "prompt": "Production transparent game sprite atlas of PRIVATEER BOARDING VESSEL: compact fast military cutter, open aft boarding deck with two dark inflatable boats on racks, boarding crane and reinforced angular bridge, no gun turrets. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, hull center at cell center, generous transparent margins and no overlap. Row one bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "transport",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-c8b3ddb3-e3c1-401f-b49d-84d896421494.png",
+    "prompt": "Production transparent game sprite atlas of TROOP LANDING TRANSPORT: broad flat-bottomed military landing craft with a clearly visible hinged bow ramp, two squat covered troop compartments, small bridge at stern, blue trim, no tanks or people on deck. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, hull center at cell center, generous transparent margins and no overlap. Row one bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape or cast ground shadow. Truly transparent background. Prefer 2048x1024 image.",
+    "correction": "Edit this transparent eight-direction troop transport sprite atlas. Preserve ship design, style, lighting, alpha, and the other seven views exactly. Correct ONLY the second sprite in the bottom row: it currently points southwest with its bow ramp at bottom-left. It must instead point NORTHWEST, with the bow ramp at TOP-LEFT and the stern bridge at BOTTOM-RIGHT, seen from the same elevated fixed camera. It is the same craft rotated on the horizontal water plane, not a rotated or flipped image. Keep all eight sprites isolated on transparency. Do not add text or anything else."
+  },
+  {
+    "id": "merchant",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-60eed80d-98bc-4c3f-88d7-538ef80749cf.png",
+    "prompt": "Production transparent game sprite atlas of MERCHANT CARGO SHIP: medium civilian freighter with long flat cargo deck of stacked low metal shipping containers and a compact stern bridge, dark gray steel with blue trim. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, unit center at cell center, generous transparent margins and no overlap. Row one nose/bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, exhaust or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "heavytransport",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-c311ad12-511f-48d8-9a20-82c07cb2addc.png",
+    "prompt": "Production transparent game sprite atlas of HEAVY TROOP TRANSPORT: wide military amphibious landing ship, enclosed bulky troop decks, closed bow ramp, twin stern funnels and small forward bridge. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, unit center at cell center, generous transparent margins and no overlap. Row one nose/bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, exhaust or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "fighter",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-9dfef61c-84ea-406b-81b8-6ebee7aed370.png",
+    "prompt": "Production transparent game sprite atlas of FIGHTER JET: compact twin-engine modern tactical fighter, swept wings, paired tail fins, pointed nose and small dark cockpit, blue wing stripes. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, all cells equal, unit center at cell center, generous transparent margins and no overlap. Row one nose/bow points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST, NORTH, NORTHEAST. All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, exhaust or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "bomber",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-fd82416c-e646-4a03-8db0-a3194a5b399e.png",
+    "prompt": "Production transparent game sprite atlas of HEAVY BOMBER AIRCRAFT: wide swept wings, four jet engines, long armored fuselage, dark cockpit, compact tail. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, unit center at cell center, generous transparent margins and no overlap. Row one nose points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST (nose top-left, tail bottom-right), NORTH (nose away at top, tail nearest bottom), NORTHEAST (nose top-right, tail bottom-left). All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, smoke or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "carrier",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-585fa576-0cd3-4a03-b0ff-09e5445477c5.png",
+    "prompt": "Production transparent game sprite atlas of TROOP CARRIER AIRCRAFT: bulky military cargo plane, high straight wings, four turboprop engines, tall tail, large rounded fuselage. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, unit center at cell center, generous transparent margins and no overlap. Row one nose points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST (nose top-left, tail bottom-right), NORTH (nose away at top, tail nearest bottom), NORTHEAST (nose top-right, tail bottom-left). All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, smoke or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "spy",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-af6a8b5f-6acb-4a0a-96c8-b6b187d4c961.png",
+    "prompt": "Production transparent game sprite atlas of SPY RECONNAISSANCE AIRCRAFT: sleek thin fuselage, very long narrow wings, single jet engine, small upright tail, no visible weapons. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, unit center at cell center, generous transparent margins and no overlap. Row one nose points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST (nose top-left, tail bottom-right), NORTH (nose away at top, tail nearest bottom), NORTHEAST (nose top-right, tail bottom-left). All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, smoke or cast ground shadow. Truly transparent background. Prefer 2048x1024 image."
+  },
+  {
+    "id": "truck",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-ae010581-e525-434b-a084-8d12a81bfead.png",
+    "prompt": "Production transparent game sprite atlas of ENGINEER REPAIR TRUCK: compact six wheel armored workshop truck, utility crane folded on rear bed, blue maintenance tool cabinets, gray cabin, rugged large tires. Detailed 3D-rendered military miniatures in modernized 1996 RTS style, weathered dark gray steel, restrained blue team markings, warm top-left highlights. Fixed orthographic elevated camera 55 degrees. Exact same unit shown at eight horizontal ground-plane rotations, always right side up. Precisely 4 columns x 2 rows, unit center at cell center, generous transparent margins and no overlap. Row one nose points EAST, SOUTHEAST, SOUTH, SOUTHWEST. Row two WEST, NORTHWEST (nose top-left, tail bottom-right), NORTH (nose away at top, tail nearest bottom), NORTHEAST (nose top-right, tail bottom-left). All eight frames maintain equal world scale and identical geometry. No labels, text, grid lines, water, wake, landscape, smoke or cast ground shadow. Truly transparent background. Prefer 2048x1024 image.",
+    "correction": "Edit this transparent eight-direction repair truck sprite atlas. Preserve truck design, blue trim, style, lighting, alpha, and other seven views exactly. Correct ONLY the eighth sprite, the fourth sprite in the bottom row: it currently points northwest with its cabin at top-left. It must instead point NORTHEAST, with the front cabin at TOP-RIGHT and the rear crane bed at BOTTOM-LEFT, showing its rear and left side from the same elevated fixed camera. Same vehicle rotated on the horizontal ground plane, not an image rotation. Keep all eight sprites isolated on transparency. No text."
+  },
+  {
+    "id": "structures",
+    "path": "C:\\Users\\ken\\.codex\\generated_images\\01a0e07c-5645-7d21-bcf2-ed3e1315abac\\exec-c4d4906c-9f78-496e-a59b-5af61e9fb276.png",
+    "prompt": "Production game sprite atlas of 12 distinct military structures for a modernized 1996 RTS. Detailed 3D-rendered miniatures, weathered dark gray steel and concrete, restrained blue team-color trim, warm top-left lighting. Fixed orthographic camera elevated 55 degrees, consistent southwest-front perspective for every structure. Exact 4 columns x 3 rows, equal square cells with generous transparent padding and no overlap. All buildings at equal visual scale, ground contact near lower center of each cell. Row 1 left to right: (1) MISSILE SILO: reinforced round hatch open beside upright ballistic missile; (2) FORT: squat square reinforced concrete bunker with armored shutters and sandbag parapet; (3) COMMAND HEADQUARTERS: broad armored operations bunker with antenna cluster, small satellite dish, blue entrance; (4) SHIELD DEFENSE: circular armored pedestal with four upright energy emitter coils, subtle blue light but no big dome. Row 2: (5) COASTAL GUN: twin long naval cannons on fixed concrete rotating turret base; (6) HEAVY ARTILLERY: enormous single long siege cannon on heavy rectangular concrete platform; (7) FLIGHT OPERATIONS: tall airport control tower with glazed blue control room and low attached office; (8) SUBMARINE BASE: covered waterside submarine pen with two dark rectangular entrances and industrial roof, no water or submarine. Row 3: (9) TROOP COMMAND: army barracks compound with two low rectangular buildings and radio antenna; (10) LONG RANGE RADAR: huge tilted rectangular phased-array radar panel on sturdy pedestal; (11) JAMMER: electronic warfare installation with four tall whip antennas and two tilted dish antennas on low armored cabin; (12) SATELLITE UPLINK: large parabolic dish tilted skyward on hexagonal equipment building. No text, labels, grid lines, landscape, ground plane, people, cast shadows, or other objects. True transparent background. Preferred 2048x1536."
+  }
+]

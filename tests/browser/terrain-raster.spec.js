@@ -18,7 +18,7 @@ test('F2 shares 4x deterministic bytes and recomposes only across the camera det
     const context=await browser.newContext({viewport:{width:1280,height:720},deviceScaleFactor:1}),page=await context.newPage(); await start(page,renderer);
     await page.evaluate(()=>window.__STATEFALL_TEST__.setCamera(.9,'world'));
     const initial=await page.evaluate(async()=>{ const digest=await window.__STATEFALL_TEST__.terrainRasterDigest(); window.__STATEFALL_TEST__.renderRepeatedly(1); return {digest,rendering:window.__STATEFALL_TEST__.rendererDiagnostics()}; });
-    expect(initial.digest).toMatchObject({worldWidth:720,worldHeight:414,pixelWidth:2880,pixelHeight:1656,pixelsPerTile:4,bytes:2880*1656*4,detailLevel:'strategic',filter:'canvas-high-pixi-linear',styleRevision:'direction-02-f2'});
+    expect(initial.digest).toMatchObject({worldWidth:720,worldHeight:414,pixelWidth:2880,pixelHeight:1656,pixelsPerTile:4,bytes:2880*1656*4,detailLevel:'strategic',filter:'canvas-high-pixi-linear',styleRevision:'direction-02-f2-rivers'});
     expect(initial.rendering.rasterDiagnostics).toMatchObject({staticBuild:1,worldWidth:720,worldHeight:414,pixelWidth:2880,pixelHeight:1656,pixelsPerTile:4,bytes:2880*1656*4,detailLevel:'strategic',filter:'canvas-high-pixi-linear',filterPolicy:{canvas:'imageSmoothingEnabled with imageSmoothingQuality=high',pixi:'bilinear/linear texture sampling'}});
     const before=initial.rendering,coarse=await page.evaluate(()=>window.__STATEFALL_TEST__.refreshTerrainRaster());
     expect(coarse.changed).toBe(false); expect(coarse.rendering.rasterBuildCount).toBe(before.rasterBuildCount); expect(coarse.rendering.rasterUploadCount).toBe(before.rasterUploadCount);

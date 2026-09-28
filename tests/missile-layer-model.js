@@ -17,7 +17,7 @@ const assert=require('node:assert/strict');
   assert.equal(scene.entries[0].bodyScale,1); assert.equal(scene.entries[1].bodyScale,.65); assert.equal(scene.entries[0].heading,scene.entries[0].analyticHeading); assert.equal(scene.entries[1].heading,0);
   assert.equal(scene.entries[0].warningRadius,4); assert.equal(scene.entries[1].warningRadius,3); assert.equal(scene.entries[0].warningAlpha,.35+.35*Math.sin(375/150));
   assert.equal(scene.entries[0].items[0].primitives[0].stroke,'rgba(255,200,120,0.11)'); assert.equal(scene.entries[0].items[0].primitives.at(-1).width,4);
-  assert.deepEqual(scene.entries[0].items[1].primitives.map(value=>value.fill),['rgba(255,180,80,.55)','#e8ecef','#e35d5d']);
+  assert.deepEqual(scene.entries[0].items[1].primitives.map(value=>value.fill),['rgba(255,180,80,.55)','#d9d7c7','#f4f0d7','#b96558']);
   assert.deepEqual(scene.entries[0].items[2].primitives[0].dash,[6,6]); assert.equal(scene.entries[0].items[2].primitives[0].stroke,`rgba(255,107,107,${.35+.35*Math.sin(375/150)})`);
   assert.deepEqual(scene.canvasStrokeState,{lineJoin:'miter',lineCap:'round',globalAlpha:1,lineDash:[],lineDashOffset:0});
 

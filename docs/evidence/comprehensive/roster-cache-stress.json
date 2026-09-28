@@ -1,0 +1,60 @@
+{
+  "times": [
+    273.69999998807907,
+    19,
+    18.399999976158142,
+    18.400000005960464,
+    17.900000005960464,
+    18,
+    18.5,
+    19.80000001192093
+  ],
+  "builds": [
+    512,
+    512,
+    512,
+    512,
+    512,
+    512,
+    512,
+    512
+  ],
+  "diagnostics": {
+    "frames": 0,
+    "trees": 0,
+    "visibleTiles": 0,
+    "spriteDraws": 2048,
+    "sourceBuilds": 512,
+    "unitDraws": {
+      "warship": 128,
+      "battleship": 128,
+      "cruiser": 128,
+      "scout": 128,
+      "sub": 128,
+      "hunter": 128,
+      "rship": 128,
+      "privateer": 128,
+      "transport": 128,
+      "heavytransport": 128,
+      "merchant": 128,
+      "fighter": 128,
+      "bomber": 128,
+      "carrier": 128,
+      "spy": 128,
+      "truck": 128
+    },
+    "shipHeading": 4,
+    "shipDisplayAngle": 3.241592653589793,
+    "shipBlend": 0.04450597174087351,
+    "overlayRefreshes": 0,
+    "terrainRefreshes": 0,
+    "groundCacheBytes": 0,
+    "terrainCacheBytes": 0,
+    "enabled": true,
+    "loaded": true,
+    "cacheEntries": 512,
+    "sourceBytes": 33554432,
+    "sourceBudget": 67108864,
+    "terrainP95Ms": 0
+  }
+}

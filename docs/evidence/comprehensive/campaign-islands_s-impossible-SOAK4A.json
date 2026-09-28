@@ -1,0 +1,70 @@
+{
+  "name": "campaign-islands_s-impossible-SOAK4A",
+  "options": {
+    "map": "islands_s",
+    "diff": "impossible",
+    "seed": "SOAK4A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "teams": 3,
+    "fog": true
+  },
+  "ticks": 513,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 513,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 11,
+  "observed": {
+    "maxStructures": 31,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 13,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 11.585999999999785,
+  "maxTickMs": 171.27440000000024,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 171.27440000000024,
+      "structures": 4,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 125.38910000000033,
+      "structures": 17,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 111.10429999999997,
+      "structures": 20,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 103.1886000000004,
+      "structures": 10,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 94.7492999999995,
+      "structures": 30,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 7391.611700000001,
+  "replay": "PASS"
+}

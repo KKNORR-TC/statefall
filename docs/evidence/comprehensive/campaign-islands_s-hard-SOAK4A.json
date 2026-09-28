@@ -1,0 +1,169 @@
+{
+  "name": "campaign-islands_s-hard-SOAK4A",
+  "options": {
+    "map": "islands_s",
+    "diff": "hard",
+    "seed": "SOAK4A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "quick": true
+  },
+  "ticks": 6000,
+  "ended": false,
+  "endings": [],
+  "alive": true,
+  "commands": 40,
+  "observed": {
+    "maxStructures": 299,
+    "maxShips": 12,
+    "maxAir": 0,
+    "maxAttacks": 11,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 6.9289000000007945,
+  "maxTickMs": 173.8810999999996,
+  "slowTicks": [
+    {
+      "tick": 700,
+      "ms": 173.8810999999996,
+      "structures": 52,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 100,
+      "ms": 158.99429999999984,
+      "structures": 10,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 5800,
+      "ms": 144.29170000000158,
+      "structures": 296,
+      "ships": 10,
+      "aircraft": 0
+    },
+    {
+      "tick": 5500,
+      "ms": 121.85540000000037,
+      "structures": 289,
+      "ships": 4,
+      "aircraft": 0
+    },
+    {
+      "tick": 5400,
+      "ms": 113.4249000000018,
+      "structures": 286,
+      "ships": 4,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 111.66040000000066,
+      "structures": 40,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 6000,
+      "ms": 111.22859999999855,
+      "structures": 298,
+      "ships": 10,
+      "aircraft": 0
+    },
+    {
+      "tick": 4800,
+      "ms": 110.29099999999926,
+      "structures": 267,
+      "ships": 4,
+      "aircraft": 0
+    },
+    {
+      "tick": 3200,
+      "ms": 110.25740000000042,
+      "structures": 203,
+      "ships": 1,
+      "aircraft": 0
+    },
+    {
+      "tick": 5900,
+      "ms": 104.60449999999764,
+      "structures": 295,
+      "ships": 12,
+      "aircraft": 0
+    },
+    {
+      "tick": 4200,
+      "ms": 103.69430000000102,
+      "structures": 242,
+      "ships": 4,
+      "aircraft": 0
+    },
+    {
+      "tick": 5700,
+      "ms": 103.38270000000193,
+      "structures": 294,
+      "ships": 9,
+      "aircraft": 0
+    },
+    {
+      "tick": 4000,
+      "ms": 103.07289999999921,
+      "structures": 235,
+      "ships": 4,
+      "aircraft": 0
+    },
+    {
+      "tick": 800,
+      "ms": 102.80289999999968,
+      "structures": 57,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 5100,
+      "ms": 102.04500000000189,
+      "structures": 280,
+      "ships": 5,
+      "aircraft": 0
+    },
+    {
+      "tick": 3800,
+      "ms": 101.2489999999998,
+      "structures": 235,
+      "ships": 2,
+      "aircraft": 0
+    },
+    {
+      "tick": 1800,
+      "ms": 100.40039999999954,
+      "structures": 122,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 2200,
+      "ms": 100.36260000000038,
+      "structures": 151,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 5600,
+      "ms": 99.34029999999984,
+      "structures": 290,
+      "ships": 5,
+      "aircraft": 0
+    },
+    {
+      "tick": 900,
+      "ms": 99.05549999999948,
+      "structures": 65,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 37802.6379,
+  "replay": "PASS"
+}

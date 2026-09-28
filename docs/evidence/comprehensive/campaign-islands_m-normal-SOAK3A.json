@@ -1,0 +1,55 @@
+{
+  "name": "campaign-islands_m-normal-SOAK3A",
+  "options": {
+    "map": "islands_m",
+    "diff": "normal",
+    "seed": "SOAK3A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "risky": true
+  },
+  "ticks": 346,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 346,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 10,
+  "observed": {
+    "maxStructures": 19,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 6,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 6.003099999999904,
+  "maxTickMs": 150.7103000000002,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 150.7103000000002,
+      "structures": 9,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 111.32919999999967,
+      "structures": 19,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 93.02010000000018,
+      "structures": 10,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3574.7239,
+  "replay": "PASS"
+}

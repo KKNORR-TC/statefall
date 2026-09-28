@@ -1,0 +1,16 @@
+{
+  "map": "africa",
+  "difficulty": "impossible",
+  "seed": "SOAK9B",
+  "ticks": 1800,
+  "recordOnly": true,
+  "baselineMs": 86338.6296,
+  "indexOnlyMs": 68365.7905,
+  "indexAndBatchMs": 55136.4232,
+  "indexBatchFortQueryAndInvasionMs": 37399.9648,
+  "canonical": {
+    "version": "statefall-authoritative-state/v1",
+    "sha256": "f8ba27c61771d392b56d980b48720c4219f7f123eaaa691a22fe5c28362802d1"
+  },
+  "scope": "Intermediate isolated diagnostics. Final source additionally optimizes event snapshot reuse and AI filter order. Full record/replay qualification is fingerprinted separately."
+}

@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "tick": 903,
+  "port": 2,
+  "airfield": 2,
+  "fort": 3,
+  "hangar": 6,
+  "carrier": 1,
+  "refit": true,
+  "errors": []
+}

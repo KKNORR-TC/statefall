@@ -1,4 +1,4 @@
-import {structureBasePaintBounds} from './structure-layer-model.mjs';
+import {STRUCTURE_AMBIENT_TYPES,STRUCTURE_AMBIENT_ZOOM_CUTOFF,structureAmbientDish,structureBasePaintBounds} from './structure-layer-model.mjs';
 import {RASTER_ANTIALIAS_MARGIN_CSS,conservativePaintBounds,paintBoundsIntersectViewport} from './paint-bounds.mjs';
 
 export const PRE_STRUCTURE_QUALITY=Object.freeze(['high','medium','low']);
@@ -124,7 +124,7 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
   const viewport={width:Number(input?.viewport?.width),height:Number(input?.viewport?.height)},mapWidth=Number(input?.mapWidth);
   if(!finite(camera.x)||!finite(camera.y)||!finite(camera.scale)||camera.scale<=0||!finite(viewport.width)||!finite(viewport.height)||viewport.width<0||viewport.height<0||!Number.isInteger(mapWidth)||mapWidth<1) throw new TypeError('invalid pre-structure camera');
   const quality=PRE_STRUCTURE_QUALITY.includes(input?.quality)?input.quality:'high',reducedMotion=!!input?.reducedMotion,time=finite(input?.time)?Number(input.time):0;
-  const fog=input?.fog||null,fronts=[],routes=[],rangesStatus=[],postOverlays=[],structureEntries=[],counts={fronts:0,supplyLinks:0,supplyMarkers:0,focusRings:0,commandLinks:0,commandMarkers:0,bubbles:0,pips:0,repairArcs:0,jammerRanges:0,gunRanges:0,commandRanges:0,samRanges:0,fortRanges:0,buildingArcs:0,buildingLabels:0,popRings:0,levelLabels:0,upgradeArcs:0,airfieldLabels:0,airfieldQueueArcs:0,shipQueueArcs:0,shipQueueLabels:0,suppressedMarks:0,linkedRings:0,cooldownArcs:0};
+  const fog=input?.fog||null,fronts=[],routes=[],rangesStatus=[],postOverlays=[],structureEntries=[],counts={fronts:0,supplyLinks:0,supplyMarkers:0,focusRings:0,commandLinks:0,commandMarkers:0,bubbles:0,pips:0,repairArcs:0,jammerRanges:0,gunRanges:0,commandRanges:0,samRanges:0,fortRanges:0,buildingArcs:0,buildingLabels:0,popRings:0,levelLabels:0,upgradeArcs:0,airfieldLabels:0,airfieldQueueArcs:0,shipQueueArcs:0,shipQueueLabels:0,ambientDishes:0,movingDishes:0,staticDishes:0,budgetSkippedDishes:0,suppressedMarks:0,linkedRings:0,cooldownArcs:0};
   let primitives=0,segments=0,texts=0;
   const add=(target,value,countName)=>{
     if(!primitiveIntersectsViewport(value,viewport)) return false;
@@ -197,6 +197,8 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
     if(st.fortRange&&st.owned) addEntry(circle(p.x,p.y,st.fortRange*camera.scale,{stroke:st.level>=3?'rgba(255,210,122,.35)':st.level>=2?'rgba(255,210,122,.24)':'rgba(255,255,255,.14)',width:st.level}),'fortRanges');
     if(entry.pre.length) entry.items.push({kind:'graphics',semantic:'pre-graphics',primitives:entry.pre});
     entry.items.push({kind:'base',semantic:'base'});
+    const ambientEligible=STRUCTURE_AMBIENT_TYPES.includes(st.type)&&!st.building;
+    if(ambientEligible&&camera.scale<STRUCTURE_AMBIENT_ZOOM_CUTOFF) counts.budgetSkippedDishes++;
     if(st.building){
       const primitive=arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.buildFraction),{stroke:'#ffd27a',width:2.5,semantic:'building-arc'});
       if(addPost(primitive,'buildingArcs')) entry.items.push({kind:'graphics',semantic:'building-arc',primitives:[entry.post.at(-1)]});
@@ -204,6 +206,8 @@ export function createPreStructureScene(input,{primitiveLimit=MAX_PRE_STRUCTURE_
     }else{
       const pop=Number.isFinite(Number(st.pop))?Math.max(1,Number(st.pop)):1,level=Number(st.level)||1;
       const addOrderedGraphics=(value,name,semantic)=>{ if(addPost(value,name)) entry.items.push({kind:'graphics',semantic,primitives:[entry.post.at(-1)]}); };
+      const ambient=structureAmbientDish(st,camera,time,{mapWidth,reducedMotion,quality});
+      if(ambient){ addOrderedGraphics(ambient,'ambientDishes','ambient-dish'); if(entry.items.at(-1)?.semantic==='ambient-dish') counts[ambient.motionMode==='moving'?'movingDishes':'staticDishes']++; }
       if(pop>1) addOrderedGraphics(circle(p.x,p.y,r*pop*1.3,{stroke:'rgba(255,255,255,.6)',width:2,semantic:'pop-ring'}),'popRings','pop-graphics');
       if(level>=2){ const label=levelLabel(level,p.x+r*.9,p.y-r*.8); if(addEntryText(label,'levelLabels')) entry.items.push({kind:'label',semantic:'level-mark',label:entry.labels.at(-1)}); }
       if(st.upgrading) addOrderedGraphics(arc(p.x,p.y,r+3,-Math.PI/2,-Math.PI/2+TAU*clamp01(st.upgradeFraction),{stroke:'#ffd27a',width:2.5,semantic:'upgrade-arc'}),'upgradeArcs','upgrade-graphics');

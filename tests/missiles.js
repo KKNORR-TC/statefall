@@ -57,6 +57,15 @@ const {pathToFileURL}=require('node:url');
     assert.equal(control.state.map.owner[target],1,'blast ownership leaked to another instance');
     assert.equal(control.players[1].troops,600,'blast damage leaked to another instance');
     assert.equal(impact.events.some(event=>event[0]==='threat'&&event[3]==='missile'),true);
+    const upgraded=make(),building={type:'port',owner:1,t:target,level:2,lshield:4};
+    upgraded.state.actors.structures.push(building);
+    upgraded.state.map.struct[target]=1;
+    upgraded.system.crater(target%W,Math.floor(target/W),1,0);
+    assert.equal(building.level,1,'bombardment should remove one structure level');
+    assert.equal(upgraded.state.map.owner[target],building.owner,'a surviving upgraded structure must retain its ground');
+    upgraded.system.crater(target%W,Math.floor(target/W),1,0);
+    assert.equal(upgraded.state.actors.structures.includes(building),false);
+    assert.equal(upgraded.state.map.owner[target],-1,'a destroyed structure may lose its ground');
     console.log('Missiles browser-free launch, interception, blast damage, and instance isolation contracts PASS');
   }finally{
     for(const [name,descriptor] of prior){ if(descriptor) Object.defineProperty(globalThis,name,descriptor); else delete globalThis[name]; }

@@ -1,6 +1,6 @@
 const now=()=>globalThis.performance?.now?.()||0;
 
-export function createTerrainRasterClient({workerFactory,snapshot,publish,invalidateInstalled=()=>{},captureGuard=()=>null,allowIntermediate=()=>false,clock=now,schedule=queueMicrotask}={}){
+export function createTerrainRasterClient({workerFactory,snapshot,publish,invalidateInstalled=()=>{},captureGuard=()=>null,disposeResult=()=>{},allowIntermediate=()=>false,clock=now,schedule=queueMicrotask}={}){
   if(typeof snapshot!=='function'||typeof publish!=='function') throw new TypeError('terrain client requires snapshot and publish');
   let worker=null,queued=null,inFlight=null,generation=0,epoch=0,stopped=false,pumpScheduled=false,lastDiagnostics=null,waiters=[];
   const stats={requested:0,queued:0,dispatched:0,completed:0,published:0,latestPublications:0,intermediatePublications:0,staleDiscarded:0,discarded:0,coalesced:0,failures:0,resets:0,workerStarts:0,retries:0,snapshots:0,maxQueued:0,maxInFlight:0,latestRequestedGeneration:0,latestPublishedGeneration:0,latestRasterGeneration:0,completedWorkerEpoch:null,completedRasterRevision:null,publishedWorkerEpoch:null,publishedRasterRevision:null,installedWorkerEpoch:null,installedRasterRevision:null,uploadSkippedSameRevision:0,validRaster:false,emergencyMode:false,requestMs:0,publishMs:0,maxRequestMs:0,maxPublishMs:0,lastWorkerMs:0,maxWorkerMs:0,requestSamplesMs:[],publishSamplesMs:[],fallback:'none',failure:null};
@@ -28,25 +28,26 @@ export function createTerrainRasterClient({workerFactory,snapshot,publish,invali
       inFlight=request; stats.dispatched++; stats.maxInFlight=Math.max(stats.maxInFlight,1); worker.postMessage({type:'build',generation:request.generation,input},transfer);
     }catch(error){ fail(error?.message); }
   }
+  const dispose=message=>{try{disposeResult(message);}catch{}};
   function onMessage(source,event){
-    if(source!==worker) return;
+    if(source!==worker){dispose(event.data);return;}
     const message=event.data||{};
     if(message.type==='failure'){ if(message.generation===inFlight?.generation) fail(message.message); return; }
-    if(message.type!=='complete'||message.generation!==inFlight?.generation) return;
-    if(!Number.isSafeInteger(message.rasterRevision)||message.rasterRevision<1){ fail('invalid terrain worker raster revision',source); return; }
+    if(message.type!=='complete'||message.generation!==inFlight?.generation){dispose(message);return;}
+    if(!Number.isSafeInteger(message.rasterRevision)||message.rasterRevision<1){ dispose(message);fail('invalid terrain worker raster revision',source); return; }
     const completed=inFlight,completion={...message,workerEpoch:completed.epoch}; inFlight=null; stats.completed++; stats.completedWorkerEpoch=completion.workerEpoch; stats.completedRasterRevision=completion.rasterRevision; stats.lastWorkerMs=Number(message.workerMs)||0; stats.maxWorkerMs=Math.max(stats.maxWorkerMs,stats.lastWorkerMs);
     const latest=message.generation===generation;
-    if(!latest&&!allowIntermediate(completed?.guard,queued?.state,completed?.state)){ stats.discarded++; stats.staleDiscarded++; schedulePump(); return; }
+    if(!latest&&!allowIntermediate(completed?.guard,queued?.state,completed?.state)){ stats.discarded++; stats.staleDiscarded++; dispose(completion);schedulePump(); return; }
     const started=clock();
     try{ lastDiagnostics=message.diagnostics; const result=publish(completion,diagnostics(),{latest,intermediate:!latest}); if(result!==false){ stats.published++; stats.validRaster=true; stats.emergencyMode=false; stats.latestRasterGeneration=message.generation; stats.publishedWorkerEpoch=completion.workerEpoch; stats.publishedRasterRevision=completion.rasterRevision; if(result&&typeof result==='object'){ stats.validRaster=result.validRaster!==undefined?!!result.validRaster:true; stats.emergencyMode=!!result.emergencyMode; stats.installedWorkerEpoch=result.installedWorkerEpoch??null; stats.installedRasterRevision=result.installedRasterRevision??null; if(result.uploadSkippedSameRevision) stats.uploadSkippedSameRevision++; } else { stats.installedWorkerEpoch=completion.workerEpoch; stats.installedRasterRevision=completion.rasterRevision; } if(latest){ stats.latestPublications++; stats.latestPublishedGeneration=message.generation; } else stats.intermediatePublications++; } }
-    catch(error){ fail(error?.message); return; }
-    const elapsed=Math.max(0,clock()-started); stats.publishSamplesMs.push(elapsed); stats.publishMs+=elapsed; stats.maxPublishMs=Math.max(stats.maxPublishMs,elapsed); schedulePump(); settle();
+    catch(error){dispose(completion);fail(error?.message);return;}
+    const elapsed=Math.max(0,clock()-started); stats.publishSamplesMs.push(elapsed); if(stats.publishSamplesMs.length>600)stats.publishSamplesMs.shift(); stats.publishMs+=elapsed; stats.maxPublishMs=Math.max(stats.maxPublishMs,elapsed); schedulePump(); settle();
   }
   return Object.freeze({
     request(state){
       const started=clock(),request={state,generation:++generation,epoch}; stats.requested++; stats.latestRequestedGeneration=request.generation;
       if(queued){ stats.coalesced++; queued=request; } else { queued=request; stats.queued++; }
-      stats.maxQueued=Math.max(stats.maxQueued,queued?1:0); schedulePump(); const elapsed=Math.max(0,clock()-started); stats.requestSamplesMs.push(elapsed); stats.requestMs+=elapsed; stats.maxRequestMs=Math.max(stats.maxRequestMs,elapsed); return request.generation;
+      stats.maxQueued=Math.max(stats.maxQueued,queued?1:0); schedulePump(); const elapsed=Math.max(0,clock()-started); stats.requestSamplesMs.push(elapsed); if(stats.requestSamplesMs.length>600)stats.requestSamplesMs.shift(); stats.requestMs+=elapsed; stats.maxRequestMs=Math.max(stats.maxRequestMs,elapsed); return request.generation;
     },
     reset(){ epoch++; generation++; stats.resets++; stats.validRaster=false; stats.emergencyMode=false; stats.latestRasterGeneration=0; stats.completedWorkerEpoch=null; stats.completedRasterRevision=null; stats.publishedWorkerEpoch=null; stats.publishedRasterRevision=null; stats.fallback='none'; stats.failure=null; queued=null; inFlight=null; stopped=false; lastDiagnostics=null; clearInstalled('reset'); try{ worker?.terminate(); }catch{} worker=null; settle(); },
     destroy(){ stopped=true; queued=null; inFlight=null; clearInstalled('destroy'); try{ worker?.terminate(); }catch{} worker=null; settle(); },

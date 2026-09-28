@@ -1,0 +1,53 @@
+[
+  {
+    "scale": 5,
+    "elapsedMs": 6010.200000005961,
+    "frames": 360,
+    "ticks": 60,
+    "p95Ms": 16.700000000000728,
+    "maxMs": 33.299999999999955,
+    "stallsOver50ms": 0
+  },
+  {
+    "scale": 10,
+    "duration": 20000,
+    "elapsedMs": 20009.4,
+    "frames": 1186,
+    "ticks": 200,
+    "p95Ms": 16.700000000000728,
+    "maxMs": 133.39999999999782,
+    "stallsOver50ms": 2
+  },
+  {
+    "scale": 24,
+    "elapsedMs": 6008.10000000596,
+    "frames": 361,
+    "ticks": 60,
+    "p95Ms": 16.799999999999955,
+    "maxMs": 16.800000000000182,
+    "stallsOver50ms": 0
+  },
+  {
+    "scale": 10,
+    "width": 2200,
+    "height": 1200,
+    "dpr": 1.5,
+    "duration": 12000,
+    "elapsedMs": 12002.200000017881,
+    "frames": 706,
+    "ticks": 120,
+    "p95Ms": 16.799999999999272,
+    "maxMs": 133.3000000000011,
+    "stallsOver50ms": 1
+  },
+  {
+    "scale": 10,
+    "standard": true,
+    "elapsedMs": 6001.1,
+    "frames": 357,
+    "ticks": 60,
+    "p95Ms": 16.799999999999727,
+    "maxMs": 33.30000000000018,
+    "stallsOver50ms": 0
+  }
+]

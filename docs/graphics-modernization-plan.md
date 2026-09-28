@@ -1,6 +1,8 @@
 # Statefall Graphics Modernization Plan
 
-_Updated 20 September 2026. Phases 0 through E are technically complete locally at `d0c92fb`; candidate commit `27a2389` and its terrain-affected baselines are approved locally as the in-game Phase F2 terrain; production remains unchanged and Phase G has not started._
+**Current candidate update:** 1.10.49 / plugin 1.10.8 is now undergoing qualification for the approved GO objective. See [the current release record](release-record-1.10.49.md). References to 1.10.48 below describe the prior candidate. No publication has occurred.
+
+_Updated 28 September 2026. Phases 0–F retain their historical evidence; Phase G is implemented in the current classic-art candidate but its detailed human review remains open. Game 1.10.48/plugin 1.10.8 is NO-GO. See [current status](current-status.md), [release record](release-record-1.10.48.md), and [loading-budget reassessment](performance-budget-reassessment.md). Production remains unchanged._
 
 ## 1. Goal
 
@@ -14,7 +16,7 @@ Success means a player immediately sees a generational visual improvement, while
 
 - Multi-file web application built with Vite.
 - JavaScript ES modules initially; do not combine the renderer migration with a TypeScript conversion.
-- PixiJS using WebGL for the map, entities, effects, and compositing.
+- Current release direction: classic authored sprites and terrain through Canvas, with background terrain workers. PixiJS/WebGL remains a development renderer and potential future path; it is excluded from the current production package. This supersedes the original assumption that the art release would require Pixi migration.
 - DOM UI retained initially, then restyled after the map renderer is stable.
 - Authored image assets, texture atlases, shaders, fonts, and audio may ship as separate files.
 - Fixed 100 ms simulation ticks remain independent from rendering.

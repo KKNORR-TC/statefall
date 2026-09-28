@@ -1,0 +1,346 @@
+
+> statefall@1.10.46 verify:fast
+> npm run syntax && npm test
+
+
+> statefall@1.10.46 syntax
+> node tools/check-game-syntax.js && node --check playwright.config.js && node --check playwright.wordpress.config.js && node --check tools/package-zip.js && node --check tools/build-release.js && node --check tools/build-plugin.js && node --check tools/build-previous-plugin.js && node --check tests/build-package-fixtures.js && npm run syntax:prototype
+
+Syntax OK: module entry and 241 source/tool/test files
+
+> statefall@1.10.46 syntax:prototype
+> node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js
+
+
+> statefall@1.10.46 test
+> npm run test:rendering-contract && npm run test:runtime && npm run test:engine && npm run test:engine-isolation && npm run test:relay && npm run test:adversarial-boundaries && npm run test:compatibility-effects && npm run test:world-loop && npm run test:command-router && npm run test:rules-geometry && npm run test:state && npm run test:map-generation && npm run test:world-setup && npm run test:match-flow && npm run test:diplomacy && npm run test:land-combat && npm run test:ai && npm run test:logistics && npm run test:economy && npm run test:structures && npm run test:missiles && npm run test:fog && npm run test:air && npm run test:naval && npm run test:simulation-ports && npm run test:harness-hardening && npm run test:help-contract && npm run test:browser-server && npm run test:security && npm run test:seeded-order && npm run test:replaycheck && npm run test:phase-d-parity && npm run test:smoke && npm run test:restart && npm run test:renderer-independence && npm run determinism
+
+
+> statefall@1.10.46 test:rendering-contract
+> node tests/presentation-step-clock.js && node tests/classic-terrain-client.js && node tests/area-labels.js && node tests/rendering-contract.js && node tests/atlas-manifest.js && node tests/phase-e-hardware-harness.js && node tests/structure-layer-model.js && node tests/pre-structure-layer-model.js && node tests/naval-logistics-model.js && node tests/warship-layer-model.js && node tests/projectile-layer-model.js && node tests/missile-layer-model.js && node tests/aircraft-layer-model.js && node tests/map-label-layer-model.js && node tests/support-actor-layer-model.js && node tests/floating-text-layer-model.js && node tests/global-effects-layer-model.js && node tests/nation-overlay-layer-model.js && node tests/world-annotation-layer-model.js && node tests/notification-overlay-layer-model.js && node tests/interaction-overlay-layer-model.js
+
+Effect clock 10–144 Hz, pause gap bound, exact batched aging and zero-step purity PASS
+Classic terrain worker snapshot, coalescing, camera, reset, failure, timeout and teardown PASS
+Area label exact-reference and linear-scaling regressions PASS
+Terrain F2 high-resolution deterministic cache and semantic fixture PASS
+Camera and viewport contracts PASS
+Atlas manifest contract tests passed.
+Phase E evidence mutation contracts passed (60 Hz: 3600 frames/60000.000 ms; 30 Hz: 1800 frames/60000.000 ms).
+Structure layer model contracts PASS
+Pre-structure layer model contracts PASS
+Naval logistics model contracts PASS
+Warship layer model contracts PASS
+Projectile layer model contracts PASS
+Missile layer model contracts PASS
+Aircraft layer model contracts PASS
+Map label layer model contracts PASS
+Support actor layer model contracts PASS
+Floating text layer model contracts PASS
+Global effects layer model contracts PASS
+Nation overlay layer model contracts PASS
+World annotation layer model contracts PASS
+Notification overlay layer model contracts PASS
+Interaction overlay layer model contracts PASS
+
+> statefall@1.10.46 test:runtime
+> node tests/sha256.js && node tests/strict-math.js && node tests/canonical-typed-cache.js && node tests/deterministic-runtime.js
+
+SHA-256 native-oracle vectors PASS (525 cases)
+Portable math exact historical-runtime vectors PASS (530563 cases)
+Canonical typed cache exact-byte, mutation, alias, unaligned-view and restart checks PASS (280 cases)
+(node:26508) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Deterministic runtime contracts PASS
+
+> statefall@1.10.46 test:engine
+> node tests/checkpoint-origins.js && node tests/rollback-copy.js && node tests/engine.js
+
+Retired attack-origin checkpoint restore, continuation and rejection regressions PASS
+Retired transport-origin acceptance and invalid-origin atomic rejection PASS
+(node:4836) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Rollback copy parity, aliases, cycles, numeric fidelity and isolation PASS
+Engine integration checks PASS
+(node:12940) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:engine-isolation
+> node tests/engine-isolation.js
+
+Phase D direct-engine isolation, checkpoint, restart, ownership, and identity evidence PASS
+(node:32816) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:relay
+> node tests/multiplayer-relay.js
+
+Phase D2 hardened relay consensus, recovery, bounds, and 400+ tick lockstep PASS
+(node:11816) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:adversarial-boundaries
+> node tests/adversarial-boundaries.js
+
+Adversarial boundaries PASS: 13 direct commands, 34 menu actions, command semantics, configuration, replay, queries, and readonly containers
+(node:22092) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:compatibility-effects
+> node tests/compatibility-effects.js
+
+Compatibility effect RNG count, payload, order, sink independence, and browser-free contracts PASS
+
+> statefall@1.10.46 test:world-loop
+> node tests/world-loop.js
+
+World-loop poisoned-global, ordering, cadence, stopped/draft, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:command-router
+> node tests/command-router.js
+
+Command router browser-poisoning, isolation, actor, and historical replay contracts PASS
+
+> statefall@1.10.46 test:rules-geometry
+> node tests/rules-geometry.js
+
+Immutable rules and deterministic geometry contracts PASS
+
+> statefall@1.10.46 test:state
+> node tests/authoritative-state.js && node tests/state-oracle.js
+
+Authoritative state isolation contracts PASS
+State oracle and authoritative reset isolation PASS
+
+> statefall@1.10.46 test:map-generation
+> node tests/map-generation.js
+
+Map generation isolation and browser-free contracts PASS
+
+> statefall@1.10.46 test:world-setup
+> node tests/world-setup.js
+
+World setup isolation and browser-free contracts PASS
+
+> statefall@1.10.46 test:match-flow
+> node tests/match-flow.js
+
+Match-flow poisoned-global, draft, allied decision, RNG, outcome, and isolation contracts PASS
+
+> statefall@1.10.46 test:diplomacy
+> node tests/diplomacy.js
+
+Diplomacy isolation, browser-free, and deterministic RNG contracts PASS
+
+> statefall@1.10.46 test:land-combat
+> node tests/land-combat.js
+
+Land combat isolation, ownership, identity, garrison, and deterministic RNG contracts PASS
+
+> statefall@1.10.46 test:ai
+> node tests/ai.js
+
+AI browser-free profiles, scheduling, seeded decisions, adapters, actor identity, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:logistics
+> node tests/logistics.js
+
+Logistics poisoned-global, stable garrison, troop synchronization, engineering, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:economy
+> node tests/economy.js
+
+Economy browser-free growth, aid, treasury/region identity, ordering, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:structures
+> node tests/structures.js
+
+Structures browser-free placement, capture, destruction, index, counter, queue, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:missiles
+> node tests/missiles.js
+
+Missiles browser-free launch, interception, blast damage, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:fog
+> node tests/fog.js && node tests/fog-transition.js
+
+Fog browser-free visibility, cooldown, spy actor, and instance isolation contracts PASS
+Fog fade timing, pause, reacquisition and reset PASS
+
+> statefall@1.10.46 test:air
+> node tests/air.js
+
+Air browser-free operations, adapters, cleanup, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:naval
+> node tests/naval.js
+
+Naval browser-free pathing, transport, ordering, cleanup, and instance isolation contracts PASS
+
+> statefall@1.10.46 test:simulation-ports
+> node tests/simulation-ports.js
+
+Simulation presentation ports PASS
+
+> statefall@1.10.46 test:harness-hardening
+> node tests/harness-hardening.js
+
+Harness direct-import boundary and isolation checks PASS
+(node:41600) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:help-contract
+> node tests/help-contract.js
+
+Static help and release-tool module contracts PASS
+
+> statefall@1.10.46 test:browser-server
+> node tests/browser-server.js
+
+Browser server path and Host hardening PASS
+
+> statefall@1.10.46 test:security
+> node tests/security.js
+
+PASS replay identity markup is normalized before simulation setup
+(node:27716) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:seeded-order
+> node tests/seeded-tier-order.js
+
+Seeded tier ordering PASS
+(node:32624) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:replaycheck
+> node tests/replaycheck.js
+
+Replay checker strict positive and negative checks PASS
+(node:12624) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:phase-d-parity
+> node tests/phase-d-parity-corpus.js
+
+PARITY standard-random 400 ticks 4 commands 3fe9e126 4a559a11fc57
+PARITY fog-world 400 ticks 4 commands a0b8763a f302ebf1a87d
+PARITY garrisons-land 400 ticks 4 commands 94c4e860 7402870b5d07
+PARITY quick-europe 400 ticks 4 commands d8ceb5df dbab8e35e823
+PARITY endgame-asia 400 ticks 4 commands 45767b79 4d79214fd333
+PARITY risky-draft-random 100 ticks 10 commands b76753eb d57baa8bee76
+PARITY combined-arms-islands 400 ticks 20 commands 76964ee7 ce2d0e639917
+Phase D old-versus-extracted parity corpus PASS (7 scenarios, oracle ad30188)
+(node:42372) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:smoke
+> node tests/smoke.js
+
+PASS continents 10350 land 20 players 48e6ee21 b1febe45039c
+(node:16756) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS world 4011 land 14 players ffd5ae71 5a8a3f3324b9
+(node:26936) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS europe 16755 land 23 players ae7faa06 a00885ed8cdc
+(node:42864) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS atoll 5712 land 15 players 69444c48 d388b083ee46
+(node:41620) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS medium islands 8690 land 16 players 5900f336 08aada7fb1c5
+(node:42892) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS quick start 16643 land 25 players d507184a fc68e7122c3a
+(node:25168) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS fog 21154 land 27 players 5b80f0de 3589b433bd13
+(node:23600) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS end game 18911 land 25 players 7239c17e 8a11327e2f45
+(node:38172) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS garrisons 15579 land 26 players c40420d6 e3061dde7e07
+(node:41356) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS risky start 13190 land 23 players 8b4175ed 9914b324e043
+(node:22880) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:restart
+> node tests/restart-replay.js standard && node tests/restart-replay.js fog && node tests/restart-replay.js garrisons
+
+RESTART REPLAY MATCH standard 77683843 3cf3f0ded683 1464 tiles 14 commands
+(node:40484) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+RESTART REPLAY MATCH fog 69bcdf18 b9811f9c8cbc 1750 tiles 14 commands
+(node:41364) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+RESTART REPLAY MATCH garrisons 81232aef b1ea57c49266 1492 tiles 10 commands
+(node:2736) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 test:renderer-independence
+> node tests/renderer-independence.js
+
+Headless event-delivery independence PASS (browser Canvas render purity is covered by Playwright)
+(node:41952) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+> statefall@1.10.46 determinism
+> node tools/determinism.js
+
+run 1: commands 85 checkpoints 30 final bc43ad4e 509ad7e54aa2 tiles 214
+run 2: final bc43ad4e 509ad7e54aa2 tiles 214 diverged flag false applied 85 / 85
+DETERMINISTIC ✓

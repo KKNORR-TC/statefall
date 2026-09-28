@@ -1,0 +1,56 @@
+{
+  "name": "campaign-land-superhard-SOAK1A",
+  "options": {
+    "map": "land",
+    "diff": "superhard",
+    "seed": "SOAK1A",
+    "countryIdx": 0,
+    "ticks": 6000,
+    "fog": true,
+    "garrison": true
+  },
+  "ticks": 97,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 97,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 5,
+  "observed": {
+    "maxStructures": 0,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 8,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 18.13159999999999,
+  "maxTickMs": 69.3734,
+  "slowTicks": [
+    {
+      "tick": 30,
+      "ms": 69.3734,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 60,
+      "ms": 69.30550000000005,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 90,
+      "ms": 61.06529999999998,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 1427.1455,
+  "replay": "PASS"
+}

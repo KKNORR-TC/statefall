@@ -1,3 +1,4 @@
+import * as portableMath from "./strict-math.mjs";
 const noop=()=>{};
 
 export function createCompatibilityEffectProducer({random,sink}={}){
@@ -24,7 +25,7 @@ export function createCompatibilityEffectProducer({random,sink}={}){
     for(let i=0;i<n;i++){
       const a=ang+(draw()-.5)*1.2;
       const sp=.6+draw()*1.2;
-      const descriptor={x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,age:0,life:12+draw()*10,col};
+      const descriptor={x,y,vx:portableMath.cos(a)*sp,vy:portableMath.sin(a)*sp,age:0,life:12+draw()*10,col};
       emit({type:'fragment',descriptor});
     }
   }

@@ -1,5 +1,7 @@
 # Building a Statefall release from these files
 
+**28 September approval update:** Ken approved the recommended replacement and requested fixes to achieve GO. The required cold-load-plus-start limits are now 15 seconds at 25 Mbps / 100 ms and 40 seconds at 10 Mbps / 150 ms, maximum of three samples each. Both profiles run by default. Byte counts remain reported; the historical 0.9 MB gates are superseded. All other performance/correctness limits are unchanged. A passing current rerun is required. Earlier pending-approval wording below records the proposal history.
+
 This is the authoritative local build and manual WordPress deployment runbook. The source game is the Vite application under `game/`; the source plugin is `plugin/statefall-scores/`. Approved artifacts are copied to `D:\One Drive\projects - local\statefall\working releases`, which is a handoff location rather than source authority.
 
 ## Release gate
@@ -44,3 +46,9 @@ Record the deployed time, uploader, production versions, checksums, verification
 Before any release that touches the simulation, `npm test` must pass and print `DETERMINISTIC ✓`. In PowerShell, customize a run with commands such as `$env:SEED='X'; $env:TICKS='2000'; npm run determinism`.
 
 Always finish Docker-backed work with `.\sandbox\stop.ps1 -DockerDesktop`, then confirm `.\sandbox\status.ps1` reports Docker and the sandbox stopped.
+
+## Current loading-budget review (28 September 2026)
+
+Ken approved replacing the Phase A 900,000-byte thresholds on 28 September 2026. `npm run perf:browser` now always runs three cold samples per network scenario: every load-plus-start result must be within 15 seconds at 25 Mbps / 100 ms and 40 seconds at 10 Mbps / 150 ms. Transfer/decoded sizes remain reported, and all other limits remain unchanged. See [the evidence and rationale](performance-budget-reassessment.md). Preserve historical failed reports and require a passing current rerun.
+
+A local checkpoint commit is not a release approval. Do not tag, push, deploy, or mark a failed candidate GO merely because its source has been committed. See [checkpoint guidance](checkpoint-plan-2026-09-28.md).

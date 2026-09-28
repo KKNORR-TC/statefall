@@ -1,0 +1,38 @@
+[
+  {
+    "map": "islands_s",
+    "name": "baseline",
+    "ms": 14884.1115,
+    "hash": "27c7d88c"
+  },
+  {
+    "map": "islands_s",
+    "name": "hoisted",
+    "ms": 6783.312599999999,
+    "hash": "27c7d88c"
+  },
+  {
+    "map": "atoll",
+    "name": "baseline",
+    "ms": 593.9771000000001,
+    "hash": "774ba311"
+  },
+  {
+    "map": "atoll",
+    "name": "hoisted",
+    "ms": 478.5535000000018,
+    "hash": "774ba311"
+  },
+  {
+    "map": "random",
+    "name": "baseline",
+    "ms": 1274.000899999999,
+    "hash": "70956fc7"
+  },
+  {
+    "map": "random",
+    "name": "hoisted",
+    "ms": 765.2451000000001,
+    "hash": "70956fc7"
+  }
+]

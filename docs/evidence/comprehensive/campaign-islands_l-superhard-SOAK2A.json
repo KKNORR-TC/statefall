@@ -1,0 +1,68 @@
+{
+  "name": "campaign-islands_l-superhard-SOAK2A",
+  "options": {
+    "map": "islands_l",
+    "diff": "superhard",
+    "seed": "SOAK2A",
+    "countryIdx": 0,
+    "ticks": 6000
+  },
+  "ticks": 527,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 527,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 22,
+  "observed": {
+    "maxStructures": 85,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 9,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 7.037600000000111,
+  "maxTickMs": 172.28390000000013,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 172.28390000000013,
+      "structures": 1,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 300,
+      "ms": 96.19920000000002,
+      "structures": 43,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 200,
+      "ms": 93.7639999999999,
+      "structures": 19,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 500,
+      "ms": 87.4431999999997,
+      "structures": 85,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 400,
+      "ms": 84.01300000000037,
+      "structures": 67,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 3922.8372000000004,
+  "replay": "PASS"
+}

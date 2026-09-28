@@ -1,0 +1,54 @@
+{
+  "name": "campaign-land-normal-SOAK1A",
+  "options": {
+    "map": "land",
+    "diff": "normal",
+    "seed": "SOAK1A",
+    "countryIdx": 0,
+    "ticks": 6000
+  },
+  "ticks": 146,
+  "ended": true,
+  "endings": [
+    {
+      "tick": 146,
+      "title": "Overrun"
+    }
+  ],
+  "alive": false,
+  "commands": 6,
+  "observed": {
+    "maxStructures": 4,
+    "maxShips": 0,
+    "maxAir": 0,
+    "maxAttacks": 8,
+    "maxTrucks": 0
+  },
+  "p95TickMs": 3.3273000000000366,
+  "maxTickMs": 156.03229999999996,
+  "slowTicks": [
+    {
+      "tick": 100,
+      "ms": 156.03229999999996,
+      "structures": 1,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 90,
+      "ms": 53.8458,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    },
+    {
+      "tick": 60,
+      "ms": 52.65179999999998,
+      "structures": 0,
+      "ships": 0,
+      "aircraft": 0
+    }
+  ],
+  "elapsedMs": 1244.4187000000002,
+  "replay": "PASS"
+}

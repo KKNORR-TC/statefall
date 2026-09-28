@@ -1,3 +1,4 @@
+import {createCanonicalTypedCache} from './canonical-typed-cache.mjs';
 import {STATE_ORACLE_VERSION,serializeCanonicalV1} from './deterministic-runtime.mjs';
 import {sha256} from './sha256.mjs';
 
@@ -7,6 +8,7 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
   const {hostile,proposals}=engineState.diplomacy;
   const {supplyAt}=engineState.garrison;
   const replay=runtime.replay,commands=runtime.commands;
+  const typedCache=createCanonicalTypedCache();
   const me=()=>engineState.match.playerId==null?null:players[engineState.match.playerId]||null;
 
   function stateDetail(){
@@ -81,7 +83,7 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
         else flagsByCountry.set(player.country,player.flag);
       }
     }
-    return serializeCanonicalV1(authoritativeState(),{derivedProperties:value=>{
+    return serializeCanonicalV1(authoritativeState(),{...typedCache,derivedProperties:value=>{
       if(!labelPositions||!players.includes(value)) return null;
       const labelPos=labelPositions[value.id];
       return labelPos?{labelPos}:null;

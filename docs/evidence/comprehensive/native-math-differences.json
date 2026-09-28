@@ -1,0 +1,46 @@
+{
+  "functions": [
+    "sin",
+    "cos",
+    "atan",
+    "atan2",
+    "hypot",
+    "pow"
+  ],
+  "inputs": 2000,
+  "result": [
+    {
+      "name": "chromium",
+      "differences": [
+        60,
+        52,
+        129,
+        340,
+        0,
+        198
+      ]
+    },
+    {
+      "name": "firefox",
+      "differences": [
+        50,
+        46,
+        0,
+        0,
+        717,
+        198
+      ]
+    },
+    {
+      "name": "webkit",
+      "differences": [
+        50,
+        46,
+        10,
+        337,
+        748,
+        198
+      ]
+    }
+  ]
+}

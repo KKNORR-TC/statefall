@@ -15,6 +15,12 @@ const scenarios = [
   {name: 'mobile-pixel-7-390x844', context: {...devices['Pixel 7'], viewport: {width: 390, height: 844}}}
 ];
 
+// Ken approved both network profiles as required release gates on 28 September 2026.
+scenarios.push(
+  {name: 'desktop-broadband-25mbps', context: {viewport: {width: 1440, height: 900}}, network: {mbps: 25, latencyMs: 100}},
+  {name: 'desktop-constrained-10mbps', context: {viewport: {width: 1440, height: 900}}, network: {mbps: 10, latencyMs: 150}}
+);
+
 function percentile(values, fraction) {
   const sorted = [...values].sort((a, b) => a - b);
   return sorted[Math.min(sorted.length - 1, Math.ceil(sorted.length * fraction) - 1)];
@@ -50,13 +56,21 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
 
   await session.send('Network.enable');
   await session.send('Network.setCacheDisabled', {cacheDisabled: true});
+  if (scenario.network) await session.send('Network.emulateNetworkConditions', {
+    offline: false, latency: scenario.network.latencyMs,
+    downloadThroughput: scenario.network.mbps * 1000000 / 8,
+    uploadThroughput: 1000000 / 8
+  });
   await page.addInitScript(() => {
     window.__STATEFALL_TEST_MODE__ = true;
     localStorage.setItem('statefall-audio', JSON.stringify({master: 0, sfx: 0, alert: 0, amb: 0, music: 0}));
   });
 
   try {
-    await page.goto(`${baseURL}/index.html?browserTest=1`, {waitUntil: 'load'});
+    await page.goto(`${baseURL}/index.html?browserTest=1`, {waitUntil: 'load', timeout: 90000});
+    // Module initialization awaits the production artwork after the document load event.
+    await page.waitForFunction(()=>typeof window.__STATEFALL_TEST__==='object',null,{timeout:90000});
+    const appReadyMs=await page.evaluate(()=>performance.now());
     const loaded = await page.evaluate(() => ({
       hasBridge: typeof window.__STATEFALL_TEST__ === 'object',
       paths: performance.getEntriesByType('resource').map(entry => new URL(entry.name).pathname)
@@ -120,9 +134,10 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
     await session.send('HeapProfiler.collectGarbage');
     const heap = await session.send('Runtime.getHeapUsage');
     const result = {
-      coldLoadMs: navigation.coldLoadMs,
+      network: scenario.network || null,
+      coldLoadMs: Math.max(navigation.coldLoadMs,appReadyMs),
       startToReadyMs: started.startToReadyMs,
-      coldLoadAndStartToReadyMs: navigation.coldLoadMs + started.startToReadyMs,
+      coldLoadAndStartToReadyMs: Math.max(navigation.coldLoadMs,appReadyMs) + started.startToReadyMs,
       simulation300TicksMs: simulation.elapsedMs,
       simulationTick: simulation.ticks,
       simulationDigest: simulation.digest,
@@ -194,7 +209,8 @@ async function main() {
     const baseURL = server.resolvedUrls.local[0].replace(/\/$/,'');
     browser = await chromium.launch();
     report = {
-      schemaVersion: 1,
+      schemaVersion: 2,
+      budgetPolicy: ceilings.policy,
       generatedAt: new Date().toISOString(),
       environment: {
         platform: process.platform,

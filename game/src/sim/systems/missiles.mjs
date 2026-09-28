@@ -1,3 +1,4 @@
+import * as portableMath from "../strict-math.mjs";
 const noop=()=>{};
 
 export function createMissilesSystem({
@@ -38,8 +39,8 @@ export function createMissilesSystem({
   }
   function missilePos(m,age){
     const k=Math.min(1,age/m.flight),x0=m.from%W+.5,y0=(m.from-m.from%W)/W+.5,x1=m.t%W+.5,y1=(m.t-m.t%W)/W+.5;
-    const h=m.cruise?0:Math.hypot(x1-x0,y1-y0)*0.35;
-    return [x0+(x1-x0)*k,y0+(y1-y0)*k-Math.sin(k*Math.PI)*h];
+    const h=m.cruise?0:portableMath.hypot(x1-x0,y1-y0)*0.35;
+    return [x0+(x1-x0)*k,y0+(y1-y0)*k-portableMath.sin(k*Math.PI)*h];
   }
   function stepInterceptors(){
     for(const m of missiles){ if(m.done||m.age<constants.samReact||m.age>m.flight-8) continue;
@@ -60,11 +61,11 @@ export function createMissilesSystem({
     }
     for(const it of interceptors){
       it.age++; const m=it.target; if(m.done){ it.done=true; continue; }
-      let mx,my; { let aimed=null; for(let k=1;k<=m.flight-m.age;k++){ const [px,py]=missilePos(m,m.age+k); if(Math.hypot(px-it.x,py-it.y)<=constants.interceptorSpeed*k){ aimed=[px,py]; break; } } if(!aimed) aimed=missilePos(m,m.age); [mx,my]=aimed; }
-      const [cx2,cy2]=missilePos(m,m.age); const dx=mx-it.x,dy=my-it.y,d=Math.hypot(dx,dy); const dNow=Math.hypot(cx2-it.x,cy2-it.y);
+      let mx,my; { let aimed=null; for(let k=1;k<=m.flight-m.age;k++){ const [px,py]=missilePos(m,m.age+k); if(portableMath.hypot(px-it.x,py-it.y)<=constants.interceptorSpeed*k){ aimed=[px,py]; break; } } if(!aimed) aimed=missilePos(m,m.age); [mx,my]=aimed; }
+      const [cx2,cy2]=missilePos(m,m.age); const dx=mx-it.x,dy=my-it.y,d=portableMath.hypot(dx,dy); const dNow=portableMath.hypot(cx2-it.x,cy2-it.y);
       it.trail.push([it.x,it.y]); if(it.trail.length>10) it.trail.shift();
       if(dNow<=constants.interceptorSpeed*1.2||d<=constants.interceptorSpeed){ it.done=true; mx=cx2; my=cy2;
-        if(random()<(it.hit??constants.samHit)){ m.done=true; m.intercepted=true; if(it.owner===getMe().id) incrementStat('intercepts'); flash({x:mx,y:my,r:4,age:0,col:'#9df'}); { const [nx2,ny2]=missilePos(m,m.age+1); fragments(mx,my,Math.atan2(ny2-my,nx2-mx),8,'#ffd27a'); puff(mx-.5,my-.5,4,'200,220,255'); } sound('intercept');
+        if(random()<(it.hit??constants.samHit)){ m.done=true; m.intercepted=true; if(it.owner===getMe().id) incrementStat('intercepts'); flash({x:mx,y:my,r:4,age:0,col:'#9df'}); { const [nx2,ny2]=missilePos(m,m.age+1); fragments(mx,my,portableMath.atan2(ny2-my,nx2-mx),8,'#ffd27a'); puff(mx-.5,my-.5,4,'200,220,255'); } sound('intercept');
           log(`${players[it.owner].name}'s ${it.ship?'warship':'SAM site'} shot down ${players[m.owner].name}'s missile.`,it.owner===getMe().id||m.owner===getMe().id); }
         else { flash({x:it.x,y:it.y,r:1.5,age:0,col:'#9df'}); dudFragment({x:it.x,y:it.y,vx:dx/Math.max(1,d)*1.2,vy:dy/Math.max(1,d)*1.2+0.2,age:0,life:28,col:'#bfe6ff',dud:true}); }
         continue; }
@@ -162,7 +163,7 @@ export function createMissilesSystem({
     for(let y=cy-r;y<=cy+r;y++)for(let x=cx-r;x<=cx+r;x++){ if(!inb(x,y)||(x-cx)**2+(y-cy)**2>r*r) continue; const t=idx(x,y); if(!land[t]) continue;
       const oo=owner[t]; if(spare!=null&&oo>=0&&(oo===spare||diplomacy.atPeace(spare,oo))) continue;
       if(struct[t]){ const st=structures.find(q=>q.t===t); if(st&&(st.level||1)>=2){ st.level=1; st.lshield=0; if(st.owner===getMe().id) log(`${definitions[st.type].label} knocked back to level I by bombardment.`,true); } else { structureOps.destroyStructure(t); if(st) structureOps.structCounts(players[st.owner]); } }
-      const o=owner[t]; if(spare!=null&&o>=0&&(o===spare||diplomacy.atPeace(spare,o))) continue; if(o>=0&&o!==by){ lost[o]=(lost[o]||0)+1; landCombat.setOwner(t,-1); } }
+      const o=owner[t]; if(spare!=null&&o>=0&&(o===spare||diplomacy.atPeace(spare,o))) continue; if(o>=0&&o!==by&&!struct[t]){ lost[o]=(lost[o]||0)+1; landCombat.setOwner(t,-1); } }
     let cas=0;
     for(const o in lost){ const q=players[o];
       const area=landCombat.areaAt(idx(cx,cy)); const poolB=landCombat.gOn(q)?((area&&area.owner===q.id)?area.troops:q.troops):q.troops; const dB=landCombat.gOn(q)?landCombat.densityAt(q,idx(cx,cy)):landCombat.density(q);

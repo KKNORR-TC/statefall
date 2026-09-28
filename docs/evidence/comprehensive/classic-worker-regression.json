@@ -1,0 +1,80 @@
+[
+  {
+    "browser": "chromium",
+    "terrain": [
+      {
+        "dpr": 1,
+        "differences": 290611,
+        "maxDelta": 28,
+        "meanDelta": 1.5717123015873016,
+        "front": {
+          "layers": 1,
+          "meanDelta": 0,
+          "maxDelta": 0,
+          "pixels": 32992,
+          "bytes": 504000
+        }
+      },
+      {
+        "dpr": 1.5,
+        "differences": 646202,
+        "maxDelta": 57,
+        "meanDelta": 1.6844929453262787,
+        "front": {
+          "layers": 1,
+          "meanDelta": 0,
+          "maxDelta": 0,
+          "pixels": 72948,
+          "bytes": 1134000
+        }
+      }
+    ],
+    "effectDifferences": 0,
+    "baseDraws": 2400,
+    "culledDraws": 626,
+    "stateEqual": true,
+    "errors": []
+  },
+  {
+    "browser": "firefox",
+    "terrain": [
+      {
+        "dpr": 1,
+        "differences": 0,
+        "maxDelta": 0,
+        "meanDelta": 0,
+        "front": {
+          "layers": 1,
+          "meanDelta": 0,
+          "maxDelta": 0,
+          "pixels": 32992,
+          "bytes": 504000
+        }
+      },
+      {
+        "dpr": 1.5,
+        "differences": 0,
+        "maxDelta": 0,
+        "meanDelta": 0,
+        "front": {
+          "layers": 1,
+          "meanDelta": 0,
+          "maxDelta": 0,
+          "pixels": 72948,
+          "bytes": 1134000
+        }
+      }
+    ],
+    "effectDifferences": 0,
+    "baseDraws": 2400,
+    "culledDraws": 626,
+    "stateEqual": true,
+    "errors": []
+  },
+  {
+    "browser": "webkit",
+    "unsupported": true,
+    "fallback": true,
+    "errors": []
+  }
+]

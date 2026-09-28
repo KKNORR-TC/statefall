@@ -1,0 +1,17 @@
+{"map":"mideast","catchup":{"elapsedMs":20065,"ready":true,"tick":2788,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":112,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":265,"framesRun":264}}}
+{"map":"mideast","catchup":{"elapsedMs":40018,"ready":true,"tick":3409,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":137,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":510,"framesRun":509}}}
+{"map":"mideast","catchup":{"elapsedMs":60037,"ready":true,"tick":3880,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":156,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":724,"framesRun":723}}}
+{"map":"mideast","catchup":{"elapsedMs":80009,"ready":true,"tick":4465,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":179,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":958,"framesRun":957}}}
+{"map":"mideast","catchup":{"elapsedMs":100049,"ready":true,"tick":4933,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":198,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":1181,"framesRun":1180}}}
+{"map":"mideast","catchup":{"elapsedMs":120036,"ready":true,"tick":5337,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":214,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":1400,"framesRun":1399}}}
+{"map":"mideast","catchup":{"elapsedMs":140082,"ready":true,"tick":5717,"paused":false,"lastCommand":null,"replay":{"on":true,"commands":240,"applied":230,"targetTick":6000,"mismatch":false,"why":null,"divTick":null,"speed":1,"finalVerified":false,"verifiedEvidence":true,"finished":false},"catchup":{"status":"running","target":6000,"framePending":true,"framesScheduled":1609,"framesRun":1608}}}
+{"map":"mideast","frames":321,"ticks":118,"p95Ms":83.39999999999418,"p99Ms":116.70000000001164,"maxMs":300.0999999999767,"stallsOver50ms":92,"replay":"PASS"}
+AssertionError [ERR_ASSERTION]: late-game presentation fell below 30 FPS average
+    at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tools\qualification\late-game-browser.js:57:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}

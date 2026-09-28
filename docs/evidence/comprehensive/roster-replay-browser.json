@@ -1,0 +1,26 @@
+[
+  {
+    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "browser": "chromium",
+    "tick": 2100,
+    "replay": "PASS",
+    "renderPurity": "PASS",
+    "errors": []
+  },
+  {
+    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "browser": "firefox",
+    "tick": 2100,
+    "replay": "PASS",
+    "renderPurity": "PASS",
+    "errors": []
+  },
+  {
+    "fingerprint": "dcdf92704a921c4d797bc1613d33661bbcaa5fb9337d44ab45c79738908c2539",
+    "browser": "webkit",
+    "tick": 2100,
+    "replay": "PASS",
+    "renderPurity": "PASS",
+    "errors": []
+  }
+]

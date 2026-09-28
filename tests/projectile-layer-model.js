@@ -21,10 +21,10 @@ const assert=require('node:assert/strict');
   assert.deepEqual(scene.canvasStrokeState,{lineJoin:'miter',lineCap:'round',globalAlpha:1,lineDash:[],lineDashOffset:0});
   const torpedo=scene.entries[0],aam=scene.entries[1],barrage=scene.entries[2],artillery=scene.entries[3],ordinary=scene.entries[4],shot=scene.entries[5];
   assert.equal(torpedo.items[0].primitives[0].cap,'round'); assert.equal(torpedo.items[0].primitives[0].stroke,'rgba(225,240,255,0.26333333333333336)');
-  assert.equal(aam.items[0].primitives[0].width,2); assert.equal(aam.items[1].primitives[1].fill,'#ffb347');
+  assert.equal(aam.items[0].primitives[0].width,2); assert.equal(aam.items[1].primitives[1].fill,'#c88e54');
   assert.equal(barrage.arc.rise,17); assert.equal(barrage.arc.delay,2); assert.equal(barrage.arc.total,6); assert.ok(Math.abs(barrage.arc.height)<1e-12); assert.equal(barrage.items[0].primitives[1].y1,74,'height-bearing trail point is projected above ground');
-  assert.deepEqual(artillery.items[1].primitives[0].dash,[2,4]); assert.equal(artillery.items[1].primitives[0].stroke,'rgba(255,255,255,.25)');
-  assert.equal(ordinary.items[0].primitives[0].stroke,'rgba(255,220,150,0.3)'); assert.equal(ordinary.items[1].primitives[0].fill,'#ffe0a8');
+  assert.deepEqual(artillery.items[1].primitives[0].dash,[2,4]); assert.equal(artillery.items[1].primitives[0].stroke,'rgba(217,215,199,.25)');
+  assert.equal(ordinary.items[0].primitives[0].stroke,'rgba(194,166,110,0.3)'); assert.equal(ordinary.items[1].primitives[0].fill,'#d9d7c7');
   assert.equal(shot.alpha,5/6); assert.equal(shot.items[0].primitives[0].width,2);
 
   const fallback={x:20,y:20,tx:30,ty:20,arc:true,trail:[]},first=model.build({...input,shells:[fallback],visualShots:[]}),total=first.entries[0].arc.total; fallback.x=25; const second=model.build({...input,shells:[fallback],visualShots:[]}); assert.equal(total,10); assert.equal(second.entries[0].arc.total,10,'renderer fallback total follows object identity'); assert.equal(model.diagnostics().fallbackTotals,1); model.build({...input,shells:[],visualShots:[]}); assert.equal(model.diagnostics().fallbackTotals,0,'removed fallback totals clean deterministically');

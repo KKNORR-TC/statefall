@@ -1,5 +1,9 @@
 # Phase A Evidence Index and Art-Direction Board
 
+**Current candidate update:** 1.10.49 / plugin 1.10.8 is now undergoing qualification for the approved GO objective. See [the current release record](release-record-1.10.49.md). References to 1.10.48 below describe the prior candidate. No publication has occurred.
+
+Updated 28 September 2026: game 1.10.48 / plugin 1.10.8 is the current local candidate, with classic Canvas artwork enabled for production packaging. It is NO-GO; see [the release record](release-record-1.10.48.md) and [budget reassessment](performance-budget-reassessment.md). Production has not been accessed or changed. Earlier observations below remain historical evidence, not current release certification.
+
 _Approved Phase A record, 15 September 2026._
 
 ## Visual Principles

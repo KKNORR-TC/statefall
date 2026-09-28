@@ -53,6 +53,12 @@ function statefall_register_rewrite() {
 add_action('init', 'statefall_register_rewrite');
 add_filter('query_vars', function ($v) { $v[] = 'statefall_play'; $v[] = 'statefall_asset'; $v[] = 'statefall_credits'; return $v; });
 
+// Asset URLs are files, not permalink pages. A trailing slash changes import.meta.url
+// and makes relative module imports and worker/art URLs resolve below the file itself.
+add_filter('redirect_canonical', function ($redirect) {
+    return get_query_var('statefall_asset') ? false : $redirect;
+});
+
 function statefall_mime($path) {
     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
     $m = ['html' => 'text/html; charset=utf-8', 'js' => 'application/javascript; charset=utf-8', 'mjs' => 'application/javascript; charset=utf-8', 'css' => 'text/css; charset=utf-8', 'json' => 'application/json; charset=utf-8',

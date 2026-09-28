@@ -1,0 +1,23 @@
+[
+  {
+    "browser": "chromium",
+    "differences": 0,
+    "cases": 1296,
+    "culledDraws": 970,
+    "referenceDraws": 1296
+  },
+  {
+    "browser": "firefox",
+    "differences": 0,
+    "cases": 1296,
+    "culledDraws": 970,
+    "referenceDraws": 1296
+  },
+  {
+    "browser": "webkit",
+    "differences": 0,
+    "cases": 1296,
+    "culledDraws": 970,
+    "referenceDraws": 1296
+  }
+]

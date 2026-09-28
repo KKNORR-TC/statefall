@@ -1,0 +1,13 @@
+{
+  "diagnosticTicks": 800,
+  "beforeSeconds": 90.72,
+  "afterSeconds": 6.6,
+  "fullAtoll": {
+    "ticks": 6000,
+    "recordAndReplaySeconds": 177.368,
+    "watchdogSeconds": 360,
+    "p95TickMs": 43.34,
+    "maxTickMs": 175.81
+  },
+  "scope": "Local diagnostic timings; final qualification tracked by simulation fingerprint in qualification-summary.json."
+}

@@ -1,0 +1,25 @@
+
+Running 9 tests using 1 worker
+
+
+
+(node:9732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/9] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[2/9] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[3/9] [chromium-desktop-scale-1] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+
+(node:15252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[4/9] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[5/9] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[6/9] [chromium-desktop-scale-1.5] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+
+(node:41304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[7/9] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[8/9] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[9/9] [chromium-desktop-scale-2] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+  9 passed (35.7s)
