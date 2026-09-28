@@ -1,5 +1,9 @@
 # Statefall Current Status
 
+**Current debug patch: 1.10.53 / plugin 1.10.9.** Removed the 180-tree cutoff that left lower screen areas bare. Focused tree coverage/cache, map-edge, syntax, exact-ZIP integrity/startup checks passed. User replay 91WI5P matched all 28 checkpoints. Full qualification remains deferred under Ken's debug/testing instruction. [Patch record](release-record-1.10.53.md).
+
+## Prior map-edge patch
+
 **Current debug patch: 1.10.52 / plugin 1.10.9.** Map-edge clipping corrected and focused rendering, syntax, exact-ZIP integrity/startup checks passed. Ken explicitly requested patch packaging without the full suite during debugging. Full release qualification is deferred; this patch is not declared production GO. [Patch record](release-record-1.10.52.md).
 
 ## Prior qualified credits correction

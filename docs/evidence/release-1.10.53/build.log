@@ -1,0 +1,56 @@
+
+> statefall@1.10.53 build:release
+> npm run build:game && node tools/build-release.js
+
+
+> statefall@1.10.53 build:game
+> vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 83 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/assets/terrain-raster-worker-CLeriLB5.js           8.84 kB
+../dist/index.html                                        19.58 kB │ gzip:   5.77 kB
+../dist/assets/classic-terrain-worker-BDRwRaQI.js         26.48 kB
+../dist/assets/spy-directions.DtF7O0Lw.png               739.12 kB
+../dist/assets/sub-directions.UIukOQ0g.png               797.92 kB
+../dist/assets/scout-directions.8DJqo1uL.png             838.96 kB
+../dist/assets/hunter-directions.DsmpFbK8.png            848.20 kB
+../dist/assets/destroyer-directions.Bn0IdzHr.png         932.62 kB
+../dist/assets/rship-directions.7lr-mIv4.png           1,050.92 kB
+../dist/assets/transport-directions.BLM_oUCL.png       1,079.67 kB
+../dist/assets/cruiser-directions.Cmpwy1ko.png         1,082.27 kB
+../dist/assets/battleship-directions.q9N9MxIe.png      1,094.65 kB
+../dist/assets/merchant-directions.DU7IfVj-.png        1,097.69 kB
+../dist/assets/fighter-directions.BJodwhUi.png         1,109.64 kB
+../dist/assets/carrier-directions.2BGiq__M.png         1,149.05 kB
+../dist/assets/bomber-directions.B_iZkf5O.png          1,272.79 kB
+../dist/assets/privateer-directions.lidVSLc7.png       1,277.95 kB
+../dist/assets/heavytransport-directions.DP80JD89.png  1,392.20 kB
+../dist/assets/fort-level2.CJiWC7AM.png                1,439.12 kB
+../dist/assets/truck-directions.CtEFX2Mw.png           1,449.87 kB
+../dist/assets/units.CPVKFj2k.png                      1,515.39 kB
+../dist/assets/airfield-level2.h5hjsl38.png            1,602.10 kB
+../dist/assets/port-level2.B_j6EYvf.png                1,882.34 kB
+../dist/assets/fort-level3.DW81DmkH.png                1,976.55 kB
+../dist/assets/structures-complete.Bm3RzRlB.png        2,030.23 kB
+../dist/assets/terrain.C-2eEVb_.png                    3,581.89 kB
+../dist/assets/index.Bsdwr1Qt.css                         12.87 kB │ gzip:   3.30 kB
+../dist/assets/module-preload.PPVm8Dsz.js                  1.23 kB │ gzip:   0.71 kB
+../dist/assets/index.BaykL1zI.js                           1.57 kB │ gzip:   0.81 kB
+../dist/assets/classic-terrain-client.eVLltk-d.js          3.18 kB │ gzip:   1.59 kB
+../dist/assets/terrain-raster-client.2__AgCLY.js           5.05 kB │ gzip:   1.90 kB
+../dist/assets/classic-battlefield.Yb1wukhH.js            25.14 kB │ gzip:  10.51 kB
+../dist/assets/legacy-game.DWVSZuZi.js                   812.23 kB │ gzip: 263.46 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.26s
+copied 8 pages to dist/howto
+flags.js 18128 bytes
+dist/release.json 53 files sha256 7ffe245da71c80c249757bb867160663145932e1e507c99840dac8927926abff
+.artifacts\statefall-release-1.10.53.zip sha256 7583cdcfc0bb7bace308cd25129c8eb425e85fb509dd245347af4280496366fe

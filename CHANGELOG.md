@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.10.53 — Tree coverage
+
+- Remove the top-to-bottom 180-tree cutoff that left lower portions of large close-up views bare. Scenery remains viewport-bounded and cached.
+- Debug/testing patch with focused checks; full qualification deferred at Ken's request.
+
 ## 1.10.52 — Close-up map edge
 
 - Clip classic terrain and its cached overscan to map bounds, preserving the empty border when zoomed in or panning.

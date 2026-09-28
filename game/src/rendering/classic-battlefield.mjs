@@ -218,11 +218,12 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
     }
     ctx.restore();
     ctx.restore();
-    // Bounded, presentation-only trees; never cover building sites or truck routes.
+    // Viewport-bounded, cached scenery; never truncate by draw count (which leaves lower rows bare).
+    // Never cover building sites or truck routes.
     let trees=0;
     if(s>=6){
       const occupied=structures.filter(st=>!fog||fog[st.t]).map(st=>[st.t%W+.5,Math.floor(st.t/W)+.5]);
-      for(let y=y0;y<y1&&trees<180;y+=2) for(let x=x0;x<x1&&trees<180;x+=2){
+      for(let y=y0;y<y1;y+=2) for(let x=x0;x<x1;x+=2){
         // Absolute cell parity prevents scenery changing when the camera pans.
         const xx=x-x%2,yy=y-y%2,t=yy*W+xx;
         if(!land[t]||river[t]||hash(xx,yy)%19!==0) continue;
