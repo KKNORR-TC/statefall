@@ -1,4 +1,13 @@
 $ErrorActionPreference = 'Stop'
+# Use the runtime SHA-256 implementation; nested Windows PowerShell can lack Get-FileHash.
+function Get-ArtifactSha256([string]$LiteralPath) {
+    $stream = [IO.File]::OpenRead([IO.Path]::GetFullPath($LiteralPath))
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose(); $stream.Dispose() }
+}
+
+
 $dockerBin = 'C:\Program Files\Docker\Docker\resources\bin'
 if (Test-Path -LiteralPath $dockerBin) { $env:Path = "$dockerBin;$env:Path" }
 $settings = @{}
@@ -34,7 +43,7 @@ $pluginSource = Get-Content -LiteralPath (Join-Path $PSScriptRoot '..\plugin\sta
 $pluginVersion = [regex]::Match($pluginSource,'Version:\s*([^\s]+)').Groups[1].Value
 if ($pluginCandidate.version -ne $pluginVersion -or $pluginCandidate.filename -ne "statefall-scores-$pluginVersion.zip") { throw 'Plugin candidate does not match repository version.' }
 $plugin = Join-Path $PSScriptRoot ('..\.artifacts\' + $pluginCandidate.filename)
-if ((Get-FileHash -LiteralPath $plugin -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pluginCandidate.sha256) { throw 'Plugin ZIP checksum changed.' }
+if ((Get-ArtifactSha256 -LiteralPath $plugin) -ne $pluginCandidate.sha256) { throw 'Plugin ZIP checksum changed.' }
 $pluginArchive = '/statefall-artifacts/' + $pluginCandidate.filename
 if (-not (Test-Path -LiteralPath $plugin)) { throw 'Built plugin ZIP was not found.' }
 docker @cli plugin install '/statefall-artifacts/statefall-scores-1.10.6.zip' --activate
@@ -71,7 +80,7 @@ $expectedVersion = [regex]::Match($buildSource,"GAME_VERSION='([^']+)'").Groups[
 $expectedBuild = [regex]::Match($buildSource,"GAME_BUILD='([^']+)'").Groups[1].Value
 if ($candidate.version -ne $expectedVersion -or $candidate.build -ne $expectedBuild -or $candidate.filename -ne "statefall-release-$expectedVersion.zip") { throw 'Artifact candidate does not match the repository build.' }
 $zipPath = Join-Path $PSScriptRoot ('..\.artifacts\' + $candidate.filename)
-if ((Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant() -ne $candidate.sha256) { throw 'Exact game ZIP checksum changed.' }
+if ((Get-ArtifactSha256 -LiteralPath $zipPath) -ne $candidate.sha256) { throw 'Exact game ZIP checksum changed.' }
 $versionPattern = "GAME_VERSION='" + [regex]::Escape($expectedVersion) + "',\s*GAME_BUILD='" + [regex]::Escape($expectedBuild) + "'"
 if ($play.StatusCode -ne 200 -or $play.Content -notmatch '<script type="application/json" id="statefall-wp-config">' -or $play.Content -notmatch $versionPattern) { throw 'Private exact-game HTML does not match the candidate.' }
 if (($play.Headers['Cache-Control'] -join ',') -notmatch 'no-cache|no-store') { throw 'Play HTML is not private/uncached.' }
