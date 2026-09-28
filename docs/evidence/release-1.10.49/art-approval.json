@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-09-28T17:00:34.730Z",
+  "reviewer": "Ken",
+  "candidate": "1.10.49",
+  "decision": "Approve current art for this release; defer detailed Phase G review",
+  "scope": "Current classic units, buildings and upgrade artwork accepted for this release. Detailed Phase G animation/state reviews remain follow-up; this does not mark individual register rows complete or authorize publication.",
+  "boards": [
+    {
+      "path": "docs/evidence/comprehensive/naval-roster.png",
+      "sha256": "b7818ba7fb0c4a6d5cb27b0f24576cac9f9f6bca51b0be7c930c86416aae7d5b"
+    },
+    {
+      "path": "docs/evidence/comprehensive/structure-roster.png",
+      "sha256": "1de23dc7167a51b8e62bdecb79acda92f929327c6c9cd4ccb4a11c1e530e58b6"
+    },
+    {
+      "path": "docs/evidence/upgrades/art-tiers.png",
+      "sha256": "d7771d231ced16574b8527db93f37fd881b9a2070810898dfb50f81fc870d9e4"
+    }
+  ]
+}

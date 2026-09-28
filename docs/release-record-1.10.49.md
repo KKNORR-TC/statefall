@@ -19,6 +19,11 @@ Game build: 2026-09-28-release-performance. Minimum plugin: 1.10.8. The original
 - Pixi support-layer suite: 17/17 PASS, including resource/fallback behavior.
 - Three isolated 1,800-frame stress repeats: 3/3 PASS; p99 11.0, 11.1 and 12.6 ms, versus the unchanged 33 ms limit. Tight-loop maximum stalls remain 868–941 ms; these tests measure synchronous submission, not live display smoothness.
 
-Full current-source matrix, browser suites, required network performance, reproducibility and exact WordPress artifact qualification remain to be completed and recorded. The unit-art register still requires its named human review; no row approval has been invented.
+Full current-source matrix, browser suites, required network performance, reproducibility and exact WordPress artifact qualification remain to be completed and recorded. Ken explicitly approved the current classic artwork for this release and deferred detailed Phase G animation/state reviews. This release-specific acceptance is [recorded with the reviewed boards](evidence/release-1.10.49/art-approval.json); no individual row approval has been invented.
 
 The [1.10.48 release record](release-record-1.10.48.md) is historical and retains that candidate's exact ZIPs and failures. New final artifacts must be built and verified for 1.10.49.
+
+## Startup follow-up
+
+The first full verification passed 355 browser cases, 21 scale checks, the prototype check, deterministic Node contracts, reproducibility and all approved loading limits. A subsequent startup usability fix now displays loading status, prevents input until ready and offers retry after a failed module download. Its ten targeted checks pass across Chromium, Firefox, WebKit and source/built contracts. Full qualification is being repeated for this final source.
+

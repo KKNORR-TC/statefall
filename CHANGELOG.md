@@ -2,12 +2,13 @@
 
 ## Unreleased — Qualification and documentation
 
-- Add optional cold-network performance observations at 25 Mbps and 10 Mbps without removing existing release gates.
+- Retain loading-budget provenance and qualification history.
 - Trace the historical 0.9 MB limits, record measured startup and a proposed replacement policy, and reconcile current classic-art status with historical modernization evidence.
-- Document local checkpoint boundaries; candidate remains NO-GO and tested game/plugin ZIPs are unchanged.
+- Document reviewed local checkpoints and release-specific artwork acceptance; final qualification remains in progress.
 
 ## 1.10.49 — Release performance fixes
 
+- Show loading status and prevent inactive controls during startup; offer a working retry after loading failures. Keep production preload helpers independently fingerprinted for reproducible builds.
 - Remove repeated coordinate work and direction branching from capture fronts while preserving tile insertion order and random-number consumption.
 - Avoid Canvas state writes for offscreen effects; pixel-equivalence checks include screen-edge overlap.
 - Isolate changing development Pixi support graphics into a render group to reduce GPU-upload stalls; production remains classic Canvas.

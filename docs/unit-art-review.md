@@ -1,5 +1,7 @@
 # Phase G Unit Art Review Register
 
+**Release-specific decision, 28 September 2026:** Ken explicitly approved the current classic units, buildings and upgrade artwork for release 1.10.49, and deferred detailed Phase G animation/state reviews. This supersedes the requirement to finish every register row before this particular release; Phase G itself remains open and rows retain their actual review status. [Approval and reviewed boards](evidence/release-1.10.49/art-approval.json).
+
 Current candidate note (28 September 2026): Ken explicitly requested that the release include the new classic look. Candidate 1.10.48 includes the complete classic roster and level II/III structure artwork. This authorizes inclusion, but is not a recorded row-by-row review; existing statuses remain unchanged. See [current release evidence](release-record-1.10.48.md).
 
 _Reconciled against the shipped roster and rendering categories on 25 September 2026. Ken has approved general Unit Direction 02 for production translation only. That direction approval does not approve any Phase G entity, state, animation, effect, evidence set, or register row. Every row below remains `Pending | Unassigned`; no per-row approvals have been recorded. The complete static-identity translation candidate is documented in `docs/phase-g-all-units-review.md`; it does not change any row status._

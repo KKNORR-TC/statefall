@@ -1,5 +1,7 @@
 # Statefall Graphics Modernization Plan
 
+**Release-specific decision, 28 September 2026:** Ken explicitly approved the current classic units, buildings and upgrade artwork for release 1.10.49, and deferred detailed Phase G animation/state reviews. This supersedes the requirement to finish every register row before this particular release; Phase G itself remains open and rows retain their actual review status. [Approval and reviewed boards](evidence/release-1.10.49/art-approval.json).
+
 **Current candidate update:** 1.10.49 / plugin 1.10.8 is now undergoing qualification for the approved GO objective. See [the current release record](release-record-1.10.49.md). References to 1.10.48 below describe the prior candidate. No publication has occurred.
 
 _Updated 28 September 2026. Phases 0–F retain their historical evidence; Phase G is implemented in the current classic-art candidate but its detailed human review remains open. Game 1.10.48/plugin 1.10.8 is NO-GO. See [current status](current-status.md), [release record](release-record-1.10.48.md), and [loading-budget reassessment](performance-budget-reassessment.md). Production remains unchanged._

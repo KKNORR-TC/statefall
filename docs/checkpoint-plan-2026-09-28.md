@@ -20,3 +20,9 @@ These are review boundaries, not a promise that the present diff can be split me
 Inspect untracked source and evidence individually; include required assets and their provenance. Exclude credentials, sandbox/.env, database/runtime dumps, temporary browser output, ZIPs and node_modules. Review evidence sizes and prefer compact reproducible reports over unnecessary bulk. Check the staged diff and whitespace. Record the known NO-GO findings in the commit body: legacy byte threshold pending reassessment, late Middle East slowdown/watchdog, intermittent development Pixi stress, and open art review. Do not create a release tag or push without authorization.
 
 The exact tested ZIP checksums remain those in [the release record](release-record-1.10.48.md). A source checkpoint must not silently rewrite the recorded source identity of a previously tested archive.
+
+## Recorded checkpoints
+
+- a352b92: reviewed combined classic-art, simulation, release and performance candidate. Dependencies were retained together to keep the checkpoint coherent.
+- Startup follow-up: loading status, inactive-control protection, retry, independently fingerprinted preload helper, and ten browser regression checks. Full qualification follows this checkpoint.
+
