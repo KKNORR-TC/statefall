@@ -1,3 +1,4 @@
+import {paintSilo} from './classic-silo-runtime.mjs';
 import {missilePosition} from './missile-layer-model.mjs';
 import {paintSam} from './classic-sam-sequence.mjs';
 import {createClassicMotionPainter} from './classic-motion-effects.mjs';
@@ -20,6 +21,7 @@ export function createClassicMotionLayer(){
    const unit=SEA.has(key)||AIR.has(key)||key==='truck',heading=options.heading||0;
    ctx.save();ctx.translate(x,y);ctx.scale(size,size);ctx.translate(-180,unit?(key==='truck'?-128:-116):-166);
    if(key==='sam')paintSam(ctx,{age:options.samAge??3.8,target:options.heading??-Math.PI/2,projectile:options.projectile!==false,aimHeading:options.heading,reducedMotion:!animate});
+   else if(key==='silo')paintSilo(ctx,{age:options.age,projectile:options.age<4.65});
    else paint(ctx,{key,level:source.level||1,time:time+(source.t??source.id??source.owner??0)*.071,age:options.age??-100,scale:Math.min(1,c.s/4),strength:.8,muzzles:unit?shipMuzzles(key,heading):null,wingtips:AIR.has(key)?art.motionWingTips(key,heading):null,unitPoint:unit?(x,y)=>unitAttachment(heading,x,y):null,moving:options.moving??true,shieldActive:options.shieldActive??true,nativeActions:true,impact:source.flash>tick});ctx.restore();draws++;
   }
   for(const st of structures){
@@ -42,7 +44,8 @@ export function createClassicMotionLayer(){
     else{if(weapon.fired){weapon.fired=false;weapon.loadedAt=time;}const loading=(time-weapon.loadedAt)*4;samAge=loading<1.8?loading:3.8;}
    }
    const state=tracker.observe(st,values),phase=(time+st.t*.071)%12;
-   let age=st.type==='silo'?state.age*14:state.age;
+   let age=state.age;
+   if(st.type==='silo'){const missile=(input.weaponMissiles||[]).find(m=>!m.cruise&&m.from===st.t&&m.owner===st.owner);if(missile)weapon.launchTick=tick-missile.age;age=weapon.launchTick==null?-1:Math.max(0,tick-weapon.launchTick-1+(input.interpolationAlpha??1))*1.4;}
    if(routine&&phase<2.5||dispatch||(st.type==='fort'&&st===selectedStructure))age=phase%2.5;
    if(st.type==='flightops'&&departures.size&&structures.some(q=>q.type==='airfield'&&q.owner===st.owner&&departures.has(q.t)))age=phase%2.5;
    if(st.type==='command'&&structures.some(q=>q.type==='silo'&&q.owner===st.owner&&(!fog||fog[q.t])&&q.cool>tick&&q.cool-tick>175&&Math.hypot(q.t%W-st.t%W,Math.floor(q.t/W)-Math.floor(st.t/W))<=45))age=phase%2.5;

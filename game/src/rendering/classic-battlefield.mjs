@@ -1,5 +1,5 @@
 import {paintSam,loadSamArt} from './classic-sam-sequence.mjs';
-import {paintSilo,loadSiloArt} from './classic-silo-sequence.mjs';
+import {paintSilo,loadSiloArt} from './classic-silo-runtime.mjs';
 import upgradeMetadata from './classic-assets/upgrade-metadata.json';
 import structureMetadata from './classic-assets/structure-metadata.json';
 import directionalMetadata from './classic-assets/directional-metadata.json';

@@ -1,3 +1,4 @@
+import {siloFlightPosition} from './silo-flight-path.mjs';
 import {primitiveGraphicsSegments,primitiveIntersectsViewport} from './pre-structure-layer-model.mjs';
 import {UNIT_COLORS} from './unit-art-direction.mjs';
 
@@ -18,6 +19,7 @@ const circle=(x,y,r,style)=>({kind:'circle',x,y,r,...style});
 const rotate=(x,y,angle,scale,values)=>values.map(([px,py])=>point(x+(px*Math.cos(angle)-py*Math.sin(angle))*scale,y+(px*Math.sin(angle)+py*Math.cos(angle))*scale));
 
 export function missilePosition(missile,age,mapWidth){
+  if(missile.classicLaunchScale)return siloFlightPosition(missile,Number(age),mapWidth,missile.classicLaunchScale);
   const k=Math.min(1,Number(age)/Number(missile.flight)),x0=Number(missile.from)%mapWidth+.5,y0=(Number(missile.from)-Number(missile.from)%mapWidth)/mapWidth+.5,x1=Number(missile.t)%mapWidth+.5,y1=(Number(missile.t)-Number(missile.t)%mapWidth)/mapWidth+.5;
   const h=missile.cruise?0:Math.hypot(x1-x0,y1-y0)*.35;
   return Object.freeze([x0+(x1-x0)*k,y0+(y1-y0)*k-Math.sin(k*Math.PI)*h]);
@@ -56,11 +58,11 @@ function validatedMissileInput(input){
 }
 
 // This is the legacy Canvas path, intentionally independent of Pixi model/resource caps.
-export function paintMissilesCanvas(context,input,{onlySemantic=null}={}){
+export function paintMissilesCanvas(context,input,{onlySemantic=null,paintBody=null}={}){
   const {camera,mapWidth,now,nukeRadius,cruiseRadius,missiles}=validatedMissileInput(input),order=[];
   for(const missile of missiles){
     if(!missile.visible&&!missile.owned) continue;
-    const age=Number(missile.age),current=missilePosition(missile,age,mapWidth),next=missilePosition(missile,age+1,mapWidth),x=camera.x+current[0]*camera.scale,y=camera.y+current[1]*camera.scale,target=missilePosition(missile,Number(missile.flight),mapWidth),targetX=camera.x+target[0]*camera.scale,targetY=camera.y+target[1]*camera.scale,N=Math.max(2,Math.floor(age/2));
+    const age=Number(missile.age),current=missilePosition(missile,age,mapWidth),next=missilePosition(missile,age+(missile.classicLaunchScale?.0001:1),mapWidth),x=camera.x+current[0]*camera.scale,y=camera.y+current[1]*camera.scale,target=missilePosition(missile,Number(missile.flight),mapWidth),targetX=camera.x+target[0]*camera.scale,targetY=camera.y+target[1]*camera.scale,N=Math.max(2,Math.floor(age/2));
     if(!onlySemantic||onlySemantic==='missile-trail'){
       context.lineCap='round'; order.push('missile-trail');
       for(let i=1;i<=N;i++){
@@ -69,11 +71,11 @@ export function paintMissilesCanvas(context,input,{onlySemantic=null}={}){
       }
     }
     if(!onlySemantic||onlySemantic==='missile-body'){
-      order.push('missile-body'); context.save(); context.translate(x,y); context.rotate(missile.cruise?Math.atan2(targetY-y,targetX-x):Math.atan2(next[1]-current[1],next[0]-current[0])); if(missile.cruise) context.scale(.65,.65);
+      order.push('missile-body'); if(paintBody&&missile.classicLaunchScale){paintBody(context,{x,y,heading:Math.atan2(next[1]-current[1],next[0]-current[0]),scale:missile.classicLaunchScale*camera.scale,age});}else{ context.save(); context.translate(x,y); context.rotate(missile.cruise?Math.atan2(targetY-y,targetX-x):Math.atan2(next[1]-current[1],next[0]-current[0])); if(missile.cruise) context.scale(.65,.65);
       context.fillStyle='rgba(255,180,80,.55)'; context.beginPath(); context.moveTo(-6,0); context.lineTo(-18,-3); context.lineTo(-14,0); context.lineTo(-18,3); context.closePath(); context.fill();
       context.fillStyle=UNIT_COLORS.ivory; context.beginPath(); context.moveTo(8,0); context.lineTo(3,-2.5); context.lineTo(-6,-2.5); context.lineTo(-6,2.5); context.lineTo(3,2.5); context.closePath(); context.fill();
       context.fillStyle='#f4f0d7'; context.beginPath(); context.moveTo(5,-2.1); context.lineTo(-5,-2.1); context.lineTo(-5,-1); context.lineTo(3,-1); context.closePath(); context.fill();
-      context.fillStyle=UNIT_COLORS.hostile; context.beginPath(); context.moveTo(-6,-2.5); context.lineTo(-9,-5); context.lineTo(-6,0); context.lineTo(-9,5); context.lineTo(-6,2.5); context.fill(); context.restore();
+      context.fillStyle=UNIT_COLORS.hostile; context.beginPath(); context.moveTo(-6,-2.5); context.lineTo(-9,-5); context.lineTo(-6,0); context.lineTo(-9,5); context.lineTo(-6,2.5); context.fill(); context.restore();}
     }
     if(!onlySemantic||onlySemantic==='missile-target-warning'){
       order.push('missile-target-warning'); context.strokeStyle=`rgba(255,107,107,${.35+.35*Math.sin(now/150)})`; context.lineWidth=1.5; context.setLineDash([6,6]); context.beginPath(); context.arc(targetX,targetY,(missile.cruise?cruiseRadius:nukeRadius)*camera.scale,0,Math.PI*2); context.stroke(); context.setLineDash([]);
