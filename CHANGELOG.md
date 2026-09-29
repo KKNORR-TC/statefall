@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.10.57 — Loading screen unit showcase
+
+- Rotate through six named unit images every three seconds during startup using existing artwork.
+- Keep a static image for reduced motion and stop the showcase on startup completion or failure.
+- Package shared artwork metadata independently to preserve reproducible asset fingerprints.
+
+## 1.10.56 — Continuous silo flight
+
+- Join the approved silo launch artwork to the native missile trajectory using the actual missile age and frame interpolation.
+- Preserve arrival time, targeting, damage, interception rules, and simulation state.
+- Isolated testing handoff; qualification scope is recorded in the 1.10.56 release record.
+
 ## 1.10.55 — Silo and SAM firing
 
 - Integrate approved layered silo and rotating single-missile SAM visuals with gameplay timing and target bearings.

@@ -16,7 +16,7 @@ module.exports=defineConfig(({command,mode})=>({
     outDir:path.resolve(__dirname,mode==='capture'?'.artifacts/trailer-dist':'dist'),
     emptyOutDir:true,
     assetsDir:'assets',
-    // Keep the shared preload helper out of the entry to avoid circular asset hashes.
-    rollupOptions:{output:{manualChunks:id=>id.includes('vite/preload-helper')?'module-preload':undefined,entryFileNames:'assets/[name].[hash].js',chunkFileNames:'assets/[name].[hash].js',assetFileNames:'assets/[name].[hash][extname]'}}
+    // Shared startup/battlefield data must stay out of the entry to avoid circular asset hashes.
+    rollupOptions:{output:{manualChunks:id=>id.includes('vite/preload-helper')?'module-preload':id.endsWith('/classic-assets/directional-metadata.json')?'unit-art-metadata':undefined,entryFileNames:'assets/[name].[hash].js',chunkFileNames:'assets/[name].[hash].js',assetFileNames:'assets/[name].[hash][extname]'}}
   }
 }));

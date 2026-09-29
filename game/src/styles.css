@@ -94,3 +94,9 @@
   #bootStatus>div{max-width:36rem}
   #bootStatus h1{font-size:28px;margin:0 0 12px}
   #bootStatus p{color:var(--muted)}
+  #bootStatus{overflow-y:auto}
+  #bootUnits{margin:0 auto 24px;width:min(320px,75vw);visibility:hidden}
+  #bootUnits.ready{visibility:visible}
+  #bootUnits canvas{display:block;width:100%;height:auto;background:radial-gradient(ellipse,rgba(127,179,255,.13),transparent 70%)}
+  #bootUnits figcaption{min-height:20px;color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  #bootStatus[role="alert"] #bootUnits{display:none}

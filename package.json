@@ -1,6 +1,6 @@
 {
   "name": "statefall",
-  "version": "1.10.55",
+  "version": "1.10.57",
   "private": true,
   "description": "Headless simulation tests and release tooling for Statefall",
   "engines": {
