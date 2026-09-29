@@ -361,6 +361,17 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
     }
     ctx.restore();return true;
   }
+  const motionTips=new Map();
+  function motionWingTips(type,heading){
+    if(!['fighter','bomber','carrier','spy'].includes(type))return null;
+    const phase=((heading/(Math.PI/4))%8+8)%8,low=Math.floor(phase),f=phase-low,blend=f*f*(3-2*f);
+    const tips=index=>{const key=type+'/'+index;if(motionTips.has(key))return motionTips.get(key);
+      const im=source(key,null,256),data=im.getContext('2d').getImageData(0,0,256,256).data,angle=index*Math.PI/4,nx=-Math.sin(angle),ny=Math.cos(angle);
+      let lo=Infinity,hi=-Infinity,left=[128,128],right=[128,128];
+      for(let y=0;y<256;y++)for(let x=0;x<256;x++){const i=(y*256+x)*4;if(data[i+3]<180||data[i]+data[i+1]+data[i+2]<90)continue;const side=(x-128)*nx+(y-128)*ny;if(side<lo){lo=side;left=[x,y];}if(side>hi){hi=side;right=[x,y];}}
+      const width=28*(type==='fighter'?4.4:5.2),result=[left,right].map(([x,y])=>[180+(x-128)*width/256,116+(y-128)*width/256]);motionTips.set(key,result);return result;};
+    const a=tips(low),b=tips((low+1)%8);return a.map((v,i)=>[v[0]+(b[i][0]-v[0])*blend,v[1]+(b[i][1]-v[1])*blend]);
+  }
   function paintAircraft(ctx,craft,camera){
     if(!enabled||!['fighter','bomber','carrier','spy'].includes(craft.type))return false;
     const x=camera.x+craft.x*camera.scale,y=camera.y+craft.y*camera.scale,w=Math.max(10,camera.scale*(craft.type==='fighter'?4.4:5.2));
@@ -397,7 +408,7 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
     ready?.();
   }
   return {
-    interpolateShipHeading,get enabled(){return enabled;},paintTerrain,paintFronts,paintStructure,paintShip,paintWake,paintAircraft,paintSpy,paintTruck,pickStructure,
+    motionWingTips,interpolateShipHeading,get enabled(){return enabled;},paintTerrain,paintFronts,paintStructure,paintShip,paintWake,paintAircraft,paintSpy,paintTruck,pickStructure,
     setEnabled(value){enabled=!!value;},
     sortedStructures(values){return enabled?[...values].sort((a,b)=>a.t-b.t):values;},
     mountControls,

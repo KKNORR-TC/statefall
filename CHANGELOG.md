@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.54 — Classic animation integration
+
+- Integrate reviewed lightweight building and unit effects with fog, visibility, pause and reduced-motion guards.
+- Share the effect renderer with the review scene; attach action effects to existing presentation state, without changing simulation rules or RNG.
+- Use heading-aware naval muzzles and artwork-derived aircraft wingtip lights.
+- Focused debug-patch verification requested; full release qualification deferred.
+
 ## 1.10.53 — Tree coverage
 
 - Remove the top-to-bottom 180-tree cutoff that left lower portions of large close-up views bare. Scenery remains viewport-bounded and cached.

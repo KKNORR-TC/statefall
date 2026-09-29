@@ -1,0 +1,5 @@
+REPLAY MATCH 91WI5P 2806 ticks 57 commands 28 checkpoints final 584b5cbd
+(node:35072) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/maps.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)

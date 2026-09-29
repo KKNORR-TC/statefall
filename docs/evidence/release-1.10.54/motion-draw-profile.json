@@ -1,0 +1,7 @@
+{
+  "scenario": "200 visible buildings, effects only, 1920x1080, scale 6",
+  "samples": 180,
+  "medianMs": 0.40000003576278687,
+  "p95Ms": 1,
+  "maxMs": 2
+}

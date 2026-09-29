@@ -1,0 +1,8 @@
+
+> statefall@1.10.54 syntax
+> node tools/check-game-syntax.js && node --check playwright.config.js && node --check playwright.wordpress.config.js && node --check tools/package-zip.js && node --check tools/build-release.js && node --check tools/build-plugin.js && node --check tools/build-previous-plugin.js && node --check tests/build-package-fixtures.js && npm run syntax:prototype
+
+Syntax OK: module entry and 255 source/tool/test files
+
+> statefall@1.10.54 syntax:prototype
+> node --check prototypes/graphics-vertical-slice/scene.js && node --check prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js && node --check prototypes/graphics-vertical-slice/playwright.config.js

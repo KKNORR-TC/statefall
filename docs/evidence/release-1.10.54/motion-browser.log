@@ -1,0 +1,14 @@
+
+[WebServer] (node:51232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+
+(node:51860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/3] [chromium-desktop] › tests\browser\classic-map-edge.spec.js:2:1 › classic terrain preserves all four map edges across cache pans and worker output
+[2/3] [chromium-desktop] › tests\browser\classic-motion.spec.js:2:1 › classic motion covers roster, guards fog/offscreen/reduced motion and leaves state unchanged
+[3/3] [chromium-desktop] › tests\browser\classic-tree-coverage.spec.js:2:1 › large close-up terrain draws trees through the bottom of the view and reuses its cache
+  3 passed (4.8s)

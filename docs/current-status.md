@@ -1,5 +1,9 @@
 # Statefall Current Status
 
+**Current debug patch: 1.10.54 / plugin 1.10.9.** Reviewed unit/building motions integrated and packaged. Focused animation, terrain, startup and exact-ZIP checks passed; replay 91WI5P still matches all 28 checkpoints. Full qualification remains deferred; no new production GO or deployment. [Patch record](release-record-1.10.54.md).
+
+## Prior tree-coverage patch
+
 **Current debug patch: 1.10.53 / plugin 1.10.9.** Removed the 180-tree cutoff that left lower screen areas bare. Focused tree coverage/cache, map-edge, syntax, exact-ZIP integrity/startup checks passed. User replay 91WI5P matched all 28 checkpoints. Full qualification remains deferred under Ken's debug/testing instruction. [Patch record](release-record-1.10.53.md).
 
 ## Prior map-edge patch
