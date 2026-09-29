@@ -1,0 +1,162 @@
+[
+  {
+    "path": "artifacts.log.gz",
+    "uncompressedSha256": "3511fc9ec3b98958720076ce2fe85555b99ecc6d134c2cd611948323a515db66",
+    "uncompressedBytes": 15340
+  },
+  {
+    "path": "build-reproducibility.log.gz",
+    "uncompressedSha256": "f7ae9369f641d709ee588651b3d56b640d89bc3352b07226e6f38dac371e3a17",
+    "uncompressedBytes": 7220
+  },
+  {
+    "path": "docker-final-status.log.gz",
+    "uncompressedSha256": "e99f49ac915843bfc0457b3d15a42ca65fc2bafbc1c65fc9620fbd0299742970",
+    "uncompressedBytes": 55
+  },
+  {
+    "path": "docker-final-stop.log.gz",
+    "uncompressedSha256": "41926d80ea57b5914ccd04964f3b5fa97736e76465fc4afdeeda8f52faf5382e",
+    "uncompressedBytes": 247
+  },
+  {
+    "path": "final-startup.log.gz",
+    "uncompressedSha256": "0a0c1df75859879ad7f635755e49ddc6a3fcb4458eb44fc2b4ad3670880c5796",
+    "uncompressedBytes": 2170
+  },
+  {
+    "path": "performance.log.gz",
+    "uncompressedSha256": "abdd99bffdd15ef278494b4e909ba7bb4993ec45ea02f58772d9e9d815473d2b",
+    "uncompressedBytes": 5837
+  },
+  {
+    "path": "sandbox-start.log.gz",
+    "uncompressedSha256": "f1ebdf17a8a180a8e09e794c75d7d7ec3e7b11e895a4c325aa610d6e23480a59",
+    "uncompressedBytes": 1291
+  },
+  {
+    "path": "source-final.patch.gz",
+    "uncompressedSha256": "fdd340d2a02dc8732e0e6cd923ffc208170faaa7979b3b6d25c7a1ae9bcfc5b2",
+    "uncompressedBytes": 12592
+  },
+  {
+    "path": "syntax.log.gz",
+    "uncompressedSha256": "f3a892a28651b06ab71599ff6f84342bc06561192ce6ac19691788150ad1d099",
+    "uncompressedBytes": 701
+  },
+  {
+    "path": "initial-candidate/artifacts.log.gz",
+    "uncompressedSha256": "e22f78831fd306708a0aec939331315b2b876a491e7def08a0806102835c84bc",
+    "uncompressedBytes": 15340
+  },
+  {
+    "path": "initial-candidate/build-reproducibility.log.gz",
+    "uncompressedSha256": "50c3170f4cf60c8a1ec619f483101fd442135d129eda72678e64eefd8bf1e464",
+    "uncompressedBytes": 7220
+  },
+  {
+    "path": "initial-candidate/desktop-scale.log.gz",
+    "uncompressedSha256": "a7dc0c641a621f2906ba10d15434329b512eba83a61b77791d6ca7926692d951",
+    "uncompressedBytes": 5516
+  },
+  {
+    "path": "initial-candidate/docker-final-status.log.gz",
+    "uncompressedSha256": "e99f49ac915843bfc0457b3d15a42ca65fc2bafbc1c65fc9620fbd0299742970",
+    "uncompressedBytes": 55
+  },
+  {
+    "path": "initial-candidate/docker-final-stop.log.gz",
+    "uncompressedSha256": "41926d80ea57b5914ccd04964f3b5fa97736e76465fc4afdeeda8f52faf5382e",
+    "uncompressedBytes": 247
+  },
+  {
+    "path": "initial-candidate/docker-recovery-stop.log.gz",
+    "uncompressedSha256": "b05022a989e57c9429330c1916c2a7f1c6cb8e3d704920ffb50167396feb5b4a",
+    "uncompressedBytes": 124
+  },
+  {
+    "path": "initial-candidate/docker-recovery-stop3.log.gz",
+    "uncompressedSha256": "b05022a989e57c9429330c1916c2a7f1c6cb8e3d704920ffb50167396feb5b4a",
+    "uncompressedBytes": 124
+  },
+  {
+    "path": "initial-candidate/map-edge-rerun.log.gz",
+    "uncompressedSha256": "11bb23d37cc87c01cbad8a0987ebf89db56b752d013479836469edea445dc0f8",
+    "uncompressedBytes": 1563
+  },
+  {
+    "path": "initial-candidate/npm-ci-retry.log.gz",
+    "uncompressedSha256": "c0662db1fc55b69be0ceea4dd920f7526731bcde833e491f19da3840f4c64a67",
+    "uncompressedBytes": 247
+  },
+  {
+    "path": "initial-candidate/npm-ci.log.gz",
+    "uncompressedSha256": "e019b786d9477fe0ba9f012cb3843f533bd5f19979e17c1bf24c0641231f1514",
+    "uncompressedBytes": 1194
+  },
+  {
+    "path": "initial-candidate/performance.log.gz",
+    "uncompressedSha256": "48a04edc2cdfbe921351c64891e77c17853a25110c5ef4da3d04a3c4f25d1879",
+    "uncompressedBytes": 5837
+  },
+  {
+    "path": "initial-candidate/prototype.log.gz",
+    "uncompressedSha256": "57059fd12eee5d14d42e083d78d52d0b5ae3c830148ebc3a11e7bd9298ce57dd",
+    "uncompressedBytes": 524
+  },
+  {
+    "path": "initial-candidate/sandbox-security-windows-powershell.log.gz",
+    "uncompressedSha256": "1e8d9aecc204033953900867f320e1434e60fc755aadc2e42068f25b52bb2dc6",
+    "uncompressedBytes": 598
+  },
+  {
+    "path": "initial-candidate/sandbox-security.log.gz",
+    "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncompressedBytes": 0
+  },
+  {
+    "path": "initial-candidate/sandbox-start-retry.log.gz",
+    "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncompressedBytes": 0
+  },
+  {
+    "path": "initial-candidate/sandbox-start-retry2.log.gz",
+    "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncompressedBytes": 0
+  },
+  {
+    "path": "initial-candidate/sandbox-start-retry3.log.gz",
+    "uncompressedSha256": "37c7f26f3eca938ee6b12dc5899d49568f23ea10a796c07761ad9e874c8def08",
+    "uncompressedBytes": 1291
+  },
+  {
+    "path": "initial-candidate/sandbox-start.log.gz",
+    "uncompressedSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncompressedBytes": 0
+  },
+  {
+    "path": "initial-candidate/sandbox-verify.log.gz",
+    "uncompressedSha256": "398e52fdac06f86888299f475b73f3f2d2d308d1da455aa1db10c21e7a8b7167",
+    "uncompressedBytes": 88
+  },
+  {
+    "path": "initial-candidate/source-final.patch.gz",
+    "uncompressedSha256": "8c3215563770b468505afabecc8e665626b951467e1723d9d43ead986cedad17",
+    "uncompressedBytes": 17595
+  },
+  {
+    "path": "initial-candidate/source.patch.gz",
+    "uncompressedSha256": "dc9174919c75424cef22209675ce66465564c728cbf47030109ef231f17981f5",
+    "uncompressedBytes": 10000
+  },
+  {
+    "path": "initial-candidate/verify-retry.log.gz",
+    "uncompressedSha256": "f2e76ce53c1d5ad2ae426525fe7c112f9a295c2709bab75151bf06639f0eb0c4",
+    "uncompressedBytes": 815702
+  },
+  {
+    "path": "initial-candidate/verify.log.gz",
+    "uncompressedSha256": "b35c8969bc12f9086331d4cb4b435eeaaba551cb248b0b75428ef25943d5fce7",
+    "uncompressedBytes": 1454
+  }
+]

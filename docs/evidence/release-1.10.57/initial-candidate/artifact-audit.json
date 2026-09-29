@@ -1,0 +1,14 @@
+{
+  "filename": "statefall-release-1.10.56.zip",
+  "bytes": 35983010,
+  "sha256": "6026eb4a1bb7dc0054848bb6f528abb050c27fbb101a7ac15b13784d9caa672f",
+  "entries": 58,
+  "verifiedPayloads": 57,
+  "version": "1.10.56",
+  "build": "2026-09-28-loading-units",
+  "minimumPluginVersion": "1.10.9",
+  "signingKeySha256": "c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53",
+  "embeddedVersionChecked": true,
+  "versionFile": "1.10.56 build 2026-09-28-loading-units\n",
+  "passed": true
+}

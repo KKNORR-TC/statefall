@@ -1,0 +1,226 @@
+[
+  {
+    "name": "1.10.7-1.10.6-release-record.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\1.10.7-1.10.6-release-record.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\1.10.7-1.10.6-release-record.md",
+    "bytes": 2771,
+    "sha256": "b8050997e3f8a868f00f7d531434dff9bf6757c2fb19b7dec7a83570538aa703"
+  },
+  {
+    "name": "INSTALL-plugin-1.10.9-FIX.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-plugin-1.10.9-FIX.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-plugin-1.10.9-FIX.md",
+    "bytes": 2667,
+    "sha256": "18ccd7cc7fde73d41765f63b9c053141cc33e707dccd7cd8d2890d762c4f5455"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.49.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.49.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.49.md",
+    "bytes": 1889,
+    "sha256": "6d5808dd3d7c9068d1bcce1d232c77dc3e21eeb5979f6a185a2d73d441f3f5c4"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.50.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.50.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.50.md",
+    "bytes": 3290,
+    "sha256": "9badddbbed2d83c46bfef10dd33cfec6ce155360436ec092c12a4d602dd04826"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.51.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.51.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.51.md",
+    "bytes": 4366,
+    "sha256": "44b1dcc5f119da74eeebe68a65df53f8a42148940de5e1b56710419aec336999"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.52.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.52.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.52.md",
+    "bytes": 1778,
+    "sha256": "3793ab67ace30b49b2240106ee03e294bad8c40c82bc5434dfc04c7ce1a8832b"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.53.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.53.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.53.md",
+    "bytes": 1943,
+    "sha256": "1e2ceffccff00f3871dd4bb3e83ffcaa9956b13e5ae39f613123a7f0a73b4f3c"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.54.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.54.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.54.md",
+    "bytes": 3724,
+    "sha256": "2381a4818a31da941c65802aef409a507fc998863903332e4a6ccf7826a2c166"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.55.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.55.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.55.md",
+    "bytes": 2944,
+    "sha256": "74048608a4d946d9bd565eb96ba6a80cccb13847f1410b183bfcdeb335c049b4"
+  },
+  {
+    "name": "INSTALL-statefall-1.10.56.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\INSTALL-statefall-1.10.56.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\INSTALL-statefall-1.10.56.md",
+    "bytes": 2136,
+    "sha256": "3932447279c00bf252e31b6c8ad79f84ae5cfb9c0bd9698ab596b6bbb4aa26f9"
+  },
+  {
+    "name": "RELEASE-HOLD-1.10.49.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\RELEASE-HOLD-1.10.49.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\RELEASE-HOLD-1.10.49.md",
+    "bytes": 1164,
+    "sha256": "a823f366139f600bcd73305a1e1d33b354aed8ac07ee3ce2f9ac7c08f7a6c4a8"
+  },
+  {
+    "name": "statefall-1.10.49-handoff.json",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.49-handoff.json",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.49-handoff.json",
+    "bytes": 1271,
+    "sha256": "c2ed4d288fcde7825de6f922e4d048fa6ea0b61b06de1db2cd131ea2c66f4678"
+  },
+  {
+    "name": "statefall-1.10.49-release-record.md",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.49-release-record.md",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.49-release-record.md",
+    "bytes": 10426,
+    "sha256": "71947cd8191826614ec55a3573223f60178bf3ede02bd150eb37a37a92f3666a"
+  },
+  {
+    "name": "statefall-1.10.49-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.49-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.49-SHA256.txt",
+    "bytes": 192,
+    "sha256": "ab633e93eed081ebc95f6f030ad657ed8ad08e1f074eedae74818d4932edfbdc"
+  },
+  {
+    "name": "statefall-1.10.50-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.50-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.50-SHA256.txt",
+    "bytes": 190,
+    "sha256": "37298bc353b20836ab9f083c433fd1b619df4ecc6ef7b4dea7d154dd53cc857c"
+  },
+  {
+    "name": "statefall-1.10.51-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.51-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.51-SHA256.txt",
+    "bytes": 96,
+    "sha256": "ba37b5a3cafcb9e2bc08809e8e59f6106721a3f11ca8a16b66d5f31c94a3cd2e"
+  },
+  {
+    "name": "statefall-1.10.52-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.52-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.52-SHA256.txt",
+    "bytes": 96,
+    "sha256": "d255823978740feec37b311b3ac9857905e5c245183f94daae85352f9873493e"
+  },
+  {
+    "name": "statefall-1.10.53-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.53-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.53-SHA256.txt",
+    "bytes": 96,
+    "sha256": "99246b0172ee2013b57e31ee2be7d97b44021a1de725203693f8f3cb6ff3b495"
+  },
+  {
+    "name": "statefall-1.10.54-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.54-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.54-SHA256.txt",
+    "bytes": 96,
+    "sha256": "42754a0db4ec56fd1500b47fb33c3878efe09eccbe718140e206dba642f51270"
+  },
+  {
+    "name": "statefall-1.10.55-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.55-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.55-SHA256.txt",
+    "bytes": 96,
+    "sha256": "b018795359b9baffd7e63c06786fba91a2e7fbc72666397557ed2a6c2f8c6263"
+  },
+  {
+    "name": "statefall-1.10.56-SHA256.txt",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-1.10.56-SHA256.txt",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-1.10.56-SHA256.txt",
+    "bytes": 96,
+    "sha256": "594e344cee22409cd7314d72fe749651cc756fa63a2c283d9c899c23a2ff7e03"
+  },
+  {
+    "name": "statefall-release-1.10.49.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.49.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.49.zip",
+    "bytes": 32439615,
+    "sha256": "bcdcd534e3454939d34cebace3af7184bcc2ad89b95d8df0bd56d2c0a6dfc60a"
+  },
+  {
+    "name": "statefall-release-1.10.50.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.50.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.50.zip",
+    "bytes": 32439659,
+    "sha256": "ad23b6c5d25d9b779499093de4a7519bfb0ea4090ae2c5a479593fb203c74476"
+  },
+  {
+    "name": "statefall-release-1.10.51.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.51.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.51.zip",
+    "bytes": 32439812,
+    "sha256": "1328cc26883d1d87be2994cec3ae8901a39d2601405af544f05755a9bd8ee8ba"
+  },
+  {
+    "name": "statefall-release-1.10.52.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.52.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.52.zip",
+    "bytes": 32439938,
+    "sha256": "37297a49236d58887527c4c6ace0cc7f71da0ccf4e7a438d308f2446d49c4455"
+  },
+  {
+    "name": "statefall-release-1.10.53.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.53.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.53.zip",
+    "bytes": 32439930,
+    "sha256": "7583cdcfc0bb7bace308cd25129c8eb425e85fb509dd245347af4280496366fe"
+  },
+  {
+    "name": "statefall-release-1.10.54.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.54.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.54.zip",
+    "bytes": 32455156,
+    "sha256": "9d0fd5485cf3719ac6c1ac6d945027edb02612340bdca9abf32dd19401410355"
+  },
+  {
+    "name": "statefall-release-1.10.55.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.55.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.55.zip",
+    "bytes": 35978508,
+    "sha256": "4bc66341b0acf423e4a9fa3fa8c4218a027c8c49e454c4f483b2a9a513f9654a"
+  },
+  {
+    "name": "statefall-release-1.10.56.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.56.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.56.zip",
+    "bytes": 35980469,
+    "sha256": "60314e7f6d5843920da8a8a2ae87659c885af524b2adb6f4b1499d79a9dcc807"
+  },
+  {
+    "name": "statefall-release-1.10.7.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-release-1.10.7.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-release-1.10.7.zip",
+    "bytes": 359781,
+    "sha256": "c7f0c0ad22b51dd8732f63acb53834de4f6d0844502124f2b6470c59b9908c86"
+  },
+  {
+    "name": "statefall-scores-1.10.6.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-scores-1.10.6.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-scores-1.10.6.zip",
+    "bytes": 67267,
+    "sha256": "12c08eb0960b9f423e2c9ba826d13aa6c8082e690f6484334fea28558c69f042"
+  },
+  {
+    "name": "statefall-scores-1.10.8.zip",
+    "source": "D:\\One Drive\\projects - local\\statefall\\working releases\\statefall-scores-1.10.8.zip",
+    "destination": "D:\\One Drive\\projects - local\\statefall\\working releases\\superseded\\2026-09-28-before-1.10.57\\statefall-scores-1.10.8.zip",
+    "bytes": 212334,
+    "sha256": "8b8a65ed1282d5a9440c01b908a187772c0e517260666c8d8d63241d29b539dc"
+  }
+]

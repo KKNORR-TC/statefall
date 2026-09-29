@@ -1,6 +1,6 @@
 # Testing Baselines
 
-**Current candidate update:** 1.10.49 / plugin 1.10.8 has passed the required local gates and is GO for manual publishing. See [the release record](release-record-1.10.49.md). No publication has occurred.
+**Current qualified handoff:** game 1.10.57 / plugin 1.10.9. See [the release record](release-record-1.10.57.md) for exact artifact hashes, verification scope, the WebKit harness correction, segmented reruns, and passing performance gates. No production deployment is claimed. Earlier phase and release evidence below remains historical.
 
 The 1.10.48 candidate is retained as [historical NO-GO evidence](release-record-1.10.48.md). The earlier observations below document their named revisions and do not certify the current release.
 

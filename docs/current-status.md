@@ -1,18 +1,24 @@
 # Statefall Current Status
 
-**Current debug patch: 1.10.55 / plugin 1.10.9.** Approved silo and SAM integrated and packaged; focused checks and exact-ZIP standard/end-game smoke passed. Full qualification and live combat acceptance pending. No new production GO or deployment. [Patch record](release-record-1.10.55.md).
+**Current qualified handoff: 1.10.57 / plugin 1.10.9.** Loading-screen unit rotation added on top of the silo-flight fix. Required local verification, exact-ZIP WordPress installation, reproducibility, and performance gates passed, with the WebKit map-edge harness correction and segmented reruns recorded explicitly. Docker is stopped. GO for manual installation; no production access, upload, deployment, or push occurred. [Release record](release-record-1.10.57.md).
+
+## Prior debug patches
+
+**1.10.56 / plugin 1.10.9:** continuous silo flight testing handoff, built in isolation while loading-screen work was in progress. Its source fix is included in 1.10.57. [Patch record](release-record-1.10.56.md).
+
+**Historical debug patch: 1.10.55 / plugin 1.10.9.** Approved silo and SAM integrated and packaged; focused checks and exact-ZIP standard/end-game smoke passed. Full qualification and live combat acceptance pending. No new production GO or deployment. [Patch record](release-record-1.10.55.md).
 
 ## Prior motion patch
 
-**Current debug patch: 1.10.54 / plugin 1.10.9.** Reviewed unit/building motions integrated and packaged. Focused animation, terrain, startup and exact-ZIP checks passed; replay 91WI5P still matches all 28 checkpoints. Full qualification remains deferred; no new production GO or deployment. [Patch record](release-record-1.10.54.md).
+**Historical debug patch: 1.10.54 / plugin 1.10.9.** Reviewed unit/building motions integrated and packaged. Focused animation, terrain, startup and exact-ZIP checks passed; replay 91WI5P still matches all 28 checkpoints. Full qualification remains deferred; no new production GO or deployment. [Patch record](release-record-1.10.54.md).
 
 ## Prior tree-coverage patch
 
-**Current debug patch: 1.10.53 / plugin 1.10.9.** Removed the 180-tree cutoff that left lower screen areas bare. Focused tree coverage/cache, map-edge, syntax, exact-ZIP integrity/startup checks passed. User replay 91WI5P matched all 28 checkpoints. Full qualification remains deferred under Ken's debug/testing instruction. [Patch record](release-record-1.10.53.md).
+**Historical debug patch: 1.10.53 / plugin 1.10.9.** Removed the 180-tree cutoff that left lower screen areas bare. Focused tree coverage/cache, map-edge, syntax, exact-ZIP integrity/startup checks passed. User replay 91WI5P matched all 28 checkpoints. Full qualification remains deferred under Ken's debug/testing instruction. [Patch record](release-record-1.10.53.md).
 
 ## Prior map-edge patch
 
-**Current debug patch: 1.10.52 / plugin 1.10.9.** Map-edge clipping corrected and focused rendering, syntax, exact-ZIP integrity/startup checks passed. Ken explicitly requested patch packaging without the full suite during debugging. Full release qualification is deferred; this patch is not declared production GO. [Patch record](release-record-1.10.52.md).
+**Historical debug patch: 1.10.52 / plugin 1.10.9.** Map-edge clipping corrected and focused rendering, syntax, exact-ZIP integrity/startup checks passed. Ken explicitly requested patch packaging without the full suite during debugging. Full release qualification is deferred; this patch is not declared production GO. [Patch record](release-record-1.10.52.md).
 
 ## Prior qualified credits correction
 

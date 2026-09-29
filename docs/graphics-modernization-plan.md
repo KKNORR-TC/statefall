@@ -2,9 +2,9 @@
 
 **Release-specific decision, 28 September 2026:** Ken explicitly approved the current classic units, buildings and upgrade artwork for release 1.10.49, and deferred detailed Phase G animation/state reviews. This supersedes the requirement to finish every register row before this particular release; Phase G itself remains open and rows retain their actual review status. [Approval and reviewed boards](evidence/release-1.10.49/art-approval.json).
 
-**Current candidate update:** 1.10.49 / plugin 1.10.8 has passed the required local gates and is GO for manual publishing. See [the release record](release-record-1.10.49.md). No publication has occurred.
+**Current qualified handoff:** game 1.10.57 / plugin 1.10.9. See [the release record](release-record-1.10.57.md) for exact artifact hashes, verification scope, the WebKit harness correction, segmented reruns, and passing performance gates. No production deployment is claimed. Earlier phase and release evidence below remains historical.
 
-_Updated 28 September 2026. Phases 0–F retain their historical evidence. Phase G is implemented in the current classic-art candidate, with release-specific artwork acceptance and detailed review deferred. See [current status](current-status.md), [current release record](release-record-1.10.49.md), and [loading-budget reassessment](performance-budget-reassessment.md). Production remains unchanged._
+_Updated 28 September 2026. Phases 0–F retain their historical evidence. Phase G is implemented in the current classic-art candidate, with release-specific artwork acceptance and detailed review deferred. See [current status](current-status.md), [current release record](release-record-1.10.57.md), and [loading-budget reassessment](performance-budget-reassessment.md). Production remains unchanged._
 
 ## 1. Goal
 
