@@ -1,0 +1,15 @@
+{
+  "approved": "2026-09-28",
+  "decision": "Ken: lock that",
+  "scope": "SAM artwork, projected rotation, one-missile loading and firing sequence as reviewed; production integration remains separate",
+  "files": [
+    {
+      "path": "prototypes/combat-effects/sam-sequence.mjs",
+      "sha256": "65830aeff98256a1d5709af0c5d44d3c0ec4c2f631c44b23a1e685b3f598e9df"
+    },
+    {
+      "path": "prototypes/combat-effects/sam-base-v1.png",
+      "sha256": "c22a85fb599d5f6592b71bdc1a558ff551a399d992a4fee8e0103dff092d6988"
+    }
+  ]
+}

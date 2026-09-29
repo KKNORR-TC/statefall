@@ -1,3 +1,5 @@
+import {paintSam,loadSamArt} from './classic-sam-sequence.mjs';
+import {paintSilo,loadSiloArt} from './classic-silo-sequence.mjs';
 import upgradeMetadata from './classic-assets/upgrade-metadata.json';
 import structureMetadata from './classic-assets/structure-metadata.json';
 import directionalMetadata from './classic-assets/directional-metadata.json';
@@ -48,6 +50,7 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
     terrainOnly?null:load(new URL('./classic-assets/destroyer-directions.png',import.meta.url).href),
     terrainOnly?null:load(new URL('./classic-assets/structures-complete.png',import.meta.url).href)
   ]);
+  if(!terrainOnly)await Promise.all([loadSiloArt(),loadSamArt()]);
   const directionalAtlases=Object.fromEntries(await Promise.all(Object.entries(terrainOnly?{}:DIRECTIONAL_URLS).map(async([key,url])=>[key,await load(url)])));
   const upgradeImages=Object.fromEntries(await Promise.all(Object.entries(terrainOnly?{}:UPGRADE_URLS).map(async([key,url])=>[key,await load(url)])));
   const sources=new Map(),patterns=new Map(),stats={frames:0,trees:0,visibleTiles:0,spriteDraws:0},timings=[];
@@ -308,6 +311,8 @@ export async function createClassicBattlefield({terrainOnly=false}={}){
   }
   function paintStructure(ctx,type,x,y,r,color,level=1){
     if(!enabled||!FRAMES[type]) return false;
+    if(type==='sam'){ctx.save();ctx.translate(x,y);ctx.scale(r/62,r/62);ctx.translate(-180,-166);paintSam(ctx,{age:0,baseOnly:true});ctx.restore();return true;}
+    if(type==='silo'){ctx.save();ctx.translate(x,y);ctx.scale(r/62,r/62);ctx.translate(-180,-166);paintSilo(ctx,{color});ctx.restore();return true;}
     return sprite(ctx,structureKey(type,level),x,y,r*2*tierScale(level),color,0,.78);
   }
   let shipBlendCanvas=null;

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.10.55 — Silo and SAM firing
+
+- Integrate approved layered silo and rotating single-missile SAM visuals with gameplay timing and target bearings.
+- Preserve simulation behavior and approved artwork locks; leave mushroom cloud in the review prototype.
+- Focused debug-patch verification only; full qualification deferred.
+
 ## 1.10.54 — Classic animation integration
 
 - Integrate reviewed lightweight building and unit effects with fog, visibility, pause and reduced-motion guards.

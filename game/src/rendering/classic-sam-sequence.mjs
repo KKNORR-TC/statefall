@@ -1,0 +1,30 @@
+// Runtime adaptation of the approved projected 3D launcher. No simulation state changes.
+const clamp=x=>Math.max(0,Math.min(1,x)),ease=x=>{x=clamp(x);return x*x*(3-2*x);};
+let jet=null,smoke=null,baseArt=null,loading=null,grain=null;
+const hash=(x,y)=>{const a=Math.sin(x*127.1+y*311.7)*43758.5453;return a-Math.floor(a);};
+function noise(x,y){const ix=Math.floor(x),iy=Math.floor(y),a=ease(x-ix),b=ease(y-iy);return (hash(ix,iy)*(1-a)+hash(ix+1,iy)*a)*(1-b)+(hash(ix,iy+1)*(1-a)+hash(ix+1,iy+1)*a)*b;}
+function textures(){if(jet)return;jet=document.createElement('canvas');jet.width=96;jet.height=256;smoke=document.createElement('canvas');smoke.width=smoke.height=96;
+ for(const [cv,isJet] of [[jet,true],[smoke,false]]){const c=cv.getContext('2d'),im=c.createImageData(cv.width,cv.height);for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){const u=(x-cv.width/2)/(cv.width/2),v=y/cv.height,n=noise(x/17,y/17)*.55+noise(x/7+19,y/7)*.3+noise(x/2,y/2)*.15,i=(y*cv.width+x)*4;
+ if(isJet){const width=.22+.32*Math.sin(v*3.1),edge=Math.abs(u)/width,alpha=clamp((1-edge)*2.4+(n-.5)*.9)*Math.pow(1-v,1.1),core=clamp(1-edge*1.7)*(1-v);im.data[i]=255;im.data[i+1]=120+core*135+n*15;im.data[i+2]=40+core*215;im.data[i+3]=alpha*245;}else{const r=Math.hypot(u,(y-48)/48),alpha=clamp((1-r)*2+(n-.5)*1.3);im.data[i]=im.data[i+1]=im.data[i+2]=115+n*95;im.data[i+3]=alpha*155;}}
+ c.putImageData(im,0,0);}}
+
+export function loadSamArt(){return loading??=new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{baseArt=im;const cv=document.createElement('canvas');cv.width=cv.height=32;const cx=cv.getContext('2d');cx.drawImage(im,630,170,128,128,0,0,32,32);grain=cx.createPattern(cv,'repeat');resolve();};im.onerror=reject;im.src=new URL('./classic-assets/sam-base-v1.png',import.meta.url).href;});}
+export function samSequence(t,target=-.4){const load=ease((t-.5)/1.3),turn=ease((t-1.8)/1.8),start=-Math.PI/2,delta=Math.atan2(Math.sin(target-start),Math.cos(target-start)),heading=start+delta*turn;return {load,heading,travel:t>4.2?(t-4.2)*65+(t-4.2)**2*95:0,firing:t>=4&&t<6.5,loaded:t>=.5&&t<6.5,phase:t<.5?'Empty launcher':t<1.8?'Loading one missile':t<3.6?'Turning toward target':t<4?'Target aligned':t<4.2?'Ignition':t<6.5?'Single missile launch':'Empty rail / exhaust clearing'};}
+export function paintSam(c,{age=0,target=-.4,reducedMotion=false,projectile=true,base=true,baseOnly=false,aimHeading=null}={}){if(!baseArt)return;const q=samSequence(reducedMotion?3.8:age,target);if(Number.isFinite(aimHeading))q.heading=aimHeading;textures();c.save();
+ if(base)c.drawImage(baseArt,112,112,136,85);if(baseOnly){c.restore();return q;}
+ const faces=[],cs=Math.cos(q.heading),sn=Math.sin(q.heading),e=.78;
+ const world=p=>[p[0]*cs-p[1]*sn,p[0]*sn+p[1]*cs,p[2]],proj=p=>[180+p[0],153+p[1]*.55-p[2]*.9];
+ const materials={olive:[90,99,80],dark:[47,58,56],steel:[149,159,154],silver:[222,226,213],blue:[54,132,169],black:[58,65,67]};
+ function face(points,mat){const ps=points.map(world),a=ps[0],b=ps[1],d=ps[2],u=b.map((v,i)=>v-a[i]),v=d.map((z,i)=>z-a[i]),n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],len=Math.hypot(...n)||1,light=.6+.4*Math.abs((-n[0]*.35-n[1]*.35+n[2]*.85)/len);faces.push({points:ps.map(proj),depth:ps.reduce((sum,p)=>sum+p[1]+p[2]*.61,0)/ps.length,mat,light});}
+ function box(x,y,z,l,w,h,mat){const p=[[x,y,z],[x+l,y,z],[x+l,y+w,z],[x,y+w,z],[x,y,z+h],[x+l,y,z+h],[x+l,y+w,z+h],[x,y+w,z+h]];for(const indices of [[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7],[4,5,6,7]])face(indices.map(i=>p[i]),mat);}
+ const railPoint=(s,y,z)=>[s*Math.cos(e)-z*Math.sin(e),y,27+s*Math.sin(e)+z*Math.cos(e)];
+ function rail(y){const p=[[-29,y-2,-3],[30,y-2,-3],[30,y+2,-3],[-29,y+2,-3],[-29,y-2,0],[30,y-2,0],[30,y+2,0],[-29,y+2,0]].map(p=>railPoint(...p));for(const ix of [[0,1,5,4],[1,2,6,5],[2,3,7,6],[4,5,6,7]])face(ix.map(i=>p[i]),'olive');for(const s of [-23,-6,12,25])face([[s,y-2,0],[s+2,y-2,0],[s+2,y+2,0],[s,y+2,0]].map(p=>railPoint(...p)),'steel');}
+ box(-17,-16,5,34,32,9,'olive');box(-5,-13,14,10,26,12,'dark');for(const y of [-11,0,11])rail(y);
+ const offset=-58*(1-q.load)+(projectile?q.travel:0);
+ function missileSection(a,b,ra,rb,mat){for(let j=0;j<20;j++){const aa=j*Math.PI/10,bb=(j+1)*Math.PI/10;face([[a+offset,Math.cos(aa)*ra,Math.sin(aa)*ra+5],[b+offset,Math.cos(aa)*rb,Math.sin(aa)*rb+5],[b+offset,Math.cos(bb)*rb,Math.sin(bb)*rb+5],[a+offset,Math.cos(bb)*ra,Math.sin(bb)*ra+5]].map(p=>railPoint(...p)),mat);}}
+ if(q.loaded&&projectile){missileSection(-25,-21,2.4,3.4,'black');missileSection(-21,15,3.4,3.4,'silver');for(const a of [-17,-2,12])missileSection(a,a+.55,3.48,3.48,'steel');missileSection(15,19,3.4,3.4,'blue');missileSection(19,23,3.4,3.1,'silver');missileSection(23,34,3.1,0,'black');for(const a of [0,Math.PI/2,Math.PI,Math.PI*1.5]){const yy=Math.cos(a),zz=Math.sin(a);face([[-23+offset,yy*3.4,zz*3.4+5],[-23+offset,yy*8,zz*8+5],[-12+offset,yy*3.4,zz*3.4+5]].map(p=>railPoint(...p)),'steel');}}
+ faces.sort((a,b)=>a.depth-b.depth);for(const f of faces){const rgb=materials[f.mat].map(v=>Math.round(v*f.light));c.beginPath();c.moveTo(...f.points[0]);for(const p of f.points.slice(1))c.lineTo(...p);c.closePath();c.fillStyle='rgb('+rgb.join(',')+')';c.fill();c.save();c.clip();c.globalAlpha=.17;c.fillStyle=grain;c.fillRect(0,-500,400,1000);c.restore();c.strokeStyle='rgba(18,25,26,.2)';c.lineWidth=.35;c.stroke();}
+ // The nozzle and exhaust use the same projected launch vector as the missile and rail.
+ if(q.firing&&!reducedMotion){const nozzle=proj(world(railPoint(-26+offset,0,5))),tip=proj(world(railPoint(34+offset,0,5))),angle=Math.atan2(tip[1]-nozzle[1],tip[0]-nozzle[0]);c.save();c.translate(...nozzle);c.rotate(angle+Math.PI/2);c.globalCompositeOperation='lighter';c.globalAlpha=.75;for(let j=0;j<3;j++)c.drawImage(jet,-5-j,0,10+j*2,22+j*5+Math.sin(age*24)**2*5);c.restore();}
+ if(age>=4&&!reducedMotion){const a=age-4,fade=clamp((8-age)/2);for(let j=0;j<12;j++){const p=proj(world(railPoint(-29-j*2,Math.sin(j*2.4)*a*4,0))),sz=5+a*5;c.globalAlpha=fade*.4;c.drawImage(smoke,p[0]-sz,p[1]-sz*.6,sz*2,sz*1.2);}}
+ c.restore();return q;}

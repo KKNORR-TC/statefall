@@ -1,5 +1,9 @@
 # Statefall Current Status
 
+**Current debug patch: 1.10.55 / plugin 1.10.9.** Approved silo and SAM integrated and packaged; focused checks and exact-ZIP standard/end-game smoke passed. Full qualification and live combat acceptance pending. No new production GO or deployment. [Patch record](release-record-1.10.55.md).
+
+## Prior motion patch
+
 **Current debug patch: 1.10.54 / plugin 1.10.9.** Reviewed unit/building motions integrated and packaged. Focused animation, terrain, startup and exact-ZIP checks passed; replay 91WI5P still matches all 28 checkpoints. Full qualification remains deferred; no new production GO or deployment. [Patch record](release-record-1.10.54.md).
 
 ## Prior tree-coverage patch

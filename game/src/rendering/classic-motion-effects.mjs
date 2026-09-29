@@ -1,3 +1,4 @@
+import {paintSilo} from './classic-silo-sequence.mjs';
 const air=new Set(['fighter','bomber','carrier','spy']);
 // Shared lightweight presentation effects. No simulation state, RNG, timers or particles are owned here.
 export function createClassicMotionPainter(){
@@ -31,6 +32,7 @@ function muzzleFlash(c,x,y,angle,age,heavy){
  return function paintMotion(c,{key:k,level=1,time:t=0,age=-100,scale=1,strength=.8,muzzles=null,wingtips=null,unitPoint=null,moving=true,shieldActive=true,nativeActions=false,impact=true}={}){
  intensity=strength;point=unitPoint;const card={level},active=age>=0&&age<2.5,still=false;
  c.save();
+ if(k==='silo'&&age>=0&&age<9)paintSilo(c,{age});
   if(!still){if((moving||k==='factory')&&['factory','warship','truck','merchant','heavytransport','privateer','cruiser','battleship'].includes(k))smoke(c,k==='factory'?138:k==='truck'?148:174,k==='factory'?75:k==='truck'?127:107,t,k==='truck'?.35:1);
  if(['factory','radar','rship'].includes(k))glow(c,k==='factory'?200:180,k==='factory'?131:k==='radar'?104:103,t);
  if(moving&&['sub','hunter'].includes(k)){for(let j=0;j<4;j++){const f=(t*.3+j/4)%1;const [x,y]=unitPoint?unitPoint(108-f*14,117):[108-f*14,117];dot(c,x,y,1+f,'#a6d6d9',(1-f)*.22*intensity);}}
@@ -114,7 +116,7 @@ function muzzleFlash(c,x,y,angle,age,heavy){
     for(let j=0;j<4;j++){const a=Math.max(0,1-Math.abs(age-(.15+j*.22))/.3)*Math.min(1,intensity);const x=180+(j%2?1:-1)*(39+(level-1)*5),y=j<2?122:153;dot(c,x,y,6+level,'#8edbff',a*.35);dot(c,x,y,2.5,'#e2f5ff',a);}
     c.restore();
    }
-   if(['sam','silo','satellite','cruiser'].includes(k)){for(let j=0;j<(k==='cruiser'?3:1);j++){const a=age-j*.3;if(a>=0&&a<1.8){smoke(c,176+j*10,110-a*23,a,1-a/1.8);dot(c,176+j*10,110-a*27,2,'#ffcc81',(1-a/1.8)*intensity);}}}
+   if(['satellite','cruiser'].includes(k)){for(let j=0;j<(k==='cruiser'?3:1);j++){const a=age-j*.3;if(a>=0&&a<1.8){smoke(c,176+j*10,110-a*23,a,1-a/1.8);dot(c,176+j*10,110-a*27,2,'#ffcc81',(1-a/1.8)*intensity);}}}
    if(['sub','hunter'].includes(k))for(let j=0;j<6;j++)dot(c,243+age*18-j*4,119,1.3,'#bbe7e8',(1-age/2.5)*.6*intensity);
    if(!nativeActions&&k==='privateer'){c.strokeStyle='#d7c494';c.setLineDash([3,4]);c.beginPath();c.moveTo(192,128);c.lineTo(220+age*7,157);c.stroke();c.setLineDash([]);}
    if(['transport','heavytransport','merchant'].includes(k))for(let j=0;j<3;j++){c.fillStyle='rgba(229,199,136,'+(1-age/2.5)+')';const [cx,cy]=unitPoint?unitPoint(236+age*9-j*5,137+j*3):[236+age*9-j*5,137+j*3];c.fillRect(cx,cy,3,3);}

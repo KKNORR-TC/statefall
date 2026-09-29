@@ -1,0 +1,14 @@
+{
+  "approved": "2026-09-28",
+  "decision": "Ken: good lock that",
+  "files": [
+    {
+      "path": "game/src/rendering/classic-silo-sequence.mjs",
+      "sha256": "575f0df6e70e77486c78a7c40e62ef8bfdab0dc4b0d35f16866b4dd27bd55083"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/silo-layered-v2.png",
+      "sha256": "1a789d64947986c8ad2086d8fa71cac422f712c71bc8f8d76bc71e2c7dd9e2c1"
+    }
+  ]
+}
