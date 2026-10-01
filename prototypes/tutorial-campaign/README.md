@@ -1,7 +1,11 @@
-# First Command design preview
+# First Command — real-engine tutorial preview
 
-Run `node prototypes/tutorial-campaign/server.cjs` from the repository root, then open http://127.0.0.1:4188/prototypes/tutorial-campaign/index.html.
+Run `node prototypes/tutorial-campaign/server.cjs` from the repository root and open http://127.0.0.1:4188/?browserTest=1. The previous preview URL redirects here.
 
-This is a presentation prototype, not an integrated campaign. It demonstrates a paused coach with arrows, camera exercises, interface guidance, schematic factory placement and a compressed construction result. Chapter tabs describe the course; the searchable guide imports all 40 actual roster entries and art. A startup assertion requires every roster key to have a chapter assignment.
+This runs the actual game entry point through its existing Vite configuration: deterministic engine, Canvas renderer, terrain, artwork, native controls, menus and illustrated help. A local-only injected coach uses the existing development bridge to start a reproducible paused match, observe outcomes and project world anchors. No production game files or releases are changed.
 
-The full campaign is specified in `docs/tutorial-campaign-design.md`. Prototype interactions intentionally simplify ownership and construction and do not run combat or simulation. Progress is temporary; no accounts, scores, production writes or external services are used. Prices in the roster come from shared rules; the first-factory illustration is explicitly tied to the 1.10.62 design baseline.
+The 17-step opening requires actual zoom/pan, economy/attack settings, native pause, a city from the build menu and a factory placed through the game's F mode. Gold deductions and placement restrictions are real. Factory construction runs for the full 150 simulation ticks (15 seconds) before the coach pauses the engine. Show target uses the camera's actual projection; unit explanations open the existing game guide.
+
+This is an opening lesson and free-practice demo, not the complete nine-chapter campaign. The later chapters remain specified in `docs/tutorial-campaign-design.md`. Training uses local custom starting resources and Paused orders, with no WordPress account connection. Restart lesson reloads a fresh fixture. Free practice leaves the real match paused for the player to resume.
+
+Regression: `npx playwright test --config prototypes/tutorial-campaign/playwright.config.cjs --project=chromium`. The test server is isolated on port 4190. Chromium passed the complete sequence, including frozen time, camera controls, real gold deductions, native placement, 150 construction ticks and guide pause preservation. Firefox was blocked by the local SSLKEYLOGFILE privacy warning; WebKit did not complete and was interrupted. Neither is claimed verified. No production release qualification was performed for this local prototype.

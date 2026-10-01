@@ -1,6 +1,6 @@
 # Statefall tutorial campaign — First Command
 
-Design baseline: deployed game 1.10.62, 1 October 2026 UTC. **Design complete; campaign integration is not shipped.** The companion `prototypes/tutorial-campaign/index.html` demonstrates the opening coach, camera exercises, first construction flow and complete roster reference on a schematic map. It does not run the Statefall simulation or award campaign progress.
+Design baseline: deployed game 1.10.62, 1 October 2026 UTC. **Design complete; campaign integration is not shipped.** The companion `prototypes/tutorial-campaign/server.cjs` now runs the real game engine and renderer with a local-only coach. Its opening lesson uses actual camera controls, native menus, placement validation, gold deductions and full simulation construction time. The former schematic preview was replaced after visual review; advanced chapters below remain design work, not playable missions.
 
 ## Player promise
 
@@ -203,4 +203,4 @@ At 200% zoom or narrow width, use a compact docked coach with the target scrolle
 4. Add capstone/debrief and classification protection. Confirm tutorials cannot submit regular scores or overwrite ordinary autosaves, including direct API attempts. Ordinary matches, saves and replays must retain deterministic behavior.
 5. Run full repository release qualification, exact-ZIP integration and performance checks. Coach/art loads lazily after Learn to play; ordinary startup should not pay for all scenario fixtures. Production release needs current About, guide and a new version; 1.10.62 remains the shipped pause patch.
 
-Design acceptance: every chapter has ordered tasks, outcomes, recovery and prerequisites; every roster entry has a practical lesson; orientation includes paused arrows, zoom-out before panning, zoom-in inspection, interface reading and construction. Implementation acceptance additionally requires fresh-player playtesting and all technical gates above. The companion prototype validates presentation/interaction direction only.
+Design acceptance: every chapter has ordered tasks, outcomes, recovery and prerequisites; every roster entry has a practical lesson; orientation includes paused arrows, zoom-out before panning, zoom-in inspection, interface reading and construction. Implementation acceptance additionally requires fresh-player playtesting and all technical gates above. The companion prototype runs the opening lesson with the actual engine and native construction; it does not implement the later campaign chapters or production training isolation.
