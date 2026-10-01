@@ -34,6 +34,18 @@ const steps=[
  ['helpBtn2','Opening lesson complete','You have practiced the camera, interface, pause controls and real construction. This is the end of the current demo. The remaining campaign chapters are still in development. Choose Free practice to keep playing, or Restart lesson to try again.']
 ];
 function ownStructures(){return game.structurePresentation().filter(s=>s.color===game.me.color);}
+// Check actual structures synchronously, so a second click cannot beat the lesson poll.
+window.__STATEFALL_TUTORIAL_ALLOW_ORDER__=(kind,order)=>{
+ if(!active)return true;
+ const task=steps[step][3],type=kind==='menu'&&order.act==='build'?order.type:kind==='click'?order.build:null;
+ if(!type)return true;
+ const allowed=ownStructures().length===baseStructures&&(
+  task==='city'&&type==='city'&&kind==='menu'||
+  task==='factory'&&type==='factory'&&kind==='click'
+ );
+ if(!allowed)$('trainingFeedback').textContent=task==='prepare'?'Factory selected. Choose Continue before placing it.':'Construction is locked for this step. Follow the lesson, or choose Free practice to build freely.';
+ return allowed;
+};
 function finish(text){if(completed)return;completed=true;$('trainingFeedback').textContent=text;$('trainingNext').disabled=false;$('trainingNext').textContent='Continue';}
 function show(){observing=false;game.pause();completed=!steps[step][3];seenRunning=false;baseCamera=game.snapshot().camera;baseStructures=ownStructures().length;if(['menu','prepare'].includes(steps[step][3]))target=game.focusTarget('buildable',6);$('trainingTitle').textContent=steps[step][1];$('trainingCopy').textContent=steps[step][2];$('trainingPhase').textContent=`${step+1} / ${steps.length} · PAUSED · ${completed?'LOOK':'TRY'}`;$('trainingFeedback').textContent=completed?'Take your time. The simulation is paused.':'Complete the action in the game.';$('trainingNext').textContent=steps[step][3]==='observe'?'Run construction':'Continue';$('trainingNext').disabled=!completed&&steps[step][3]!=='observe';draw();}
 function worldRect(tile){const s=lastSnapshot||game.snapshot(),r=$('map').getBoundingClientRect(),c=s.camera,w=720;return {left:r.left+c.x+(tile%w+.5)*c.scale-12,top:r.top+c.y+(Math.floor(tile/w)+.5)*c.scale-12,width:24,height:24};}
