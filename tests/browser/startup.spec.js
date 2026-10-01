@@ -29,8 +29,12 @@ test('startup communicates loading and prevents input until the game is ready',a
     release();
     await expect(page.locator('#bootStatus')).toHaveCount(0);
     await expect(page.locator('#gameRoot')).not.toHaveAttribute('inert','');
+    await page.locator('#guidedMatch').click();
     await page.locator('#seedIn').fill('STARTUPREADY');
+    await page.locator('#setupNext').click();
+    await page.locator('#setupNext').click();
     await page.locator('#countrySel').selectOption('0');
+    await page.locator('#setupNext').click();
     await page.locator('#startBtn').click();
     await expect(page.locator('#start')).toBeHidden();
     await expect(page.locator('#myName')).not.toBeEmpty();
@@ -49,5 +53,6 @@ test('failed startup offers a working retry without exposing inactive controls',
   await page.locator('#bootRetry').click();
   await expect(page.locator('#bootStatus')).toHaveCount(0);
   await expect(page.locator('#gameRoot')).not.toHaveAttribute('inert','');
+  await page.locator('#guidedMatch').click();
   await page.locator('#seedIn').fill('STARTUPRETRY');
 });

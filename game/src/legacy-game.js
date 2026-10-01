@@ -79,7 +79,9 @@ if(import.meta.env.PROD||(__STATEFALL_DEV_RENDERERS__&&new URLSearchParams(locat
   try{ classicBattlefield=await (await import('./rendering/classic-battlefield.mjs')).createClassicBattlefield();classicBattlefield=(await import('./rendering/classic-terrain-client.mjs')).attachClassicTerrainWorker(classicBattlefield); }
   catch(error){ console.warn('[statefall] classic art unavailable; using existing artwork',error); }
 }
-const PLATFORM=createPlatform();
+const TRAINING=new URLSearchParams(location.search).get('tutorial')==='1';
+const tutorialSession={allowOrder:null,onEvent:null};
+const PLATFORM=createPlatform({training:TRAINING});
 const WP=PLATFORM.config;
 const IDENTITY=PLATFORM.identity(), CAPABILITIES=PLATFORM.capabilities();
 async function sfSign(rec){ const canon=JSON.stringify({when:rec.when,result:rec.result,country:rec.country,map:rec.map,diff:rec.diff,fog:!!rec.fog,risky:!!rec.risky,cls:rec.cls,land:rec.land,minutes:rec.minutes,kills:rec.kills,peak:rec.peak,gold:rec.gold,seed:rec.seed}); const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(STATEFALL_SIGN_KEY),{name:'HMAC',hash:'SHA-256'},false,['sign']); const sig=await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(canon)); return [...new Uint8Array(sig)].map(b=>b.toString(16).padStart(2,'0')).join(''); }
@@ -94,6 +96,7 @@ const engine=createEngine({W,H,tickMs:TICK},{eventSink:presentEngineEvent,testBr
 const {state:engineState,runtime:deterministicRuntime}=engine.presentation(),Q=engine.queries;
 const renderState=engine.renderBuffers();
 const START={...engineState.rules.settings},ALLOWED=new Set(engineState.rules.allowed);
+let restartCustomBots;
 const setupState=engineState.setup;
 function newSeed(){ return Math.floor(Math.random()*1e9).toString(36).toUpperCase(); } let draftDoneAt=0,mapLabelRenderOverride=null;
 let hoverAir=null, hoverArea=-1, hoverPickArea=-1; const TEAM_NAMES=['Red','Blue','Green','Gold'], TEAM_COLS=['#e35d5d','#4da3ff','#5fc76a','#e5a53c'];
@@ -543,8 +546,8 @@ async function approveCustom(){ if(!lastPostId||!CUSTOM.data) { fail('Post a sco
 // ---------------------------------------------------------------- command layer: every player action is a serialisable command (replays, saves, multiplayer)
 const CMD=deterministicRuntime.commands;
 const REPLAY=deterministicRuntime.replay;
-function issueMenu(d,t,selIds,siteT,ratioV,aidGold,aidTroops,actorId){ return runEngineOperation(()=>engine.issue({kind:'menu',args:[d,t,selIds,siteT,ratioV,aidGold,aidTroops],actor:actorId})); }
-function issueClick(t,env,actorId){ env=env||{ratio:+ratio.value,pick:pickMode?{kind:pickMode.kind,t:pickMode.t}:null,build:buildMode||null}; return runEngineOperation(()=>engine.issue({kind:'click',args:[t,env],actor:actorId})); }
+function issueMenu(d,t,selIds,siteT,ratioV,aidGold,aidTroops,actorId){ if(TRAINING&&tutorialSession.allowOrder?.('menu',d)===false)return false; return runEngineOperation(()=>engine.issue({kind:'menu',args:[d,t,selIds,siteT,ratioV,aidGold,aidTroops],actor:actorId})); }
+function issueClick(t,env,actorId){ if(TRAINING&&tutorialSession.allowOrder?.('click',{tile:t,owner:owner[t],build:env?env.build:buildMode})===false)return false; env=env||{ratio:+ratio.value,pick:pickMode?{kind:pickMode.kind,t:pickMode.t}:null,build:buildMode||null}; return runEngineOperation(()=>engine.issue({kind:'click',args:[t,env],actor:actorId})); }
 function issue(kind,...args){ return runEngineOperation(()=>engine.issue(kind,...args)); }
 const stateHash=engine.stateHash,canonicalState=engine.serializeCanonical,checkStateInvariants=engine.checkInvariants;
 function exposeStateOracle(){ const s=typeof globalThis!=='undefined'&&globalThis.S; if(!s||s.stateHash!==stateHash) return; Object.defineProperties(s,{serializeCanonicalState:{value:canonicalState},checkStateInvariants:{value:checkStateInvariants}}); }
@@ -685,7 +688,7 @@ let flagUrlCache=new WeakMap(), shellRenderState=new WeakMap(); const shellRende
 const shipRenderState=new Map(), labelRenderState=new Map(); let nationMeasureCanvas=null;
 function fxSpark(x,y,col){ if(sparks.length<900) sparks.push({x,y,age:0,col}); }
 function presentCompatibilityEffect({type,descriptor}){ const visual=structuredClone(descriptor); if(type==='puff') puffs.push(visual); else if(type==='wreck') wrecks.push(visual); else if(type==='fragment') frags.push(visual); }
-function presentEngineEvent({type,args}){
+function presentEngineEvent({type,args}){ if(TRAINING)tutorialSession.onEvent?.(type,args);
   const [a,b,c]=args;
   if(type==='invalidateMap') drawMap();
   else if(type==='invalidateUi') updateUI();
@@ -775,7 +778,7 @@ function loadBoard(){ try{ return JSON.parse(localStorage.getItem(LB_KEY)||'[]')
 function saveBoard(b){ try{ localStorage.setItem(LB_KEY,JSON.stringify(b.slice(-300))); }catch(e){} }
 function matchClass(){ const c=[]; if(START.billionaire) c.push('Billionaire'); if(START.endgame) c.push('End game'); if(START.quick) c.push('Quick start'); if(START.risky) c.push('Risky start'); if(START.instant) c.push('Instant build'); if(START.noCap) c.push('No cap'); if(START.troops!==120||START.gold!==100||START.bots) c.push('Custom start'); if(START.teams>0) c.push(START.teams+' teams'); if(START.garrison) c.push('Garrisons'); if(START.pauseBuild) c.push('Paused orders'); return c.length?c.join(' + '):'Standard'; }
 function matchScore(rec){ const dm={supereasy:0.4,easy:0.7,normal:1,hard:1.4,superhard:1.9,impossible:2.6}[rec.diff]||1; const mode=(rec.fog?1.25:1)*(rec.risky?1.15:1); const res={'Total victory':1.3,'Victory':1,'Team victory':1,'Shared victory':0.7,'Abandoned':0}[rec.result]??0.25; return Math.round(rec.land*dm*mode*res/Math.max(1,rec.minutes)*100); }
-function recordMatch(title){ if(presentationState.matchRecorded) return; presentationState.matchRecorded=true; const minutes=REPLAY.on?clockState.tickN*TICK/60000:((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/60000;
+function recordMatch(title){ if(TRAINING)return; if(presentationState.matchRecorded) return; presentationState.matchRecorded=true; const minutes=REPLAY.on?clockState.tickN*TICK/60000:((lifecycleState.userPaused?pausedAt:performance.now())-startTime)/60000;
   const rec={when:Date.now(),result:title,country:me().name,map:START.map,diff:matchState.difficulty,fog:!!START.fog,risky:!!START.risky,cls:matchClass(),land:Math.round(me().tiles/mapState.landCount*1000)/10,minutes:Math.round(minutes*10)/10,kills:me().kills||0,peak:Math.round(me().peakTroops||me().troops),gold:Math.round(me().goldEarned||0),seed:START.seed};
   rec.botNations=players.filter(p=>p.customNation).map(p=>({userId:p.customNation.userId,name:p.customNation.name,alive:!!p.alive,land:Math.round(p.tiles/mapState.landCount*1000)/10,killedBy:p.killedBy!=null?players[p.killedBy].name:null,kills:players.filter(q=>q.kind!=='neutral'&&q.killedBy===p.id).length,killedPlayer:me().killedBy===p.id,peak:Math.round(p.peakTroops||0)}));
   rec.stats=statsSnapshot(title); { let n=JSON.stringify(rec.stats).length; while(n>60000&&rec.stats.tl.length>40){ rec.stats.tl=rec.stats.tl.filter((e,i)=>i%2===0||e.k!=='note'); n=JSON.stringify(rec.stats).length; } console.info('[statefall] stats blob',n,'bytes,',rec.stats.tl.length,'timeline entries'); } rec.score=matchScore(rec); const b=loadBoard(); b.push(rec); saveBoard(b); lastStats=rec.stats;
@@ -2206,8 +2209,9 @@ $('pmSave').onclick=()=>saveAndQuit();
 $('pmRestart').onclick=()=>{ $('restart').style.display='flex'; $('restart').dataset.wasPaused='1'; };
 $('restartBtn').onclick=()=>{ if(!me()) return; const wasPaused=lifecycleState.userPaused; if(!lifecycleState.userPaused) togglePause(); $('restart').style.display='flex'; $('restart').dataset.wasPaused=wasPaused?'1':'0'; };
 $('restartNo').onclick=()=>{ $('restart').style.display='none'; if($('restart').dataset.wasPaused!=='1'&&lifecycleState.userPaused) togglePause(); };
-$('restartYes').onclick=()=>{ if(me()&&!lifecycleState.over) recordMatch('Abandoned'); // remember the start-card choices, then reload the page
-  try{ sessionStorage.setItem('statefall-restart',JSON.stringify({seed:START.seed,diff:matchState.difficulty,map:START.map,teams:START.teams,country:setupState.chosenFlag?setupState.chosenFlag.idx:null,quick:$('quickStart').checked,fog:$('fogOn').checked,instant:$('instantOn').checked,risky:$('riskyOn').checked,endgame:$('endgameOn').checked,billionaire:$('billionaireOn').checked,garrison:$('garrisonOn').checked,troops:$('stTroops').value,gold:$('stGold').value,bots:$('stBots').checked,noCap:$('stNoCap').checked,pauseBuild:$('stPauseBuild').checked})); }catch(e){}
+$('restartYes').onclick=()=>{ if(me()&&!lifecycleState.over) recordMatch('Abandoned'); // preserve the active match, including custom countries and unit restrictions
+  const flag=me()?.flag;
+  try{ sessionStorage.setItem('statefall-restart',JSON.stringify({...engineState.rules.settings,diff:matchState.difficulty,country:flag?.idx??null,customFlag:flag?.custom?{name:flag.name,layers:flag.layers,userId:flag.userId}:null,allowed:[...engineState.rules.allowed]})); }catch(e){}
   location.reload(); };
 $('satBtn').onclick=()=>issue('sat');
 $('saveBtn').onclick=()=>{ if(!me()) return; if(lifecycleState.over){ openModal(canSave()?'<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">This match is finished</h2><p class="muted" style="font-size:13px;margin:0 0 12px">Its replay is already in your account. Find it under Games &amp; replays on the start card.</p><button data-close style="padding:7px 14px">OK</button></div>':loginPitch('Keep a replay of this match')); return; } openSaveModal(); };
@@ -2277,19 +2281,30 @@ if(!$('seedIn').value) $('seedIn').value=newSeed();
 $('startBtn').onclick=()=>{
   replayCatchUpCancel();
   const seed=($('seedIn').value.trim().replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,16))||newSeed(),settings={...START,seed,troops:+$('stTroops').value,gold:+$('stGold').value,bots:$('stBots').checked,noCap:$('stNoCap').checked,quick:$('quickStart').checked,fog:$('fogOn').checked,instant:$('instantOn').checked,risky:$('riskyOn').checked&&!$('endgameOn').checked,endgame:$('endgameOn').checked,billionaire:$('billionaireOn').checked,garrison:$('garrisonOn').checked,pauseBuild:$('stPauseBuild').checked};
-  if(!REPLAY.on){ settings.customBots=null; const pool=(WP&&Array.isArray(WP.nationPool))?WP.nationPool.filter(n=>n&&n.flag&&Array.isArray(n.flag.layers)&&n.name&&!(WP.user&&n.userId===WP.user.id)):[]; if(pool.length&&Math.random()<0.6){ const n=pool[Math.floor(Math.random()*pool.length)]; settings.customBots=[{userId:n.userId,name:n.name,layers:n.flag.layers,slot:Math.floor(Math.random()*BOTS)}]; } }
+  if(!REPLAY.on&&restartCustomBots!==undefined) settings.customBots=restartCustomBots;
+  else if(!REPLAY.on){ settings.customBots=null; const pool=(WP&&Array.isArray(WP.nationPool))?WP.nationPool.filter(n=>n&&n.flag&&Array.isArray(n.flag.layers)&&n.name&&!(WP.user&&n.userId===WP.user.id)):[]; if(pool.length&&Math.random()<0.6){ const n=pool[Math.floor(Math.random()*pool.length)]; settings.customBots=[{userId:n.userId,name:n.name,layers:n.flag.layers,slot:Math.floor(Math.random()*BOTS)}]; } }
   try{ setup({settings,allowed:[...ALLOWED]}); }catch(error){ fail(`Could not start match: ${error.message}`); $('start').style.display='flex'; $('startBtn').disabled=false; return; }
   Object.assign(START,engineState.rules.settings);
+  restartCustomBots=undefined;
   $('seedIn').value=START.seed; $('start').style.display='none'; AUD.menuMute=false; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on) MUS.start('game');
   exposeStateOracle(); if(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_PAUSE_ON_START__===true) engine.setLifecycleForDiagnostics('paused',true); colorCache(); resize();
   cam.focus(me().sx+.5,me().sy+.5,viewWidth(),viewHeight(),2.2); $('mySw').style.background=me().color; $('myFlag').src=flagURL(me().flag,36,24); $('myName').textContent=me().name;
   drawMap(); updateUI(); if(window.__tickTimer) clearInterval(window.__tickTimer); let nextTickAt=performance.now()+TICK; window.__tickTimer=setInterval(()=>{ if(SAVES.catchup)return; const now=performance.now(); if(now<nextTickAt)return; const pacedCredits=REPLAY.on&&REPLAY.creditsMode; const interval=pacedCredits?TICK/Math.max(1,REPLAY.speed):TICK; nextTickAt=Math.max(nextTickAt+interval,now); if(!REPLAY.on||clockState.tickN<REPLAY.toTick) tick(); if(clockState.tickN%300===0&&!lifecycleState.paused) autoSave(); if(REPLAY.on){ for(let i=1;i<(pacedCredits?1:REPLAY.speed)&&clockState.tickN<REPLAY.toTick;i++) tick(); if(clockState.tickN===REPLAY.toTick&&!lifecycleState.paused){ if(REPLAY.creditsMode) runEngineOperation(()=>engine.pauseCreditsAtTarget()); else runEngineOperation(()=>engine.finishReplayWatch()); } if(clockState.tickN%10===0&&!REPLAY.creditsMode){ const ri=$('rpInfo'); if(ri) ri.textContent=`${REPLAY.i}/${REPLAY.cmds.length} commands${REPLAY.mismatch?' · diverged':''}`; } } },8); scheduleRender(); log(`Seed ${START.seed}. Difficulty: ${DIFF().label}${START.quick?', quick start':''}. Starting with ${Math.round(me().troops)} troops and ${Math.round(me().gold)} gold.`,true); };
 // restore start-card choices after a restart (runs last, once everything is built)
 { let saved=null; try{ saved=JSON.parse(sessionStorage.getItem('statefall-restart')||'null'); sessionStorage.removeItem('statefall-restart'); }catch(e){}
-  if(saved){ if(saved.seed) $('seedIn').value=saved.seed; engine.configure({difficulty:saved.diff||'normal'}); $('diffSel').value=matchState.difficulty; START.map=saved.map||'random'; document.querySelectorAll('#maps button').forEach(x=>x.classList.toggle('on',x.dataset.m===START.map)); START.teams=saved.teams||0; $('teamSel').value=String(START.teams);
-    if(saved.country!=null){ engine.configure({chosenFlag:countryByIdx(saved.country)}); $('countrySel').value=saved.country; document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===setupState.chosenFlag.name)); }
-    for(const [id,v] of [['quickStart',saved.quick],['fogOn',saved.fog],['instantOn',saved.instant],['riskyOn',saved.risky],['endgameOn',saved.endgame],['billionaireOn',saved.billionaire],['garrisonOn',saved.garrison],['stBots',saved.bots],['stNoCap',saved.noCap],['stPauseBuild',saved.pauseBuild]]) $(id).checked=!!v;
-    $('stTroops').value=saved.troops||120; $('stGold').value=saved.gold||100; document.querySelectorAll('#modes input[data-group=layout]').forEach(c=>c.onchange&&c.onchange()); } }
+  if(saved){
+    if(saved.seed) $('seedIn').value=saved.seed;
+    applySettings({...saved,troops:saved.troops??120,gold:saved.gold??100});
+    restartCustomBots=START.customBots;
+    if(saved.customFlag&&setupState.chosenFlag?.custom){
+      const option=document.createElement('option'); option.value='-1'; option.textContent=setupState.chosenFlag.name;
+      if(!$('countrySel').querySelector('option[value="-1"]')) $('countrySel').appendChild(option);
+      $('countrySel').value='-1';
+    }
+    document.querySelectorAll('.flagbtn').forEach(x=>x.classList.toggle('on',x.title===setupState.chosenFlag?.name));
+    document.querySelectorAll('input[data-u]').forEach(c=>{ c.checked=ALLOWED.has(c.dataset.u); });
+    document.querySelectorAll('#modes input[data-group=layout]').forEach(c=>c.onchange&&c.onchange());
+  } }
 
  // Development-only example: all sites and units enter through ordinary player commands.
 if(__STATEFALL_DEV_RENDERERS__&&classicBattlefield&&!WP&&new URLSearchParams(location.search).get('scene')==='coast'){
@@ -2361,4 +2376,44 @@ if(__STATEFALL_DEV_RENDERERS__&&classicBattlefield&&!WP&&new URLSearchParams(loc
     compare:()=>{classicBattlefield.setEnabled(!classicBattlefield.enabled);drawMap();},
     focus
   })});
+}
+
+// Presentation-only onboarding adapter. No diagnostic state mutation or public globals.
+export async function mountOnboarding(){
+ if(__STATEFALL_TEST_BRIDGE__&&window.__STATEFALL_TEST_MODE__===true&&new URLSearchParams(location.search).get('opening')!=='1'&&!TRAINING)return;
+ if(!TRAINING){const {mountOpening}=await import('./onboarding/opening.js');mountOpening({
+   async latest(){if(!canSave())return {available:false};const response=await sfApi('saves');const saves=(response.saves||[]).filter(s=>s.kind==='save').sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));return {available:true,save:saves[0]||null};},
+   async resume(item){const full=await sfApi('saves/'+item.id);loadReplayFile(full.data,'resume',item);}
+  });return;}
+ const openingURL=new URL(location.href);openingURL.search='';openingURL.hash='';
+ for(const id of ['saveBtn','pmSave']){const button=$(id);button.textContent='Exit tutorial';button.onclick=()=>location.assign(openingURL.href);}
+ const exit=document.createElement('button');exit.id='tutorialMenu';exit.textContent='Back to menu';exit.style.cssText='position:fixed;top:105px;right:12px;z-index:56';exit.onclick=()=>location.assign(openingURL.href);document.body.append(exit);
+ const {mountTutorial}=await import('./onboarding/tutorial.js');
+ await mountTutorial({
+ prepare(){ sessionStorage.removeItem('statefall-restart'); restartCustomBots=undefined; applySettings({seed:'FIRSTCOMMAND',map:'random',diff:'supereasy',country:0,troops:1200,gold:3000,teams:0,quick:false,risky:false,endgame:false,fog:false,instant:false,billionaire:false,garrison:false,bots:false,noCap:false,pauseBuild:true,allowed:[...document.querySelectorAll("input[data-u]")].map(input=>input.dataset.u)}); },
+ get me(){return {id:me().id,color:me().color};},
+ status(){return {ready:!!me(),tick:clockState.tickN,paused:lifecycleState.paused};},
+ snapshot(){return {camera:cam.snapshot(),player:me()?{id:me().id,tiles:me().tiles,troops:me().troops,gold:me().gold}:null};},
+ pause(){if(me()&&!lifecycleState.paused)togglePause();},
+     focusTarget(kind='owned',scale=4){
+      if(!me()) throw new Error('match not started');
+      let target=-1,best=Infinity;
+      for(let t=0;t<W*H;t++){
+        const matches=kind==='owned'?land[t]&&owner[t]===me().id:kind==='buildable'?land[t]&&owner[t]===me().id&&!struct[t]&&snapBuild(me().id,t,'city',3)>=0:kind==='foreign'?land[t]&&owner[t]>=0&&owner[t]!==me().id:kind==='water'?!land[t]:false;
+        if(!matches) continue;
+        const x=t%W,y=(t-x)/W,d=(x-me().sx)**2+(y-me().sy)**2;
+        if(d<best){ best=d; target=t; }
+      }
+      if(target<0) throw new Error('target not found: '+kind);
+      const x=target%W,y=(target-x)/W;
+      cam.focus(x+.5,y+.5,viewWidth(),viewHeight(),+scale||4); render();
+      return {tile:target,owner:owner[target],land:!!land[target],x:viewWidth()/2,y:viewHeight()/2};
+    },
+
+ setCameraOrigin(x,y,scale){cam.x=x;cam.y=y;cam.s=scale;render();},
+ structurePresentation(){return structures.map(st=>({tile:st.t,type:st.type,color:players[st.owner].color,building:!!st.building,x:cam.x+(st.t%W+.5)*cam.s,y:cam.y+(Math.floor(st.t/W)+.5)*cam.s}));}
+ },{
+   target(){const candidates=new Map();for(let t=0;t<W*H;t++){if(owner[t]!==me().id)continue;for(const n of [t-W,t+W,t%W?t-1:-1,t%W<W-1?t+1:-1]){if(n<0||n>=W*H||!land[n])continue;const p=players[owner[n]];if(p?.kind==='neutral'&&p.alive&&!candidates.has(p.id))candidates.set(p.id,{id:p.id,name:p.name,tile:n,tiles:p.tiles,troops:p.troops});}}return [...candidates.values()].sort((a,b)=>a.tiles-b.tiles)[0]||null;},
+   read(id){const p=players[id];return {tiles:p?.tiles||0,alive:!!p?.alive,attacking:attacks.some(a=>a.owner===me().id&&a.target===id)};}
+  },tutorialSession);
 }

@@ -1,3 +1,5 @@
+> Production integration: this server now previews the shipped modules in game/src/onboarding. It no longer rewrites the game or exposes tutorial-only globals. The earlier engine-demo/opening-preview/order-gate files below are retained as design history and are not loaded. Open the menu, choose Learn to play, then Start tutorial.
+
 # First Command — real-engine tutorial preview
 
 Run `node prototypes/tutorial-campaign/server.cjs` from the repository root and open http://127.0.0.1:4188/?browserTest=1. The previous preview URL redirects here.

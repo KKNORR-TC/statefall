@@ -7,10 +7,11 @@ retry?.addEventListener('click', () => location.reload());
 const stopLoadingUnits = startLoadingUnits(document.getElementById('bootUnits'));
 
 // The page stays visibly busy and non-interactive until artwork and handlers are ready.
-import('./legacy-game.js').then(() => {
+import('./legacy-game.js').then(async ({mountOnboarding}) => {
   stopLoadingUnits();
   root?.removeAttribute('inert');
   root?.removeAttribute('aria-busy');
+  await mountOnboarding();
   status?.remove();
 }).catch(error => {
   stopLoadingUnits();

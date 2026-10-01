@@ -17,8 +17,12 @@ test('source and built module applications load every chunk and preserve the can
   if(testInfo.project.name==='chromium-built-contract'){
     expect(await page.evaluate(()=>('__STATEFALL_TEST__' in window))).toBe(false);
     expect(await page.locator('.pixi-world').count()).toBe(0);
+    await page.locator('#guidedMatch').click();
     await page.locator('#seedIn').fill('PHASECBUILT');
+    await page.locator('#setupNext').click();
+    await page.locator('#setupNext').click();
     await page.locator('#countrySel').selectOption('0');
+    await page.locator('#setupNext').click();
     await page.locator('#startBtn').click();
     await expect(page.locator('#start')).toBeHidden();
     await expect(page.locator('#myName')).not.toBeEmpty();

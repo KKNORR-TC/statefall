@@ -1,6 +1,7 @@
 // Detailed rules retained from the existing guide. Shared by the app and website.
 export const HELP_REFERENCE={
   "basics": [
+    {"title":"Learn to play & new matches","body":"Choose Learn to play on the opening menu, read the introduction, then start the guided lesson. It pauses for explanations and teaches camera controls, construction and territory capture. Tutorial and free practice do not save matches or submit scores. Use Back to menu to exit. New match walks through mode, map and difficulty, country, and Ready; Random match lets you review and Shuffle before starting."},
     {
       "title": "Left-click a bordering country",
       "body": "Invade along the whole shared frontier with the share of your army set by the <b>Send into attack</b> slider. The advance stops when that country falls; click again to reinforce."

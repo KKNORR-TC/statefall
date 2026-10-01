@@ -28,12 +28,16 @@ test(`installed exact release loads on ${scenario} without missing chunks`,async
   expect(await page.evaluate(()=>window.STATEFALL_WP.assets)).not.toContain('/play/releases/');
   await expect(page.locator('#start')).toBeVisible();
   await expect(page.locator('#sfUser')).toContainText(/Log in|Playing as/);
+  await page.locator('#guidedMatch').click();
   await page.locator('#seedIn').fill('PHASECWORDPRESS');
+  await page.locator('#setupNext').click();
+  await page.locator('#setupNext').click();
   expect(await page.evaluate(()=>window.STATEFALL_WP.nationPool.some(n=>n.flag.layers.some(l=>l[0]==='emb'&&l[6]===null)))).toBe(true);
   if(loggedIn){
     expect(await page.evaluate(()=>window.STATEFALL_WP.user?.nation?.flag.layers[1][6])).toBe(null);
     await expect(page.locator('#countrySel')).toHaveValue('-1');
   }else await page.locator('#countrySel').selectOption('0');
+  await page.locator('#setupNext').click();
   await page.locator('#startBtn').click();
   await expect(page.locator('#start')).toBeHidden();
   await expect(page.locator('#myName')).not.toBeEmpty();

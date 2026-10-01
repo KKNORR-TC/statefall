@@ -1,0 +1,102 @@
+import {STRUCT,BUILD_TICKS} from '../sim/rules.mjs';
+import './tutorial.css';
+export async function mountTutorial(game,battle,session){
+const $=id=>document.getElementById(id);
+game.prepare();
+for(const [id,value] of Object.entries({seedIn:'FIRSTCOMMAND',diffSel:'supereasy',stTroops:'1200',stGold:'3000'})){ $(id).value=value;$(id).dispatchEvent(new Event('change',{bubbles:true})); }
+$('stPauseBuild').checked=true;
+$('countrySel').value=[...$('countrySel').options].find(o=>o.text==='Hungary').value;
+$('countrySel').dispatchEvent(new Event('change',{bubbles:true}));
+$('startBtn').click();
+while(!game.status().ready)await new Promise(r=>setTimeout(r,80));
+game.pause();
+let target=game.focusTarget('buildable',6),step=0,completed=false,baseCamera,seenRunning=false,baseStructures=0,factoryTile=null,active=true,observing=false,lastSnapshot=null,guideOpened=false;
+document.body.insertAdjacentHTML('beforeend',`<div id="trainingBadge">TUTORIAL · PRACTICE MATCH</div><div id="trainingRing"></div><svg id="trainingArrow" aria-hidden="true"><defs><marker id="trainingHead" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><polygon points="0,0 0,6 8,3" fill="#f2c778"/></marker></defs><path marker-end="url(#trainingHead)"/></svg><section id="training" aria-labelledby="trainingTitle"><small id="trainingPhase"></small><h2 id="trainingTitle"></h2><p id="trainingCopy"></p><p id="trainingFeedback" role="status"></p><div class="actions"><button id="trainingNext">Continue</button><button id="trainingLocate">Show target</button><button id="trainingGuide">Unit guide</button><button id="trainingReset">Restart lesson</button><button id="trainingExit">Free practice</button></div></section><button id="trainingHelpReturn" hidden>Return to lesson</button>`);
+const steps=[
+ ['world','Your starting country','This is your country. Its flag marks your starting position and its borders show the land you control. Time is paused while you learn the controls.'],
+ ['map','Zoom out','Scroll down over the battlefield until you can see more of the surrounding countries. The clock stays paused.','out'],
+ ['map','Pan the battlefield','Drag the real map to look around. Move it about 60 pixels. This changes your view without changing the world.','pan'],
+ ['world','Zoom back in','Scroll up to inspect terrain and borders. Use Show target if your homeland is offscreen.','in'],
+ ['troops','Read your available troops','The current army and its capacity are shown here. Your army grows while time runs.'],
+ ['gold','Read your construction budget','Gold pays for buildings and units. Watch this number change when you place a city and factory.'],
+ ['income','Read your income','Construction, supply links and your economy setting affect them.'],
+ ['focus','Balance the economy','Move the Economy slider until at least 65% goes to gold. Read the actual label above it.','economy'],
+ ['ratio','Keep a reserve','Set Send into attack between 30% and 40%. The remaining troops stay behind.','ratio'],
+ ['pauseBtn','Practice pausing','Use the actual Pause button or Space to resume, then pause again. This exercise, construction observation and the later attack lesson allow time to run.','pause'],
+ ['world','Open build menu','Right-click a tile in your territory. The build menu shows buildings, prices and any placement restrictions.','menu'],
+ ['cityButton','Build a city',`Choose City in the native menu. It costs ${STRUCT.city.cost} gold and adds troops immediately. The game validates the location and charges the actual price.`,'city'],
+ ['world','Prepare a factory',`A hotkey is a keyboard shortcut for a menu action. Find the letter badges in the build menu, or open Unit guide → Basics → Hotkeys for the full list. Close Help, then press the F key once (no Ctrl or Shift) to select a factory. Press Esc to cancel. A factory costs ${STRUCT.factory.cost} gold and takes ${BUILD_TICKS.factory/10} simulation seconds. Move the preview over your land.`,'prepare'],
+ ['world','Place the factory','Left-click the marked valid area. The actual game checks ownership and spacing. A successful order creates a real construction site and deducts gold.','factory'],
+ ['factory','Let construction finish','Press Run construction. The real world runs at normal speed; the lesson pauses as soon as your factory is operational. ','observe'],
+ ['factory','Inspect your finished factory','This is the game’s actual factory artwork at its actual map location. Pan and zoom to inspect it. Compare the Income readout and any supply connection.'],
+ ['world','Attack a neighboring country','Left-click the highlighted neighboring territory to order an attack. Your Send into attack setting commits that share of your available troops; the rest stay home. Time remains paused until you choose Run attack.','attack'],
+ ['world','Watch the border advance','Choose Run attack. Watch captured tiles change to your color. The lesson pauses when the target is captured. If the attack runs out of troops, it pauses so you can send reinforcements.','battle'],
+ ['world','Territory captured','The highlighted area now belongs to you. The border and country color changed because your army captured it.'],
+ ['land','Read your increased territory',''],
+ ['gold','Where the extra gold came from',''],
+ ['troops','Account for your army',''],
+ ['income','Read the new income',''],
+ ['helpBtn2','Explore every unit','Open Unit guide to explore the illustrated Buildings, Ships and Air tabs. Close Help or choose Return to lesson when you are ready.','guide'],
+ ['helpBtn2','Opening lesson complete','You have practiced the camera, interface, pause controls, construction and territory capture. You have completed the introductory lesson. Choose Free practice to keep playing, or Restart lesson to try again.']
+];
+function ownStructures(){return game.structurePresentation().filter(s=>s.color===game.me.color);}
+let enemy=null,battleBefore=null,battleAfter=null,plunder=0,battleStarted=false;
+session.onEvent=(type,args)=>{if(type==='plunder'&&enemy&&args[0].id===enemy.id)plunder+=args[1];};
+function focusEnemy(){if(!enemy)return;target={tile:enemy.tile};const r=$('map').getBoundingClientRect();game.setCameraOrigin(r.width/2-(enemy.tile%720+.5)*6,r.height/2-(Math.floor(enemy.tile/720)+.5)*6,6);lastSnapshot=game.snapshot();}
+function battleStep(){
+ const task=steps[step][3];
+ if(task==='attack'){
+  if(!enemy){enemy=battle.target();battleBefore={...game.snapshot().player,income:$('income').textContent};}
+  if(!enemy){$('trainingCopy').textContent='No bordering neutral territory is available. Restart lesson for a fresh battlefield.';return;}
+  focusEnemy();$('trainingCopy').textContent=`Left-click ${enemy.name}, the highlighted neighboring territory. Send into attack is ${$('ratio').value}%: that share joins the attack and the rest stays home. The attack advances only when time runs. Neutrals defend themselves once attacked.`;
+ }
+ if(task==='battle'){$('trainingNext').textContent='Run attack';$('trainingNext').disabled=false;focusEnemy();}
+ if(!battleAfter)return;
+ const title=steps[step][1],delta=Math.round(battleAfter.gold-battleBefore.gold);
+ if(title==='Territory captured'){focusEnemy();$('trainingCopy').textContent=`You captured ${enemy.name}. Its territory now uses your color. The game is paused so you can inspect the new border and the results.`;}
+ if(title==='Read your increased territory')$('trainingCopy').textContent=`Land grew from ${battleBefore.tiles} to ${battleAfter.tiles} tiles (+${battleAfter.tiles-battleBefore.tiles}). This readout tracks progress toward controlling 72% of the land.`;
+ if(title==='Where the extra gold came from')$('trainingCopy').textContent=`Gold changed from ${Math.round(battleBefore.gold)} to ${Math.round(battleAfter.gold)} (${delta>=0?'+':''}${delta} net). Capturing ${enemy.name} awarded ${plunder} gold in plunder. Regular income also accrued while time ran; the total increase is not all plunder.`;
+ if(title==='Account for your army')$('trainingCopy').textContent=`Available troops changed from ${Math.round(battleBefore.troops)} to ${Math.round(battleAfter.troops)}. Sending an attack commits troops from this pool, combat costs troops, and growth continues while time runs. This is the available army, not a casualty counter. Keep a reserve before attacking again.`;
+ if(title==='Read the new income')$('trainingCopy').textContent=`Before the attack: ${battleBefore.income}. After capture: ${battleAfter.income}. More land supports your economy and army capacity. These are ongoing rates; conquest plunder was a one-time payment.`;
+}
+// Check actual structures synchronously, so a second click cannot beat the lesson poll.
+session.allowOrder=(kind,order)=>{
+ if(!active)return true;
+ const task=steps[step][3],type=kind==='menu'&&order.act==='build'?order.type:kind==='click'?order.build:null;
+ if(!type){
+  if(kind==='click'&&order.owner!==game.me.id){const allowed=task==='attack'&&enemy&&order.owner===enemy.id;if(!allowed)$('trainingFeedback').textContent='Attack the highlighted neighbor when the attack lesson asks you to.';return !!allowed;}
+  if(kind==='menu'&&['attackfrom','transport','pickattack'].includes(order.act))return false;
+  return true;
+ }
+ const allowed=ownStructures().length===baseStructures&&(
+  task==='city'&&type==='city'&&kind==='menu'||
+  task==='factory'&&type==='factory'&&kind==='click'
+ );
+ if(!allowed)$('trainingFeedback').textContent=task==='prepare'?'Factory selected. Choose Continue before placing it.':'Construction is locked for this step. Follow the lesson, or choose Free practice to build freely.';
+ return allowed;
+};
+function finish(text){if(completed)return;completed=true;$('trainingFeedback').textContent=text;$('trainingNext').disabled=false;$('trainingNext').textContent='Continue';}
+function show(){observing=false;game.pause();completed=!steps[step][3];seenRunning=false;baseCamera=game.snapshot().camera;baseStructures=ownStructures().length;if(['menu','prepare'].includes(steps[step][3]))target=game.focusTarget('buildable',6);$('trainingTitle').textContent=steps[step][1];$('trainingCopy').textContent=steps[step][2];$('trainingPhase').textContent=`${step+1} / ${steps.length} · PAUSED · ${completed?'LOOK':'TRY'}`;$('trainingFeedback').textContent=completed?'Take your time. The simulation is paused.':'Complete the action in the game.';$('trainingNext').textContent=steps[step][3]==='observe'?'Run construction':'Continue';$('trainingNext').disabled=!completed&&steps[step][3]!=='observe';battleStep();draw();}
+function worldRect(tile){const s=lastSnapshot||game.snapshot(),r=$('map').getBoundingClientRect(),c=s.camera,w=720;return {left:r.left+c.x+(tile%w+.5)*c.scale-12,top:r.top+c.y+(Math.floor(tile/w)+.5)*c.scale-12,width:24,height:24};}
+function anchor(){const kind=steps[step][0];if(kind==='world')return worldRect(target.tile);if(kind==='factory'){const st=game.structurePresentation().find(s=>s.tile===factoryTile);const r=$('map').getBoundingClientRect();return st?{left:r.left+st.x-18,top:r.top+st.y-22,width:36,height:40}:null;}if(kind==='cityButton')return document.querySelector('#ctx [data-type="city"]')?.getBoundingClientRect();if(kind==='map'){const r=$('map').getBoundingClientRect();return {left:r.left+r.width*.6,top:r.top+r.height*.35,width:40,height:40};}return $(kind)?.getBoundingClientRect();}
+function setCueHidden(hidden){for(const id of ['trainingRing','trainingArrow'])$(id).toggleAttribute('hidden',hidden);}
+function draw(){if(!active)return;const help=getComputedStyle($('help')).display!=='none';$('training').hidden=help;setCueHidden(help);$('trainingHelpReturn').hidden=!help;if(help)return;if(['out','pan','menu'].includes(steps[step][3])){setCueHidden(true);return;}const r=anchor(),card=$('training'),c=card.getBoundingClientRect(),ring=$('trainingRing');if(!r||r.left<0||r.top<0||r.left+r.width>innerWidth||r.top+r.height>innerHeight){setCueHidden(true);return;}setCueHidden(false);$('trainingArrow').toggleAttribute('hidden',(['city','prepare','factory','observe'].includes(steps[step][3])||steps[step][0]==='factory'));Object.assign(ring.style,{left:(r.left-4)+'px',top:(r.top-4)+'px',width:(r.width+8)+'px',height:(r.height+8)+'px'});if(r.left<c.right&&r.top+r.height>c.top&&r.top<c.bottom){card.style.left=Math.max(12,Math.min(innerWidth-card.offsetWidth-12,$('map').clientWidth-card.offsetWidth-16))+'px';}else if(r.left>c.right+40)card.style.left='18px';const box=card.getBoundingClientRect();$('trainingArrow').querySelector('path').setAttribute('d',`M${box.right-10} ${box.top+24} Q${box.right+20} ${r.top+r.height/2} ${r.left-7} ${r.top+r.height/2}`);}
+// Keep the native build menu open when advancing its explanation.
+$('training').addEventListener('mousedown',e=>e.stopPropagation());
+// Observe both native Help and the coach shortcut, including either close control.
+new MutationObserver(()=>{
+ if(!active||steps[step][3]!=='guide')return;
+ if(getComputedStyle($('help')).display!=='none')guideOpened=true;
+ else if(guideOpened){step++;show();$('trainingPhase').textContent='COMPLETE · PAUSED';$('trainingNext').hidden=true;$('trainingLocate').hidden=true;$('trainingFeedback').textContent='The opening lesson is complete. The game will stay paused until you choose free practice.';}
+ draw();
+}).observe($('help'),{attributes:true,attributeFilter:['style']});
+$('trainingNext').onclick=()=>{if(steps[step][3]==='battle'&&!completed){observing=true;battleStarted=true;$('trainingPhase').textContent='RUNNING · WATCH THE BORDER';if(game.status().paused)$('pauseBtn').click();return;}if(steps[step][3]==='observe'&&!completed){observing=true;$('trainingPhase').textContent='RUNNING · OBSERVE REAL CONSTRUCTION';if(game.status().paused)$('pauseBtn').click();return;}if(step<steps.length-1){step++;show();}else free();};
+$('trainingLocate').onclick=()=>{if(enemy&&steps[step][0]==='world'){focusEnemy();draw();return;}if(steps[step][0]==='factory'&&factoryTile!=null){const r=$('map').getBoundingClientRect();game.setCameraOrigin(r.width/2-(factoryTile%720+.5)*8,r.height/2-(Math.floor(factoryTile/720)+.5)*8,8);}else if(['world','map','cityButton'].includes(steps[step][0])){target=game.focusTarget('buildable',6);}else $(steps[step][0])?.scrollIntoView({block:'center'});draw();};
+$('trainingGuide').onclick=()=>$('helpBtn2').click();$('trainingHelpReturn').onclick=()=>$('helpClose').click();$('trainingReset').onclick=()=>location.reload();function free(){active=false;game.pause();setCueHidden(true);for(const id of ['training','trainingArrow','trainingRing','trainingHelpReturn'])$(id).hidden=true;$('trainingBadge').textContent='PRACTICE · PAUSED · SPACE TO RESUME';} $('trainingExit').onclick=free;
+// Prevent accidental unpause while reading, without changing the game's pause implementation.
+document.addEventListener('keydown',e=>{if(active&&steps[step][3]!=='pause'&&!observing&&e.code==='Space'&&!e.target.closest('#help')){e.preventDefault();e.stopImmediatePropagation();}},true);
+document.addEventListener('click',e=>{if(active&&steps[step][3]!=='pause'&&!observing&&e.target.closest('#pauseBtn,#pmResume')){e.preventDefault();e.stopImmediatePropagation();}},true);
+setInterval(()=>{if(!active)return;const status=game.status(),task=steps[step][3];lastSnapshot=game.snapshot();if(task!=='pause'&&!observing&&!status.paused)game.pause();if(!completed){const c=lastSnapshot.camera;if(task==='attack'&&enemy&&battle.read(enemy.id).attacking)finish('Attack ordered. Choose Continue to watch it advance.');if(task==='battle'&&battleStarted&&observing){const state=battle.read(enemy.id);if(!state.alive||state.tiles===0){observing=false;game.pause();battleAfter={...game.snapshot().player,income:$('income').textContent};finish('Territory captured. The game is paused. Choose Continue to inspect the results.');$('trainingPhase').textContent='PAUSED · TERRITORY CAPTURED';}else if(!state.attacking){observing=false;game.pause();step--;show();$('trainingFeedback').textContent='The attack ran out of troops. Left-click the highlighted neighbor to send reinforcements.';}}if(task==='out'&&c.scale<baseCamera.scale*.8)finish('Zoomed out with the real camera.');if(task==='pan'&&Math.hypot(c.x-baseCamera.x,c.y-baseCamera.y)>60)finish('Map panned. Simulation remains paused.');if(task==='in'&&c.scale>baseCamera.scale*1.2)finish('Zoomed in on the real battlefield.');if(task==='economy'&&+$('focus').value<=35)finish('Gold share is at least 65%.');if(task==='ratio'&&+$('ratio').value>=30&&+$('ratio').value<=40)finish('A reserve remains at home.');if(task==='pause'){if(!status.paused)seenRunning=true;else if(seenRunning)finish('The actual clock is paused again.');}if(task==='menu'&&getComputedStyle($('ctx')).display!=='none'&&document.querySelector('#ctx [data-type="city"]'))finish('Owned-land construction menu opened.');if(task==='city'&&ownStructures().some(s=>s.type==='city')&&ownStructures().length>baseStructures)finish('City built by the engine. Troops and gold updated.');if(task==='prepare'&&$('hint').textContent.startsWith('Factory mode'))finish('Native factory placement mode active.');if(task==='factory'){const f=ownStructures().filter(s=>s.type==='factory').at(-1);if(f&&ownStructures().length>baseStructures){factoryTile=f.tile;finish('Real factory construction started.');}}if(task==='observe'&&observing){const f=ownStructures().find(s=>s.tile===factoryTile);if(f&&!f.building){observing=false;game.pause();$('trainingPhase').textContent='PAUSED · FACTORY OPERATIONAL';finish('Construction finished through real simulation ticks.');}}}draw();},180);
+show();
+
+}

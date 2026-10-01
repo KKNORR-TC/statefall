@@ -4,7 +4,7 @@ test('in-game guide loads every current unit portrait and practical usage note',
  await page.addInitScript(()=>localStorage.setItem('statefall-audio',JSON.stringify({master:0,sfx:0,alert:0,amb:0,music:0})));
  await page.goto('/');
  await expect(page.locator('#bootStatus')).toHaveCount(0,{timeout:30000});
- await page.getByRole('button',{name:'How to play',exact:true}).click();
+ await page.getByRole('button',{name:'Game guide',exact:true}).click();
  for(const [name,count]of [['Buildings',25],['Ships',11],['Air',4]]){
   await page.getByRole('button',{name,exact:true}).click();
   const cards=page.locator('.sf-unit-card');await expect(cards).toHaveCount(count);

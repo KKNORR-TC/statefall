@@ -30,7 +30,7 @@ test('field guide stays readable on desktop and mobile, with working reference d
 test('app guide shares current About and resets the reading position on tab changes',async({page})=>{
  await page.goto('/');
  await expect(page.locator('#bootStatus')).toHaveCount(0,{timeout:30000});
- await page.getByRole('button',{name:'How to play',exact:true}).click();
+ await page.getByRole('button',{name:'Game guide',exact:true}).click();
  await page.getByRole('button',{name:'Systems',exact:true}).click();
  await page.locator('#helpBody summary').last().scrollIntoViewIfNeeded();
  await page.getByRole('button',{name:'About',exact:true}).click();

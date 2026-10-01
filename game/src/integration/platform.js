@@ -9,7 +9,7 @@ function wordpressConfig(){
   try{return JSON.parse(element.textContent);}catch(error){console.error('[statefall] invalid WordPress configuration',error);return null;}
 }
 
-export function createPlatform(){
-  const config=wordpressConfig();
+export function createPlatform({training=false}={}){
+  const config=training?null:wordpressConfig();
   return config?createWordPressPlatform(config):createLocalPlatform();
 }

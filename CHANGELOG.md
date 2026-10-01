@@ -1,3 +1,9 @@
+## 1.10.63 — 2026-10-01
+
+- Ship the guided first-match tutorial using the production game engine and artwork. Tutorial practice is isolated from account saves and scores.
+- Add the opening menu, tutorial introduction, four-step match setup, and random-match review with Shuffle.
+- Preserve settings, countries, custom opponents and allowed units when restarting a match.
+
 # Changelog
 
 ## 1.10.62 — Tactical pause

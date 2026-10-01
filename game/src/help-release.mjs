@@ -3,13 +3,14 @@ import {GAME_VERSION,GAME_BUILD} from './config/build.js';
 // Update this player-facing note with every game release. The package build
 // deliberately fails when it no longer matches the release metadata.
 export const HELP_RELEASE={
- version:'1.10.62',
- build:'2026-09-30-tactical-pause',
- title:'Pause. Read the battlefield. Plan your next move.',
+ version:'1.10.63',
+ build:'2026-10-01-guided-first-match',
+ title:'Learn your first moves. Set up your next match.',
  changes:[
-  'Pausing leaves the battlefield clear. Pan, zoom and inspect while the clock is stopped; use the compact pause controls to resume, save or restart.',
-  'With Paused orders enabled, you can build and issue orders directly on the paused map.',
-  'Opening How to Play pauses a running single-player match. Closing it returns to your previous running or paused state.'
+  'Learn to play guides you through the real battlefield: camera controls, troops and gold, construction, attacking and capturing territory. Practice does not save matches or post scores.',
+  'New match walks through mode, map and difficulty, country and a final review. Random match includes a Ready card and Shuffle.',
+  'The opening menu provides tutorial introductions, games and replays, and a Game guide with a route back to setup.',
+  'Restart preserves the active match settings, country, custom opponents and allowed units.'
  ]
 };
 export function assertHelpRelease(version=GAME_VERSION,build=GAME_BUILD){
