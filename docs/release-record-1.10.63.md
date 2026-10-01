@@ -31,13 +31,14 @@
 Game ZIP: statefall-release-1.10.63.zip, 42,623,618 bytes. SHA-256: 9527785c572fa344729606bcac0f4ade076e4e368e5d81440a656b5c6d173e8a.
 All 141 payload sizes/hashes and 142 archive entries independently verified. Signing-key SHA-256: c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53. See evidence/release-1.10.63/archive-inspection.json.
 
-Release qualification: GO. All required checks passed. Exact final candidate retained without repackaging. Prior immutable 1.10.62 is available for rollback. Production installed; live acceptance remains partially pending as detailed below.
+Release qualification: GO. All required checks passed. Exact final candidate retained without repackaging. Prior immutable 1.10.62 is available for rollback. Production installed; live acceptance completed on 1 October 2026 as detailed below.
 
 ## Production deployment and acceptance
 
 - Installed the exact qualified ZIP on 1 October 2026 at 14:02:51 UTC as Statefall Staff. WordPress confirmed activation and matching signing key. WP Engine caches cleared at 14:03:23 UTC. Prior 1.10.62 retained for rollback.
 - Anonymous manifest matches qualified release. All 141 public payloads returned 200: 115 exact hashes, 25 hosting-recompressed PNGs with identical decoded pixels, and the entry page matching after removal of the injected Cloudflare challenge script. All eight public help tabs returned correct content, including current About.
 - Authenticated opening/version, wizard Ready card, tutorial introduction, isolated tutorial startup/zoom lesson/menu return, in-game About, profile and leaderboard passed live inspection. All five audio levels were zero and persisted after reload.
-- Production save/resume, replay and fresh score acceptance remains pending: automatic approval review rejected starting the prepared TUTOR1063LIVE match because it creates account records. Explicit approval was requested; no answer received and no test match started. This is not full production acceptance. Equivalent installed-artifact checks passed locally.
+- Ken explicitly approved all suggested production testing after the initial approval-review block. The named account save “Release 1.10.63 muted acceptance” survived reload and resumed seed TUTOR1063LIVE / Hungary / Impossible / Custom start with the expected initial settings. The match completed as Overrun; the site confirmed score posted at #84 overall / #3 in Custom start (credits link 90). Its finished recording appeared in Games & replays and completed at 8× with “The replay matched the recording throughout.” The established HELP1060SCORE recording also completed with an exact match throughout. Both tabs reported no captured browser warning/error logs. Master and every channel were verified at 0 before playback.
+- Required live acceptance is complete. The previously documented resumed-save checkpoint-history issue remains a separate follow-up: this acceptance resumed before checkpoint 100 and does not establish that later-checkpoint resumption is repaired. See replay-resume-checkpoint-followup.md.
 - Deployment and tutorial screenshots, public payload checks and performance results are retained in evidence/release-1.10.63.
 - Docker lifecycle recovery passed two start/stop cycles and sandbox verification. Docker is stopped. See docker-runtime-recovery.md for scope and limitations.
