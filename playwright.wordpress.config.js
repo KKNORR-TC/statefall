@@ -2,6 +2,7 @@ const {defineConfig}=require('@playwright/test');
 
 module.exports=defineConfig({
   testDir:'./tests/browser',
+  outputDir:'.artifacts/wordpress-test-results',
   testMatch:/wordpress-artifact\.spec\.js/,
   timeout:60_000,
   workers:1,

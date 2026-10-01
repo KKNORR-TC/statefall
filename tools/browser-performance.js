@@ -67,9 +67,9 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
   });
 
   try {
-    await page.goto(`${baseURL}/index.html?browserTest=1`, {waitUntil: 'load', timeout: 90000});
+    await page.goto(`${baseURL}/index.html?browserTest=1&opening=1`, {waitUntil: 'load', timeout: 90000});
     // Module initialization awaits the production artwork after the document load event.
-    await page.waitForFunction(()=>typeof window.__STATEFALL_TEST__==='object',null,{timeout:90000});
+    await page.waitForFunction(()=>typeof window.__STATEFALL_TEST__==='object'&&!document.getElementById('bootStatus')&&!!document.getElementById('guidedMatch'),null,{timeout:90000});
     const appReadyMs=await page.evaluate(()=>performance.now());
     const loaded = await page.evaluate(() => ({
       hasBridge: typeof window.__STATEFALL_TEST__ === 'object',
@@ -79,9 +79,13 @@ async function collectSample(browser, baseURL, scenario, buildPaths) {
     if (!loaded.paths.some(resourcePath => resourcePath.startsWith('/assets/') && resourcePath.endsWith('.js'))) {
       throw new Error('qualification build did not load a bundled JavaScript asset');
     }
-    await page.locator('#maps button[data-m="random"]').click();
+    await page.locator('#guidedMatch').click();
     await page.locator('#seedIn').fill('PHASEAPERF');
+    await page.locator('#setupNext').click();
+    await page.locator('#maps button[data-m="random"]').click();
+    await page.locator('#setupNext').click();
     await page.locator('#countrySel').selectOption('0');
+    await page.locator('#setupNext').click();
 
     const started = await page.evaluate(() => {
       window.__STATEFALL_TEST__.prepareControlledStart();
