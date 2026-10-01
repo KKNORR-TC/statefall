@@ -1,6 +1,7 @@
 const {test,expect}=require('@playwright/test');
 for(const closeControl of ['#helpClose','#trainingHelpReturn']) test('real lesson and guide return via '+closeControl,async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/?browserTest=1');await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country',{timeout:30000});
+ const artResponses=[];page.on('response',r=>{if(r.url().includes('/classic-assets/')&&r.url().endsWith('.png'))artResponses.push({url:r.url(),ok:r.ok()});});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/?browserTest=1');await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country',{timeout:30000});
+ await expect(page).toHaveURL(/art=classic/);expect(artResponses.some(r=>r.url.includes('structures-complete.png')&&r.ok)).toBe(true);expect(artResponses.every(r=>r.ok)).toBe(true);
  const status=()=>page.evaluate(()=>window.__STATEFALL_TEST__.status());const next=async()=>{await expect(page.locator('#trainingNext'),await page.locator('#trainingTitle').innerText()).toBeEnabled();await page.locator('#trainingNext').click();};
  await page.locator('#trainingGuide').click();await expect(page.locator('#help')).toBeVisible();await page.locator(closeControl).click();await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country');
  const before=await status();await page.waitForTimeout(300);expect((await status()).tick).toBe(before.tick);await next();

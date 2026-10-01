@@ -11,3 +11,5 @@ This is an opening lesson and free-practice demo, not the complete nine-chapter 
 Regression: `npx playwright test --config prototypes/tutorial-campaign/playwright.config.cjs --project=chromium`. The test server is isolated on port 4190. Chromium passed the complete sequence, including frozen time, camera controls, real gold deductions, native placement, 150 construction ticks and guide pause preservation. Firefox was blocked by the local SSLKEYLOGFILE privacy warning; WebKit did not complete and was interrupted. Neither is claimed verified. No production release qualification was performed for this local prototype.
 
 Help can be opened during any lesson without losing the current step. At the final guide task, closing Help through either Close or Return to lesson advances to an explicit completion screen. Free practice is a separate choice; later campaign chapters are not available yet.
+
+The preview forces the production artwork selection (art=classic, the internal name of the current illustrated art), including when opened through older preview links. Regression coverage checks the current structure atlas loads successfully before exercising the lesson.
