@@ -211,7 +211,7 @@ async function main() {
       preview: {host: '127.0.0.1', port: 0}
     });
     const baseURL = server.resolvedUrls.local[0].replace(/\/$/,'');
-    browser = await chromium.launch();
+    browser = await chromium.launch({args:['--mute-audio']});
     report = {
       schemaVersion: 2,
       budgetPolicy: ceilings.policy,

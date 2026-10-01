@@ -47,5 +47,6 @@ if ($DockerDesktop) {
         Start-Sleep -Seconds 1
     }
     if (Get-Process '*docker*' -ErrorAction SilentlyContinue) { throw 'Docker Desktop processes remain after shutdown.' }
+    & "$PSScriptRoot\preserve-runtime-sockets.ps1"
     Write-Host 'Docker Desktop and the Statefall sandbox are stopped.'
 }

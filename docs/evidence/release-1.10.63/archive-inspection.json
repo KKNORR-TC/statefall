@@ -1,0 +1,9 @@
+{
+  "version": "1.10.63",
+  "build": "2026-10-01-guided-first-match",
+  "entries": 142,
+  "verifiedPayloads": 141,
+  "signingKeySha256": "c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53",
+  "sha256": "9527785c572fa344729606bcac0f4ade076e4e368e5d81440a656b5c6d173e8a",
+  "bytes": 42623618
+}

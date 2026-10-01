@@ -13,6 +13,10 @@ function Test-DockerReady {
 }
 
 if (-not (Test-DockerReady)) {
+    if (Get-Process '*docker*' -ErrorAction SilentlyContinue) {
+        throw 'Docker is already starting or unhealthy. Run sandbox/stop.ps1 -DockerDesktop before retrying.'
+    }
+    & "$PSScriptRoot\preserve-runtime-sockets.ps1"
     Start-Process -FilePath 'C:\Program Files\Docker\Docker\Docker Desktop.exe' -WindowStyle Hidden
     $ready = $false
     for ($i = 0; $i -lt 60; $i++) {

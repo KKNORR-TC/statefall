@@ -34,3 +34,9 @@ module.exports = defineConfig({
     {name: 'chromium-built-contract', testMatch: /(build-contract|startup)\.spec\.js/, use: {browserName: 'chromium', baseURL: 'http://127.0.0.1:4174', viewport: {width: 1280, height: 720}}}
   ]
 });
+
+// Keep agent-run tests silent even when explicitly run headed.
+for(const project of module.exports.projects||[]){
+ const browser=project.use?.browserName||project.use?.defaultBrowserType||'chromium';
+ project.use.launchOptions={...project.use.launchOptions,...(browser==='firefox'?{firefoxUserPrefs:{'media.volume_scale':'0.0'}}:browser==='chromium'?{args:['--mute-audio']}: {})};
+}

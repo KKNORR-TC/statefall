@@ -1,0 +1,1070 @@
+{
+  "payloads": [
+    {
+      "path": "assets/airfield-level2.Dm-AO7Ce.webp",
+      "status": 200,
+      "size": 27978,
+      "expectedSize": 27978,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/airfield-level2.h5hjsl38.png",
+      "status": 200,
+      "size": 1488398,
+      "expectedSize": 1602102,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/airfield.DoaqS2Go.webp",
+      "status": 200,
+      "size": 20780,
+      "expectedSize": 20780,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/artillery.CO7U-4uP.ogg",
+      "status": 200,
+      "size": 30835,
+      "expectedSize": 30835,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/attack-failed.Dx12q7w7.ogg",
+      "status": 200,
+      "size": 27217,
+      "expectedSize": 27217,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/attack-progress.BAHszaEM.ogg",
+      "status": 200,
+      "size": 159811,
+      "expectedSize": 159811,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/attack-stalled.BuZ-w6O4.ogg",
+      "status": 200,
+      "size": 18018,
+      "expectedSize": 18018,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/attack-start.CGsRx-b1.ogg",
+      "status": 200,
+      "size": 13265,
+      "expectedSize": 13265,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/battery.Dp8hAS9O.webp",
+      "status": 200,
+      "size": 21946,
+      "expectedSize": 21946,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/battleship-directions.q9N9MxIe.png",
+      "status": 200,
+      "size": 1047292,
+      "expectedSize": 1094649,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/battleship.CMa6Vr3I.webp",
+      "status": 200,
+      "size": 27898,
+      "expectedSize": 27898,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/bertha.iuxoryxl.webp",
+      "status": 200,
+      "size": 27958,
+      "expectedSize": 27958,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/bomber-directions.B_iZkf5O.png",
+      "status": 200,
+      "size": 1201814,
+      "expectedSize": 1272788,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/bomber.vCyUYVmX.webp",
+      "status": 200,
+      "size": 29514,
+      "expectedSize": 29514,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/capture-enemy.BlL2PXpG.ogg",
+      "status": 200,
+      "size": 37249,
+      "expectedSize": 37249,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/capture-neutral.7iFR-8an.ogg",
+      "status": 200,
+      "size": 28926,
+      "expectedSize": 28926,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/carrier-directions.2BGiq__M.png",
+      "status": 200,
+      "size": 1092091,
+      "expectedSize": 1149050,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/carrier.DTDHsreo.webp",
+      "status": 200,
+      "size": 35132,
+      "expectedSize": 35132,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/city.C-_ns83z.webp",
+      "status": 200,
+      "size": 22444,
+      "expectedSize": 22444,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/classic-battlefield.853490ce1855.js",
+      "status": 200,
+      "size": 21714,
+      "expectedSize": 21714,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/classic-sam-sequence.cf284416b601.js",
+      "status": 200,
+      "size": 8138,
+      "expectedSize": 8138,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/classic-terrain-client.3f75e55b3ab1.js",
+      "status": 200,
+      "size": 3192,
+      "expectedSize": 3192,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/classic-terrain-worker-DbixG6kC.39990ccba7b0.js",
+      "status": 200,
+      "size": 35524,
+      "expectedSize": 35524,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/command.BGJc27jO.webp",
+      "status": 200,
+      "size": 28904,
+      "expectedSize": 28904,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-airfield.ByQ9Uzgx.ogg",
+      "status": 200,
+      "size": 42584,
+      "expectedSize": 42584,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-battery.BPSBhelb.ogg",
+      "status": 200,
+      "size": 40608,
+      "expectedSize": 40608,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-bertha.B53p2FNk.ogg",
+      "status": 200,
+      "size": 36204,
+      "expectedSize": 36204,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-city.C06fbj7X.ogg",
+      "status": 200,
+      "size": 54194,
+      "expectedSize": 54194,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-command.BAV_a7SW.ogg",
+      "status": 200,
+      "size": 25255,
+      "expectedSize": 25255,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-engcmd.DxYxdTfW.ogg",
+      "status": 200,
+      "size": 16773,
+      "expectedSize": 16773,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-factory.BdzJTT9Y.ogg",
+      "status": 200,
+      "size": 23271,
+      "expectedSize": 23271,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-flightops.VIkhw6EU.ogg",
+      "status": 200,
+      "size": 21715,
+      "expectedSize": 21715,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-fort.CXHjHMam.ogg",
+      "status": 200,
+      "size": 32787,
+      "expectedSize": 32787,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-jammer.DVBETfl0.ogg",
+      "status": 200,
+      "size": 26735,
+      "expectedSize": 26735,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-lradar.B9cHv6Lg.ogg",
+      "status": 200,
+      "size": 13347,
+      "expectedSize": 13347,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-port.5m7qgOz6.ogg",
+      "status": 200,
+      "size": 17709,
+      "expectedSize": 17709,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-radar.BYMq1I8r.ogg",
+      "status": 200,
+      "size": 11465,
+      "expectedSize": 11465,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-sam.BCoQ6zaA.ogg",
+      "status": 200,
+      "size": 18168,
+      "expectedSize": 18168,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-satellite.Bs8hdmou.ogg",
+      "status": 200,
+      "size": 17200,
+      "expectedSize": 17200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-shield.41IsRhsw.ogg",
+      "status": 200,
+      "size": 34576,
+      "expectedSize": 34576,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-shore.BEZndTDf.ogg",
+      "status": 200,
+      "size": 19062,
+      "expectedSize": 19062,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-silo.CJI6wUu_.ogg",
+      "status": 200,
+      "size": 26797,
+      "expectedSize": 26797,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-start.D8HmVWzh.ogg",
+      "status": 200,
+      "size": 43477,
+      "expectedSize": 43477,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-subbase.tLivGB3Z.ogg",
+      "status": 200,
+      "size": 19025,
+      "expectedSize": 19025,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/construction-troopcmd.XgMfS9rt.ogg",
+      "status": 200,
+      "size": 32350,
+      "expectedSize": 32350,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/CREDITS.CI7BT1uz.txt",
+      "status": 200,
+      "size": 11214,
+      "expectedSize": 11214,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/cruiser-directions.Cmpwy1ko.png",
+      "status": 200,
+      "size": 1041690,
+      "expectedSize": 1082267,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/cruiser.Btcxe4wS.webp",
+      "status": 200,
+      "size": 26806,
+      "expectedSize": 26806,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/destroyer-directions.Bn0IdzHr.png",
+      "status": 200,
+      "size": 886473,
+      "expectedSize": 932617,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/enemy-eliminated.BG-SPIRF.ogg",
+      "status": 200,
+      "size": 95298,
+      "expectedSize": 95298,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/engcmd.b7DNwJxR.webp",
+      "status": 200,
+      "size": 23440,
+      "expectedSize": 23440,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/factory.CszCQo-B.webp",
+      "status": 200,
+      "size": 24964,
+      "expectedSize": 24964,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/fighter-directions.BJodwhUi.png",
+      "status": 200,
+      "size": 1041629,
+      "expectedSize": 1109637,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/fighter.LyTzn5bp.webp",
+      "status": 200,
+      "size": 30476,
+      "expectedSize": 30476,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/flightops.CmlKgzna.webp",
+      "status": 200,
+      "size": 20492,
+      "expectedSize": 20492,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/fort-level2.CGk7IK6i.webp",
+      "status": 200,
+      "size": 33300,
+      "expectedSize": 33300,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/fort-level2.CJiWC7AM.png",
+      "status": 200,
+      "size": 1330743,
+      "expectedSize": 1439119,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/fort-level3.DW81DmkH.png",
+      "status": 200,
+      "size": 1834370,
+      "expectedSize": 1976546,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/fort-level3.SPfiemnC.webp",
+      "status": 200,
+      "size": 39630,
+      "expectedSize": 39630,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/fort.C9uNcj6U.webp",
+      "status": 200,
+      "size": 36862,
+      "expectedSize": 36862,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/heavytransport-directions.DP80JD89.png",
+      "status": 200,
+      "size": 1328167,
+      "expectedSize": 1392202,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/heavytransport.jiwASQRd.webp",
+      "status": 200,
+      "size": 25262,
+      "expectedSize": 25262,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/hunter-directions.DsmpFbK8.png",
+      "status": 200,
+      "size": 794109,
+      "expectedSize": 848204,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/hunter.u1BIKrVw.webp",
+      "status": 200,
+      "size": 23270,
+      "expectedSize": 23270,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/incoming-warning.B7opzLix.ogg",
+      "status": 200,
+      "size": 38493,
+      "expectedSize": 38493,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index.dcb4fbdc8612.css",
+      "status": 200,
+      "size": 13765,
+      "expectedSize": 13765,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index.ec8262421f79.js",
+      "status": 200,
+      "size": 3356,
+      "expectedSize": 3356,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/jammer.BCFhSz4o.webp",
+      "status": 200,
+      "size": 25590,
+      "expectedSize": 25590,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/layer-artillery.QGLdAoRd.ogg",
+      "status": 200,
+      "size": 28247,
+      "expectedSize": 28247,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/layer-machineguns.B3UI_Zyf.ogg",
+      "status": 200,
+      "size": 22989,
+      "expectedSize": 22989,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/layer-tracks.CltHjs7U.ogg",
+      "status": 200,
+      "size": 138463,
+      "expectedSize": 138463,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/legacy-game.6579d63fb388.js",
+      "status": 200,
+      "size": 841013,
+      "expectedSize": 841013,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/lradar.BHDBiBak.webp",
+      "status": 200,
+      "size": 29994,
+      "expectedSize": 29994,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/merchant-directions.DU7IfVj-.png",
+      "status": 200,
+      "size": 1060881,
+      "expectedSize": 1097693,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/merchant.CmaNDhnI.webp",
+      "status": 200,
+      "size": 29130,
+      "expectedSize": 29130,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/missile-launch.DYNKhuog.ogg",
+      "status": 200,
+      "size": 32936,
+      "expectedSize": 32936,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/module-preload.0bcb72f8ec0d.js",
+      "status": 200,
+      "size": 1232,
+      "expectedSize": 1232,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/nuclear-detonation.8lokG4Ht.ogg",
+      "status": 200,
+      "size": 39426,
+      "expectedSize": 39426,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/opening.23c5c0f80d3f.js",
+      "status": 200,
+      "size": 16100,
+      "expectedSize": 16100,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/port-level2.B_j6EYvf.png",
+      "status": 200,
+      "size": 1774694,
+      "expectedSize": 1882343,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/port-level2.DsxvAANN.webp",
+      "status": 200,
+      "size": 35608,
+      "expectedSize": 35608,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/port.C8LDPiM1.webp",
+      "status": 200,
+      "size": 24698,
+      "expectedSize": 24698,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/privateer-directions.lidVSLc7.png",
+      "status": 200,
+      "size": 1209548,
+      "expectedSize": 1277945,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/privateer.BoNvWPSJ.webp",
+      "status": 200,
+      "size": 31796,
+      "expectedSize": 31796,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/radar.DOCXPpIw.webp",
+      "status": 200,
+      "size": 21996,
+      "expectedSize": 21996,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/rship-directions.7lr-mIv4.png",
+      "status": 200,
+      "size": 1007340,
+      "expectedSize": 1050917,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/rship.Du93rFD7.webp",
+      "status": 200,
+      "size": 25610,
+      "expectedSize": 25610,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/rules.25d0e7b63fcc.js",
+      "status": 200,
+      "size": 10578,
+      "expectedSize": 10578,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/sam-base-v1.Cf8gTYxL.png",
+      "status": 200,
+      "size": 1949431,
+      "expectedSize": 2648241,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/sam-intercept.ByftU06W.ogg",
+      "status": 200,
+      "size": 20990,
+      "expectedSize": 20990,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/sam-launch.C7fCzSZS.ogg",
+      "status": 200,
+      "size": 13779,
+      "expectedSize": 13779,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/sam.CkktHUk3.webp",
+      "status": 200,
+      "size": 19374,
+      "expectedSize": 19374,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/satellite.wsAf_yqE.webp",
+      "status": 200,
+      "size": 27160,
+      "expectedSize": 27160,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/scout-directions.8DJqo1uL.png",
+      "status": 200,
+      "size": 789396,
+      "expectedSize": 838961,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/scout.Cub5FsSa.webp",
+      "status": 200,
+      "size": 23946,
+      "expectedSize": 23946,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/shell-impact.33uSdFCN.ogg",
+      "status": 200,
+      "size": 20089,
+      "expectedSize": 20089,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/shield.DyrkHtE0.webp",
+      "status": 200,
+      "size": 33572,
+      "expectedSize": 33572,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/ship-sinking.BpWdtiaD.ogg",
+      "status": 200,
+      "size": 59968,
+      "expectedSize": 59968,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/shore.DkoBowlT.webp",
+      "status": 200,
+      "size": 29020,
+      "expectedSize": 29020,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/silo-layered-v2.By3OUt3k.png",
+      "status": 200,
+      "size": 801141,
+      "expectedSize": 855432,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/silo.CGocG91k.webp",
+      "status": 200,
+      "size": 22386,
+      "expectedSize": 22386,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/spy-directions.DtF7O0Lw.png",
+      "status": 200,
+      "size": 690127,
+      "expectedSize": 739119,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/spy.DVlcTsjA.webp",
+      "status": 200,
+      "size": 27476,
+      "expectedSize": 27476,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/structures-complete.Bm3RzRlB.png",
+      "status": 200,
+      "size": 1920774,
+      "expectedSize": 2030228,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/sub-directions.UIukOQ0g.png",
+      "status": 200,
+      "size": 749272,
+      "expectedSize": 797923,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/sub.BPrUd6iE.webp",
+      "status": 200,
+      "size": 21896,
+      "expectedSize": 21896,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/subbase.8JWbtTrM.webp",
+      "status": 200,
+      "size": 32024,
+      "expectedSize": 32024,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/terrain-raster-client.043c2f5c1bac.js",
+      "status": 200,
+      "size": 5049,
+      "expectedSize": 5049,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/terrain-raster-worker-CLeriLB5.dafc1d0437ac.js",
+      "status": 200,
+      "size": 8836,
+      "expectedSize": 8836,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/terrain.C-2eEVb_.png",
+      "status": 200,
+      "size": 3293719,
+      "expectedSize": 3581888,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/transport-directions.BLM_oUCL.png",
+      "status": 200,
+      "size": 1019800,
+      "expectedSize": 1079671,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/transport.uFOOuNMF.webp",
+      "status": 200,
+      "size": 19072,
+      "expectedSize": 19072,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/troopcmd.BBHa6HYX.webp",
+      "status": 200,
+      "size": 28118,
+      "expectedSize": 28118,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/truck-directions.CtEFX2Mw.png",
+      "status": 200,
+      "size": 1391138,
+      "expectedSize": 1449865,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/truck.CQFV7wMD.webp",
+      "status": 200,
+      "size": 29812,
+      "expectedSize": 29812,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/tutorial.150db8af0c28.css",
+      "status": 200,
+      "size": 1423,
+      "expectedSize": 1423,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/tutorial.74ee360fada9.js",
+      "status": 200,
+      "size": 14844,
+      "expectedSize": 14844,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/unit-art-metadata.d06d83dd807e.js",
+      "status": 200,
+      "size": 4597,
+      "expectedSize": 4597,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/units.CPVKFj2k.png",
+      "status": 200,
+      "size": 1440619,
+      "expectedSize": 1515389,
+      "hashMatches": false,
+      "pixelsMatch": true
+    },
+    {
+      "path": "assets/warship.CsCdiM_8.webp",
+      "status": 200,
+      "size": 24714,
+      "expectedSize": 24714,
+      "hashMatches": true
+    },
+    {
+      "path": "bundle-report.json",
+      "status": 200,
+      "size": 14152,
+      "expectedSize": 14152,
+      "hashMatches": true
+    },
+    {
+      "path": "flags.js",
+      "status": 200,
+      "size": 18128,
+      "expectedSize": 18128,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/about.html",
+      "status": 200,
+      "size": 110076,
+      "expectedSize": 110076,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/about/index.html",
+      "status": 200,
+      "size": 110052,
+      "expectedSize": 110052,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/air.html",
+      "status": 200,
+      "size": 214560,
+      "expectedSize": 214560,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/air/index.html",
+      "status": 200,
+      "size": 214536,
+      "expectedSize": 214536,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/basics.html",
+      "status": 200,
+      "size": 42719,
+      "expectedSize": 42719,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/basics/index.html",
+      "status": 200,
+      "size": 42695,
+      "expectedSize": 42695,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/build.html",
+      "status": 200,
+      "size": 975658,
+      "expectedSize": 975658,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/build/index.html",
+      "status": 200,
+      "size": 975634,
+      "expectedSize": 975634,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/garrisons.html",
+      "status": 200,
+      "size": 105254,
+      "expectedSize": 105254,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/garrisons/index.html",
+      "status": 200,
+      "size": 105230,
+      "expectedSize": 105230,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/modes.html",
+      "status": 200,
+      "size": 37695,
+      "expectedSize": 37695,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/modes/index.html",
+      "status": 200,
+      "size": 37671,
+      "expectedSize": 37671,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/ships.html",
+      "status": 200,
+      "size": 427865,
+      "expectedSize": 427865,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/ships/index.html",
+      "status": 200,
+      "size": 427841,
+      "expectedSize": 427841,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/systems.html",
+      "status": 200,
+      "size": 232484,
+      "expectedSize": 232484,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/systems/index.html",
+      "status": 200,
+      "size": 232460,
+      "expectedSize": 232460,
+      "hashMatches": true
+    },
+    {
+      "path": "howto/tabs.json",
+      "status": 200,
+      "size": 159,
+      "expectedSize": 159,
+      "hashMatches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "size": 21491,
+      "expectedSize": 20553,
+      "hashMatches": false
+    },
+    {
+      "path": "VERSION.txt",
+      "status": 200,
+      "size": 44,
+      "expectedSize": 44,
+      "hashMatches": true
+    }
+  ],
+  "help": [
+    {
+      "tab": "basics",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "build",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "ships",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "air",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "systems",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "garrisons",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "modes",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    },
+    {
+      "tab": "about",
+      "status": 200,
+      "guide": true,
+      "currentAbout": true
+    }
+  ],
+  "checkedAt": "2026-10-01T14:15:16.3582214Z",
+  "version": "1.10.63",
+  "entryMatchesAfterHostingChallengeRemoval": true,
+  "note": "115 exact hashes; 25 PNGs recompressed by hosting have identical decoded RGBA pixels; index.html differs only by the injected Cloudflare challenge script. All 141 payloads return 200."
+}

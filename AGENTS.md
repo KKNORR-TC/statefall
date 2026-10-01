@@ -43,3 +43,10 @@
 - Test the exact release artifacts before handoff; manually repackaging an already tested artifact invalidates that verification.
 - Existing coverage remains until equivalent replacement coverage passes.
 - Do not declare a release GO with skipped required checks, unexplained replay divergence, failed browser requests, or incomplete Docker cleanup.
+
+## Quiet testing (Ken, 1 October 2026)
+
+- All agent-run simulations and browser testing must be silent, including visible/in-app browser sessions. Do not rely on low volume or the Music toggle: sound effects and alerts must also be muted.
+- Before starting a manual browser match, set the game's Master volume to 0 and verify it. The Mute all checkbox alone resets on reload, so it is not a persistent safeguard. Keep testing silent across reloads and origins.
+- Automated browsers must suppress audio at their output in addition to any game-level test settings. Audio tests may exercise decoding/playback internally but must not emit audible sound. Never mute the user's system-wide audio or meeting applications.
+- Restore audible game playback only if Ken requests it.

@@ -19,7 +19,7 @@ const powershell=script=>JSON.parse(execFileSync('powershell.exe',['-NoProfile',
 async function waitForServer(url,timeout=30000){ const end=Date.now()+timeout; while(Date.now()<end){ try{ const response=await fetch(url); if(response.ok) return; }catch{} await new Promise(resolve=>setTimeout(resolve,200)); } throw new Error(`Vite did not become ready at ${url}`); }
 
 async function qualify(browserSpec){
-  const browser=await chromium.launch({headless:false,executablePath:browserSpec.path,args:['--use-angle=d3d11','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows']});
+  const browser=await chromium.launch({headless:false,executablePath:browserSpec.path,args:['--mute-audio','--use-angle=d3d11','--disable-background-timer-throttling','--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows']});
   const context=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1}),page=await context.newPage(),failures=[];
   page.on('pageerror',error=>failures.push(`page error: ${error.stack||error.message}`)); page.on('console',message=>{ if(message.type()==='error'&&!/favicon\.ico/i.test(message.text())) failures.push(`console error: ${message.text()}`); }); page.on('requestfailed',request=>{ if(!/favicon\.ico$/i.test(new URL(request.url()).pathname)) failures.push(`request failed: ${request.url()}`); }); page.on('response',response=>{ if(response.status()>=400&&!/favicon\.ico$/i.test(new URL(response.url()).pathname)) failures.push(`HTTP ${response.status()}: ${response.url()}`); });
   try{
