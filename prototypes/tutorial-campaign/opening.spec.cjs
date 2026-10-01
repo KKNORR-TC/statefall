@@ -9,7 +9,7 @@ test('whole cards activate and guide returns to the current setup step',async({p
   await expect(page.locator('#start')).toBeVisible();if(step>=0)await expect(page.locator(['#setupMode','#setupBattlefield','#setupCountry','#setupReview'][step])).toBeVisible();
  }
  await page.locator('#setupBack').click();await page.locator('#setupBack').click();await page.locator('#setupBack').click();await page.locator('#setupBack').click();
- await page.locator('.learnChoice').click({position:{x:12,y:12}});await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country',{timeout:30000});
+ await page.locator('.learnChoice').click({position:{x:12,y:12}});await expect(page.locator('#tutorialIntro')).toBeVisible();await expect(page.locator('#trainingTitle')).toHaveCount(0);await page.locator('#tutorialIntroBack').click();await expect(page.locator('#guidedMatch')).toBeVisible();await page.locator('.learnChoice').click({position:{x:12,y:12}});await page.locator('#tutorialIntroStart').click();await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country',{timeout:30000});
 });
 test('random match reviews selections and rerolls before starting',async({page})=>{
  await page.goto('/?browserTest=1&art=classic&opening=1');await expect(page.locator('#randomMatch')).toBeVisible();
