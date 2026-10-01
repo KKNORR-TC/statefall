@@ -11,7 +11,7 @@ $('countrySel').dispatchEvent(new Event('change',{bubbles:true}));
 $('startBtn').click();
 while(!game.status().ready)await new Promise(r=>setTimeout(r,80));
 $('pauseBtn').click(); // Establish the native user-pause state after controlled startup.
-let target=game.focusTarget('buildable',6),step=0,completed=false,baseCamera,seenRunning=false,baseStructures=0,factoryTile=null,active=true,observing=false,lastSnapshot=null;
+let target=game.focusTarget('buildable',6),step=0,completed=false,baseCamera,seenRunning=false,baseStructures=0,factoryTile=null,active=true,observing=false,lastSnapshot=null,guideOpened=false;
 document.body.insertAdjacentHTML('beforeend',`<div id="trainingBadge">LOCAL TUTORIAL PREVIEW · REAL STATEFALL ENGINE</div><div id="trainingRing"></div><svg id="trainingArrow" aria-hidden="true"><defs><marker id="trainingHead" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><polygon points="0,0 0,6 8,3" fill="#f2c778"/></marker></defs><path marker-end="url(#trainingHead)"/></svg><section id="training" aria-labelledby="trainingTitle"><small id="trainingPhase"></small><h2 id="trainingTitle"></h2><p id="trainingCopy"></p><p id="trainingFeedback" role="status"></p><div class="actions"><button id="trainingNext">Continue</button><button id="trainingLocate">Show target</button><button id="trainingGuide">Unit guide</button><button id="trainingReset">Restart lesson</button><button id="trainingExit">Free practice</button></div></section><button id="trainingHelpReturn" hidden>Return to lesson</button>`);
 const steps=[
  ['world','Your actual starting country','This is the real game: its terrain, flags, troops and camera. Time is stopped. The marker identifies a valid owned tile, not a substitute map.'],
@@ -30,7 +30,8 @@ const steps=[
  ['world','Place the factory','Left-click the marked valid area. The actual game checks ownership and spacing. A successful order creates a real construction site and deducts gold.','factory'],
  ['factory','Let construction finish','Press Run construction. The real world runs at normal speed; the lesson pauses as soon as your factory is operational. No shortened timer or fabricated income.','observe'],
  ['factory','Inspect your finished factory','This is the game’s actual factory artwork at its actual map location. Pan and zoom to inspect it. Compare the Income readout and any supply connection.'],
- ['helpBtn2','Explore every unit','Open Unit guide for the game’s own illustrated Buildings, Ships and Air tabs. This preview covers orientation and the first builds; the remaining campaign chapters are still a design.']
+ ['helpBtn2','Explore every unit','Open Unit guide to explore the illustrated Buildings, Ships and Air tabs. Close Help or choose Return to lesson when you are ready.','guide'],
+ ['helpBtn2','Opening lesson complete','You have practiced the camera, interface, pause controls and real construction. This is the end of the current demo. The remaining campaign chapters are still in development. Choose Free practice to keep playing, or Restart lesson to try again.']
 ];
 function ownStructures(){return game.structurePresentation().filter(s=>s.color===game.me.color);}
 function finish(text){if(completed)return;completed=true;$('trainingFeedback').textContent=text;$('trainingNext').disabled=false;$('trainingNext').textContent='Continue';}
@@ -40,6 +41,13 @@ function anchor(){const kind=steps[step][0];if(kind==='world')return worldRect(t
 function draw(){if(!active)return;const help=getComputedStyle($('help')).display!=='none';$('training').hidden=$('trainingRing').hidden=$('trainingArrow').hidden=help;$('trainingHelpReturn').hidden=!help;if(help)return;const r=anchor(),card=$('training'),c=card.getBoundingClientRect(),ring=$('trainingRing');if(!r||r.left<0||r.top<0||r.left+r.width>innerWidth||r.top+r.height>innerHeight){ring.hidden=true;$('trainingArrow').hidden=true;return;}ring.hidden=false;$('trainingArrow').hidden=false;Object.assign(ring.style,{left:(r.left-4)+'px',top:(r.top-4)+'px',width:(r.width+8)+'px',height:(r.height+8)+'px'});if(r.left<c.right&&r.top+r.height>c.top&&r.top<c.bottom){card.style.left=Math.max(12,Math.min(innerWidth-card.offsetWidth-12,$('map').clientWidth-card.offsetWidth-16))+'px';}else if(r.left>c.right+40)card.style.left='18px';const box=card.getBoundingClientRect();$('trainingArrow').querySelector('path').setAttribute('d',`M${box.right-10} ${box.top+24} Q${box.right+20} ${r.top+r.height/2} ${r.left-7} ${r.top+r.height/2}`);}
 // Keep the native build menu open when advancing its explanation.
 $('training').addEventListener('mousedown',e=>e.stopPropagation());
+// Observe both native Help and the coach shortcut, including either close control.
+new MutationObserver(()=>{
+ if(!active||steps[step][3]!=='guide')return;
+ if(getComputedStyle($('help')).display!=='none')guideOpened=true;
+ else if(guideOpened){step++;show();$('trainingPhase').textContent='COMPLETE · PAUSED';$('trainingNext').hidden=true;$('trainingLocate').hidden=true;$('trainingFeedback').textContent='The opening lesson is complete. The game will stay paused until you choose free practice.';}
+ draw();
+}).observe($('help'),{attributes:true,attributeFilter:['style']});
 $('trainingNext').onclick=()=>{if(steps[step][3]==='observe'&&!completed){observing=true;$('trainingPhase').textContent='RUNNING · OBSERVE REAL CONSTRUCTION';if(game.status().paused)$('pauseBtn').click();return;}if(step<steps.length-1){step++;show();}else free();};
 $('trainingLocate').onclick=()=>{if(steps[step][0]==='factory'&&factoryTile!=null){const r=$('map').getBoundingClientRect();game.setCameraOrigin(r.width/2-(factoryTile%720+.5)*8,r.height/2-(Math.floor(factoryTile/720)+.5)*8,8);}else if(['world','map','cityButton'].includes(steps[step][0])){target=game.focusTarget('buildable',6);}else $(steps[step][0])?.scrollIntoView({block:'center'});draw();};
 $('trainingGuide').onclick=()=>$('helpBtn2').click();$('trainingHelpReturn').onclick=()=>$('helpClose').click();$('trainingReset').onclick=()=>location.reload();function free(){active=false;game.pause();for(const id of ['training','trainingArrow','trainingRing','trainingHelpReturn'])$(id).hidden=true;$('trainingBadge').textContent='LOCAL REAL-ENGINE PRACTICE · PAUSED · SPACE TO RESUME';} $('trainingExit').onclick=free;
