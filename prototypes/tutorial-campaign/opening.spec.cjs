@@ -1,10 +1,22 @@
 const {test,expect}=require('@playwright/test');
-test('random match chooses map and difficulty and starts immediately',async({page})=>{
+test('whole cards activate and guide returns to the current setup step',async({page})=>{
+ await page.goto('/?browserTest=1&art=classic&opening=1');await expect(page.locator('#openingSaved')).toBeVisible();
+ await page.locator('#openingSaved').click({position:{x:12,y:12}});await expect(page.locator('#modal')).toBeVisible();await page.locator('#modal [data-close]').click();
+ for(let step=-1;step<4;step++){
+  if(step===0)await page.locator('#guidedMatch').click();else if(step>0)await page.locator('#setupNext').click();
+  await page.locator('#helpBtn1').click();await expect(page.locator('#help')).toBeVisible();await expect(page.locator('#start')).toBeHidden();
+  if(step===1)await page.keyboard.press('Escape');else if(step===2)await page.locator('#helpClose').click();else await page.locator('#openingGuideReturn').click();
+  await expect(page.locator('#start')).toBeVisible();if(step>=0)await expect(page.locator(['#setupMode','#setupBattlefield','#setupCountry','#setupReview'][step])).toBeVisible();
+ }
+ await page.locator('#setupBack').click();await page.locator('#setupBack').click();await page.locator('#setupBack').click();await page.locator('#setupBack').click();
+ await page.locator('.learnChoice').click({position:{x:12,y:12}});await expect(page.locator('#trainingTitle')).toHaveText('Your actual starting country',{timeout:30000});
+});
+test('random match reviews selections and rerolls before starting',async({page})=>{
  await page.goto('/?browserTest=1&art=classic&opening=1');await expect(page.locator('#randomMatch')).toBeVisible();
  // Fixed draw verifies both selectors use randomness; the engine still starts normally.
  await page.evaluate(()=>{Math.random=()=>0.99;});
- await page.locator('#randomMatch').click();await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__?.status().ready)).toBe(true);
- await expect(page.locator('#diffSel option:checked')).toHaveText('Impossible');await expect(page.locator('#maps .on')).toHaveText('Middle East');await expect(page.locator('#start')).toBeHidden();
+ await page.locator('#randomMatch').click();await expect(page.locator('#setupReview')).toBeVisible();expect(await page.evaluate(()=>window.__STATEFALL_TEST__?.status().ready||false)).toBe(false);await expect(page.locator('#setupRecap')).toContainText('Impossible');await page.evaluate(()=>{Math.random=()=>0.01;});await page.locator('#randomReroll').click();await expect(page.locator('#setupRecap')).toContainText('Super easy');await page.locator('#startBtn').click();await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__?.status().ready)).toBe(true);
+ await expect(page.locator('#diffSel option:checked')).toHaveText('Super easy');await expect(page.locator('#maps .on')).toHaveText('Continents');await expect(page.locator('#start')).toBeHidden();
 });
 test('exclusive layout, readable difficulty, rule summary and reset',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
