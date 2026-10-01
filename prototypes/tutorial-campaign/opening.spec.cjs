@@ -13,7 +13,7 @@ test('exclusive layout, readable difficulty, rule summary and reset',async({page
  await expect(page.locator('#openingNew')).toHaveCount(0);
  await expect(page.locator('#diffSel option:checked')).toHaveText('Normal');
  await expect(page.locator('#difficultyHelp')).toContainText('Even footing');
- await page.getByText('Special rules & starting setup',{exact:false}).first().click();
+ await expect(page.locator('#setupMode > .toggleRow')).toBeVisible();await expect(page.locator('#fogOn')).toBeVisible();await expect(page.locator('#setupBattlefield')).toBeHidden();
  for(const id of ['quickStart','riskyOn','endgameOn','']){
   await page.locator('#openingLayout').selectOption(id);
   expect(await page.locator('#modes input[data-group=layout]').evaluateAll(inputs=>inputs.filter(i=>i.checked).map(i=>i.id))).toEqual(id?[id]:[]);
@@ -21,7 +21,7 @@ test('exclusive layout, readable difficulty, rule summary and reset',async({page
  await page.locator('#fogOn').check();await expect(page.locator('#activeRules')).toContainText('Fog of war');
  await page.locator('#teamSel').selectOption('2');await expect(page.locator('#activeRules')).toContainText('2 teams');
  await page.locator('#resetStandard').click();await expect(page.locator('#activeRules')).toHaveText('Standard rules');await expect(page.locator('#teamSel')).toHaveValue('0');
- await page.locator('#setupNext').click();await expect(page.locator('#setupCountry')).toBeVisible();await page.locator('#countrySel').selectOption({label:'Hungary'});await page.locator('#setupNext').click();await expect(page.locator('#setupRecap')).toContainText('Hungary');await page.locator('#setupBack').click();await expect(page.locator('#countrySel option:checked')).toHaveText('Hungary');await page.locator('#setupNext').click();await page.setViewportSize({width:390,height:844});
+ await page.locator('#setupNext').click();await expect(page.locator('#setupBattlefield')).toBeVisible();await expect(page.locator('#diffSel')).toBeVisible();await page.locator('#diffSel').selectOption('easy');await page.locator('#maps [data-m=europe]').click();await page.locator('#setupBack').click();await expect(page.locator('#setupMode')).toBeVisible();await page.locator('#setupNext').click();await expect(page.locator('#diffSel')).toHaveValue('easy');await expect(page.locator('#maps .on')).toHaveText('Europe');await page.locator('#setupNext').click();await expect(page.locator('#setupCountry')).toBeVisible();await page.locator('#countrySel').selectOption({label:'Hungary'});await page.locator('#setupNext').click();await expect(page.locator('#setupRecap')).toContainText('Hungary');await page.locator('#setupBack').click();await expect(page.locator('#countrySel option:checked')).toHaveText('Hungary');await page.locator('#setupNext').click();await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  const box=await page.locator('#startBtn').boundingBox();expect(box.y+box.height).toBeLessThanOrEqual(844);
  await expect(page.locator('#openingContinue')).toBeHidden();await page.locator('#startBtn').click();await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__?.status().ready)).toBe(true);expect(errors).toEqual([]);
