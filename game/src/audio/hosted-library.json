@@ -1,0 +1,116 @@
+{
+  "menu": [
+    {
+      "id": "ec1ec3b3",
+      "title": "Statefall",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/ec1ec3b3-Statefall.mp3?v=1788906658",
+      "seconds": 154.752
+    }
+  ],
+  "game": [
+    {
+      "id": "b488cdf5",
+      "title": "Iron March",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/b488cdf5-Iron-March.mp3?v=1788906678",
+      "seconds": 180.768
+    },
+    {
+      "id": "63370d50",
+      "title": "Salvo",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/63370d50-Salvo.mp3?v=1788906694",
+      "seconds": 196.128
+    },
+    {
+      "id": "02447876",
+      "title": "Iron Banner March",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/02447876-Iron-Banner-March.mp3?v=1788906713",
+      "seconds": 158.4
+    },
+    {
+      "id": "c3603fc7",
+      "title": "Last Banner Falls",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c3603fc7-Last-Banner-Falls.mp3?v=1788906777",
+      "seconds": 183.72
+    },
+    {
+      "id": "65232d55",
+      "title": "Ashes of Victory",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/65232d55-Ashes-of-Victory.mp3?v=1788906794",
+      "seconds": 139.032
+    },
+    {
+      "id": "42a54b5f",
+      "title": "Drift and Divide",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/42a54b5f-Drift-and-Divide.mp3?v=1788906813",
+      "seconds": 204.72
+    },
+    {
+      "id": "e72d488f",
+      "title": "Siege Map Drift",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/e72d488f-Siege-Map-Drift.mp3?v=1788906837",
+      "seconds": 183.36
+    },
+    {
+      "id": "2fa4ea9d",
+      "title": "Death Comes For Everyone",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/2fa4ea9d-Siege-Heartbeat-1.mp3?v=1788906854",
+      "seconds": 213.96
+    },
+    {
+      "id": "db6d886b",
+      "title": "Siege Heartbeat",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/db6d886b-Siege-Heartbeat.mp3?v=1788906888",
+      "seconds": 169.128
+    },
+    {
+      "id": "c504875f",
+      "title": "Seventy Two Percent",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c504875f-Seventy-Two-Percent.mp3?v=1788906910",
+      "seconds": 203.832
+    },
+    {
+      "id": "abbdbdec",
+      "title": "Fallen Field",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/abbdbdec-Fallen-Field.mp3?v=1788906927",
+      "seconds": 119.688
+    },
+    {
+      "id": "1a64ff8f",
+      "title": "Iron Coast",
+      "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/1a64ff8f-Iron-Coast.mp3?v=1788907012",
+      "seconds": 193.128
+    }
+  ],
+  "stings": {
+    "defeat": [
+      {
+        "id": "c1bfaf04",
+        "title": "Fallen Banners",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c1bfaf04-Fallen-Banners.mp3?v=1788906749",
+        "seconds": 240.48
+      },
+      {
+        "id": "0434532c",
+        "title": "Last Honor Call",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/0434532c-Last-Honor-Call.mp3?v=1788906966",
+        "seconds": 199.44
+      }
+    ],
+    "credits": [
+      {
+        "id": "1a64ff8f",
+        "title": "Iron Coast",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/1a64ff8f-Iron-Coast.mp3?v=1788907012",
+        "seconds": 193.128
+      }
+    ],
+    "top1": [
+      {
+        "id": "f6d91ae9",
+        "title": "Iron Horizon",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/f6d91ae9-Iron-Horizon.mp3?v=1788907052",
+        "seconds": 179.352
+      }
+    ]
+  }
+}

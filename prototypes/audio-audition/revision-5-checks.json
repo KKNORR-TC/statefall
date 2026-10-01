@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "buildingTypes": 20,
+  "rebuiltFamilies": 16,
+  "buildingFilesDecoded": 80,
+  "engineUsedBy": [
+    "factory"
+  ],
+  "unchanged": "All non-building audio, hammering start, city, factory, port and troop command",
+  "scoreReviewed": 16,
+  "note": "Technical checks do not establish audible recognition."
+}

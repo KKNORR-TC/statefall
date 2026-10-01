@@ -1,0 +1,11 @@
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-cli-run-ad9bde543153 Creating 
+ Container statefall-sandbox-cli-run-ad9bde543153 Created 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-cli-run-2a208f10ddb3 Creating 
+ Container statefall-sandbox-cli-run-2a208f10ddb3 Created 
+PASS replay XSS, immutable kind, Autosave uniqueness, and bot-record isolation regressions

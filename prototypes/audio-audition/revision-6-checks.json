@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "revisedSounds": 21,
+  "approvedFilesUnchanged": 30,
+  "decodedRevisedFiles": 84,
+  "note": "Signal, decode, and approval-integrity checks passed. Listening approval pending."
+}

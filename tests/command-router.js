@@ -5,6 +5,7 @@ const {createAuthoritativeState}=require('../game/src/sim/authoritative-state.mj
 const {createDeterministicRuntime}=require('../game/src/sim/deterministic-runtime.mjs');
 const {createCommandRouter}=require('../game/src/sim/command-router.mjs');
 const {validateReplaySchema}=require('../game/src/sim/replay-schema.mjs');
+const {assertCommandArguments}=require('../game/src/sim/command-schema.mjs');
 
 function createInstance(){
   const engineState=createAuthoritativeState({tileCount:4,settings:{pauseBuild:false}});
@@ -47,6 +48,18 @@ try{
     const replay=createInstance();replay.engineState.rules.settings.instant=instant;replay.engineState.setClock(tick,tick*100);const replayShip={id:20,owner:0,hp:10,cls:'battleship',x:.5,y:.5};replay.engineState.actors.warships.push(replayShip);replay.engineState.actors.structures.push({...port});replay.router.replayApply(f.runtime.commands.log.at(-2));assert.equal(replayShip.refit,vessel.refit,'refit replay deadline differs');assert.equal(replay.players[0].gold,f.players[0].gold,'refit replay cost differs');
   }
   const first=createInstance(),second=createInstance();
+  for(const act of ['giveGold','giveTroops']){
+    const liveAid=createInstance(),replayedAid=createInstance();
+    const args=[{act},1,[],-1,50,250_000_000,250_000_000];
+    assert.doesNotThrow(()=>assertCommandArguments('menu',args),'Billionaire aid defaults must be accepted');
+    assert.doesNotThrow(()=>assertCommandArguments('menu',[...args.slice(0,5),1_000_000_000,1_000_000_000]));
+    for(const invalid of [-1,NaN,Infinity,1_000_000_001]){
+      assert.throws(()=>assertCommandArguments('menu',[...args.slice(0,5),invalid,0]),/Invalid arguments/);
+      assert.throws(()=>assertCommandArguments('menu',[...args.slice(0,5),0,invalid]),/Invalid arguments/);
+    }
+    liveAid.router.issueMenu(...args);
+    assert.equal(replayedAid.router.replayApply(liveAid.runtime.commands.log.at(-1)),true,'large aid must replay');
+  }
   first.router.issue('focus',.4);
   first.router.issueFor(1,'focus',.7);
   second.router.issue('focus',.2);

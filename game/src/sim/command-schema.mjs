@@ -1,3 +1,4 @@
+export const MAX_AID_AMOUNT=1_000_000_000;
 export const SIMPLE_COMMAND_KINDS=Object.freeze(['focus','airAuto','logAuto','autoFire','recall','recallAll','sat','accept','decline','decShare','decWar','continueAfterEnd','surrender']);
 export const MENU_ACTIONS=Object.freeze(['plane','fpatrol','bstrike','recallnear','upgrade','buyf','buyb','buyc','paradrop','sat','refit','move','blockade','warship','build','focus','unfocus','repair','repairstop','cancelship','cancel','nuke','nap','ally','war','giveTroops','giveGold','askTroops','askGold','pickreinf','pickattack','attackfrom','transportfrom','transport']);
 export const COMMAND_KINDS=Object.freeze(['menu','click',...SIMPLE_COMMAND_KINDS]);
@@ -29,7 +30,7 @@ export function assertCommandArguments(kind,args){
   if(!Array.isArray(args)) throw new TypeError('Command arguments must be an array.');
   let valid=false;
   switch(kind){
-    case 'menu': valid=args.length===7&&plain(args[0])&&integer(args[1])&&Array.isArray(args[2])&&args[2].length<=10_000&&args[2].every(integer)&&new Set(args[2]).size===args[2].length&&Number.isSafeInteger(args[3])&&args[3]>=-1&&finite(args[4],0,100)&&args.slice(5).every(value=>finite(value,0,1_000_000)); if(valid) assertMenuAction(args[0]); break;
+    case 'menu': valid=args.length===7&&plain(args[0])&&integer(args[1])&&Array.isArray(args[2])&&args[2].length<=10_000&&args[2].every(integer)&&new Set(args[2]).size===args[2].length&&Number.isSafeInteger(args[3])&&args[3]>=-1&&finite(args[4],0,100)&&args.slice(5).every(value=>finite(value,0,MAX_AID_AMOUNT)); if(valid) assertMenuAction(args[0]); break;
     case 'click': { const env=args[1],pick=env&&env.pick; valid=args.length===2&&integer(args[0])&&exact(env,['ratio','pick','build'])&&finite(env.ratio,0,100)&&(pick==null||exact(pick,['kind','t'])&&['attack','reinforce'].includes(pick.kind)&&integer(pick.t))&&(env.build==null||env.build==='nuke'||BUILD_TYPES.has(env.build)); break; }
     case 'focus': valid=args.length===1&&finite(args[0],0,1); break;
     case 'airAuto': case 'logAuto': case 'autoFire': valid=args.length===1&&typeof args[0]==='boolean'; break;

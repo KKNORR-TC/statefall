@@ -1,0 +1,5 @@
+
+> statefall@1.10.60 test:help-contract
+> node tests/help-contract.js
+
+Static help and release-tool module contracts PASS

@@ -111,7 +111,7 @@ export function createLandCombatSystem({
         const localDensity=defGarrison?(def.areas&&localGarrison?localGarrison.troops/Math.max(1,localGarrison.tiles):density(def)):undefined;
         let cost=def?tileCost(a,def,t,tileForts,localDensity):0;
         if(def){ const pool=defGarrison?(localGarrison?localGarrison.troops:def.troops):def.troops; const base=0.38*(0.65+0.7*rough[t]); const cap=base+Math.max(0,pool)*1.5/Math.max(1,a.front.size); cost=Math.min(cost,Math.max(base,cap)); if(def.kind!=='neutral'&&!(shelled[t]>clock.tickN)){ const forts=tileForts; if(forts) cost+=constants.wallToll*Math.pow(2,forts-1); } }
-        if(a.troops<cost){ a.dead=true; break; }
+        if(a.troops<cost){ a.dead=true; if(p===localPlayer) sound(a.took?'attack-stalled':'attack-failed'); break; }
         a.troops-=cost; a.spent=(a.spent||0)+cost;
         if(def){ if(defGarrison){ const defer=!!localGarrison&&!!def.areas?.length;loseTroopsAt(def,t,cost*0.55,defer,localGarrison);if(defer)needsTroopSync=true; } else def.troops=Math.max(0,def.troops-cost*0.55); if(def.kind==='neutral'&&p.kind!=='neutral'){ def.grudge[p.id]=clock.tickN; if(!diplomacy.isProvokedBy(def,p.id,1)) def.warned=false; } }
         setOwner(t,p.id); n++; a.took=(a.took||0)+1; tileCaptured(t,p); if(def&&n===1) diplomacy.markHostile(p.id,def.id); if(def===localPlayer) sound('invaded');
@@ -129,7 +129,7 @@ export function createLandCombatSystem({
         def.alive=false;
         if(p===localPlayer){ sound('conquered'); localPlayer.kills=(localPlayer.kills||0)+1; conquest(def); }
         if(def===localPlayer&&p.kind!=='neutral') fell(p);
-        if(def.kind!=='neutral'){ def.killedBy=p.id; def.diedAt=clock.tickN; badge(def,p); }
+        if(def.kind!=='neutral'){ if(p===localPlayer) sound('elimination'); def.killedBy=p.id; def.diedAt=clock.tickN; badge(def,p); }
         if(def.kind==='neutral'&&p.kind!=='neutral'){ const early=1+(constants.conquestEarly-1)*Math.max(0,1-clock.tickN/constants.conquestEarlyTicks); const g=Math.round(a.startTiles*constants.conquestGold*early); p.gold+=g; if(p===localPlayer) plunder(def,g,early); }
         else if(def.kind!=='neutral'&&p.kind!=='neutral'){ const g=Math.floor(def.gold); def.gold=0; if(g>0){ p.gold+=g; treasury(p,def,g); } }
         log(p.kind==='neutral'?`${def.name} overextended and was conquered by ${p.name}.`:`${p.name} wiped out ${def.name}.`,p===localPlayer||def===localPlayer);

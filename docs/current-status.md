@@ -1,6 +1,12 @@
 # Statefall Current Status
 
-**Current qualified handoff: 1.10.57 / plugin 1.10.9.** Loading-screen unit rotation added on top of the silo-flight fix. Required local verification, exact-ZIP WordPress installation, reproducibility, and performance gates passed, with the WebKit map-edge harness correction and segmented reruns recorded explicitly. Docker is stopped. GO for manual installation; no production access, upload, deployment, or push occurred. [Release record](release-record-1.10.57.md).
+**Production 1.10.61 / plugin 1.10.10 — field guide and allied aid are live.** All eight How to Play tabs share an illustrated layout; About is refreshed and its version/build note is required by every release build. The reviewed Billionaire ally-sharing fix is included. The exact qualified ZIP was installed on 30 September at 22:01:14 UTC and caches cleared at 22:02:02 UTC. Full qualification, reproducibility, installed-artifact and performance gates passed. Live assets/help, startup, profile/leaderboard, save/resume, historical replay and fresh score submission passed. Prior 1.10.60 is retained for rollback. Docker is stopped; no Git push occurred. [Release record](release-record-1.10.61.md) · [Implementation notes](field-guide-1.10.61.md).
+
+**Production 1.10.60 / plugin 1.10.10 — illustrated help is live.** Buildings, Ships and Air now share 40 larger gameplay portraits and practical usage advice. Ken confirmed the backup, and the verified package was installed on 30 September at 20:57:43 UTC. Local qualification and live acceptance passed: anonymous assets/help, authenticated startup, profile/leaderboard, save/resume, replay and score submission. Caches cleared; prior 1.10.59 retained for rollback. Docker is stopped. [Release record](release-record-1.10.60.md) · [Implementation notes](illustrated-help.md).
+
+## Previous release
+
+**Production: 1.10.59 / plugin 1.10.10 — ready for play testing.** Approved effects and all 16 original score tracks are live, with situation music and Radio override. Paused-save compatibility and Overrun score submission corrections passed local qualification and live acceptance. Save/resume, replay, startup, score posting and public assets were checked. Docker is stopped. No Git push occurred. Human audio balance/play testing is next. [Release record](release-record-1.10.59.md).
 
 ## Prior debug patches
 

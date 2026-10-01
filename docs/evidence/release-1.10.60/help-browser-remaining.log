@@ -1,0 +1,1078 @@
+
+[WebServer] (node:27700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1014 tests using 1 worker
+
+
+
+(node:22024) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/1014] [firefox-desktop] › tests\browser\audio.spec.js:3:1 › approved audio decodes and situation / Radio controls survive mute and reload
+[2/1014] [firefox-desktop] › tests\browser\audio.spec.js:42:1 › pausing during a pending score download cannot start late playback
+[3/1014] [firefox-desktop] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[4/1014] [firefox-desktop] › tests\browser\canvas.spec.js:93:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[5/1014] [firefox-desktop] › tests\browser\canvas.spec.js:135:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[6/1014] [firefox-desktop] › tests\browser\canvas.spec.js:162:1 › major modes launch individually and expose their defining state
+[7/1014] [firefox-desktop] › tests\browser\canvas.spec.js:197:1 › real pointer targeting and context interaction use the expected tile
+[8/1014] [firefox-desktop] › tests\browser\canvas.spec.js:241:1 › dense late-game fixture exposes strategic visual layers
+[9/1014] [firefox-desktop] › tests\browser\canvas.spec.js:260:1 › loads and plays the historical replay fixture in the browser
+[10/1014] [firefox-desktop] › tests\browser\canvas.spec.js:282:1 › 8x watch stops and finalizes exactly at the replay target
+[11/1014] [firefox-desktop] › tests\browser\canvas.spec.js:294:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[12/1014] [firefox-desktop] › tests\browser\canvas.spec.js:320:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[13/1014] [firefox-desktop] › tests\browser\canvas.spec.js:339:1 › browser replay payload includes strong final evidence for a short save
+[14/1014] [firefox-desktop] › tests\browser\canvas.spec.js:354:1 › a save from the pause menu resumes with verified final evidence
+[15/1014] [firefox-desktop] › tests\browser\canvas.spec.js:370:1 › credits replay reset clears setup scratch before rebuilding the match
+[16/1014] [firefox-desktop] › tests\browser\canvas.spec.js:379:1 › rejects malformed and unsupported replay commands before configuration
+[17/1014] [firefox-desktop] › tests\browser\canvas.spec.js:401:1 › invalid replay settings leave start state usable and allow a successful retry
+[18/1014] [firefox-desktop] › tests\browser\canvas.spec.js:423:1 › invalid start configuration reports the error without hiding the start card
+[19/1014] [firefox-desktop] › tests\browser\canvas.spec.js:440:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[20/1014] [firefox-desktop] › tests\browser\canvas.spec.js:459:1 › resizes without document overflow and keeps the Canvas usable
+[21/1014] [firefox-desktop] › tests\browser\canvas.spec.js:486:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[22/1014] [firefox-desktop] › tests\browser\canvas.spec.js:536:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+[23/1014] [firefox-desktop] › tests\browser\classic-combat-effects.spec.js:2:1 › combat effects have distinct stages, restore Canvas state and respect lifecycle/visibility
+[24/1014] [firefox-desktop] › tests\browser\classic-map-edge.spec.js:2:1 › classic terrain preserves all four map edges across cache pans and worker output
+[25/1014] [firefox-desktop] › tests\browser\classic-motion.spec.js:2:1 › classic motion covers roster, guards fog/offscreen/reduced motion and leaves state unchanged
+[26/1014] [firefox-desktop] › tests\browser\classic-sam-runtime.spec.js:2:1 › runtime SAM preserves aim during reload, supports every bearing and freezes when paused
+[27/1014] [firefox-desktop] › tests\browser\classic-silo-sequence.spec.js:2:1 › silo starts closed, opens before elevation, holds before ignition and closes after flight
+[28/1014] [firefox-desktop] › tests\browser\classic-tree-coverage.spec.js:2:1 › large close-up terrain draws trees through the bottom of the view and reuses its cache
+[29/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[30/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[31/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[32/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[33/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[34/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[35/1014] [firefox-desktop] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[36/1014] [firefox-desktop] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+[37/1014] [firefox-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[38/1014] [firefox-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+[39/1014] [firefox-desktop] › tests\browser\phase-g-all-units.spec.js:15:1 › all shipped unit families expose isolated Unit Direction 02 candidates without canonical state
+[40/1014] [firefox-desktop] › tests\browser\phase-g-projectiles.spec.js:11:1 › all nine shipped projectile rows expose isolated production-render candidates
+[41/1014] [firefox-desktop] › tests\browser\phase-g-radar-sam.spec.js:23:1 › Phase G radar and SAM dishes use bounded Pixi overlays with deterministic state-safe motion
+[42/1014] [firefox-desktop] › tests\browser\phase-g-radar-sam.spec.js:54:1 › Phase G Canvas fallback shares moving and reduced-motion dish policy
+[43/1014] [firefox-desktop] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G medium-quality Pixi keeps bounded readable dishes without texture churn
+[44/1014] [firefox-desktop] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G low-quality Pixi keeps bounded readable dishes without texture churn
+[45/1014] [firefox-desktop] › tests\browser\phase-g-radar-sam.spec.js:77:1 › Phase G evidence identifies the approved Unit Direction 02 source
+[46/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:26:1 › Pixi owns the exact aircraft block with interpolation-ready coordinates and Canvas handoff
+[47/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:32:1 › synthetic malformed stepped bomber rejects Pixi but direct Canvas fallback remains legacy-safe
+[48/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[49/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:47:1 › aircraft stays above missiles and real Air-list hover drives the patrol highlight
+[50/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:52:1 › aircraft resource failures withdraw all aircraft, directly Canvas-paint, and retry cleanly
+[51/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft entry cap rejects without truncation, uses uncapped Canvas, and recovers
+[52/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft primitive cap rejects without truncation, uses uncapped Canvas, and recovers
+[53/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft segment cap rejects without truncation, uses uncapped Canvas, and recovers
+[54/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft container cap rejects without truncation, uses uncapped Canvas, and recovers
+[55/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft Graphics cap rejects without truncation, uses uncapped Canvas, and recovers
+[56/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:68:1 › stable positive aircraft IDs survive reorder/remove/re-add and reject duplicate or missing IDs
+[57/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:72:1 › aircraft ownership requires every prerequisite through missiles
+[58/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:76:1 › aircraft container and Graphics constructor failures leave no phantom resources
+[59/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:80:1 › fatal final submission replays aircraft once with omission-sensitive primitives
+[60/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:84:1 › active aircraft resources recreate after BFCache loss and clean up on context loss
+[61/1014] [firefox-desktop] › tests\browser\pixi-aircraft.spec.js:88:1 › 1800-frame type/state/color/HP/heading/pull/patrol/fog/cull/reorder churn plateaus
+[62/1014] [firefox-desktop] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[63/1014] [firefox-desktop] › tests\browser\pixi-atlas.spec.js:14:1 › atlas loading failures are categorized, atomic, and choose Canvas fallback
+[64/1014] [firefox-desktop] › tests\browser\pixi-atlas.spec.js:35:1 › atlas references prevent eviction and released atlases evict in LRU order
+[65/1014] [firefox-desktop] › tests\browser\pixi-atlas.spec.js:44:1 › concurrent atlas commits recheck duplicate, atlas, byte, and aggregate frame caps in completion order
+[66/1014] [firefox-desktop] › tests\browser\pixi-atlas.spec.js:71:1 › failed staged replacement and destroy-during-load preserve publication atomically
+[67/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:14:1 › Pixi owns exactly floating text after support and preserves formulas, style, order, and handoff
+[68/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[69/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-after-raster withdraws every floater and paints uncapped Canvas
+[70/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-final-append withdraws every floater and paints uncapped Canvas
+[71/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-final-append keeps support below and Canvas effects above without double-age
+[72/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-update keeps support below and Canvas effects above without double-age
+[73/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass final-render keeps support below and Canvas effects above without double-age
+[74/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text entry-cap rejects without truncation
+[75/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text label-cap rejects without truncation
+[76/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text char-cap rejects without truncation
+[77/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text container-cap rejects without truncation
+[78/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text sprite-cap rejects without truncation
+[79/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text texture-cap rejects without truncation
+[80/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text source-byte-cap rejects without truncation
+[81/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:24:1 › WeakMap occurrence identity survives reorder, removal, text changes, and restore
+[82/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:26:1 › real event adapter cash floater is created unchanged and presented by Pixi
+[83/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:28:1 › floating text ownership requires support actors and reset recovery is clean
+[84/1014] [firefox-desktop] › tests\browser\pixi-floating-text.spec.js:30:1 › 1800-frame age/text/color/cull/pan churn plateaus within submission ceilings
+[85/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:31:1 › Pixi owns the exact independently inventoried seven-category block and all legacy wreck classes
+[86/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[87/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects category-cap rejects the complete block without truncation
+[88/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects entry-cap rejects the complete block without truncation
+[89/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects trail-point-cap rejects the complete block without truncation
+[90/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects primitive-cap rejects the complete block without truncation
+[91/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects segment-cap rejects the complete block without truncation
+[92/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects container-cap rejects the complete block without truncation
+[93/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects graphics-cap rejects the complete block without truncation
+[94/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-graphics-after-paint withdraws every category and recovers
+[95/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-final-append withdraws every category and recovers
+[96/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-final-append keeps floaters below and nation labels above without double age
+[97/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-update keeps floaters below and nation labels above without double age
+[98/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass final-render keeps floaters below and nation labels above without double age
+[99/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:41:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[100/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:43:1 › production renderPass retains one legacy fog decision for air-wreck smoke and replay
+[101/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:45:1 › real effect adapters feed all feasible categories without simulation mutation
+[102/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:47:1 › global effects ownership requires floating text and reset recovery is clean
+[103/1014] [firefox-desktop] › tests\browser\pixi-global-effects.spec.js:49:1 › 1800-frame all-category color/cull/pan/quality/motion churn plateaus within submission ceilings
+[104/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:8:1 › Pixi owns the complete ordered final interaction block without input or authority mutation
+[105/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 pick condition retains exact bounded inventory
+[106/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 box condition retains exact bounded inventory
+[107/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 dashed condition retains exact bounded inventory
+[108/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 draft condition retains exact bounded inventory
+[109/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 paused condition retains exact bounded inventory
+[110/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 valid condition retains exact bounded inventory
+[111/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 invalid condition retains exact bounded inventory
+[112/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Entry cap rejects without truncation and direct Canvas paints
+[113/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Primitive cap rejects without truncation and direct Canvas paints
+[114/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Segment cap rejects without truncation and direct Canvas paints
+[115/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Label cap rejects without truncation and direct Canvas paints
+[116/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Char cap rejects without truncation and direct Canvas paints
+[117/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Container cap rejects without truncation and direct Canvas paints
+[118/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Graphics cap rejects without truncation and direct Canvas paints
+[119/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Sprite cap rejects without truncation and direct Canvas paints
+[120/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Texture cap rejects without truncation and direct Canvas paints
+[121/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 SourceByte cap rejects without truncation and direct Canvas paints
+[122/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-source withdraws E17, paints direct Canvas, and recovers cleanly
+[123/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-after-paint withdraws E17, paints direct Canvas, and recovers cleanly
+[124/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-final-append withdraws E17, paints direct Canvas, and recovers cleanly
+[125/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:24:1 › fatal final submission performs one nonadvancing full Canvas replay from frozen E17 input
+[126/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:28:1 › E17 viewport inventory remains bounded on mobile and reduced motion
+[127/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[128/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:36:1 › each E17 visual has independent production-frame raster evidence
+[129/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:40:1 › E17 lighter composite has parity and unsupported composite uses direct Canvas fallback
+[130/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:44:1 › E17-active real desktop pointer targeting, pick, drag selection, pan, zoom, resize, and context action stay Canvas-bound
+[131/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:48:1 › E17-active touch pointers target, tap, pan, pinch zoom, and remain aligned after mobile resize
+[132/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-container constructor failure leaves no E17 phantom resources and retries
+[133/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-graphics constructor failure leaves no E17 phantom resources and retries
+[134/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-sprite constructor failure leaves no E17 phantom resources and retries
+[135/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:56:1 › fatal E17 update performs one Canvas replay and destroys every active resource
+[136/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[137/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:64:1 › 1800-frame pointer, drag, build, pick, pause, and resize-style churn stays bounded
+[138/1014] [firefox-desktop] › tests\browser\pixi-interaction-overlays.spec.js:68:1 › reset releases every E17 source and restores normal ownership
+[139/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:15:1 › Pixi owns only draft and garrison labels with stable order and cached raster sources
+[140/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[141/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:28:1 › map-label failures withdraw the whole block, paint direct Canvas, and recover
+[142/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:32:1 › production renderPass label failure composites real Canvas labels and support actor above retained Pixi aircraft
+[143/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label entry cap rejects without truncation and uses uncapped Canvas
+[144/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label label cap rejects without truncation and uses uncapped Canvas
+[145/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label char cap rejects without truncation and uses uncapped Canvas
+[146/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label container cap rejects without truncation and uses uncapped Canvas
+[147/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label sprite cap rejects without truncation and uses uncapped Canvas
+[148/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label texture cap rejects without truncation and uses uncapped Canvas
+[149/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label source-byte cap rejects without truncation and uses uncapped Canvas
+[150/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:48:1 › stable semantic keys survive reorder/remove and prerequisites recover
+[151/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:52:1 › text changes evict only zero-reference cached textures and reset/BFCache recreate cleanly
+[152/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:57:1 › continuous draft fade replaces old alpha rasters while stable garrison textures are reused
+[153/1014] [firefox-desktop] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[154/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:19:1 › Pixi owns normal and cruise missiles in exact array and primitive order
+[155/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[156/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:30:1 › an intentional overlap keeps a real projectile pixel below the later missile body
+[157/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:34:1 › missile failures withdraw the whole layer, Canvas-paint it, and recover without ghosts
+[158/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile entry cap falls back to complete uncapped Canvas and recovers
+[159/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile trail cap falls back to complete uncapped Canvas and recovers
+[160/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile primitive cap falls back to complete uncapped Canvas and recovers
+[161/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile segment cap falls back to complete uncapped Canvas and recovers
+[162/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:50:1 › missile container and Graphics constructor failures leave no phantom slots and retry
+[163/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:54:1 › missile ownership requires the complete E4-E7 prerequisite chain
+[164/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:58:1 › fatal final submit replays missiles once on Canvas with omission-sensitive primitive evidence
+[165/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:62:1 › reduced motion keeps the legacy missile warning pulse on the supplied frame timestamp
+[166/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:66:1 › WeakMap identities survive reorder and removal without changing source state
+[167/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:70:1 › active missile resources recreate after BFCache loss and clean up on context loss
+[168/1014] [firefox-desktop] › tests\browser\pixi-missiles.spec.js:74:1 › 1800-frame age, type, owner, fog, cull, reorder, and create-remove churn plateaus
+[169/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:10:1 › production Pixi owns nation overlays after effects and leaves marker layers on Canvas
+[170/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay entry-cap rejects the whole layer
+[171/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay label-cap rejects the whole layer
+[172/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay char-cap rejects the whole layer
+[173/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay primitive-cap rejects the whole layer
+[174/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay container-cap rejects the whole layer
+[175/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay sprite-cap rejects the whole layer
+[176/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay texture-cap rejects the whole layer
+[177/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay source-byte-cap rejects the whole layer
+[178/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:19:1 › nation overlay segment cap rejects geometry inventory
+[179/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:23:1 › recoverable final append withdraws all overlays and recovers without stale textures
+[180/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:27:1 › fatal nation update falls back with one nonadvancing Canvas replay
+[181/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-final-append keeps effects below, labels exclusive, and opening marker above
+[182/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-update keeps effects below, labels exclusive, and opening marker above
+[183/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production final-render keeps effects below, labels exclusive, and opening marker above
+[184/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:35:1 › independent inventory matches direct legacy Canvas pixels without clipped icon sources
+[185/1014] [firefox-desktop] › tests\browser\pixi-nation-overlays.spec.js:41:1 › 1800 changing frames churn all visual inputs while pools and source cache stay bounded
+[186/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:24:1 › Pixi owns the bounded naval-logistics prefix in exact legacy order with targeted pixels
+[187/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:47:1 › boarding cap and Canvas handoff follow earlier visible wakes before viewport culling
+[188/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:56:1 › naval cap failure is atomic, leaves structures owned, and recovers next valid frame
+[189/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:64:1 › invalid paint and every pooled fail-after-mutation path fall back in-frame without dirty idle state or recovery ghosts
+[190/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:90:1 › WeakMap source identity survives reorder, removal, and compaction without index cross-wiring
+[191/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:97:1 › reset withdraws naval ownership when structures are unowned and a normal render restores it
+[192/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval container-resource constructor failure leaves no phantom slot and recovers
+[193/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval graphics-resource constructor failure leaves no phantom slot and recovers
+[194/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval label-resource constructor failure leaves no phantom slot and recovers
+[195/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[196/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:125:1 › naval active and idle resources release across BFCache recreation and context loss
+[197/1014] [firefox-desktop] › tests\browser\pixi-naval-logistics.spec.js:139:1 › 1800-frame naval create/remove/reorder/state/visibility churn plateaus within frame budgets
+[198/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:8:1 › Pixi owns ordered notification overlays after annotations without authority mutation
+[199/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:12:1 › credits use the exclusive E16 viewport layer without advancing authority or audio
+[200/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[201/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[202/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology normal uses frame-start world camera and one late advancement
+[203/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology final-render uses frame-start world camera and one late advancement
+[204/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:28:1 › default Canvas keeps the same first and subsequent credits camera chronology
+[205/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:32:1 › notification anchoring remains bounded on mobile and under reduced motion
+[206/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification entry-cap falls back without truncation
+[207/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification label-cap falls back without truncation
+[208/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification char-cap falls back without truncation
+[209/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification primitive-cap falls back without truncation
+[210/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification segment-cap falls back without truncation
+[211/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification container-cap falls back without truncation
+[212/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification graphics-cap falls back without truncation
+[213/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification sprite-cap falls back without truncation
+[214/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification texture-cap falls back without truncation
+[215/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification source-byte-cap falls back without truncation
+[216/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:40:1 › notification final append withdraws E16 and recovers next frame
+[217/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:44:1 › queued age-zero badge advances, sounds, counts, and displays in the same frame
+[218/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:48:1 › badge final lifetime frame paints once and is absent from the following inventory
+[219/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:52:40 › final-render replays the prepared badge once without re-age or re-audio
+[220/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:56:1 › every E16 offscreen stage fails notification-only, cleans up, and recovers
+[221/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:61:1 › destination-dependent and unknown composites bypass allocation and preserve direct Canvas results
+[222/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Entry cap preflight leaves the offscreen raster untouched
+[223/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Char cap preflight leaves the offscreen raster untouched
+[224/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Primitive cap preflight leaves the offscreen raster untouched
+[225/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification SourceByte cap preflight leaves the offscreen raster untouched
+[226/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:69:1 › default Canvas notification path never allocates the Pixi offscreen raster
+[227/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:73:1 › notification viewport source releases on reset and BFCache suspend, then recreates normally
+[228/1014] [firefox-desktop] › tests\browser\pixi-notifications.spec.js:77:1 › 1800-frame notification churn remains bounded and meets submission ceilings
+[229/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:34:1 › Pixi owns every E7 variant in exact category and primitive order
+[230/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:40:1 › isolated Pixi Graphics rasterize every E7 primitive and preserve the separate intentional overlap order fixture
+[231/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:49:1 › projectile failures withdraw the complete layer and recover without live-slot ghosts
+[232/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:54:1 › fatal final submission replays the complete frame on Canvas without another RAF or presentation advance
+[233/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:61:1 › fatal world-layer update failure uses the same bounded full-frame Canvas replay
+[234/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:66:1 › visual-shot presentation ages exactly once and expires on the sixth displayed frame
+[235/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:70:1 › Pixi failure falls back without double-aging visual shots
+[236/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:74:1 › projectile ownership requires the complete E4-E6 prerequisite chain
+[237/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[238/1014] [firefox-desktop] › tests\browser\pixi-projectiles.spec.js:82:1 › 1800-frame variant, trail, fog, cull, reorder, and create-remove churn plateaus
+[239/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:71:1 › Pixi owns every complete visible structure with stable tile alignment and bounded reuse
+[240/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the sprite-cap is exhausted
+[241/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the texture-cap is exhausted
+[242/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:139:1 › structure completion, pop, texture replacement, destruction, eviction, invalid source, and reset use real resource identity
+[243/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:177:1 › overlapping structures remain in one Pixi-owned legacy-ordered scene graph
+[244/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:200:1 › fog-hidden active missile focus remains Pixi-owned and painted
+[245/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:213:1 › missile focus uses explicit route phase in Canvas and Pixi at two times with and without supply context
+[246/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:230:1 › Canvas fallback geometry ignores poisoned prior stroke state and restores defaults
+[247/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:239:1 › build, queue, pop, level, suppression, linked, and cooldown marks remain Pixi-owned
+[248/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:270:1 › a visible pre-base range keeps its ordered entry when the base sprite is offscreen
+[249/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure primitive-cap atomically restores Canvas pre-layers and bases
+[250/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure segment-cap atomically restores Canvas pre-layers and bases
+[251/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-cap atomically restores the complete Canvas structure scene and recovers
+[252/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-resource atomically restores the complete Canvas structure scene and recovers
+[253/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:314:1 › countdown labels use bounded explicit textures and do not enter the Pixi Text cache
+[254/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one sprite-resource constructor failure leaves no phantom pool slot and recovers
+[255/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one graphics-resource constructor failure leaves no phantom pool slot and recovers
+[256/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one text-resource constructor failure leaves no phantom pool slot and recovers
+[257/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:343:1 › structure pooled resources discard tainted paint failures and recover without stale children
+[258/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:361:1 › segment cap accepts the exact generated count and rejects one less before drawing
+[259/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:379:1 › 60-frame paused dense-fixture microbenchmark stays bounded with visible and culled structure scenes
+[260/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:402:1 › 1800-frame dev Pixi structure state churn keeps every owned resource bounded
+[261/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:422:1 › quality tiers reduce route segments without hiding gameplay meaning
+[262/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:449:1 › reduced motion freezes pre-structure pulse and route movement while retaining all semantics
+[263/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:462:1 › complete Pixi structure ownership obeys effective motion policy without changing canonical state
+[264/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:484:1 › dense structure resources recreate after BFCache loss and cleanly hand ownership to Canvas on context loss
+[265/1014] [firefox-desktop] › tests\browser\pixi-structures.spec.js:511:1 › Pixi structure layer smokes every map and major mode
+[266/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:24:1 › Pixi owns the exact support block after labels and hands state to floating text
+[267/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[268/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:38:1 › support resource failures withdraw all categories, direct Canvas paint, and recover
+[269/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-graphics-after-paint proves isolated support operations and later floating text
+[270/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-final-append proves isolated support operations and later floating text
+[271/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-update proves isolated support operations and later floating text
+[272/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass final-render proves isolated support operations and later floating text
+[273/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:57:1 › support container and Graphics constructor failures leave no phantom resources
+[274/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support entry-cap rejects without truncation
+[275/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support trail-point-cap rejects without truncation
+[276/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support primitive-cap rejects without truncation
+[277/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support segment-cap rejects without truncation
+[278/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support container-cap rejects without truncation
+[279/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support graphics-cap rejects without truncation
+[280/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:68:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[281/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:70:1 › support ownership requires map labels and reset recovery is clean
+[282/1014] [firefox-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+[283/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:22:1 › Pixi owns every warship class and attached status visual in exact entry order
+[284/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:32:1 › warship caps advance chronologically through visible array order
+[285/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:46:1 › duplicate IDs and injected resource failures withdraw all warships but preserve naval ownership and recover
+[286/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:52:1 › constructor failures leave no phantom warship slots and stable IDs survive reorder, remove, and re-add
+[287/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:65:1 › warship ownership requires complete structures and naval logistics
+[288/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[289/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[290/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[291/1014] [firefox-desktop] › tests\browser\pixi-warships.spec.js:91:1 › 1800-frame class, color, state, selection, fire, HP, wake, cull, and reorder churn plateaus
+[292/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:10:1 › production Pixi owns the exact annotation block after nation overlays
+[293/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation entry-cap rejects without truncation
+[294/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation member-cap rejects without truncation
+[295/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation primitive-cap rejects without truncation
+[296/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation segment-cap rejects without truncation
+[297/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation label-cap rejects without truncation
+[298/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation char-cap rejects without truncation
+[299/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation container-cap rejects without truncation
+[300/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation graphics-cap rejects without truncation
+[301/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation sprite-cap rejects without truncation
+[302/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation texture-cap rejects without truncation
+[303/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation source-byte-cap rejects without truncation
+[304/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:18:1 › recoverable annotation final append withdraws all resources and retries
+[305/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:22:1 › stable frames reuse textures and returning variants stay cached within policy
+[306/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:26:1 › failed post-raster transaction balances references and destroys only new resources
+[307/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:30:1 › texture cap pressure evicts least-recently-used zero-reference variants
+[308/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:34:1 › source-byte pressure evicts zero-reference variants before allocating
+[309/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+[310/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:42:1 › reset and context teardown destroy every cached annotation texture once
+[311/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:46:1 › fatal annotation update performs one nonadvancing full Canvas replay
+[312/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:50:1 › opening, regions, owned SAM network, and labels match direct Canvas pixels
+[313/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:54:1 › opening, region, enemy, fog-filtered, no-network, and zoom variants retain actual pixel parity
+[314/1014] [firefox-desktop] › tests\browser\pixi-world-annotations.spec.js:58:1 › 1800-frame stable many-region plateaus and real annotation churn stays bounded
+[315/1014] [firefox-desktop] › tests\browser\platform.spec.js:3:1 › local and WordPress adapters own platform boundaries
+[316/1014] [firefox-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds
+[317/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:52:1 › Canvas and Pixi hybrid preserve state, input, camera, and bounded raster lifecycle
+[318/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:161:1 › source Pixi smoke preserves raster, input alignment, and canonical parity
+[319/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:190:42 › canvas survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[320/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:190:42 › pixi survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[321/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:230:1 › real WebGL context loss falls back without changing simulation state
+[322/1014] [firefox-desktop] › tests\browser\renderer-foundation.spec.js:251:1 › Pixi initialization failure and unsupported names fall back without restarting simulation
+[323/1014] [firefox-desktop] › tests\browser\score-retry.spec.js:3:58 › score expired response preserves the correct retry policy
+[324/1014] [firefox-desktop] › tests\browser\score-retry.spec.js:3:58 › score invalid response preserves the correct retry policy
+[325/1014] [firefox-desktop] › tests\browser\score-retry.spec.js:3:58 › score signature response preserves the correct retry policy
+[326/1014] [firefox-desktop] › tests\browser\silo-flight-handoff.spec.js:2:1 › silo uses one artwork projectile at the flight handoff
+[327/1014] [firefox-desktop] › tests\browser\startup.spec.js:5:1 › startup communicates loading and prevents input until the game is ready
+[328/1014] [firefox-desktop] › tests\browser\startup.spec.js:40:1 › failed startup offers a working retry without exposing inactive controls
+[329/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:14:1 › F2 shares 4x deterministic bytes and recomposes only across the camera detail threshold
+[330/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:41:1 › F2 source bytes ignore DPR, quality, renderer and reduced-motion policy
+[331/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:52:1 › cold worker failure paints bounded emergency terrain and reset clears old map pixels immediately
+[332/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:62:1 › production publisher installs discarded-B cache-hit C and skips only its installed revision
+[333/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:69:1 › paused pick-area highlight clears immediately on Escape and mode cancellation
+[334/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:79:1 › F2 Canvas-high and Pixi-linear terrain-only framebuffers retain geometry and bounded sampling parity
+[335/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:94:1 › F2 authoritative coast and topology input probes remain exact under smoothed presentation
+[336/1014] [firefox-desktop] › tests\browser\terrain-raster.spec.js:104:1 › F2 sustained 10Hz suppression converges and named synchronous interactions stay responsive
+
+(node:556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[337/1014] [webkit-desktop] › tests\browser\audio.spec.js:3:1 › approved audio decodes and situation / Radio controls survive mute and reload
+[338/1014] [webkit-desktop] › tests\browser\audio.spec.js:42:1 › pausing during a pending score download cannot start late playback
+[339/1014] [webkit-desktop] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[340/1014] [webkit-desktop] › tests\browser\canvas.spec.js:93:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[341/1014] [webkit-desktop] › tests\browser\canvas.spec.js:135:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[342/1014] [webkit-desktop] › tests\browser\canvas.spec.js:162:1 › major modes launch individually and expose their defining state
+[343/1014] [webkit-desktop] › tests\browser\canvas.spec.js:197:1 › real pointer targeting and context interaction use the expected tile
+[344/1014] [webkit-desktop] › tests\browser\canvas.spec.js:241:1 › dense late-game fixture exposes strategic visual layers
+[345/1014] [webkit-desktop] › tests\browser\canvas.spec.js:260:1 › loads and plays the historical replay fixture in the browser
+[346/1014] [webkit-desktop] › tests\browser\canvas.spec.js:282:1 › 8x watch stops and finalizes exactly at the replay target
+[347/1014] [webkit-desktop] › tests\browser\canvas.spec.js:294:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[348/1014] [webkit-desktop] › tests\browser\canvas.spec.js:320:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[349/1014] [webkit-desktop] › tests\browser\canvas.spec.js:339:1 › browser replay payload includes strong final evidence for a short save
+[350/1014] [webkit-desktop] › tests\browser\canvas.spec.js:354:1 › a save from the pause menu resumes with verified final evidence
+[351/1014] [webkit-desktop] › tests\browser\canvas.spec.js:370:1 › credits replay reset clears setup scratch before rebuilding the match
+[352/1014] [webkit-desktop] › tests\browser\canvas.spec.js:379:1 › rejects malformed and unsupported replay commands before configuration
+[353/1014] [webkit-desktop] › tests\browser\canvas.spec.js:401:1 › invalid replay settings leave start state usable and allow a successful retry
+[354/1014] [webkit-desktop] › tests\browser\canvas.spec.js:423:1 › invalid start configuration reports the error without hiding the start card
+[355/1014] [webkit-desktop] › tests\browser\canvas.spec.js:440:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[356/1014] [webkit-desktop] › tests\browser\canvas.spec.js:459:1 › resizes without document overflow and keeps the Canvas usable
+[357/1014] [webkit-desktop] › tests\browser\canvas.spec.js:486:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[358/1014] [webkit-desktop] › tests\browser\canvas.spec.js:536:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+[359/1014] [webkit-desktop] › tests\browser\classic-combat-effects.spec.js:2:1 › combat effects have distinct stages, restore Canvas state and respect lifecycle/visibility
+[360/1014] [webkit-desktop] › tests\browser\classic-map-edge.spec.js:2:1 › classic terrain preserves all four map edges across cache pans and worker output
+[361/1014] [webkit-desktop] › tests\browser\classic-motion.spec.js:2:1 › classic motion covers roster, guards fog/offscreen/reduced motion and leaves state unchanged
+[362/1014] [webkit-desktop] › tests\browser\classic-sam-runtime.spec.js:2:1 › runtime SAM preserves aim during reload, supports every bearing and freezes when paused
+[363/1014] [webkit-desktop] › tests\browser\classic-silo-sequence.spec.js:2:1 › silo starts closed, opens before elevation, holds before ignition and closes after flight
+[364/1014] [webkit-desktop] › tests\browser\classic-tree-coverage.spec.js:2:1 › large close-up terrain draws trees through the bottom of the view and reuses its cache
+[365/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[366/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[367/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[368/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[369/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[370/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[371/1014] [webkit-desktop] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[372/1014] [webkit-desktop] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+[373/1014] [webkit-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[374/1014] [webkit-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+[375/1014] [webkit-desktop] › tests\browser\phase-g-all-units.spec.js:15:1 › all shipped unit families expose isolated Unit Direction 02 candidates without canonical state
+[376/1014] [webkit-desktop] › tests\browser\phase-g-projectiles.spec.js:11:1 › all nine shipped projectile rows expose isolated production-render candidates
+[377/1014] [webkit-desktop] › tests\browser\phase-g-radar-sam.spec.js:23:1 › Phase G radar and SAM dishes use bounded Pixi overlays with deterministic state-safe motion
+[378/1014] [webkit-desktop] › tests\browser\phase-g-radar-sam.spec.js:54:1 › Phase G Canvas fallback shares moving and reduced-motion dish policy
+[379/1014] [webkit-desktop] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G medium-quality Pixi keeps bounded readable dishes without texture churn
+[380/1014] [webkit-desktop] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G low-quality Pixi keeps bounded readable dishes without texture churn
+[381/1014] [webkit-desktop] › tests\browser\phase-g-radar-sam.spec.js:77:1 › Phase G evidence identifies the approved Unit Direction 02 source
+[382/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:26:1 › Pixi owns the exact aircraft block with interpolation-ready coordinates and Canvas handoff
+[383/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:32:1 › synthetic malformed stepped bomber rejects Pixi but direct Canvas fallback remains legacy-safe
+[384/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[385/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:47:1 › aircraft stays above missiles and real Air-list hover drives the patrol highlight
+[386/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:52:1 › aircraft resource failures withdraw all aircraft, directly Canvas-paint, and retry cleanly
+[387/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft entry cap rejects without truncation, uses uncapped Canvas, and recovers
+[388/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft primitive cap rejects without truncation, uses uncapped Canvas, and recovers
+[389/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft segment cap rejects without truncation, uses uncapped Canvas, and recovers
+[390/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft container cap rejects without truncation, uses uncapped Canvas, and recovers
+[391/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft Graphics cap rejects without truncation, uses uncapped Canvas, and recovers
+[392/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:68:1 › stable positive aircraft IDs survive reorder/remove/re-add and reject duplicate or missing IDs
+[393/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:72:1 › aircraft ownership requires every prerequisite through missiles
+[394/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:76:1 › aircraft container and Graphics constructor failures leave no phantom resources
+[395/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:80:1 › fatal final submission replays aircraft once with omission-sensitive primitives
+[396/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:84:1 › active aircraft resources recreate after BFCache loss and clean up on context loss
+[397/1014] [webkit-desktop] › tests\browser\pixi-aircraft.spec.js:88:1 › 1800-frame type/state/color/HP/heading/pull/patrol/fog/cull/reorder churn plateaus
+[398/1014] [webkit-desktop] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[399/1014] [webkit-desktop] › tests\browser\pixi-atlas.spec.js:14:1 › atlas loading failures are categorized, atomic, and choose Canvas fallback
+[400/1014] [webkit-desktop] › tests\browser\pixi-atlas.spec.js:35:1 › atlas references prevent eviction and released atlases evict in LRU order
+[401/1014] [webkit-desktop] › tests\browser\pixi-atlas.spec.js:44:1 › concurrent atlas commits recheck duplicate, atlas, byte, and aggregate frame caps in completion order
+[402/1014] [webkit-desktop] › tests\browser\pixi-atlas.spec.js:71:1 › failed staged replacement and destroy-during-load preserve publication atomically
+[403/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:14:1 › Pixi owns exactly floating text after support and preserves formulas, style, order, and handoff
+[404/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[405/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-after-raster withdraws every floater and paints uncapped Canvas
+[406/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-final-append withdraws every floater and paints uncapped Canvas
+[407/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-final-append keeps support below and Canvas effects above without double-age
+[408/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-update keeps support below and Canvas effects above without double-age
+[409/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass final-render keeps support below and Canvas effects above without double-age
+[410/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text entry-cap rejects without truncation
+[411/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text label-cap rejects without truncation
+[412/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text char-cap rejects without truncation
+[413/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text container-cap rejects without truncation
+[414/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text sprite-cap rejects without truncation
+[415/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text texture-cap rejects without truncation
+[416/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text source-byte-cap rejects without truncation
+[417/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:24:1 › WeakMap occurrence identity survives reorder, removal, text changes, and restore
+[418/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:26:1 › real event adapter cash floater is created unchanged and presented by Pixi
+[419/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:28:1 › floating text ownership requires support actors and reset recovery is clean
+[420/1014] [webkit-desktop] › tests\browser\pixi-floating-text.spec.js:30:1 › 1800-frame age/text/color/cull/pan churn plateaus within submission ceilings
+[421/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:31:1 › Pixi owns the exact independently inventoried seven-category block and all legacy wreck classes
+[422/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[423/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects category-cap rejects the complete block without truncation
+[424/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects entry-cap rejects the complete block without truncation
+[425/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects trail-point-cap rejects the complete block without truncation
+[426/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects primitive-cap rejects the complete block without truncation
+[427/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects segment-cap rejects the complete block without truncation
+[428/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects container-cap rejects the complete block without truncation
+[429/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects graphics-cap rejects the complete block without truncation
+[430/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-graphics-after-paint withdraws every category and recovers
+[431/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-final-append withdraws every category and recovers
+[432/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-final-append keeps floaters below and nation labels above without double age
+[433/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-update keeps floaters below and nation labels above without double age
+[434/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass final-render keeps floaters below and nation labels above without double age
+[435/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:41:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[436/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:43:1 › production renderPass retains one legacy fog decision for air-wreck smoke and replay
+[437/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:45:1 › real effect adapters feed all feasible categories without simulation mutation
+[438/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:47:1 › global effects ownership requires floating text and reset recovery is clean
+[439/1014] [webkit-desktop] › tests\browser\pixi-global-effects.spec.js:49:1 › 1800-frame all-category color/cull/pan/quality/motion churn plateaus within submission ceilings
+[440/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:8:1 › Pixi owns the complete ordered final interaction block without input or authority mutation
+[441/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 pick condition retains exact bounded inventory
+[442/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 box condition retains exact bounded inventory
+[443/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 dashed condition retains exact bounded inventory
+[444/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 draft condition retains exact bounded inventory
+[445/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 paused condition retains exact bounded inventory
+[446/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 valid condition retains exact bounded inventory
+[447/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 invalid condition retains exact bounded inventory
+[448/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Entry cap rejects without truncation and direct Canvas paints
+[449/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Primitive cap rejects without truncation and direct Canvas paints
+[450/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Segment cap rejects without truncation and direct Canvas paints
+[451/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Label cap rejects without truncation and direct Canvas paints
+[452/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Char cap rejects without truncation and direct Canvas paints
+[453/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Container cap rejects without truncation and direct Canvas paints
+[454/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Graphics cap rejects without truncation and direct Canvas paints
+[455/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Sprite cap rejects without truncation and direct Canvas paints
+[456/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Texture cap rejects without truncation and direct Canvas paints
+[457/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 SourceByte cap rejects without truncation and direct Canvas paints
+[458/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-source withdraws E17, paints direct Canvas, and recovers cleanly
+[459/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-after-paint withdraws E17, paints direct Canvas, and recovers cleanly
+[460/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-final-append withdraws E17, paints direct Canvas, and recovers cleanly
+[461/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:24:1 › fatal final submission performs one nonadvancing full Canvas replay from frozen E17 input
+[462/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:28:1 › E17 viewport inventory remains bounded on mobile and reduced motion
+[463/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[464/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:36:1 › each E17 visual has independent production-frame raster evidence
+[465/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:40:1 › E17 lighter composite has parity and unsupported composite uses direct Canvas fallback
+[466/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:44:1 › E17-active real desktop pointer targeting, pick, drag selection, pan, zoom, resize, and context action stay Canvas-bound
+[467/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:48:1 › E17-active touch pointers target, tap, pan, pinch zoom, and remain aligned after mobile resize
+[468/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-container constructor failure leaves no E17 phantom resources and retries
+[469/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-graphics constructor failure leaves no E17 phantom resources and retries
+[470/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-sprite constructor failure leaves no E17 phantom resources and retries
+[471/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:56:1 › fatal E17 update performs one Canvas replay and destroys every active resource
+[472/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[473/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:64:1 › 1800-frame pointer, drag, build, pick, pause, and resize-style churn stays bounded
+[474/1014] [webkit-desktop] › tests\browser\pixi-interaction-overlays.spec.js:68:1 › reset releases every E17 source and restores normal ownership
+[475/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:15:1 › Pixi owns only draft and garrison labels with stable order and cached raster sources
+[476/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[477/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:28:1 › map-label failures withdraw the whole block, paint direct Canvas, and recover
+[478/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:32:1 › production renderPass label failure composites real Canvas labels and support actor above retained Pixi aircraft
+[479/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label entry cap rejects without truncation and uses uncapped Canvas
+[480/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label label cap rejects without truncation and uses uncapped Canvas
+[481/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label char cap rejects without truncation and uses uncapped Canvas
+[482/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label container cap rejects without truncation and uses uncapped Canvas
+[483/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label sprite cap rejects without truncation and uses uncapped Canvas
+[484/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label texture cap rejects without truncation and uses uncapped Canvas
+[485/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label source-byte cap rejects without truncation and uses uncapped Canvas
+[486/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:48:1 › stable semantic keys survive reorder/remove and prerequisites recover
+[487/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:52:1 › text changes evict only zero-reference cached textures and reset/BFCache recreate cleanly
+[488/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:57:1 › continuous draft fade replaces old alpha rasters while stable garrison textures are reused
+[489/1014] [webkit-desktop] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[490/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:19:1 › Pixi owns normal and cruise missiles in exact array and primitive order
+[491/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[492/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:30:1 › an intentional overlap keeps a real projectile pixel below the later missile body
+[493/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:34:1 › missile failures withdraw the whole layer, Canvas-paint it, and recover without ghosts
+[494/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile entry cap falls back to complete uncapped Canvas and recovers
+[495/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile trail cap falls back to complete uncapped Canvas and recovers
+[496/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile primitive cap falls back to complete uncapped Canvas and recovers
+[497/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:44:4 › missile segment cap falls back to complete uncapped Canvas and recovers
+[498/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:50:1 › missile container and Graphics constructor failures leave no phantom slots and retry
+[499/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:54:1 › missile ownership requires the complete E4-E7 prerequisite chain
+[500/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:58:1 › fatal final submit replays missiles once on Canvas with omission-sensitive primitive evidence
+[501/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:62:1 › reduced motion keeps the legacy missile warning pulse on the supplied frame timestamp
+[502/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:66:1 › WeakMap identities survive reorder and removal without changing source state
+[503/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:70:1 › active missile resources recreate after BFCache loss and clean up on context loss
+[504/1014] [webkit-desktop] › tests\browser\pixi-missiles.spec.js:74:1 › 1800-frame age, type, owner, fog, cull, reorder, and create-remove churn plateaus
+[505/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:10:1 › production Pixi owns nation overlays after effects and leaves marker layers on Canvas
+[506/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay entry-cap rejects the whole layer
+[507/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay label-cap rejects the whole layer
+[508/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay char-cap rejects the whole layer
+[509/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay primitive-cap rejects the whole layer
+[510/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay container-cap rejects the whole layer
+[511/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay sprite-cap rejects the whole layer
+[512/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay texture-cap rejects the whole layer
+[513/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay source-byte-cap rejects the whole layer
+[514/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:19:1 › nation overlay segment cap rejects geometry inventory
+[515/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:23:1 › recoverable final append withdraws all overlays and recovers without stale textures
+[516/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:27:1 › fatal nation update falls back with one nonadvancing Canvas replay
+[517/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-final-append keeps effects below, labels exclusive, and opening marker above
+[518/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-update keeps effects below, labels exclusive, and opening marker above
+[519/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production final-render keeps effects below, labels exclusive, and opening marker above
+[520/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:35:1 › independent inventory matches direct legacy Canvas pixels without clipped icon sources
+[521/1014] [webkit-desktop] › tests\browser\pixi-nation-overlays.spec.js:41:1 › 1800 changing frames churn all visual inputs while pools and source cache stay bounded
+[522/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:24:1 › Pixi owns the bounded naval-logistics prefix in exact legacy order with targeted pixels
+[523/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:47:1 › boarding cap and Canvas handoff follow earlier visible wakes before viewport culling
+[524/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:56:1 › naval cap failure is atomic, leaves structures owned, and recovers next valid frame
+[525/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:64:1 › invalid paint and every pooled fail-after-mutation path fall back in-frame without dirty idle state or recovery ghosts
+[526/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:90:1 › WeakMap source identity survives reorder, removal, and compaction without index cross-wiring
+[527/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:97:1 › reset withdraws naval ownership when structures are unowned and a normal render restores it
+[528/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval container-resource constructor failure leaves no phantom slot and recovers
+[529/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval graphics-resource constructor failure leaves no phantom slot and recovers
+[530/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval label-resource constructor failure leaves no phantom slot and recovers
+[531/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[532/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:125:1 › naval active and idle resources release across BFCache recreation and context loss
+[533/1014] [webkit-desktop] › tests\browser\pixi-naval-logistics.spec.js:139:1 › 1800-frame naval create/remove/reorder/state/visibility churn plateaus within frame budgets
+[534/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:8:1 › Pixi owns ordered notification overlays after annotations without authority mutation
+[535/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:12:1 › credits use the exclusive E16 viewport layer without advancing authority or audio
+[536/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[537/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[538/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology normal uses frame-start world camera and one late advancement
+[539/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology final-render uses frame-start world camera and one late advancement
+[540/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:28:1 › default Canvas keeps the same first and subsequent credits camera chronology
+[541/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:32:1 › notification anchoring remains bounded on mobile and under reduced motion
+[542/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification entry-cap falls back without truncation
+[543/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification label-cap falls back without truncation
+[544/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification char-cap falls back without truncation
+[545/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification primitive-cap falls back without truncation
+[546/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification segment-cap falls back without truncation
+[547/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification container-cap falls back without truncation
+[548/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification graphics-cap falls back without truncation
+[549/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification sprite-cap falls back without truncation
+[550/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification texture-cap falls back without truncation
+[551/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:36:412 › notification source-byte-cap falls back without truncation
+[552/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:40:1 › notification final append withdraws E16 and recovers next frame
+[553/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:44:1 › queued age-zero badge advances, sounds, counts, and displays in the same frame
+[554/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:48:1 › badge final lifetime frame paints once and is absent from the following inventory
+[555/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:52:40 › final-render replays the prepared badge once without re-age or re-audio
+[556/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:56:1 › every E16 offscreen stage fails notification-only, cleans up, and recovers
+[557/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:61:1 › destination-dependent and unknown composites bypass allocation and preserve direct Canvas results
+[558/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Entry cap preflight leaves the offscreen raster untouched
+[559/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Char cap preflight leaves the offscreen raster untouched
+[560/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification Primitive cap preflight leaves the offscreen raster untouched
+[561/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:65:61 › notification SourceByte cap preflight leaves the offscreen raster untouched
+[562/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:69:1 › default Canvas notification path never allocates the Pixi offscreen raster
+[563/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:73:1 › notification viewport source releases on reset and BFCache suspend, then recreates normally
+[564/1014] [webkit-desktop] › tests\browser\pixi-notifications.spec.js:77:1 › 1800-frame notification churn remains bounded and meets submission ceilings
+[565/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:34:1 › Pixi owns every E7 variant in exact category and primitive order
+[566/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:40:1 › isolated Pixi Graphics rasterize every E7 primitive and preserve the separate intentional overlap order fixture
+[567/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:49:1 › projectile failures withdraw the complete layer and recover without live-slot ghosts
+[568/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:54:1 › fatal final submission replays the complete frame on Canvas without another RAF or presentation advance
+[569/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:61:1 › fatal world-layer update failure uses the same bounded full-frame Canvas replay
+[570/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:66:1 › visual-shot presentation ages exactly once and expires on the sixth displayed frame
+[571/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:70:1 › Pixi failure falls back without double-aging visual shots
+[572/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:74:1 › projectile ownership requires the complete E4-E6 prerequisite chain
+[573/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[574/1014] [webkit-desktop] › tests\browser\pixi-projectiles.spec.js:82:1 › 1800-frame variant, trail, fog, cull, reorder, and create-remove churn plateaus
+[575/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:71:1 › Pixi owns every complete visible structure with stable tile alignment and bounded reuse
+[576/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the sprite-cap is exhausted
+[577/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the texture-cap is exhausted
+[578/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:139:1 › structure completion, pop, texture replacement, destruction, eviction, invalid source, and reset use real resource identity
+[579/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:177:1 › overlapping structures remain in one Pixi-owned legacy-ordered scene graph
+[580/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:200:1 › fog-hidden active missile focus remains Pixi-owned and painted
+[581/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:213:1 › missile focus uses explicit route phase in Canvas and Pixi at two times with and without supply context
+[582/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:230:1 › Canvas fallback geometry ignores poisoned prior stroke state and restores defaults
+[583/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:239:1 › build, queue, pop, level, suppression, linked, and cooldown marks remain Pixi-owned
+[584/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:270:1 › a visible pre-base range keeps its ordered entry when the base sprite is offscreen
+[585/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure primitive-cap atomically restores Canvas pre-layers and bases
+[586/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure segment-cap atomically restores Canvas pre-layers and bases
+[587/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-cap atomically restores the complete Canvas structure scene and recovers
+[588/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-resource atomically restores the complete Canvas structure scene and recovers
+[589/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:314:1 › countdown labels use bounded explicit textures and do not enter the Pixi Text cache
+[590/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one sprite-resource constructor failure leaves no phantom pool slot and recovers
+[591/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one graphics-resource constructor failure leaves no phantom pool slot and recovers
+[592/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one text-resource constructor failure leaves no phantom pool slot and recovers
+[593/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:343:1 › structure pooled resources discard tainted paint failures and recover without stale children
+[594/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:361:1 › segment cap accepts the exact generated count and rejects one less before drawing
+[595/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:379:1 › 60-frame paused dense-fixture microbenchmark stays bounded with visible and culled structure scenes
+[596/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:402:1 › 1800-frame dev Pixi structure state churn keeps every owned resource bounded
+[597/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:422:1 › quality tiers reduce route segments without hiding gameplay meaning
+[598/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:449:1 › reduced motion freezes pre-structure pulse and route movement while retaining all semantics
+[599/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:462:1 › complete Pixi structure ownership obeys effective motion policy without changing canonical state
+[600/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:484:1 › dense structure resources recreate after BFCache loss and cleanly hand ownership to Canvas on context loss
+[601/1014] [webkit-desktop] › tests\browser\pixi-structures.spec.js:511:1 › Pixi structure layer smokes every map and major mode
+[602/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:24:1 › Pixi owns the exact support block after labels and hands state to floating text
+[603/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[604/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:38:1 › support resource failures withdraw all categories, direct Canvas paint, and recover
+[605/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-graphics-after-paint proves isolated support operations and later floating text
+[606/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-final-append proves isolated support operations and later floating text
+[607/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-update proves isolated support operations and later floating text
+[608/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass final-render proves isolated support operations and later floating text
+[609/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:57:1 › support container and Graphics constructor failures leave no phantom resources
+[610/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support entry-cap rejects without truncation
+[611/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support trail-point-cap rejects without truncation
+[612/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support primitive-cap rejects without truncation
+[613/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support segment-cap rejects without truncation
+[614/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support container-cap rejects without truncation
+[615/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support graphics-cap rejects without truncation
+[616/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:68:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[617/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:70:1 › support ownership requires map labels and reset recovery is clean
+[618/1014] [webkit-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+[619/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:22:1 › Pixi owns every warship class and attached status visual in exact entry order
+[620/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:32:1 › warship caps advance chronologically through visible array order
+[621/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:46:1 › duplicate IDs and injected resource failures withdraw all warships but preserve naval ownership and recover
+[622/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:52:1 › constructor failures leave no phantom warship slots and stable IDs survive reorder, remove, and re-add
+[623/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:65:1 › warship ownership requires complete structures and naval logistics
+[624/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[625/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[626/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[627/1014] [webkit-desktop] › tests\browser\pixi-warships.spec.js:91:1 › 1800-frame class, color, state, selection, fire, HP, wake, cull, and reorder churn plateaus
+[628/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:10:1 › production Pixi owns the exact annotation block after nation overlays
+[629/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation entry-cap rejects without truncation
+[630/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation member-cap rejects without truncation
+[631/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation primitive-cap rejects without truncation
+[632/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation segment-cap rejects without truncation
+[633/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation label-cap rejects without truncation
+[634/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation char-cap rejects without truncation
+[635/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation container-cap rejects without truncation
+[636/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation graphics-cap rejects without truncation
+[637/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation sprite-cap rejects without truncation
+[638/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation texture-cap rejects without truncation
+[639/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation source-byte-cap rejects without truncation
+[640/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:18:1 › recoverable annotation final append withdraws all resources and retries
+[641/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:22:1 › stable frames reuse textures and returning variants stay cached within policy
+[642/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:26:1 › failed post-raster transaction balances references and destroys only new resources
+[643/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:30:1 › texture cap pressure evicts least-recently-used zero-reference variants
+[644/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:34:1 › source-byte pressure evicts zero-reference variants before allocating
+[645/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+[646/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:42:1 › reset and context teardown destroy every cached annotation texture once
+[647/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:46:1 › fatal annotation update performs one nonadvancing full Canvas replay
+[648/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:50:1 › opening, regions, owned SAM network, and labels match direct Canvas pixels
+[649/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:54:1 › opening, region, enemy, fog-filtered, no-network, and zoom variants retain actual pixel parity
+[650/1014] [webkit-desktop] › tests\browser\pixi-world-annotations.spec.js:58:1 › 1800-frame stable many-region plateaus and real annotation churn stays bounded
+[651/1014] [webkit-desktop] › tests\browser\platform.spec.js:3:1 › local and WordPress adapters own platform boundaries
+[652/1014] [webkit-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds
+[653/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:52:1 › Canvas and Pixi hybrid preserve state, input, camera, and bounded raster lifecycle
+[654/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:161:1 › source Pixi smoke preserves raster, input alignment, and canonical parity
+[655/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:190:42 › canvas survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[656/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:190:42 › pixi survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[657/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:230:1 › real WebGL context loss falls back without changing simulation state
+[658/1014] [webkit-desktop] › tests\browser\renderer-foundation.spec.js:251:1 › Pixi initialization failure and unsupported names fall back without restarting simulation
+[659/1014] [webkit-desktop] › tests\browser\score-retry.spec.js:3:58 › score expired response preserves the correct retry policy
+[660/1014] [webkit-desktop] › tests\browser\score-retry.spec.js:3:58 › score invalid response preserves the correct retry policy
+[661/1014] [webkit-desktop] › tests\browser\score-retry.spec.js:3:58 › score signature response preserves the correct retry policy
+[662/1014] [webkit-desktop] › tests\browser\silo-flight-handoff.spec.js:2:1 › silo uses one artwork projectile at the flight handoff
+[663/1014] [webkit-desktop] › tests\browser\startup.spec.js:5:1 › startup communicates loading and prevents input until the game is ready
+[664/1014] [webkit-desktop] › tests\browser\startup.spec.js:40:1 › failed startup offers a working retry without exposing inactive controls
+[665/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:14:1 › F2 shares 4x deterministic bytes and recomposes only across the camera detail threshold
+[666/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:41:1 › F2 source bytes ignore DPR, quality, renderer and reduced-motion policy
+[667/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:52:1 › cold worker failure paints bounded emergency terrain and reset clears old map pixels immediately
+[668/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:62:1 › production publisher installs discarded-B cache-hit C and skips only its installed revision
+[669/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:69:1 › paused pick-area highlight clears immediately on Escape and mode cancellation
+[670/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:79:1 › F2 Canvas-high and Pixi-linear terrain-only framebuffers retain geometry and bounded sampling parity
+[671/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:94:1 › F2 authoritative coast and topology input probes remain exact under smoothed presentation
+[672/1014] [webkit-desktop] › tests\browser\terrain-raster.spec.js:104:1 › F2 sustained 10Hz suppression converges and named synchronous interactions stay responsive
+
+(node:41312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[673/1014] [chromium-reduced-motion] › tests\browser\audio.spec.js:3:1 › approved audio decodes and situation / Radio controls survive mute and reload
+[674/1014] [chromium-reduced-motion] › tests\browser\audio.spec.js:42:1 › pausing during a pending score download cannot start late playback
+[675/1014] [chromium-reduced-motion] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+  1) [chromium-reduced-motion] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'prepareControlledStart')
+        at eval (eval at evaluate (:311:30), <anonymous>:1:33)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:311:30), <anonymous>:1:33)
+        at UtilityScript.evaluate (<anonymous>:313:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\build-contract.spec.js:52:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\build-contract-source-and--a81df-ve-the-canonical-simulation-chromium-reduced-motion\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\build-contract-source-and--a81df-ve-the-canonical-simulation-chromium-reduced-motion\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\build-contract-source-and--a81df-ve-the-canonical-simulation-chromium-reduced-motion\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\build-contract-source-and--a81df-ve-the-canonical-simulation-chromium-reduced-motion\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\build-contract-source-and--a81df-ve-the-canonical-simulation-chromium-reduced-motion\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:55364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[676/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:93:1 › launches a fixed-seed match, renders the map, and supports camera zoom
+[677/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:135:1 › all map buttons launch useful maps and match the strategic/close visual matrix
+[678/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:162:1 › major modes launch individually and expose their defining state
+[679/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:197:1 › real pointer targeting and context interaction use the expected tile
+[680/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:241:1 › dense late-game fixture exposes strategic visual layers
+[681/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:260:1 › loads and plays the historical replay fixture in the browser
+[682/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:282:1 › 8x watch stops and finalizes exactly at the replay target
+[683/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:294:1 › resume catch-up suspends once on checkpoint divergence and Continue reaches exact live target
+[684/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:320:1 › Stop replay resets a diverged resume and a subsequent ordinary resume succeeds
+[685/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:339:1 › browser replay payload includes strong final evidence for a short save
+[686/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:354:1 › a save from the pause menu resumes with verified final evidence
+[687/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:370:1 › credits replay reset clears setup scratch before rebuilding the match
+[688/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:379:1 › rejects malformed and unsupported replay commands before configuration
+[689/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:401:1 › invalid replay settings leave start state usable and allow a successful retry
+[690/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:423:1 › invalid start configuration reports the error without hiding the start card
+[691/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:440:1 › start and settings cards avoid horizontal overflow on desktop and mobile
+[692/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:459:1 › resizes without document overflow and keeps the Canvas usable
+[693/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:486:1 › fixed-seed simulation has the same canonical digest in Chromium, Firefox, and WebKit
+[694/1014] [chromium-reduced-motion] › tests\browser\canvas.spec.js:536:1 › real Canvas rendering is pure and irregular render cadence cannot change simulation
+[695/1014] [chromium-reduced-motion] › tests\browser\classic-combat-effects.spec.js:2:1 › combat effects have distinct stages, restore Canvas state and respect lifecycle/visibility
+[696/1014] [chromium-reduced-motion] › tests\browser\classic-map-edge.spec.js:2:1 › classic terrain preserves all four map edges across cache pans and worker output
+[697/1014] [chromium-reduced-motion] › tests\browser\classic-motion.spec.js:2:1 › classic motion covers roster, guards fog/offscreen/reduced motion and leaves state unchanged
+[698/1014] [chromium-reduced-motion] › tests\browser\classic-sam-runtime.spec.js:2:1 › runtime SAM preserves aim during reload, supports every bearing and freezes when paused
+[699/1014] [chromium-reduced-motion] › tests\browser\classic-silo-sequence.spec.js:2:1 › silo starts closed, opens before elevation, holds before ignition and closes after flight
+[700/1014] [chromium-reduced-motion] › tests\browser\classic-tree-coverage.spec.js:2:1 › large close-up terrain draws trees through the bottom of the view and reuses its cache
+[701/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[702/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[703/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[704/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[705/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[706/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[707/1014] [chromium-reduced-motion] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+[708/1014] [chromium-reduced-motion] › tests\browser\deterministic-math.spec.js:2:1 › portable simulation math matches the historical runtime bit for bit
+[709/1014] [chromium-reduced-motion] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[710/1014] [chromium-reduced-motion] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+[711/1014] [chromium-reduced-motion] › tests\browser\phase-g-all-units.spec.js:15:1 › all shipped unit families expose isolated Unit Direction 02 candidates without canonical state
+[712/1014] [chromium-reduced-motion] › tests\browser\phase-g-projectiles.spec.js:11:1 › all nine shipped projectile rows expose isolated production-render candidates
+[713/1014] [chromium-reduced-motion] › tests\browser\phase-g-radar-sam.spec.js:23:1 › Phase G radar and SAM dishes use bounded Pixi overlays with deterministic state-safe motion
+[714/1014] [chromium-reduced-motion] › tests\browser\phase-g-radar-sam.spec.js:54:1 › Phase G Canvas fallback shares moving and reduced-motion dish policy
+[715/1014] [chromium-reduced-motion] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G medium-quality Pixi keeps bounded readable dishes without texture churn
+[716/1014] [chromium-reduced-motion] › tests\browser\phase-g-radar-sam.spec.js:66:40 › Phase G low-quality Pixi keeps bounded readable dishes without texture churn
+[717/1014] [chromium-reduced-motion] › tests\browser\phase-g-radar-sam.spec.js:77:1 › Phase G evidence identifies the approved Unit Direction 02 source
+[718/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:26:1 › Pixi owns the exact aircraft block with interpolation-ready coordinates and Canvas handoff
+[719/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:32:1 › synthetic malformed stepped bomber rejects Pixi but direct Canvas fallback remains legacy-safe
+[720/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:36:1 › isolated real Pixi Graphics rasterize every aircraft primitive at DPR 1, 1.5, and 2
+[721/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:47:1 › aircraft stays above missiles and real Air-list hover drives the patrol highlight
+[722/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:52:1 › aircraft resource failures withdraw all aircraft, directly Canvas-paint, and retry cleanly
+[723/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft entry cap rejects without truncation, uses uncapped Canvas, and recovers
+[724/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft primitive cap rejects without truncation, uses uncapped Canvas, and recovers
+[725/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft segment cap rejects without truncation, uses uncapped Canvas, and recovers
+[726/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft container cap rejects without truncation, uses uncapped Canvas, and recovers
+[727/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:63:4 › aircraft Graphics cap rejects without truncation, uses uncapped Canvas, and recovers
+[728/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:68:1 › stable positive aircraft IDs survive reorder/remove/re-add and reject duplicate or missing IDs
+[729/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:72:1 › aircraft ownership requires every prerequisite through missiles
+[730/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:76:1 › aircraft container and Graphics constructor failures leave no phantom resources
+[731/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:80:1 › fatal final submission replays aircraft once with omission-sensitive primitives
+[732/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:84:1 › active aircraft resources recreate after BFCache loss and clean up on context loss
+[733/1014] [chromium-reduced-motion] › tests\browser\pixi-aircraft.spec.js:88:1 › 1800-frame type/state/color/HP/heading/pull/patrol/fog/cull/reorder churn plateaus
+[734/1014] [chromium-reduced-motion] › tests\browser\pixi-atlas.spec.js:4:1 › synthetic Canvas atlas creates real Pixi subtextures at DPR 1, 1.5, and 2 and tears down
+[735/1014] [chromium-reduced-motion] › tests\browser\pixi-atlas.spec.js:14:1 › atlas loading failures are categorized, atomic, and choose Canvas fallback
+[736/1014] [chromium-reduced-motion] › tests\browser\pixi-atlas.spec.js:35:1 › atlas references prevent eviction and released atlases evict in LRU order
+[737/1014] [chromium-reduced-motion] › tests\browser\pixi-atlas.spec.js:44:1 › concurrent atlas commits recheck duplicate, atlas, byte, and aggregate frame caps in completion order
+[738/1014] [chromium-reduced-motion] › tests\browser\pixi-atlas.spec.js:71:1 › failed staged replacement and destroy-during-load preserve publication atomically
+[739/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:14:1 › Pixi owns exactly floating text after support and preserves formulas, style, order, and handoff
+[740/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:16:1 › actual Pixi raster matches direct Canvas at DPR 1, 1.5, and 2 including mid-fade and subpixels
+[741/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-after-raster withdraws every floater and paints uncapped Canvas
+[742/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:18:150 › floating-text-final-append withdraws every floater and paints uncapped Canvas
+[743/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-final-append keeps support below and Canvas effects above without double-age
+[744/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass floating-text-update keeps support below and Canvas effects above without double-age
+[745/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:20:276 › production renderPass final-render keeps support below and Canvas effects above without double-age
+[746/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text entry-cap rejects without truncation
+[747/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text label-cap rejects without truncation
+[748/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text char-cap rejects without truncation
+[749/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text container-cap rejects without truncation
+[750/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text sprite-cap rejects without truncation
+[751/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text texture-cap rejects without truncation
+[752/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:22:444 › floating text source-byte-cap rejects without truncation
+[753/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:24:1 › WeakMap occurrence identity survives reorder, removal, text changes, and restore
+[754/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:26:1 › real event adapter cash floater is created unchanged and presented by Pixi
+[755/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:28:1 › floating text ownership requires support actors and reset recovery is clean
+[756/1014] [chromium-reduced-motion] › tests\browser\pixi-floating-text.spec.js:30:1 › 1800-frame age/text/color/cull/pan churn plateaus within submission ceilings
+[757/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:31:1 › Pixi owns the exact independently inventoried seven-category block and all legacy wreck classes
+[758/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:33:1 › every production drawPrimitive matches direct Canvas at DPR 1, 1.5, and 2
+[759/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects category-cap rejects the complete block without truncation
+[760/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects entry-cap rejects the complete block without truncation
+[761/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects trail-point-cap rejects the complete block without truncation
+[762/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects primitive-cap rejects the complete block without truncation
+[763/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects segment-cap rejects the complete block without truncation
+[764/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects container-cap rejects the complete block without truncation
+[765/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:35:465 › global effects graphics-cap rejects the complete block without truncation
+[766/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-graphics-after-paint withdraws every category and recovers
+[767/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:37:162 › global-effects-final-append withdraws every category and recovers
+[768/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-final-append keeps floaters below and nation labels above without double age
+[769/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass global-effects-update keeps floaters below and nation labels above without double age
+[770/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:39:279 › production renderPass final-render keeps floaters below and nation labels above without double age
+[771/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:41:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[772/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:43:1 › production renderPass retains one legacy fog decision for air-wreck smoke and replay
+[773/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:45:1 › real effect adapters feed all feasible categories without simulation mutation
+[774/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:47:1 › global effects ownership requires floating text and reset recovery is clean
+[775/1014] [chromium-reduced-motion] › tests\browser\pixi-global-effects.spec.js:49:1 › 1800-frame all-category color/cull/pan/quality/motion churn plateaus within submission ceilings
+[776/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:8:1 › Pixi owns the complete ordered final interaction block without input or authority mutation
+[777/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 pick condition retains exact bounded inventory
+[778/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 box condition retains exact bounded inventory
+[779/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 dashed condition retains exact bounded inventory
+[780/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 draft condition retains exact bounded inventory
+[781/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 paused condition retains exact bounded inventory
+[782/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 valid condition retains exact bounded inventory
+[783/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:12:82 › E17 invalid condition retains exact bounded inventory
+[784/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Entry cap rejects without truncation and direct Canvas paints
+[785/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Primitive cap rejects without truncation and direct Canvas paints
+[786/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Segment cap rejects without truncation and direct Canvas paints
+[787/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Label cap rejects without truncation and direct Canvas paints
+[788/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Char cap rejects without truncation and direct Canvas paints
+[789/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Container cap rejects without truncation and direct Canvas paints
+[790/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Graphics cap rejects without truncation and direct Canvas paints
+[791/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Sprite cap rejects without truncation and direct Canvas paints
+[792/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 Texture cap rejects without truncation and direct Canvas paints
+[793/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:16:121 › E17 SourceByte cap rejects without truncation and direct Canvas paints
+[794/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-source withdraws E17, paints direct Canvas, and recovers cleanly
+[795/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-after-paint withdraws E17, paints direct Canvas, and recovers cleanly
+[796/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:20:126 › recoverable interaction-overlays-final-append withdraws E17, paints direct Canvas, and recovers cleanly
+[797/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:24:1 › fatal final submission performs one nonadvancing full Canvas replay from frozen E17 input
+[798/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:28:1 › E17 viewport inventory remains bounded on mobile and reduced motion
+[799/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:32:1 › actual E17 Pixi primitives and labels match same-browser Canvas across DPR and device engines
+[800/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:36:1 › each E17 visual has independent production-frame raster evidence
+[801/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:40:1 › E17 lighter composite has parity and unsupported composite uses direct Canvas fallback
+[802/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:44:1 › E17-active real desktop pointer targeting, pick, drag selection, pan, zoom, resize, and context action stay Canvas-bound
+[803/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:48:1 › E17-active touch pointers target, tap, pan, pinch zoom, and remain aligned after mobile resize
+[804/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-container constructor failure leaves no E17 phantom resources and retries
+[805/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-graphics constructor failure leaves no E17 phantom resources and retries
+[806/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:52:194 › interaction-overlays-sprite constructor failure leaves no E17 phantom resources and retries
+[807/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:56:1 › fatal E17 update performs one Canvas replay and destroys every active resource
+[808/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:60:1 › active E17 resources survive BFCache recreation and DPR resize, then clear on context loss
+[809/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:64:1 › 1800-frame pointer, drag, build, pick, pause, and resize-style churn stays bounded
+[810/1014] [chromium-reduced-motion] › tests\browser\pixi-interaction-overlays.spec.js:68:1 › reset releases every E17 source and restores normal ownership
+[811/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:15:1 › Pixi owns only draft and garrison labels with stable order and cached raster sources
+[812/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:22:1 › actual isolated label sprites rasterize at DPR 1, 1.5, and 2
+[813/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:28:1 › map-label failures withdraw the whole block, paint direct Canvas, and recover
+[814/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:32:1 › production renderPass label failure composites real Canvas labels and support actor above retained Pixi aircraft
+[815/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label entry cap rejects without truncation and uses uncapped Canvas
+[816/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label label cap rejects without truncation and uses uncapped Canvas
+[817/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label char cap rejects without truncation and uses uncapped Canvas
+[818/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label container cap rejects without truncation and uses uncapped Canvas
+[819/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label sprite cap rejects without truncation and uses uncapped Canvas
+[820/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label texture cap rejects without truncation and uses uncapped Canvas
+[821/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:44:4 › map-label source-byte cap rejects without truncation and uses uncapped Canvas
+[822/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:48:1 › stable semantic keys survive reorder/remove and prerequisites recover
+[823/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:52:1 › text changes evict only zero-reference cached textures and reset/BFCache recreate cleanly
+[824/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:57:1 › continuous draft fade replaces old alpha rasters while stable garrison textures are reused
+[825/1014] [chromium-reduced-motion] › tests\browser\pixi-map-labels.spec.js:62:1 › 1800-frame text/owner/count/draft/cull/pan/DPR-stable churn stays bounded
+[826/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:19:1 › Pixi owns normal and cruise missiles in exact array and primitive order
+[827/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:25:1 › isolated real Pixi Graphics rasterize every E8 semantic at DPR 1, 1.5, and 2
+[828/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:30:1 › an intentional overlap keeps a real projectile pixel below the later missile body
+[829/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:34:1 › missile failures withdraw the whole layer, Canvas-paint it, and recover without ghosts
+[830/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:44:4 › missile entry cap falls back to complete uncapped Canvas and recovers
+[831/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:44:4 › missile trail cap falls back to complete uncapped Canvas and recovers
+[832/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:44:4 › missile primitive cap falls back to complete uncapped Canvas and recovers
+[833/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:44:4 › missile segment cap falls back to complete uncapped Canvas and recovers
+[834/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:50:1 › missile container and Graphics constructor failures leave no phantom slots and retry
+[835/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:54:1 › missile ownership requires the complete E4-E7 prerequisite chain
+[836/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:58:1 › fatal final submit replays missiles once on Canvas with omission-sensitive primitive evidence
+[837/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:62:1 › reduced motion keeps the legacy missile warning pulse on the supplied frame timestamp
+[838/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:66:1 › WeakMap identities survive reorder and removal without changing source state
+[839/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:70:1 › active missile resources recreate after BFCache loss and clean up on context loss
+[840/1014] [chromium-reduced-motion] › tests\browser\pixi-missiles.spec.js:74:1 › 1800-frame age, type, owner, fog, cull, reorder, and create-remove churn plateaus
+[841/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:10:1 › production Pixi owns nation overlays after effects and leaves marker layers on Canvas
+[842/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay entry-cap rejects the whole layer
+[843/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay label-cap rejects the whole layer
+[844/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay char-cap rejects the whole layer
+[845/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay primitive-cap rejects the whole layer
+[846/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay container-cap rejects the whole layer
+[847/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay sprite-cap rejects the whole layer
+[848/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay texture-cap rejects the whole layer
+[849/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:15:516 › nation overlay source-byte-cap rejects the whole layer
+[850/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:19:1 › nation overlay segment cap rejects geometry inventory
+[851/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:23:1 › recoverable final append withdraws all overlays and recovers without stale textures
+[852/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:27:1 › fatal nation update falls back with one nonadvancing Canvas replay
+[853/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-final-append keeps effects below, labels exclusive, and opening marker above
+[854/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production nation-overlays-update keeps effects below, labels exclusive, and opening marker above
+[855/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:31:93 › production final-render keeps effects below, labels exclusive, and opening marker above
+[856/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:35:1 › independent inventory matches direct legacy Canvas pixels without clipped icon sources
+[857/1014] [chromium-reduced-motion] › tests\browser\pixi-nation-overlays.spec.js:41:1 › 1800 changing frames churn all visual inputs while pools and source cache stay bounded
+[858/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:24:1 › Pixi owns the bounded naval-logistics prefix in exact legacy order with targeted pixels
+[859/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:47:1 › boarding cap and Canvas handoff follow earlier visible wakes before viewport culling
+[860/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:56:1 › naval cap failure is atomic, leaves structures owned, and recovers next valid frame
+[861/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:64:1 › invalid paint and every pooled fail-after-mutation path fall back in-frame without dirty idle state or recovery ghosts
+[862/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:90:1 › WeakMap source identity survives reorder, removal, and compaction without index cross-wiring
+[863/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:97:1 › reset withdraws naval ownership when structures are unowned and a normal render restores it
+[864/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval container-resource constructor failure leaves no phantom slot and recovers
+[865/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval graphics-resource constructor failure leaves no phantom slot and recovers
+[866/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:106:251 › naval label-resource constructor failure leaves no phantom slot and recovers
+[867/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:115:1 › naval fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[868/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:125:1 › naval active and idle resources release across BFCache recreation and context loss
+[869/1014] [chromium-reduced-motion] › tests\browser\pixi-naval-logistics.spec.js:139:1 › 1800-frame naval create/remove/reorder/state/visibility churn plateaus within frame budgets
+[870/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:8:1 › Pixi owns ordered notification overlays after annotations without authority mutation
+[871/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:12:1 › credits use the exclusive E16 viewport layer without advancing authority or audio
+[872/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:16:1 › notification viewport raster is DPR-aware and exactly source-byte bounded
+[873/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:20:1 › actual Pixi notification pixels match direct Canvas at DPR 1, 1.5, and 2
+[874/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology normal uses frame-start world camera and one late advancement
+[875/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:24:45 › credits camera chronology final-render uses frame-start world camera and one late advancement
+[876/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:28:1 › default Canvas keeps the same first and subsequent credits camera chronology
+[877/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:32:1 › notification anchoring remains bounded on mobile and under reduced motion
+[878/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification entry-cap falls back without truncation
+[879/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification label-cap falls back without truncation
+[880/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification char-cap falls back without truncation
+[881/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification primitive-cap falls back without truncation
+[882/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification segment-cap falls back without truncation
+[883/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification container-cap falls back without truncation
+[884/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification graphics-cap falls back without truncation
+[885/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification sprite-cap falls back without truncation
+[886/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification texture-cap falls back without truncation
+[887/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:36:412 › notification source-byte-cap falls back without truncation
+[888/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:40:1 › notification final append withdraws E16 and recovers next frame
+[889/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:44:1 › queued age-zero badge advances, sounds, counts, and displays in the same frame
+[890/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:48:1 › badge final lifetime frame paints once and is absent from the following inventory
+[891/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:52:40 › final-render replays the prepared badge once without re-age or re-audio
+[892/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:56:1 › every E16 offscreen stage fails notification-only, cleans up, and recovers
+[893/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:61:1 › destination-dependent and unknown composites bypass allocation and preserve direct Canvas results
+[894/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:65:61 › notification Entry cap preflight leaves the offscreen raster untouched
+[895/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:65:61 › notification Char cap preflight leaves the offscreen raster untouched
+[896/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:65:61 › notification Primitive cap preflight leaves the offscreen raster untouched
+[897/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:65:61 › notification SourceByte cap preflight leaves the offscreen raster untouched
+[898/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:69:1 › default Canvas notification path never allocates the Pixi offscreen raster
+[899/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:73:1 › notification viewport source releases on reset and BFCache suspend, then recreates normally
+[900/1014] [chromium-reduced-motion] › tests\browser\pixi-notifications.spec.js:77:1 › 1800-frame notification churn remains bounded and meets submission ceilings
+[901/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:34:1 › Pixi owns every E7 variant in exact category and primitive order
+[902/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:40:1 › isolated Pixi Graphics rasterize every E7 primitive and preserve the separate intentional overlap order fixture
+[903/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:49:1 › projectile failures withdraw the complete layer and recover without live-slot ghosts
+[904/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:54:1 › fatal final submission replays the complete frame on Canvas without another RAF or presentation advance
+[905/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:61:1 › fatal world-layer update failure uses the same bounded full-frame Canvas replay
+[906/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:66:1 › visual-shot presentation ages exactly once and expires on the sixth displayed frame
+[907/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:70:1 › Pixi failure falls back without double-aging visual shots
+[908/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:74:1 › projectile ownership requires the complete E4-E6 prerequisite chain
+[909/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:78:1 › projectile fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[910/1014] [chromium-reduced-motion] › tests\browser\pixi-projectiles.spec.js:82:1 › 1800-frame variant, trail, fog, cull, reorder, and create-remove churn plateaus
+[911/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:71:1 › Pixi owns every complete visible structure with stable tile alignment and bounded reuse
+[912/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the sprite-cap is exhausted
+[913/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the texture-cap is exhausted
+[914/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:139:1 › structure completion, pop, texture replacement, destruction, eviction, invalid source, and reset use real resource identity
+[915/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:177:1 › overlapping structures remain in one Pixi-owned legacy-ordered scene graph
+[916/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:200:1 › fog-hidden active missile focus remains Pixi-owned and painted
+[917/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:213:1 › missile focus uses explicit route phase in Canvas and Pixi at two times with and without supply context
+[918/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:230:1 › Canvas fallback geometry ignores poisoned prior stroke state and restores defaults
+[919/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:239:1 › build, queue, pop, level, suppression, linked, and cooldown marks remain Pixi-owned
+[920/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:270:1 › a visible pre-base range keeps its ordered entry when the base sprite is offscreen
+[921/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure primitive-cap atomically restores Canvas pre-layers and bases
+[922/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure segment-cap atomically restores Canvas pre-layers and bases
+[923/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:298:117 › text-cap atomically restores the complete Canvas structure scene and recovers
+[924/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:298:117 › text-resource atomically restores the complete Canvas structure scene and recovers
+[925/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:314:1 › countdown labels use bounded explicit textures and do not enter the Pixi Text cache
+[926/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:330:4 › cap-one sprite-resource constructor failure leaves no phantom pool slot and recovers
+[927/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:330:4 › cap-one graphics-resource constructor failure leaves no phantom pool slot and recovers
+[928/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:330:4 › cap-one text-resource constructor failure leaves no phantom pool slot and recovers
+[929/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:343:1 › structure pooled resources discard tainted paint failures and recover without stale children
+[930/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:361:1 › segment cap accepts the exact generated count and rejects one less before drawing
+[931/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:379:1 › 60-frame paused dense-fixture microbenchmark stays bounded with visible and culled structure scenes
+[932/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:402:1 › 1800-frame dev Pixi structure state churn keeps every owned resource bounded
+[933/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:422:1 › quality tiers reduce route segments without hiding gameplay meaning
+[934/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:449:1 › reduced motion freezes pre-structure pulse and route movement while retaining all semantics
+[935/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:462:1 › complete Pixi structure ownership obeys effective motion policy without changing canonical state
+[936/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:484:1 › dense structure resources recreate after BFCache loss and cleanly hand ownership to Canvas on context loss
+[937/1014] [chromium-reduced-motion] › tests\browser\pixi-structures.spec.js:511:1 › Pixi structure layer smokes every map and major mode
+[938/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:24:1 › Pixi owns the exact support block after labels and hands state to floating text
+[939/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[940/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:38:1 › support resource failures withdraw all categories, direct Canvas paint, and recover
+[941/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-graphics-after-paint proves isolated support operations and later floating text
+[942/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-final-append proves isolated support operations and later floating text
+[943/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-update proves isolated support operations and later floating text
+[944/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass final-render proves isolated support operations and later floating text
+[945/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:57:1 › support container and Graphics constructor failures leave no phantom resources
+[946/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support entry-cap rejects without truncation
+[947/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support trail-point-cap rejects without truncation
+[948/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support primitive-cap rejects without truncation
+[949/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support segment-cap rejects without truncation
+[950/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support container-cap rejects without truncation
+[951/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:66:4 › support graphics-cap rejects without truncation
+[952/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:68:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[953/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:70:1 › support ownership requires map labels and reset recovery is clean
+[954/1014] [chromium-reduced-motion] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+[955/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:22:1 › Pixi owns every warship class and attached status visual in exact entry order
+[956/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:32:1 › warship caps advance chronologically through visible array order
+[957/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:46:1 › duplicate IDs and injected resource failures withdraw all warships but preserve naval ownership and recover
+[958/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:52:1 › constructor failures leave no phantom warship slots and stable IDs survive reorder, remove, and re-add
+[959/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:65:1 › warship ownership requires complete structures and naval logistics
+[960/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:69:1 › warship fixture remains CSS-pixel aligned at DPR 1, 1.5, and 2
+[961/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:73:1 › damaged leaned recoil HP pips match the legacy Canvas footprint at every DPR
+[962/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:80:1 › distinguishes inherited butt and round dash and cruiser-detail endpoints at every DPR
+[963/1014] [chromium-reduced-motion] › tests\browser\pixi-warships.spec.js:91:1 › 1800-frame class, color, state, selection, fire, HP, wake, cull, and reorder churn plateaus
+[964/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:10:1 › production Pixi owns the exact annotation block after nation overlays
+[965/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation entry-cap rejects without truncation
+[966/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation member-cap rejects without truncation
+[967/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation primitive-cap rejects without truncation
+[968/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation segment-cap rejects without truncation
+[969/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation label-cap rejects without truncation
+[970/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation char-cap rejects without truncation
+[971/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation container-cap rejects without truncation
+[972/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation graphics-cap rejects without truncation
+[973/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation sprite-cap rejects without truncation
+[974/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation texture-cap rejects without truncation
+[975/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation source-byte-cap rejects without truncation
+[976/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:18:1 › recoverable annotation final append withdraws all resources and retries
+[977/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:22:1 › stable frames reuse textures and returning variants stay cached within policy
+[978/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:26:1 › failed post-raster transaction balances references and destroys only new resources
+[979/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:30:1 › texture cap pressure evicts least-recently-used zero-reference variants
+[980/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:34:1 › source-byte pressure evicts zero-reference variants before allocating
+[981/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+[982/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:42:1 › reset and context teardown destroy every cached annotation texture once
+[983/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:46:1 › fatal annotation update performs one nonadvancing full Canvas replay
+[984/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:50:1 › opening, regions, owned SAM network, and labels match direct Canvas pixels
+[985/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:54:1 › opening, region, enemy, fog-filtered, no-network, and zoom variants retain actual pixel parity
+[986/1014] [chromium-reduced-motion] › tests\browser\pixi-world-annotations.spec.js:58:1 › 1800-frame stable many-region plateaus and real annotation churn stays bounded
+[987/1014] [chromium-reduced-motion] › tests\browser\platform.spec.js:3:1 › local and WordPress adapters own platform boundaries
+[988/1014] [chromium-reduced-motion] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds
+[989/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:52:1 › Canvas and Pixi hybrid preserve state, input, camera, and bounded raster lifecycle
+[990/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:161:1 › source Pixi smoke preserves raster, input alignment, and canonical parity
+[991/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:190:42 › canvas survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[992/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:190:42 › pixi survives repeated persisted page lifecycle with one RAF and viewport lifecycle
+[993/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:230:1 › real WebGL context loss falls back without changing simulation state
+[994/1014] [chromium-reduced-motion] › tests\browser\renderer-foundation.spec.js:251:1 › Pixi initialization failure and unsupported names fall back without restarting simulation
+[995/1014] [chromium-reduced-motion] › tests\browser\score-retry.spec.js:3:58 › score expired response preserves the correct retry policy
+[996/1014] [chromium-reduced-motion] › tests\browser\score-retry.spec.js:3:58 › score invalid response preserves the correct retry policy
+[997/1014] [chromium-reduced-motion] › tests\browser\score-retry.spec.js:3:58 › score signature response preserves the correct retry policy
+[998/1014] [chromium-reduced-motion] › tests\browser\silo-flight-handoff.spec.js:2:1 › silo uses one artwork projectile at the flight handoff
+[999/1014] [chromium-reduced-motion] › tests\browser\startup.spec.js:5:1 › startup communicates loading and prevents input until the game is ready
+[1000/1014] [chromium-reduced-motion] › tests\browser\startup.spec.js:40:1 › failed startup offers a working retry without exposing inactive controls
+[1001/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:14:1 › F2 shares 4x deterministic bytes and recomposes only across the camera detail threshold
+[1002/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:41:1 › F2 source bytes ignore DPR, quality, renderer and reduced-motion policy
+[1003/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:52:1 › cold worker failure paints bounded emergency terrain and reset clears old map pixels immediately
+[1004/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:62:1 › production publisher installs discarded-B cache-hit C and skips only its installed revision
+[1005/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:69:1 › paused pick-area highlight clears immediately on Escape and mode cancellation
+[1006/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:79:1 › F2 Canvas-high and Pixi-linear terrain-only framebuffers retain geometry and bounded sampling parity
+[1007/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:94:1 › F2 authoritative coast and topology input probes remain exact under smoothed presentation
+[1008/1014] [chromium-reduced-motion] › tests\browser\terrain-raster.spec.js:104:1 › F2 sustained 10Hz suppression converges and named synchronous interactions stay responsive
+
+(node:42076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1009/1014] [chromium-source-contract] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[1010/1014] [chromium-source-contract] › tests\browser\startup.spec.js:5:1 › startup communicates loading and prevents input until the game is ready
+[1011/1014] [chromium-source-contract] › tests\browser\startup.spec.js:40:1 › failed startup offers a working retry without exposing inactive controls
+
+(node:54728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1012/1014] [chromium-built-contract] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation
+[1013/1014] [chromium-built-contract] › tests\browser\startup.spec.js:5:1 › startup communicates loading and prevents input until the game is ready
+[1014/1014] [chromium-built-contract] › tests\browser\startup.spec.js:40:1 › failed startup offers a working retry without exposing inactive controls
+  1 failed
+    [chromium-reduced-motion] › tests\browser\build-contract.spec.js:4:1 › source and built module applications load every chunk and preserve the canonical simulation 
+  918 skipped
+  95 passed (7.4m)

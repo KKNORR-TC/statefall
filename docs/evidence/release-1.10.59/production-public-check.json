@@ -1,0 +1,493 @@
+{
+  "checkedAt": "2026-09-29T17:24:51.133Z",
+  "version": "1.10.59",
+  "anonymous": true,
+  "manifestMatches": true,
+  "payloads": [
+    {
+      "path": "assets/airfield-level2.h5hjsl38.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/artillery.CO7U-4uP.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/attack-failed.Dx12q7w7.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/attack-progress.BAHszaEM.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/attack-stalled.BuZ-w6O4.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/attack-start.CGsRx-b1.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/battleship-directions.q9N9MxIe.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/bomber-directions.B_iZkf5O.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/capture-enemy.BlL2PXpG.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/capture-neutral.7iFR-8an.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/carrier-directions.2BGiq__M.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/classic-battlefield.853490ce1855.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/classic-sam-sequence.cf284416b601.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/classic-terrain-client.3f75e55b3ab1.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/classic-terrain-worker-DbixG6kC.39990ccba7b0.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/construction-airfield.ByQ9Uzgx.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-battery.BPSBhelb.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-bertha.B53p2FNk.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-city.C06fbj7X.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-command.BAV_a7SW.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-engcmd.DxYxdTfW.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-factory.BdzJTT9Y.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-flightops.VIkhw6EU.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-fort.CXHjHMam.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-jammer.DVBETfl0.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-lradar.B9cHv6Lg.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-port.5m7qgOz6.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-radar.BYMq1I8r.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-sam.BCoQ6zaA.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-satellite.Bs8hdmou.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-shield.41IsRhsw.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-shore.BEZndTDf.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-silo.CJI6wUu_.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-start.D8HmVWzh.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-subbase.tLivGB3Z.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/construction-troopcmd.XgMfS9rt.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/CREDITS.CI7BT1uz.txt",
+      "status": 200,
+      "type": "text/plain"
+    },
+    {
+      "path": "assets/cruiser-directions.Cmpwy1ko.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/destroyer-directions.Bn0IdzHr.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/enemy-eliminated.BG-SPIRF.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/fighter-directions.BJodwhUi.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/fort-level2.CJiWC7AM.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/fort-level3.DW81DmkH.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/heavytransport-directions.DP80JD89.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/hunter-directions.DsmpFbK8.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/incoming-warning.B7opzLix.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/index.512cc2038bb1.css",
+      "status": 200,
+      "type": "text/css"
+    },
+    {
+      "path": "assets/index.6740cd89a009.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/layer-artillery.QGLdAoRd.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/layer-machineguns.B3UI_Zyf.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/layer-tracks.CltHjs7U.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/legacy-game.f7701d21519f.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/merchant-directions.DU7IfVj-.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/missile-launch.DYNKhuog.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/module-preload.0bcb72f8ec0d.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/nuclear-detonation.8lokG4Ht.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/port-level2.B_j6EYvf.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/privateer-directions.lidVSLc7.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/rship-directions.7lr-mIv4.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/sam-base-v1.Cf8gTYxL.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/sam-intercept.ByftU06W.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/sam-launch.C7fCzSZS.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/scout-directions.8DJqo1uL.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/shell-impact.33uSdFCN.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/ship-sinking.BpWdtiaD.ogg",
+      "status": 200,
+      "type": "audio/ogg"
+    },
+    {
+      "path": "assets/silo-layered-v2.By3OUt3k.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/spy-directions.DtF7O0Lw.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/structures-complete.Bm3RzRlB.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/sub-directions.UIukOQ0g.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/terrain-raster-client.043c2f5c1bac.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/terrain-raster-worker-CLeriLB5.dafc1d0437ac.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/terrain.C-2eEVb_.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/transport-directions.BLM_oUCL.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/truck-directions.CtEFX2Mw.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "assets/unit-art-metadata.d06d83dd807e.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "assets/units.CPVKFj2k.png",
+      "status": 200,
+      "type": "image/png"
+    },
+    {
+      "path": "bundle-report.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "path": "flags.js",
+      "status": 200,
+      "type": "application/javascript"
+    },
+    {
+      "path": "howto/about.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/about/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/air.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/air/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/basics.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/basics/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/build.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/build/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/garrisons.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/garrisons/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/modes.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/modes/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/ships.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/ships/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/systems.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/systems/index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "howto/tabs.json",
+      "status": 200,
+      "type": "application/json"
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "type": "text/html; charset=utf-8"
+    },
+    {
+      "path": "VERSION.txt",
+      "status": 200,
+      "type": "text/plain"
+    }
+  ]
+}

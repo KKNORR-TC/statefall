@@ -1,0 +1,20 @@
+{
+  "sourceBase": "37a85e6ec0ac4e2dc22644973d7385109dce1bbe",
+  "sourcePatchSha256": "dea3510da243bb65245853c094bff27880d468c1fd088fc44f96c7cf7036413a",
+  "manifestSha256": "448b3b8707ec7b16226df180148e301994f53ea93494cf5c0664e741fc0c76b9",
+  "payloadFiles": 97,
+  "artifacts": [
+    {
+      "filename": "statefall-release-1.10.59.zip",
+      "bytes": 37413809,
+      "sha256": "6c0d82a39938c12e4e26b90e179c7144c80ebea9514bb851ca3bf1ddc438441a",
+      "entries": 98
+    },
+    {
+      "filename": "statefall-scores-1.10.10.zip",
+      "bytes": 212776,
+      "sha256": "a3a34f7ff11fa2b50a4821ee1ab56766ad73cdd042f94b8d88dd1e18e46de289",
+      "entries": 17
+    }
+  ]
+}

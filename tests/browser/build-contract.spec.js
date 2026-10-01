@@ -37,7 +37,7 @@ test('source and built module applications load every chunk and preserve the can
     expect(inventory.assetCategories.atlasTextures.length).toBeGreaterThanOrEqual(23);
     expect(inventory.assetCategories.atlasManifests).toEqual([]);
     expect(inventory.assetCategories.fonts).toEqual([]);
-    expect(inventory.assetCategories.audio).toEqual([]);
+    expect(inventory.assetCategories.audio).toHaveLength(39);
     expect(await page.locator('#classic-review').count()).toBe(0);
     expect(await page.evaluate(()=>('__STATEFALL_CLASSIC__' in window))).toBe(false);
     expect(await page.evaluate(()=>performance.getEntriesByType('resource').filter(e=>/port-level2|airfield-level2|fort-level[23]/.test(e.name)).length)).toBe(4);
@@ -49,6 +49,8 @@ test('source and built module applications load every chunk and preserve the can
     expect(failures,failures.join('\n')).toEqual([]);
     return;
   }
+  // Network idle can precede asynchronous renderer startup and bridge registration.
+  await expect.poll(()=>page.evaluate(()=>typeof window.__STATEFALL_TEST__?.prepareControlledStart)).toBe('function');
   await page.evaluate(()=>window.__STATEFALL_TEST__.prepareControlledStart());
   await page.locator('#maps button[data-m="random"]').click();
   await page.locator('#seedIn').fill('PHASE0DIGEST');

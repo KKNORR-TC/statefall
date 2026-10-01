@@ -1,0 +1,13 @@
+[
+  {"slug":"land-lakes-rivers","name":"Land, lakes & rivers","overview":[170,506,1584,912],"main":[0,100,2200,1238],"detail":[0,300,1400,875],"caption":"Lakes and branching rivers break up the land. Follow the banks to find your next crossing."},
+  {"slug":"large-islands","name":"Large islands","overview":[229,180,1584,912],"main":[0,300,2200,1238],"detail":[520,380,1400,875],"caption":"Long coastlines surround substantial islands. Ports connect your foothold to the next landmass."},
+  {"slug":"medium-islands","name":"Medium islands","overview":[194,194,1584,912],"main":[0,260,2200,1238],"detail":[500,620,1400,875],"caption":"Separate islands create a chain of coastal fronts. Watch the water between them as closely as the land."},
+  {"slug":"small-islands","name":"Small islands","overview":[195,200,1584,912],"main":[0,210,2200,1238],"detail":[680,450,1400,875],"caption":"Small footholds, short sea crossings, and ships on the move. Every landing opens another front."},
+  {"slug":"atoll","name":"Atoll","overview":[279,322,1584,912],"main":[0,100,2200,1238],"detail":[500,200,1400,875],"caption":"A narrow ring of land surrounds open water. River cuts and coastal approaches shape the fight."},
+  {"slug":"world","name":"World","overview":[171,234,1584,912],"main":[0,50,2200,1238],"detail":[450,350,1400,875],"caption":"Recognizable continents meet the new terrain detail. This view follows the coasts and waterways between Europe, Africa, and Asia."},
+  {"slug":"europe","name":"Europe","overview":[134,344,1584,912],"main":[0,230,2200,1238],"detail":[450,460,1400,875],"caption":"A close view of central Europe, with textured ground, river crossings, coastal routes, and developing nations."},
+  {"slug":"americas","name":"Americas","overview":[195,319,1584,912],"main":[0,30,2200,1238],"detail":[510,360,1400,875],"caption":"Central America links the land fronts while the Caribbean opens routes by sea. The coast is part of the battlefield."},
+  {"slug":"africa","name":"Africa","overview":[283,334,1584,912],"main":[0,50,2200,1238],"detail":[770,180,1400,875],"caption":"Follow the waterways toward the Horn of Africa and the Red Sea, where land fronts meet coastal shipping routes."},
+  {"slug":"asia","name":"Asia","overview":[229,259,1584,912],"main":[0,190,2200,1238],"detail":[720,450,1400,875],"caption":"Long inland fronts lead to the coasts and islands of East and Southeast Asia. Zoom in to read the shoreline and river channels."},
+  {"slug":"middle-east","name":"Middle East","overview":[238,266,1584,912],"main":[30,290,2200,1238],"detail":[710,560,1400,875],"caption":"The Gulf and its surrounding coasts bring land borders, narrow waterways, and naval approaches into one view."}
+]

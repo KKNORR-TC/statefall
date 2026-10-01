@@ -57,7 +57,7 @@ export function createMissilesSystem({
       (m.fired??=new Set()).add(best.key);
       if(best.kind==='site'){ best.st.cool=clock.tickN+constants.samCooldown; if(best.owner===getMe().id) log('SAM site launched an interceptor.',true); }
       else { best.w.samCool=clock.tickN+best.S.samCd; if(best.owner===getMe().id) log(`${best.S.label} launched an interceptor.`,true); }
-      interceptors.push({owner:best.owner,target:m,x:best.x,y:best.y,trail:[],age:0,hit:best.hit,ship:best.kind==='ship'}); sound('interceptor');
+      interceptors.push({owner:best.owner,target:m,x:best.x,y:best.y,trail:[],age:0,hit:best.hit,ship:best.kind==='ship'}); sound('interceptor',best.x,best.y);
     }
     for(const it of interceptors){
       it.age++; const m=it.target; if(m.done){ it.done=true; continue; }
@@ -65,7 +65,7 @@ export function createMissilesSystem({
       const [cx2,cy2]=missilePos(m,m.age); const dx=mx-it.x,dy=my-it.y,d=portableMath.hypot(dx,dy); const dNow=portableMath.hypot(cx2-it.x,cy2-it.y);
       it.trail.push([it.x,it.y]); if(it.trail.length>10) it.trail.shift();
       if(dNow<=constants.interceptorSpeed*1.2||d<=constants.interceptorSpeed){ it.done=true; mx=cx2; my=cy2;
-        if(random()<(it.hit??constants.samHit)){ m.done=true; m.intercepted=true; if(it.owner===getMe().id) incrementStat('intercepts'); flash({x:mx,y:my,r:4,age:0,col:'#9df'}); { const [nx2,ny2]=missilePos(m,m.age+1); fragments(mx,my,portableMath.atan2(ny2-my,nx2-mx),8,'#ffd27a'); puff(mx-.5,my-.5,4,'200,220,255'); } sound('intercept');
+        if(random()<(it.hit??constants.samHit)){ m.done=true; m.intercepted=true; if(it.owner===getMe().id) incrementStat('intercepts'); flash({x:mx,y:my,r:4,age:0,col:'#9df'}); { const [nx2,ny2]=missilePos(m,m.age+1); fragments(mx,my,portableMath.atan2(ny2-my,nx2-mx),8,'#ffd27a'); puff(mx-.5,my-.5,4,'200,220,255'); } sound('intercept',mx,my);
           log(`${players[it.owner].name}'s ${it.ship?'warship':'SAM site'} shot down ${players[m.owner].name}'s missile.`,it.owner===getMe().id||m.owner===getMe().id); }
         else { flash({x:it.x,y:it.y,r:1.5,age:0,col:'#9df'}); dudFragment({x:it.x,y:it.y,vx:dx/Math.max(1,d)*1.2,vy:dy/Math.max(1,d)*1.2+0.2,age:0,life:28,col:'#bfe6ff',dud:true}); }
         continue; }
@@ -118,7 +118,7 @@ export function createMissilesSystem({
       for(const dm of domes) if(structures.includes(dm)) hitDome(dm,shield.hit,m.owner);
       for(const o in lost){ const q=players[o]; const area=landCombat.areaAt(m.t); const pool=landCombat.gOn(q)?((area&&area.owner===q.id)?area.troops:(q.areas&&q.areas[0]?q.areas[0].troops:q.troops)):q.troops; const dloc=landCombat.gOn(q)?landCombat.densityAt(q,m.t):landCombat.density(q); const kn=Math.min(lost[o]*dloc*1.0,pool);
         if(landCombat.gOn(q)) landCombat.loseTroopsAt(q,m.t,kn); else q.troops=Math.max(0,q.troops-kn); if(q===getMe()) bigLoss(kn,players[m.owner]); if(q===getMe()||m.owner===getMe().id) log(`Missile killed ${Math.round(kn)} ${q.name} troops.`,true); structureOps.structCounts(q);
-        if(q.tiles<=0&&q.alive){q.alive=false;log(`${q.name} was annihilated.`,true);mechanics.seizeTreasury(players[m.owner],q);} }
+        if(q.tiles<=0&&q.alive){q.alive=false;if(q.kind!=='neutral'&&m.owner===getMe().id)sound('elimination');log(`${q.name} was annihilated.`,true);mechanics.seizeTreasury(players[m.owner],q);} }
       log(`Missile struck ${victim>=0?players[victim].name:'open land'}.`,victim===getMe().id);
     }
     engineState.retainActors('missiles',m=>!m.done);
@@ -169,7 +169,7 @@ export function createMissilesSystem({
       const area=landCombat.areaAt(idx(cx,cy)); const poolB=landCombat.gOn(q)?((area&&area.owner===q.id)?area.troops:q.troops):q.troops; const dB=landCombat.gOn(q)?landCombat.densityAt(q,idx(cx,cy)):landCombat.density(q);
       const kill=Math.min(lost[o]*dB*1.0,poolB)+Math.min(opt?opt.cap:constants.barrageKillCap,(opt?opt.flat:constants.barrageKillFlat)+q.troops*(opt?opt.pct:constants.barrageKillPct));
       const k=Math.min(q.troops,kill); if(landCombat.gOn(q)) landCombat.loseTroopsAt(q,idx(cx,cy),k); else q.troops-=k; cas+=k; floater({x:cx,y:cy,txt:'-'+Math.round(k),age:0,col:'#ff9a9a'});
-      if(q.kind==='neutral') q.grudge[by]=clock.tickN; if(q.tiles<=0&&q.alive){ q.alive=false; log(`${q.name} was bombarded into oblivion.`,true); mechanics.seizeTreasury(players[by],q); } if(q===getMe()) sound('invaded'); }
+      if(q.kind==='neutral') q.grudge[by]=clock.tickN; if(q.tiles<=0&&q.alive){ q.alive=false; if(q.kind!=='neutral'&&by===getMe().id)sound('elimination'); log(`${q.name} was bombarded into oblivion.`,true); mechanics.seizeTreasury(players[by],q); } if(q===getMe()) sound('invaded'); }
     if(Object.keys(lost).length&&(by===getMe().id||lost[getMe().id])) sound('shellhit');
     return cas;
   }

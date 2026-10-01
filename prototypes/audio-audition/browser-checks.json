@@ -1,0 +1,21 @@
+{
+  "player": {
+    "mode": "player",
+    "gain": 0.699999988079071,
+    "nodes": 2
+  },
+  "bots": {
+    "mode": "bots",
+    "gain": 0.2199999988079071,
+    "nodes": 2
+  },
+  "quiet": {
+    "mode": "quiet",
+    "nodes": 0,
+    "timers": 0
+  },
+  "incoming": "incoming",
+  "decoded": 39,
+  "errors": [],
+  "mobileOverflow": false
+}

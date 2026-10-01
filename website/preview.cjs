@@ -1,0 +1,20 @@
+// Static layout review only; does not execute WordPress/PHP.
+const fs=require('node:fs'),path=require('node:path');
+const {createServer}=require('../tools/dist-server.js');
+const theme=process.argv[2];
+if(!theme)throw new Error('Pass the local Statefall theme directory.');
+const root=path.resolve(__dirname,'../.artifacts/website-review');
+fs.mkdirSync(root,{recursive:true});
+fs.copyFileSync(path.join(theme,'style.css'),path.join(root,'style.css'));
+fs.copyFileSync(path.join(__dirname,'hero/hero.css'),path.join(root,'hero.css'));
+fs.cpSync(path.join(__dirname,'hero/assets'),path.join(root,'assets'),{recursive:true});
+fs.cpSync(path.join(__dirname,'continents/assets'),path.join(root,'assets/maps'),{recursive:true});
+let hero=fs.readFileSync(path.join(__dirname,'hero/hero.php'),'utf8');
+hero=hero.replace(/<\?php if \( ! defined.*?\?>/,'').replace(/<\?php echo esc_url\( get_stylesheet_directory_uri\(\) .*?\?>/g,'/assets/statefall-hero-v1.png').replace(/<\?php echo esc_url\( home_url.*?\?>/g,'/play/').replace(/<\?php echo esc_html\( get_theme_mod.*?\?>/g,'You start as one small nation on a map of a hundred countries. Race nine rival nations to hold 72% of the land — build cities, factories and ports, then fight for the rest with armies, navies, air power and missiles. A match runs 15–25 minutes.');
+const header='<header id="site-header"><div class="header-inner"><a class="brand" href="/">STATEFALL <span class="rts">RTS</span></a><a class="btn btn-primary" href="/play/">Play now</a></div></header>';
+const shell=body=>'<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Statefall — local imagery review</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/hero.css">'+header+body+'</html>';
+fs.writeFileSync(path.join(root,'index.html'),shell(hero+'<section id="how-it-plays"><div class="container"><span class="eyebrow">Maps</span><h2>Twelve boards to fight on</h2><a class="map-tile" href="/continents.html" style="display:block;width:min(100%,420px);height:260px;background-image:url(/assets/maps/continents-detail-v1.png)"><span>Continents</span></a></div></section>'));
+let detail=fs.readFileSync(path.join(__dirname,'continents/detail.php'),'utf8').replace(/<\?php if \( ! defined.*?\?>/,'').replace(/<\?php echo esc_url\( get_stylesheet_directory_uri\(\) \. '([^']+)' \); \?>/g,'$1');
+fs.writeFileSync(path.join(root,'continents.html'),shell('<section class="tight"><div class="container"><span class="eyebrow">Generated map</span><h1>Continents</h1>'+detail+'</div></section>'));
+const server=createServer(root);server.listen(4186,'127.0.0.1',()=>console.log('Static website review: http://127.0.0.1:4186/'));
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>server.close(()=>process.exit(0)));

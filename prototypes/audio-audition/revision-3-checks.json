@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "decoded": 82,
+  "checks": [
+    "music duck and smooth restoration",
+    "capture coalescing",
+    "elimination priority",
+    "preserved volume, mute and pause",
+    "stop cancels cue and restores duck",
+    "mobile overflow",
+    "unrelated audio unchanged"
+  ],
+  "changed": [
+    "attack-progress-natural.ogg",
+    "attack-progress-natural.wav",
+    "attack-progress-reinforced.ogg",
+    "attack-progress-reinforced.wav",
+    "attack-success-natural.ogg",
+    "attack-success-natural.wav",
+    "attack-success-reinforced.ogg",
+    "attack-success-reinforced.wav",
+    "everyday-sequence-natural.ogg",
+    "everyday-sequence-natural.wav",
+    "everyday-sequence-reinforced.ogg",
+    "everyday-sequence-reinforced.wav",
+    "quiet-fighting-quiet-natural.ogg",
+    "quiet-fighting-quiet-natural.wav",
+    "quiet-fighting-quiet-reinforced.ogg",
+    "quiet-fighting-quiet-reinforced.wav"
+  ]
+}

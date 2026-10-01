@@ -118,6 +118,7 @@ test('real localhost relay coordinates isolated browser engines, recovery, desyn
     expect(recovered[1].metadata).toEqual(recovered[0].metadata);
     expect(recovered[1].runtimeCommands).toEqual(recovered[0].runtimeCommands);
     expect((await control(replacement.page,'status')).generation).toBeGreaterThan((await control(seat1.page,'status')).generation);
+    await server.close();
 
     const unresolved=await makeServer('UNRESOLVED-CHECKPOINT');
     const unresolved0=await openClient(browser,unresolved,0),unresolved1=await openClient(browser,unresolved,1); resources.push(unresolved0,unresolved1);
@@ -128,6 +129,7 @@ test('real localhost relay coordinates isolated browser engines, recovery, desyn
     const unresolvedReplacement=await openClient(browser,unresolved,1); resources.push(unresolvedReplacement);
     await expect.poll(()=>unresolved.audit().retained?.tick,{timeout:30_000}).toBe(100);
     await expect.poll(async()=>(await control(unresolvedReplacement.page,'snapshot')).tick,{timeout:30_000}).toBeGreaterThan(100);
+    await unresolved.close();
 
     const completed=await makeServer('COMPLETED-DUEL');
     const winner=await openClient(browser,completed,1),loser=await openClient(browser,completed,0); resources.push(winner,loser);
@@ -141,6 +143,7 @@ test('real localhost relay coordinates isolated browser engines, recovery, desyn
     const imported0=await control(loser.page,'importReplay',{bytes:completed0.replayBytes}),imported1=await control(winner.page,'importReplay',{bytes:completed1.replayBytes});
     expect(imported0).toEqual(imported1);
     expect(imported0.metadata.canonical.sha256).toBe(JSON.parse(completed0.replayBytes).final.canonical.sha256);
+    await completed.close();
 
     const ackGate=await makeServer('TERMINAL-ACK-GATE');
     const gateWinner=await openClient(browser,ackGate,1),gateLoser=await openClient(browser,ackGate,0); resources.push(gateWinner,gateLoser);
@@ -158,15 +161,23 @@ test('real localhost relay coordinates isolated browser engines, recovery, desyn
     await expect.poll(()=>ackGate.status().state).toBe('completed');
     expect(ackGate.status().pendingAcks).toBe(0); expect(ackGate.status().currentBatch).toBe(null);
     await expect.poll(async()=>(await control(gateReplacement.page,'status')).state).toBe('completed');
+    await ackGate.close();
 
     const divergent=await makeServer('DIVERGENCE');
     const honest=await openClient(browser,divergent,0),dishonest=await openClient(browser,divergent,1,{roomConfig:{...ROOM_CONFIG,settings:{...SETTINGS,seed:'LOCAL-DIVERGENCE'}}}); resources.push(honest,dishonest);
     await expect.poll(()=>divergent.status().connections).toBe(2);
     await expect.poll(() => divergent.room.metadata().seats.filter(seat=>seat.connected).length).toBe(1);
+    await divergent.close();
 
     const security=await makeServer('WIREBOUNDS',{turnIntervalMs:1_000,limits:{maxPayload:2_048,maxMessageBytes:512,maxCheckpointMessageBytes:2_048,messagesPerSecond:3,batchTimeoutMs:500,disconnectGraceMs:500}});
     const badOrigin=rawSocket(security.url,'http://not-allowed.invalid');
-    const rejected=new Promise(resolve=>badOrigin.once('unexpected-response',(_request,response)=>resolve(response.statusCode)));
+    const rejected=new Promise((resolve,reject)=>{
+      badOrigin.once('error',reject);
+      badOrigin.once('unexpected-response',(_request,response)=>{
+        response.resume();
+        response.once('end',()=>{resolve(response.statusCode);badOrigin.terminate();});
+      });
+    });
     expect(await rejected).toBe(403);
 
     const unauthorized=rawSocket(security.url); await waitOpen(unauthorized); const unauthorizedMessage=waitMessage(unauthorized);

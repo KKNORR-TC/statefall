@@ -1,0 +1,78 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const crypto=require('node:crypto');
+
+(async()=>{
+  const {createSituationModel,createTerritoryObserver,battlePerspective}=await import('../game/src/audio/situation-model.mjs');
+  const model=createSituationModel();
+  const state=(now,battle,extra={})=>model.update({now,playing:true,battle,...extra});
+  assert.equal(state(0,false),'building');
+  assert.equal(state(1000,true),'building');
+  assert.equal(state(2999,true),'building');
+  assert.equal(state(3000,true),'battle');
+  assert.equal(state(4000,false),'battle');
+  assert.equal(state(20000,false),'battle','minimum battle dwell prevents chattering');
+  assert.equal(state(33000,false),'building');
+  assert.equal(state(34000,false,{critical:true}),'battle');
+  assert.equal(state(35000,false,{result:'victory'}),'victory');
+  model.reset();assert.equal(state(0,false,{playing:false}),'menu');
+  assert.equal(state(100,false,{paused:true}),'building');
+  assert.equal(state(10100,true),'building','paused time does not count toward battle entry');
+  assert.equal(state(12100,true),'battle');
+
+  const territories=createTerritoryObserver();
+  const region=(held,enemy=false)=>[{id:1,held,enemy}];
+  assert.deepEqual(territories.update(region(false)),[]);
+  assert.deepEqual(territories.update(region(false)),[],'partial captures stay silent');
+  assert.deepEqual(territories.update(region(true)),['capture-neutral']);
+  assert.deepEqual(territories.update(region(true)),[],'no repeated per-tile fanfare');
+  territories.update(region(false,true));territories.update(region(false));
+  assert.deepEqual(territories.update(region(true)),['capture-enemy'],'remembers the enemy until whole territory is held');
+  territories.reset();assert.deepEqual(territories.update(region(true)),[],'loading a save does not replay capture cues');
+  territories.update(region(false,true));assert.deepEqual(territories.update(region(true),{silent:true}),[]);
+  assert.deepEqual(territories.update(region(true)),[],'catch-up does not leave deferred fanfares');
+  const attack={owner:2,target:3,front:new Set([10])};
+  assert.equal(battlePerspective([attack],1,()=>false),null,'hidden bot fights are silent');
+  assert.equal(battlePerspective([attack],1,()=>true),'bots');
+  assert.equal(battlePerspective([{...attack,owner:1}],1,()=>false),'player');
+  assert.equal(battlePerspective([{...attack,target:1}],1,()=>false),'player');
+  assert.equal(battlePerspective([{...attack,dead:true}],1,()=>true),null);
+
+  const approvals=JSON.parse(fs.readFileSync('game/src/audio/approval-manifest.json'));
+  const locked=JSON.parse(fs.readFileSync('prototypes/audio-audition/feedback.json')).decisions;
+  assert.equal(Object.keys(locked).length,36);
+  for(const [id,a] of Object.entries(approvals.effects)){
+    const hash=crypto.createHash('sha256').update(fs.readFileSync('game/src/audio/assets/'+a.file)).digest('hex');
+    assert.equal(hash,a.sha256,id+' exported bytes');
+    if(locked[id])assert.ok(Object.values(locked[id].files).includes(hash),id+' locked approval');
+  }
+  assert.equal(approvals.score.length,16);
+  assert.ok(approvals.score.every(t=>t.reviewed&&t.roles.length));
+  const {matchHostedScore}=await import('../game/src/audio/hosted-score.mjs');
+  const local={id:'original',title:'Siege Heartbeat (1)',seconds:213.96,roles:['building','defeat'],url:'/local.ogg'};
+  const hosted={id:'2fa4ea9d',title:'Death Comes For Everyone',seconds:213.96,url:'https://www.worldrts.com/wp-content/uploads/statefall/audio/2fa4ea9d-Siege-Heartbeat-1.mp3?v=1788906854'};
+  assert.deepEqual(matchHostedScore([local],{game:[hosted]})[0],{...local,...hosted,catalogId:'original',fallbackUrl:'/local.ogg'});
+  assert.deepEqual(matchHostedScore([local],{game:[{...hosted,seconds:20}]}),[],'a different recording must not inherit reviewed roles');
+  assert.deepEqual(matchHostedScore([local],{game:[]}),[],'disabled or removed hosted tracks stay out of situation playlists');
+  const {createSamplePlayer}=await import('../game/src/audio/sample-player.mjs');
+  let finishFetch;const played=[],ramps=[];
+  const param=()=>({value:1,setValueAtTime(){},cancelScheduledValues(){},setTargetAtTime(){},linearRampToValueAtTime(v,t){ramps.push([v,t]);}});
+  const node=()=>({gain:param(),frequency:param(),pan:param(),playbackRate:param(),connect(){},disconnect(){},start(){played.push(this);},stop(){}});
+  const context={currentTime:0,createGain:node,createBiquadFilter:node,createStereoPanner:node,createBufferSource:node,decodeAudioData:async()=>({duration:2})};
+  const player=createSamplePlayer({context,buses:{music:node(),sfx:node(),alert:node()},catalog:{capture:{url:'/capture'}},canPlay:()=>true,fetcher:()=>new Promise(r=>finishFetch=r)});
+  const pending=player.play('capture');player.stop();finishFetch({ok:true,arrayBuffer:async()=>new ArrayBuffer(1)});await pending;
+  assert.equal(played.length,0,'reset cancels a sound whose download is still pending');
+  await player.play('capture',{duckMusic:true});assert.equal(played.length,1);
+  assert.ok(ramps.some(([value])=>value===.2),'milestones duck the separate music bus');
+  player.duckScore(8);context.currentTime=1;player.duckScore(2);
+  assert.equal(player.diagnostics().duckUntil,8,'overlapping cues never shorten an existing duck');
+  const fetched=[];
+  const outcomes=createSamplePlayer({context:{...context,decodeAudioData:async()=>({duration:.001})},buses:{music:node(),alert:node()},catalog:Object.fromEntries(['capture-neutral','capture-enemy','enemy-eliminated'].map(id=>[id,{url:id}])),canPlay:()=>true,fetcher:async url=>{fetched.push(url);return {ok:true,arrayBuffer:async()=>new ArrayBuffer(1)};}});
+  await Promise.all([outcomes.milestone('capture-neutral'),outcomes.milestone('capture-enemy'),outcomes.milestone('enemy-eliminated')]);
+  assert.deepEqual(fetched,['enemy-eliminated'],'a final conquest plays Taps without stacking capture bugles');
+  await outcomes.milestone('capture-neutral');
+  assert.deepEqual(fetched,['enemy-eliminated','capture-neutral'],'a later complete neutral conquest still announces');
+  const beforeReset=played.length,pendingOutcome=outcomes.milestone('capture-enemy');outcomes.stop();await pendingOutcome;
+  assert.equal(played.length,beforeReset,'reset cancels batched milestones before playback');
+  console.log('PASS audio roles, whole-territory outcomes, fog, locked assets, pending cancellation and score ducking');
+})().catch(error=>{console.error(error);process.exitCode=1;});

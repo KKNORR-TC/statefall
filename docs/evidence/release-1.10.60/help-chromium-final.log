@@ -1,0 +1,170 @@
+[WebServer] (node:26396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 71 tests using 1 worker
+
+(node:58060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:71:1 › Pixi owns every complete visible structure with stable tile alignment and bounded reuse
+[2/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the sprite-cap is exhausted
+[3/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:118:120 › atomic Canvas fallback represents every base when the texture-cap is exhausted
+[4/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:139:1 › structure completion, pop, texture replacement, destruction, eviction, invalid source, and reset use real resource identity
+[5/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:177:1 › overlapping structures remain in one Pixi-owned legacy-ordered scene graph
+[6/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:200:1 › fog-hidden active missile focus remains Pixi-owned and painted
+[7/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:213:1 › missile focus uses explicit route phase in Canvas and Pixi at two times with and without supply context
+[8/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:230:1 › Canvas fallback geometry ignores poisoned prior stroke state and restores defaults
+[9/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:239:1 › build, queue, pop, level, suppression, linked, and cooldown marks remain Pixi-owned
+[10/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:270:1 › a visible pre-base range keeps its ordered entry when the base sprite is offscreen
+[11/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure primitive-cap atomically restores Canvas pre-layers and bases
+[12/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:284:127 › pre-structure segment-cap atomically restores Canvas pre-layers and bases
+[13/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-cap atomically restores the complete Canvas structure scene and recovers
+[14/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:298:117 › text-resource atomically restores the complete Canvas structure scene and recovers
+[15/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:314:1 › countdown labels use bounded explicit textures and do not enter the Pixi Text cache
+[16/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one sprite-resource constructor failure leaves no phantom pool slot and recovers
+[17/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one graphics-resource constructor failure leaves no phantom pool slot and recovers
+[18/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:330:4 › cap-one text-resource constructor failure leaves no phantom pool slot and recovers
+[19/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:343:1 › structure pooled resources discard tainted paint failures and recover without stale children
+[20/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:361:1 › segment cap accepts the exact generated count and rejects one less before drawing
+[21/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:379:1 › 60-frame paused dense-fixture microbenchmark stays bounded with visible and culled structure scenes
+[chromium-desktop] › tests\browser\pixi-structures.spec.js:379:1 › 60-frame paused dense-fixture microbenchmark stays bounded with visible and culled structure scenes
+canvas dense paused structures: visible 2.792 ms/frame, culled 1.957 ms/frame; {"owned":false,"total":0,"visible":0,"culled":0,"pooled":0,"created":0,"reused":0,"destroyed":0,"textureCount":0,"textureBytesEstimate":0,"resourceLimitFallback":{"count":0,"reason":null}}
+
+pixi dense paused structures: visible 9.738 ms/frame, culled 2.700 ms/frame; {"owned":true,"total":11,"visible":0,"culled":11,"entries":0,"pooled":11,"created":11,"reused":0,"destroyed":0,"maximum":4096,"entryGraphicsCount":0,"entrySpriteCount":0,"pooledGraphicsCount":13,"pooledSpriteCount":17,"entryContainerCount":0,"pooledContainerCount":11,"graphicsMaximum":36864,"graphicsCreated":13,"graphicsReused":793,"graphicsDestroyed":0,"textureMaximum":512,"textureCount":11,"textureBytesEstimate":180224,"textureAllocations":11,"textureDestroyCount":0,"textMaximum":8192,"textStrategy":"canvas-raster-label-sprites","activeTextObjects":0,"idleTextObjects":0,"pixiTextCache":{"status":"known-unused","references":0,"textures":0,"bytes":0},"activeLabelSprites":0,"idleLabelSprites":6,"labelTextureCount":6,"activeLabelTextureBytes":0,"labelTextureSourceBytes":9680,"labelGpuBytes":{"status":"unknown","bytes":null},"labelRasterUpdates":372,"labelCreated":6,"labelReused":366,"labelDestroyed":0,"resourceLimitFallback":{"count":0,"reason":null},"order":[],"instances":[]}
+
+[22/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:402:1 › 1800-frame dev Pixi structure state churn keeps every owned resource bounded
+[chromium-desktop] › tests\browser\pixi-structures.spec.js:402:1 › 1800-frame dev Pixi structure state churn keeps every owned resource bounded
+pixi E4 1800-frame state churn: mean 0.982 ms, p95 3.000 ms, max 11.600 ms; resources [{"frame":149,"visibility":"visible","entries":5,"idleEntries":6,"entryCreated":11,"entryDestroyed":0,"activeGraphics":9,"idleGraphics":4,"graphicsCreated":13,"graphicsDestroyed":0,"activeLabels":7,"idleLabels":1,"labelCreated":8,"labelDestroyed":0,"baseTextures":19,"labelTextures":8,"textCacheTextures":0,"textCacheReferences":0},{"frame":299,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":18,"graphicsCreated":18,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":13,"labelCreated":13,"labelDestroyed":0,"baseTextures":19,"labelTextures":13,"textCacheTextures":0,"textCacheReferences":0},{"frame":449,"visibility":"visible","entries":4,"idleEntries":7,"entryCreated":11,"entryDestroyed":0,"activeGraphics":8,"idleGraphics":15,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":6,"idleLabels":11,"labelCreated":17,"labelDestroyed":0,"baseTextures":23,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":599,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":23,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":17,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":749,"visibility":"visible","entries":3,"idleEntries":8,"entryCreated":11,"entryDestroyed":0,"activeGraphics":5,"idleGraphics":18,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":4,"idleLabels":13,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":899,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":23,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":17,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1049,"visibility":"visible","entries":2,"idleEntries":9,"entryCreated":11,"entryDestroyed":0,"activeGraphics":6,"idleGraphics":17,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":3,"idleLabels":14,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1199,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":23,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":17,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1349,"visibility":"visible","entries":1,"idleEntries":10,"entryCreated":11,"entryDestroyed":0,"activeGraphics":3,"idleGraphics":20,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":1,"idleLabels":16,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1499,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":23,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":17,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1649,"visibility":"visible","entries":11,"idleEntries":0,"entryCreated":11,"entryDestroyed":0,"activeGraphics":18,"idleGraphics":5,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":16,"idleLabels":1,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0},{"frame":1799,"visibility":"offscreen","entries":0,"idleEntries":11,"entryCreated":11,"entryDestroyed":0,"activeGraphics":0,"idleGraphics":23,"graphicsCreated":23,"graphicsDestroyed":0,"activeLabels":0,"idleLabels":17,"labelCreated":17,"labelDestroyed":0,"baseTextures":27,"labelTextures":17,"textCacheTextures":0,"textCacheReferences":0}]; advisory heap [{"frame":149,"usedJSHeapSize":148000000,"advisory":true},{"frame":299,"usedJSHeapSize":148000000,"advisory":true},{"frame":449,"usedJSHeapSize":148000000,"advisory":true},{"frame":599,"usedJSHeapSize":148000000,"advisory":true},{"frame":749,"usedJSHeapSize":148000000,"advisory":true},{"frame":899,"usedJSHeapSize":148000000,"advisory":true},{"frame":1049,"usedJSHeapSize":148000000,"advisory":true},{"frame":1199,"usedJSHeapSize":148000000,"advisory":true},{"frame":1349,"usedJSHeapSize":148000000,"advisory":true},{"frame":1499,"usedJSHeapSize":148000000,"advisory":true},{"frame":1649,"usedJSHeapSize":148000000,"advisory":true},{"frame":1799,"usedJSHeapSize":148000000,"advisory":true}]
+
+[23/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:422:1 › quality tiers reduce route segments without hiding gameplay meaning
+[24/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:449:1 › reduced motion freezes pre-structure pulse and route movement while retaining all semantics
+[25/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:462:1 › complete Pixi structure ownership obeys effective motion policy without changing canonical state
+[26/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:484:1 › dense structure resources recreate after BFCache loss and cleanly hand ownership to Canvas on context loss
+[27/71] [chromium-desktop] › tests\browser\pixi-structures.spec.js:511:1 › Pixi structure layer smokes every map and major mode
+[28/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:24:1 › Pixi owns the exact support block after labels and hands state to floating text
+[29/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:30:1 › real isolated Pixi Graphics paint every support primitive at DPR 1, 1.5, and 2
+[30/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:38:1 › support resource failures withdraw all categories, direct Canvas paint, and recover
+[31/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-graphics-after-paint proves isolated support operations and later floating text
+[32/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-final-append proves isolated support operations and later floating text
+[33/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass support-actor-update proves isolated support operations and later floating text
+[34/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:48:4 › production renderPass final-render proves isolated support operations and later floating text
+[35/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:57:1 › support container and Graphics constructor failures leave no phantom resources
+[36/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support entry-cap rejects without truncation
+[37/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support trail-point-cap rejects without truncation
+[38/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support primitive-cap rejects without truncation
+[39/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support segment-cap rejects without truncation
+[40/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support container-cap rejects without truncation
+[41/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:66:4 › support graphics-cap rejects without truncation
+[42/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:68:1 › WeakMap occurrence identity survives reorder, removal, and restore
+[43/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:70:1 › support ownership requires map labels and reset recovery is clean
+[44/71] [chromium-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+[chromium-desktop] › tests\browser\pixi-support-actors.spec.js:72:1 › 1800-frame support state/type/color/progress/trail/fog/cull/reorder churn plateaus
+pixi E11 support churn: mean 3.391 ms, p95 6.400 ms, p99 12.800 ms, max 977.600 ms
+
+[45/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:10:1 › production Pixi owns the exact annotation block after nation overlays
+[46/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation entry-cap rejects without truncation
+[47/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation member-cap rejects without truncation
+[48/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation primitive-cap rejects without truncation
+[49/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation segment-cap rejects without truncation
+[50/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation label-cap rejects without truncation
+[51/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation char-cap rejects without truncation
+[52/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation container-cap rejects without truncation
+[53/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation graphics-cap rejects without truncation
+[54/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation sprite-cap rejects without truncation
+[55/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation texture-cap rejects without truncation
+[56/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:14:449 › world annotation source-byte-cap rejects without truncation
+[57/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:18:1 › recoverable annotation final append withdraws all resources and retries
+[58/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:22:1 › stable frames reuse textures and returning variants stay cached within policy
+[59/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:26:1 › failed post-raster transaction balances references and destroys only new resources
+[60/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:30:1 › texture cap pressure evicts least-recently-used zero-reference variants
+[61/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:34:1 › source-byte pressure evicts zero-reference variants before allocating
+[62/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:38:1 › DPR changes allocate once and reuse the returning DPR variant
+[63/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:42:1 › reset and context teardown destroy every cached annotation texture once
+[64/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:46:1 › fatal annotation update performs one nonadvancing full Canvas replay
+[65/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:50:1 › opening, regions, owned SAM network, and labels match direct Canvas pixels
+[66/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:54:1 › opening, region, enemy, fog-filtered, no-network, and zoom variants retain actual pixel parity
+[67/71] [chromium-desktop] › tests\browser\pixi-world-annotations.spec.js:58:1 › 1800-frame stable many-region plateaus and real annotation churn stays bounded
+[68/71] [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds
+  1) [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 2
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      148 |     await control(gateLoser.page,'holdCommand',{id:'held-terminal-ack'});
+      149 |     await control(gateLoser.page,'surrender',{id:'held-terminal-ack'});
+    > 150 |     await expect.poll(()=>ackGate.status().pendingAcks,{timeout:30_000}).toBe(1);
+          |                                                                          ^
+      151 |     await expect.poll(()=>ackGate.room.metadata().state).toBe('completing');
+      152 |     expect(ackGate.status().state).not.toBe('completed'); expect(ackGate.room.completedReplay()).toBe(null);
+      153 |     await control(gateLoser.page,'close');
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\relay-websocket.spec.js:150:74
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-5.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-7.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #7: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-6.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #8: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-10.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #9: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-8.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #10: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-9.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\error-context.md
+
+    attachment #12: trace (application/zip) ────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:60080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[69/71] [chromium-desktop] › tests\browser\score-retry.spec.js:3:58 › score expired response preserves the correct retry policy
+[70/71] [chromium-desktop] › tests\browser\score-retry.spec.js:3:58 › score invalid response preserves the correct retry policy
+[71/71] [chromium-desktop] › tests\browser\score-retry.spec.js:3:58 › score signature response preserves the correct retry policy
+  1 failed
+    [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds 
+  1 skipped
+  69 passed (4.5m)

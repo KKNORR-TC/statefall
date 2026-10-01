@@ -1,0 +1,53 @@
+
+> statefall@1.10.60 test:desktop-scale
+> playwright test tests/browser/desktop-scale.spec.js --project=chromium-desktop-scale-1 --project=chromium-desktop-scale-1.5 --project=chromium-desktop-scale-2
+
+[WebServer] (node:32948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 21 tests using 1 worker
+
+
+(node:47180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[2/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[3/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[4/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 1 scaled texture edge: 1333 changed raster pixels in first 2 columns; 96px and 108px overlaps remain Pixi-owned
+
+[5/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[6/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[7/21] [chromium-desktop-scale-1] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+
+(node:31168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[8/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[9/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[10/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[11/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 1.5 scaled texture edge: 3006 changed raster pixels in first 3 columns; 96px and 108px overlaps remain Pixi-owned
+
+[12/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[13/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[14/21] [chromium-desktop-scale-1.5] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+
+(node:56268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[15/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:98:1 › keeps Canvas, layout, targeting, and camera stable across desktop display scales
+[16/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:139:1 › keeps Pixi raster and Canvas overlay aligned across desktop display scales
+[17/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:163:1 › keeps Pixi structure sprites aligned to Canvas CSS-pixel coordinates across desktop display scales
+[18/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+[chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:177:1 › uses rasterized scaled-texture fringe for edge culling and ordered overlap at every DPR
+DPR 2 scaled texture edge: 5346 changed raster pixels in first 4 columns; 96px and 108px overlaps remain Pixi-owned
+
+[19/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:214:1 › matches Canvas alphabetic-baseline label semantics and overlapping level/queue/arc pixels at every DPR
+[20/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:232:1 › keeps Pixi naval logistics hulls, routes, wakes, labels, cargo, and boarding aligned at every DPR
+[21/21] [chromium-desktop-scale-2] › tests\browser\desktop-scale.spec.js:243:1 › distinguishes merchant miter corners and boarding butt/round endpoints at every DPR
+  21 passed (1.1m)

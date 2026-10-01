@@ -28,7 +28,10 @@ function Assert-Rejected($path,$body,$label) {
         $accepted=Post-Json $path $body
         if($accepted.id){ Invoke-RestMethod -Uri "$base/wp-json/statefall/v1/saves/$($accepted.id)" -Method Delete -Headers $headers -WebSession $session -TimeoutSec 60 | Out-Null }
         throw "$label was accepted"
-    } catch [System.Net.WebException] {
+    } catch {
+        # Windows PowerShell throws WebException; PowerShell 7 throws
+        # HttpResponseException for the same expected HTTP rejection.
+        if (-not $_.Exception.Response) { throw }
         $status=[int]$_.Exception.Response.StatusCode
         if($status -notin @(400,409,422)){ throw "$label returned unexpected HTTP $status" }
     }

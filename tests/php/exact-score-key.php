@@ -19,3 +19,18 @@ $keys = statefall_sign_keys();
 $good = sf_submit_exact($record, hash_hmac('sha256', statefall_canonical($record), $keys[0]));
 if ($good instanceof WP_REST_Response || empty($good['ok'])) throw new Exception('Exact artifact score signed with the matching key was not accepted.');
 echo "PASS exact artifact score accepts the matching key and rejects a mismatch\n";
+
+$overrun = array_merge($record, ['when' => $record['when'] + 1, 'result' => 'Overrun', 'land' => 0, 'minutes' => 0.3, 'cls' => 'Custom start', 'seed' => 'ARTIFACTOVERRUN']);
+$bad_overrun = sf_submit_exact($overrun, str_repeat('0', 64));
+if (!($bad_overrun instanceof WP_REST_Response) || $bad_overrun->get_status() !== 403) throw new Exception('Overrun bypassed signature validation.');
+$overrun_sig = hash_hmac('sha256', statefall_canonical($overrun), $keys[0]);
+$accepted_overrun = sf_submit_exact($overrun, $overrun_sig);
+if ($accepted_overrun instanceof WP_REST_Response || empty($accepted_overrun['ok'])) throw new Exception('Real Overrun result was rejected.');
+$duplicate_overrun = sf_submit_exact($overrun, $overrun_sig);
+if ($duplicate_overrun instanceof WP_REST_Response || empty($duplicate_overrun['duplicate'])) throw new Exception('Overrun duplicate was not deduplicated.');
+foreach ([['result' => 'Unknown outcome'], ['land' => 72]] as $change) {
+    $invalid = array_merge($overrun, $change);
+    $response = sf_submit_exact($invalid, hash_hmac('sha256', statefall_canonical($invalid), $keys[0]));
+    if (!($response instanceof WP_REST_Response) || $response->get_status() !== 422) throw new Exception('Invalid outcome or Overrun winning share was accepted.');
+}
+echo "PASS signed Overrun, duplicate protection, invalid result and winning-share rejection\n";

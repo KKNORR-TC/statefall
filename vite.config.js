@@ -1,8 +1,10 @@
 const {defineConfig}=require('vite');
 const path=require('node:path');
+const {localScoreMiddleware}=require('./tools/local-score-middleware.cjs');
 
 module.exports=defineConfig(({command,mode})=>({
   root:path.resolve(__dirname,'game'),
+  plugins:[{name:'local-original-score',configureServer(server){server.middlewares.use(localScoreMiddleware);},configurePreviewServer(server){server.middlewares.use(localScoreMiddleware);}}],
   base:command==='build'?'/__STATEFALL_ASSET_BASE__/':'/',
   // JavaScript and worker imports must remain relative inside immutable WordPress releases.
   experimental:{renderBuiltUrl:(_filename,{hostType})=>hostType==='js'?{relative:true}:undefined},

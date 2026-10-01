@@ -69,7 +69,7 @@ export function createStructuresSystem({
     let ticks=(settings.instant&&type!=='shield')?0:(buildTicks[type]||0); if(ticks&&industrialNear(p,t)) ticks=Math.round(ticks*0.75);
     if(p===getMe()) incrementStat('built'); if(p.kind==='bot') p.nextBuildAt=clock.simMs+botBuildDelay(p);
     const st={type,owner:p.id,t,cost,building:ticks>0,done:clock.tickN+ticks,total:ticks}; if(guns[type]) st.hp=guns[type].hp; if(type==='shield') st.hp=shield.hp; structures.push(st); structCounts(p);
-    if(p===getMe()) sound(type==='city'?'city':'build');
+    if(p===getMe()) sound(st.building?'construction-start':'construction-instant',type);
     if(st.building&&p===getMe()) log(`${S.label} under construction — ${Math.ceil(ticks/10)} s.`,true);
     if(type==='city'){ if(mechanics.garrisonOn(p)) mechanics.addTroopsAt(p,t,constants.cityPop); else p.troops+=constants.cityPop; if(p===getMe()) log(`New city: ${constants.cityPop} citizens joined the army.`,true); }
     return true;
@@ -82,12 +82,12 @@ export function createStructuresSystem({
     if(p===getMe()) log(`Captured a ${definitions[s.type].label.toLowerCase()} from ${old.name}.`,true);
   }
   function upgradeStructure(p,st){ if(mechanics.pausedBlock(p)) return false; if(p.kind==='bot'){ if(p.nextBuildAt>clock.simMs) return false; p.nextBuildAt=clock.simMs+botBuildDelay(p); } const U=upgrades[st.type]; if(!U||st.building||st.upgrading||(st.level||1)>=(U.max||2)||st.owner!==p.id) return false; const lvl=(st.level||1); const cost=lvl>=2?(U.cost3||U.cost):U.cost, ticksU=lvl>=2?(U.ticks3||U.ticks):U.ticks; if(p.gold<cost){ if(p===getMe()) fail('Not enough gold for the upgrade.'); return false; }
-    p.gold-=cost; const ticks=ticksU; st.upTo=lvl+1; st.upgrading=true; st.upDone=clock.tickN+ticks; st.upTotal=ticks; if(p===getMe()){ log(`${definitions[st.type].label} upgrading to level ${st.upTo===3?'III':'II'} — ${Math.ceil(ticks/10)} s.`,true); sound('build'); } return true; }
-  function finishUpgrades(){ for(const st of structures){ if(!st.upgrading||st.upDone>clock.tickN) continue; st.upgrading=false; st.level=st.upTo||2; st.popAt=clock.tickN; if(st.type==='airfield') st.lshield=levelShield.hp; if(st.type==='port') st.gunHp=4; if(st.owner===getMe().id){ log(`${definitions[st.type].label} is now level ${st.level>=3?'III':'II'}.`,true); sound('unified'); } } }
+    p.gold-=cost; const ticks=ticksU; st.upTo=lvl+1; st.upgrading=true; st.upDone=clock.tickN+ticks; st.upTotal=ticks; if(p===getMe()){ log(`${definitions[st.type].label} upgrading to level ${st.upTo===3?'III':'II'} — ${Math.ceil(ticks/10)} s.`,true); sound('construction-start'); } return true; }
+  function finishUpgrades(){ for(const st of structures){ if(!st.upgrading||st.upDone>clock.tickN) continue; st.upgrading=false; st.level=st.upTo||2; st.popAt=clock.tickN; if(st.type==='airfield') st.lshield=levelShield.hp; if(st.type==='port') st.gunHp=4; if(st.owner===getMe().id){ log(`${definitions[st.type].label} is now level ${st.level>=3?'III':'II'}.`,true); sound('construction-'+st.type); } } }
   function enqueue(st,job){ st.queue=st.queue||[]; const idle=st.queue.length===0; st.queue.push({...job,done:idle?clock.tickN+job.total:0}); return st.queue.length; }
   function cancelQueued(st){ if(!st||!st.queue||!st.queue.length) return null; const job=st.queue.shift(); if(st.queue.length) st.queue[0].done=clock.tickN+st.queue[0].total; return job; }
   function stepBuild(){ finishUpgrades();
-    for(const st of structures){ if(st.building&&st.done<=clock.tickN){ st.building=false; st.popAt=clock.tickN; const p=players[st.owner]; structCounts(p); if(p===getMe()){ log(`${definitions[st.type].label} completed.`,true); sound('build'); } }
+    for(const st of structures){ if(st.building&&st.done<=clock.tickN){ st.building=false; st.popAt=clock.tickN; const p=players[st.owner]; structCounts(p); if(p===getMe()){ log(`${definitions[st.type].label} completed.`,true); sound('construction-'+st.type); } }
       if((st.type==='port'||st.type==='subbase')&&st.queue&&st.queue.length&&!st.building){ const job=st.queue[0]; if(job.done<=clock.tickN){ st.queue.shift(); const p=players[st.owner]; if(!p.alive) continue;
         const path=queuedShipPath(st,job); if(path){ st.popAt=clock.tickN; if(p===getMe()) incrementStat('shipsBuilt'); launchQueuedShip(st,job,p,path); if(p===getMe()){ log(`${mechanics.shipLabel(job.cls)} launched.`,true); sound('foghorn'); } }
         if(st.queue.length){ st.queue[0].done=clock.tickN+st.queue[0].total; } } }

@@ -1,0 +1,131 @@
+{
+  "captured": "2026-09-29",
+  "source": "Ken's visible category checkboxes in the open original-score review page",
+  "tracks": [
+    {
+      "title": "Ashes of Victory",
+      "roles": [
+        "victory"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Drift and Divide",
+      "roles": [
+        "building"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Fallen Banners",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Fallen Field",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Iron Banner March",
+      "roles": [
+        "battle",
+        "victory"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Iron Coast",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Iron Horizon",
+      "roles": [
+        "building",
+        "victory"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Iron March",
+      "roles": [
+        "menu",
+        "building",
+        "victory"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Last Banner Falls",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Last Honor Call",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Salvo",
+      "roles": [
+        "battle"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Seventy-Two Percent",
+      "roles": [
+        "building",
+        "battle"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Siege Heartbeat (1)",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Siege Heartbeat",
+      "roles": [
+        "building",
+        "battle"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Siege Map Drift",
+      "roles": [
+        "building"
+      ],
+      "reviewed": true
+    },
+    {
+      "title": "Statefall",
+      "roles": [
+        "menu",
+        "victory"
+      ],
+      "reviewed": true
+    }
+  ]
+}

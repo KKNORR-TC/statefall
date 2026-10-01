@@ -1,0 +1,9 @@
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-0b9808b2eb91 Creating 
+ Container statefall-sandbox-artifact-cli-run-0b9808b2eb91 Created 
+PASS installed About version and retained plugin navigation

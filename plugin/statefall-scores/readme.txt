@@ -4,7 +4,7 @@ Tags: game, leaderboard
 Requires at least: 6.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.10.9
+Stable tag: 1.10.10
 License: GPLv2 or later
 
 Global leaderboard, player profiles and game hosting for Statefall RTS.
@@ -32,6 +32,8 @@ when, result, country, map, diff, fog, risky, cls, land, minutes, kills, peak, g
 The key is delivered to the browser with the game and therefore does not provide authoritative anti-cheat protection. Treat submitted scores as client-supplied data unless gameplay is independently validated server-side.
 
 == Changelog ==
+= 1.10.10 =
+Accept the game's Overrun defeat result without changing its signature or score formula. Apply the same winning-share validation as Defeat.
 = 1.10.9 =
 Serve split game assets from their physical immutable uploads directory so static-file hosts do not return 404 before WordPress routing.
 = 1.10.7 =

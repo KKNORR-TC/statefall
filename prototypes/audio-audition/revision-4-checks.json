@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "buildingTypes": 20,
+  "decoded": 162,
+  "captureSeconds": [
+    {
+      "id": "capture-neutral",
+      "seconds": 2.05
+    },
+    {
+      "id": "capture-enemy",
+      "seconds": 3.7
+    }
+  ],
+  "changed": [
+    "construction-start-natural.ogg",
+    "construction-start-natural.wav",
+    "construction-start-reinforced.ogg",
+    "construction-start-reinforced.wav",
+    "everyday-sequence-natural.ogg",
+    "everyday-sequence-natural.wav",
+    "everyday-sequence-reinforced.ogg",
+    "everyday-sequence-reinforced.wav"
+  ],
+  "checks": [
+    "all game structure types covered",
+    "unique completion PCM files",
+    "short distinct captures",
+    "both captures duck and restore music",
+    "elimination priority",
+    "all building selector previews",
+    "hidden name and reveal",
+    "WAV and Ogg decoding",
+    "mobile overflow",
+    "unrelated audio unchanged"
+  ]
+}

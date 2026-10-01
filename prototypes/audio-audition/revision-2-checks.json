@@ -1,0 +1,22 @@
+{
+  "changedAudio": [
+    "attack-failed-natural.ogg",
+    "attack-failed-natural.wav",
+    "attack-failed-reinforced.ogg",
+    "attack-failed-reinforced.wav",
+    "attack-stalled-natural.ogg",
+    "attack-stalled-natural.wav",
+    "attack-stalled-reinforced.ogg",
+    "attack-stalled-reinforced.wav",
+    "attack-success-natural.ogg",
+    "attack-success-natural.wav",
+    "attack-success-reinforced.ogg",
+    "attack-success-reinforced.wav",
+    "everyday-sequence-natural.ogg",
+    "everyday-sequence-natural.wav",
+    "everyday-sequence-reinforced.ogg",
+    "everyday-sequence-reinforced.wav"
+  ],
+  "otherAudioUnchanged": true,
+  "change": "Replaced arcade-like outcome gestures with unpitched recorded machinery and track excerpts; lowered their level."
+}

@@ -3,10 +3,11 @@
 const http=require('node:http');
 const fs=require('node:fs');
 const path=require('node:path');
+const {localScoreMiddleware}=require('./local-score-middleware.cjs');
 const root=path.resolve(__dirname,'..','dist');
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8','.png':'image/png','.svg':'image/svg+xml'};
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.ogg':'audio/ogg','.mp3':'audio/mpeg','.wav':'audio/wav'};
 
-function createServer(contentRoot=root){contentRoot=path.resolve(contentRoot);return http.createServer((request,response)=>{
+function createServer(contentRoot=root){contentRoot=path.resolve(contentRoot);return http.createServer((request,response)=>localScoreMiddleware(request,response,()=>{
   let pathname;
   try{pathname=decodeURIComponent(new URL(request.url,'http://localhost').pathname);}catch{response.writeHead(400).end();return;}
   if(pathname==='/'||pathname==='/index.html')pathname='/index.html';
@@ -18,7 +19,7 @@ function createServer(contentRoot=root){contentRoot=path.resolve(contentRoot);re
     if(pathname==='/index.html')data=Buffer.from(data.toString('utf8').replaceAll('/__STATEFALL_ASSET_BASE__/','/').replaceAll('__STATEFALL_ASSET_BASE__','/'));
     response.writeHead(200,{'Cache-Control':'no-store','Content-Type':types[path.extname(file)]||'application/octet-stream'}).end(data);
   });
-});}
+}));}
 
 if(require.main===module){
   const server=createServer(),port=Number(process.env.PORT||4174);

@@ -204,6 +204,20 @@ function assertDeepFrozenAndTryMutations(value,seen=new Set()){
     const finalMetadata={tick:1,legacyHash:finalHash,canonical:{version:'statefall-authoritative-state/v1',sha256:finalCanonical},rngDraws:finalRng,commandCount:0,replayCursor:0};
     const matchingFinal=createEngine(diagnostics({...options,settings:finalSettings})); matchingFinal.loadReplay({seed:finalSettings.seed,settings:finalSettings,cmds:[],hashes:[],tick:1,hashv:2,finalHash,finalDigest:finalMetadata.canonical,final:finalMetadata}); matchingFinal.start(); matchingFinal.drainEvents(); matchingFinal.tick();
     assert.equal(matchingFinal.runtimeCheckpoint().replay.mismatch,false,'matching final metadata was rejected');
+    for(const paused of [false,true])for(const userPaused of [false,true]){
+      finalSource.setLifecycleForDiagnostics('paused',paused);finalSource.setLifecycleForDiagnostics('userPaused',userPaused);
+      const savedFinal=finalSource.replayMetadata();
+      const resumed=createEngine(diagnostics({...options,settings:finalSettings}));
+      resumed.loadReplay({seed:finalSettings.seed,settings:finalSettings,cmds:[],hashes:[],tick:1,hashv:2,finalHash,finalDigest:savedFinal.canonical,final:savedFinal});
+      resumed.start();resumed.tick();
+      assert.equal(resumed.runtimeCheckpoint().replay.mismatch,false,'paused final save was rejected');
+      assert.equal(resumed.runtimeCheckpoint().replay.verifiedEvidence,true);
+      const unchanged=resumed.serializeCanonical();
+      assert.equal(resumed.matchesReplayFinalDigest(savedFinal.canonical.sha256),true);
+      assert.equal(resumed.serializeCanonical(),unchanged,'pause compatibility mutated authority');
+    }
+    finalSource.setLifecycleForDiagnostics('spectating',true);
+    assert.equal(matchingFinal.matchesReplayFinalDigest(finalSource.replayMetadata().canonical.sha256),false,'compatibility ignored a non-pause state difference');
     const forgedFinal=createEngine(diagnostics({...options,settings:finalSettings})); forgedFinal.loadReplay({seed:finalSettings.seed,settings:finalSettings,cmds:[],hashes:[],tick:1,hashv:2,finalHash:'00000000',finalDigest:{version:'statefall-authoritative-state/v1',sha256:'0'.repeat(64)},final:{...finalMetadata,legacyHash:'00000000'}}); forgedFinal.start(); forgedFinal.drainEvents(); forgedFinal.tick();
     assert.equal(forgedFinal.runtimeCheckpoint().replay.mismatch,true,'short replay accepted forged final metadata without periodic checkpoints');
     assert.ok(forgedFinal.drainEvents().some(event=>event.type==='replayDiverged'));

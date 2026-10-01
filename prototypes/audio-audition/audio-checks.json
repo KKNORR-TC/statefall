@@ -1,0 +1,784 @@
+{
+  "note": "Signal/decode checks only; aesthetic listening approval pending. 4x oversampled true-peak estimate. No claim of original lossless source quality for MP3 inputs.",
+  "files": [
+    {
+      "file": "attack-start-natural.wav",
+      "seconds": 1.075,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -3.93,
+      "rmsDb": -24.28,
+      "sha256": "179e736e7a9e84935fd92064c7252cc78879c4c9cef0b401d66ba796e5902a90"
+    },
+    {
+      "file": "attack-start-reinforced.wav",
+      "seconds": 1.268,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -5.32,
+      "rmsDb": -24.14,
+      "sha256": "54000ff6d83d80e913d209b9dc35518c755c9a651b615b2956305a5f5ed281d5"
+    },
+    {
+      "file": "attack-progress-natural.wav",
+      "seconds": 11.5,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -23.13,
+      "sha256": "a2e4cb04210aec50af975f3e606e06f3b36ef10bfa3a459be4d8d17f73129d8b"
+    },
+    {
+      "file": "attack-progress-reinforced.wav",
+      "seconds": 11.5,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -3.43,
+      "rmsDb": -21.07,
+      "sha256": "3210ed02ea679375fc29ef4ba04f75865cdb13ae95c2e20e2689d7d2d45d77e1"
+    },
+    {
+      "file": "attack-stalled-natural.wav",
+      "seconds": 1.25,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.28,
+      "rmsDb": -26.24,
+      "sha256": "9b0d7f12fee7674dd0034145ab54634daa4bb3103e2c1a3d455c92489646a544"
+    },
+    {
+      "file": "attack-stalled-reinforced.wav",
+      "seconds": 1.25,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -10.6,
+      "rmsDb": -25.87,
+      "sha256": "639088c4ee1cd1d7000db8785e2d0ca2c35e24c5729adfafeb7d0a7314008d6c"
+    },
+    {
+      "file": "attack-failed-natural.wav",
+      "seconds": 2.3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.94,
+      "rmsDb": -27.03,
+      "sha256": "c81b164bc96f3114ed4ecb12c3b71895b1bf2e2a18846c97015afcb76b98017d"
+    },
+    {
+      "file": "attack-failed-reinforced.wav",
+      "seconds": 2.3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.46,
+      "rmsDb": -26.45,
+      "sha256": "a0a63e3bf41b32de1ab0e8bc372ce3f7cfae9c5fc3539143dde4c19e9d2f1c0f"
+    },
+    {
+      "file": "capture-neutral-natural.wav",
+      "seconds": 2.05,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.51,
+      "rmsDb": -23.43,
+      "sha256": "eee713982b07cbf0b459c6bf050d3213593238187e4a884ac6c56d292afc4e8e"
+    },
+    {
+      "file": "capture-neutral-reinforced.wav",
+      "seconds": 2.627,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.46,
+      "rmsDb": -24.31,
+      "sha256": "8a81d6e4a7820c98199a036189e2f0f9bf3415908401f59d4cb8a93853fb4bad"
+    },
+    {
+      "file": "capture-enemy-natural.wav",
+      "seconds": 2.55,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.61,
+      "rmsDb": -22.61,
+      "sha256": "0e1efcc93c5853b771fa62b44a4aeb422a2943efead9aa4209b070707cd74104"
+    },
+    {
+      "file": "capture-enemy-reinforced.wav",
+      "seconds": 3.127,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.54,
+      "rmsDb": -23.35,
+      "sha256": "eae27546a050dcb8a9a881f5a46a4a7dc1ffde80c8f38564b9c1b95f71677558"
+    },
+    {
+      "file": "enemy-eliminated-natural.wav",
+      "seconds": 7.3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -5.43,
+      "rmsDb": -21.26,
+      "sha256": "debecaf8efc7c809b6e72509ea6bd9c65e8581c9cc9e30c0bd847b58a40490a0"
+    },
+    {
+      "file": "enemy-eliminated-reinforced.wav",
+      "seconds": 7.877,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -5.45,
+      "rmsDb": -21.56,
+      "sha256": "f8ae0eed62db4132f78cc5c3ab8f2d9b40b58e009d6ee33b4646fa10596e3e24"
+    },
+    {
+      "file": "construction-start-natural.wav",
+      "seconds": 3.2,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.49,
+      "rmsDb": -25.51,
+      "sha256": "e4ff19b6224fa0ebc2ada24d1779aa91b0a7b987764fc827a723b9d5bcf6a91e"
+    },
+    {
+      "file": "construction-start-reinforced.wav",
+      "seconds": 3.2,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.11,
+      "rmsDb": -25.5,
+      "sha256": "0ec959f1155433d3aae988da6e572ff8cffe02c5a5478b47cf8f7182b2a4d0ac"
+    },
+    {
+      "file": "construction-city-natural.wav",
+      "seconds": 2.9,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.21,
+      "rmsDb": -23.86,
+      "sha256": "4db46be737942670219a9666087d825231dd2c136117b8a751005502e10de27f"
+    },
+    {
+      "file": "construction-city-reinforced.wav",
+      "seconds": 2.9,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.45,
+      "rmsDb": -23.84,
+      "sha256": "dd25ddacc16b52e8528963d51fb82bb9ee6e23dcc7870745ff641a1fda854dac"
+    },
+    {
+      "file": "construction-factory-natural.wav",
+      "seconds": 2.15,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.04,
+      "rmsDb": -26.25,
+      "sha256": "98d3bc8041cb531f0a4e13439773283e3d911184c81851ad109d7bf391848164"
+    },
+    {
+      "file": "construction-factory-reinforced.wav",
+      "seconds": 2.15,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.03,
+      "rmsDb": -26.32,
+      "sha256": "78129de796d361ede28fc9827ba1228d0d2cf959b8d291616aa3cfda2e133497"
+    },
+    {
+      "file": "construction-port-natural.wav",
+      "seconds": 1.45,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.74,
+      "rmsDb": -24.17,
+      "sha256": "a7a4742947dcc3ce0d3fe01b703ed50806fa290cea5ce1e6bd4c1383c4698eb5"
+    },
+    {
+      "file": "construction-port-reinforced.wav",
+      "seconds": 1.45,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -12.18,
+      "rmsDb": -24.14,
+      "sha256": "d3b53df226875b5cadc05a52e4c4d6dcedbc4211c72665886fa777d9f2d21206"
+    },
+    {
+      "file": "construction-fort-natural.wav",
+      "seconds": 2.256,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.34,
+      "rmsDb": -33.18,
+      "sha256": "b2eb38374ce48d66e60a7e55b7a3211790ba51ef93bb95670cdbb21183977990"
+    },
+    {
+      "file": "construction-fort-reinforced.wav",
+      "seconds": 2.256,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.18,
+      "rmsDb": -33.12,
+      "sha256": "a40e8b05bd66a85aa621249bc640b08d1128b43561f8f7fc297213f459cb3178"
+    },
+    {
+      "file": "construction-sam-natural.wav",
+      "seconds": 1.23,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.58,
+      "rmsDb": -24.06,
+      "sha256": "0c0cf6cf41059c53ac1bfd6c8d0cdcddafc4c9d3e1a404772e8d7fa6e1392809"
+    },
+    {
+      "file": "construction-sam-reinforced.wav",
+      "seconds": 1.23,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.28,
+      "rmsDb": -24.07,
+      "sha256": "3b7fe417388a81989a60f1b8c5f8b1ac8fcb8287d3ea8b58b73a6f89f21a5339"
+    },
+    {
+      "file": "construction-silo-natural.wav",
+      "seconds": 2.2,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.83,
+      "rmsDb": -24.85,
+      "sha256": "dfa749452df10994bfad4363bc87497768f2934baeba37a5ce6493ba87f780d9"
+    },
+    {
+      "file": "construction-silo-reinforced.wav",
+      "seconds": 2.2,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.83,
+      "rmsDb": -24.86,
+      "sha256": "9bf5754b29674119d831089e7038b9804a35c412512ba6e5b5a5cbc8f379e3e6"
+    },
+    {
+      "file": "construction-command-natural.wav",
+      "seconds": 2.0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.6,
+      "rmsDb": -25.87,
+      "sha256": "f02499b5cc87deb1798415c8f64e4403aac3abbea2e6a8814a64cce850ae1bd9"
+    },
+    {
+      "file": "construction-command-reinforced.wav",
+      "seconds": 2.0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.72,
+      "rmsDb": -25.84,
+      "sha256": "e5a7d8d3fbcf44c9e5fa1e7d114446256a35981152f5e9623497bb005f85a1d2"
+    },
+    {
+      "file": "construction-shield-natural.wav",
+      "seconds": 2.6,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.64,
+      "rmsDb": -23.43,
+      "sha256": "975cceceb03e2cc9a1e03ee4fa0370acc6f0fd34835edf3584bb0706cb2536ff"
+    },
+    {
+      "file": "construction-shield-reinforced.wav",
+      "seconds": 2.6,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.58,
+      "rmsDb": -23.44,
+      "sha256": "5c319d33029cb2446b22383e6fb168371a66980c53e4ad9967f6c23dc7d44fe7"
+    },
+    {
+      "file": "construction-battery-natural.wav",
+      "seconds": 4.0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.09,
+      "rmsDb": -26.05,
+      "sha256": "3aa2ac344539bcd190dd459588e547b4cf692f75c0bc0636acf948c1dba79e81"
+    },
+    {
+      "file": "construction-battery-reinforced.wav",
+      "seconds": 4.0,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.56,
+      "rmsDb": -25.94,
+      "sha256": "416f2b03037c31b9b38dc5fe6144d440b62002983c8375e38842f7ac6c0360b6"
+    },
+    {
+      "file": "construction-shore-natural.wav",
+      "seconds": 1.402,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -12.87,
+      "rmsDb": -24.15,
+      "sha256": "14a0ccd34ba31773943668474f9d4b2837d07762fe7098f1d180b1cbec2439dc"
+    },
+    {
+      "file": "construction-shore-reinforced.wav",
+      "seconds": 1.402,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -12.88,
+      "rmsDb": -24.16,
+      "sha256": "6810ac49432a082bfa0ee6958bdf27c38a716ff934844da79cf6aba2a316ffc5"
+    },
+    {
+      "file": "construction-bertha-natural.wav",
+      "seconds": 2.984,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.33,
+      "rmsDb": -33.01,
+      "sha256": "9137045957d068b262c9eb4c54c1bbc24850c9ecfca7e75abf14025a242a240c"
+    },
+    {
+      "file": "construction-bertha-reinforced.wav",
+      "seconds": 2.984,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.43,
+      "rmsDb": -33.03,
+      "sha256": "f817112e90191469367bfac07bcdf285992d8bfdfaedc7bea225813d79cbf4a0"
+    },
+    {
+      "file": "construction-airfield-natural.wav",
+      "seconds": 3.6,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.31,
+      "rmsDb": -24.11,
+      "sha256": "e8986bf2ca87f4cdf0cd5a4da980f97fa623a14a5a6a7c584fc0853625dd763a"
+    },
+    {
+      "file": "construction-airfield-reinforced.wav",
+      "seconds": 3.6,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -9.39,
+      "rmsDb": -24.12,
+      "sha256": "b266ec902d646532b02a17b357720a928dec0a293180043fd763e33978b0d2b8"
+    },
+    {
+      "file": "construction-flightops-natural.wav",
+      "seconds": 2.51,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.2,
+      "rmsDb": -24.33,
+      "sha256": "8418bea71d8e75f9ffb22a13f413592728e9d93b166488996a89261f9acfe837"
+    },
+    {
+      "file": "construction-flightops-reinforced.wav",
+      "seconds": 2.51,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.14,
+      "rmsDb": -24.33,
+      "sha256": "adefbebc5e89495011aee9fb7a50fe6c343348cd2467924039c8380b18f7e979"
+    },
+    {
+      "file": "construction-subbase-natural.wav",
+      "seconds": 3.505,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.39,
+      "rmsDb": -27.56,
+      "sha256": "c65aa0ad4e316c98d57c1f4484b2365e7e048147cc4ceba8474cb663248c63f8"
+    },
+    {
+      "file": "construction-subbase-reinforced.wav",
+      "seconds": 3.505,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.35,
+      "rmsDb": -27.56,
+      "sha256": "10a5c8594dc9b6ffb044ebdd25cfe5b2129796341344c4dc56bdfabeb3591b4f"
+    },
+    {
+      "file": "construction-engcmd-natural.wav",
+      "seconds": 1.283,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.72,
+      "rmsDb": -34.48,
+      "sha256": "ef523d06e7d56aa6bc7b96612b1e7097700d26491e1e479bf9197bb76daf00bd"
+    },
+    {
+      "file": "construction-engcmd-reinforced.wav",
+      "seconds": 1.283,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.89,
+      "rmsDb": -34.25,
+      "sha256": "ca3d979ded03394c40946bb52514dbc9554e00cad2c20acc249179550eb35c85"
+    },
+    {
+      "file": "construction-troopcmd-natural.wav",
+      "seconds": 2.9,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.46,
+      "rmsDb": -28.51,
+      "sha256": "bd8ed85b48a093a10d660f9b34039a7b10e01026e9fb491b197b3d1db4f97307"
+    },
+    {
+      "file": "construction-troopcmd-reinforced.wav",
+      "seconds": 2.9,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.27,
+      "rmsDb": -28.62,
+      "sha256": "5bafff5eb22be390d6af7d8e2a6010d64e2aca13c48fe1b7e4f20b28c56ee6ee"
+    },
+    {
+      "file": "construction-radar-natural.wav",
+      "seconds": 1.35,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -12.12,
+      "rmsDb": -25.76,
+      "sha256": "c1019ae5327322c36d5a48ce7a0f94392a57ce05ee71da484238069c3801dac8"
+    },
+    {
+      "file": "construction-radar-reinforced.wav",
+      "seconds": 1.35,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -12.09,
+      "rmsDb": -25.75,
+      "sha256": "a1974ba393888fa2868197bebb0cc90a2698a69bd8efcdf35762e0fadd90c32d"
+    },
+    {
+      "file": "construction-lradar-natural.wav",
+      "seconds": 1.85,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.05,
+      "rmsDb": -24.59,
+      "sha256": "09b61c5fb0ba3a591a21c5967a8381e98d051f216f46e75735b94b5c2a1e7798"
+    },
+    {
+      "file": "construction-lradar-reinforced.wav",
+      "seconds": 1.85,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -11.0,
+      "rmsDb": -24.59,
+      "sha256": "325e67f14b15ab0e416a9812a791c6bf5bc64a54ed262e0e34c4ea1f4db6c9e3"
+    },
+    {
+      "file": "construction-jammer-natural.wav",
+      "seconds": 2.05,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.56,
+      "rmsDb": -24.81,
+      "sha256": "b55a54b9bab260c38bcf13dbb9ace06bed94f3142c8338043a20eea4b9d5e05f"
+    },
+    {
+      "file": "construction-jammer-reinforced.wav",
+      "seconds": 2.05,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.24,
+      "rmsDb": -24.82,
+      "sha256": "83e4997484c21492b4c9b770a1666fb4e32b27e6680b4c5b0ed02ac7c9904c54"
+    },
+    {
+      "file": "construction-satellite-natural.wav",
+      "seconds": 1.084,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.8,
+      "rmsDb": -26.15,
+      "sha256": "8c34b4cfd3bf73888cbb988b640b091fe226a4bdf856fb93c6567961f28c33ea"
+    },
+    {
+      "file": "construction-satellite-reinforced.wav",
+      "seconds": 1.084,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.81,
+      "rmsDb": -26.15,
+      "sha256": "5a236d2e0108424278a81406812c610e0d69d4d813aab2f612c705609896fc6b"
+    },
+    {
+      "file": "missile-launch-natural.wav",
+      "seconds": 5.037,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.96,
+      "rmsDb": -20.86,
+      "sha256": "04241c2ca6a9661acc84343deae1340a21d8d10be50ca8f78cabeb14b34c62d1"
+    },
+    {
+      "file": "missile-launch-reinforced.wav",
+      "seconds": 7.773,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.94,
+      "rmsDb": -21.31,
+      "sha256": "de7ccb7c2832e0a1cfea58f378247d0a15d5af98180274a91f75fdcf44e79a25"
+    },
+    {
+      "file": "sam-launch-natural.wav",
+      "seconds": 1.475,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.59,
+      "rmsDb": -20.8,
+      "sha256": "311a21b7701e84f2cdc92837ee0ba38ebc769e2d42faa08d0b6974c5123821c9"
+    },
+    {
+      "file": "sam-launch-reinforced.wav",
+      "seconds": 1.475,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -10.08,
+      "rmsDb": -20.66,
+      "sha256": "d3dcdb2bd0030dd9fff7877c28013d33c167bd077aa3551f91bbf1bc32389581"
+    },
+    {
+      "file": "sam-intercept-natural.wav",
+      "seconds": 2.749,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -4.99,
+      "rmsDb": -26.29,
+      "sha256": "c22bcb5aecd94b0f93d49590c94b4f5bf4bee39d3081eee6bad799dbcc344a41"
+    },
+    {
+      "file": "sam-intercept-reinforced.wav",
+      "seconds": 2.749,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.59,
+      "rmsDb": -24.9,
+      "sha256": "803721d53868167a0c86b96bcb13145d2bff453b499cf5ef11b7c81263b011f3"
+    },
+    {
+      "file": "nuclear-detonation-natural.wav",
+      "seconds": 7.053,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -3.69,
+      "rmsDb": -23.61,
+      "sha256": "d03b9755bdedb5fc33abdbfe0289368a1d4f13fa8c6d67449a9c3a8ab5b1ca95"
+    },
+    {
+      "file": "nuclear-detonation-reinforced.wav",
+      "seconds": 7.753,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.5,
+      "rmsDb": -21.82,
+      "sha256": "7a62b236d64527b48cc933a5b53be8996910b2c02338cf92e04bc9e709d0ce7d"
+    },
+    {
+      "file": "incoming-warning-natural.wav",
+      "seconds": 3.8,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.69,
+      "rmsDb": -21.0,
+      "sha256": "125efd2525465ab2a349fad6b91c3b8db57c9657eaa47d2abac3bbae16532e79"
+    },
+    {
+      "file": "incoming-warning-reinforced.wav",
+      "seconds": 4.398,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.87,
+      "rmsDb": -20.92,
+      "sha256": "ab2374723559193981d3b2cfbd1ffa14d3bb1b6109977bda30483e44f2128cd0"
+    },
+    {
+      "file": "artillery-natural.wav",
+      "seconds": 3.357,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -24.37,
+      "sha256": "8ba4e4c63b36ea7cb0b5bc309e626070483a452ca7b8699f10d5d452deb1a630"
+    },
+    {
+      "file": "artillery-reinforced.wav",
+      "seconds": 3.357,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -8.59,
+      "rmsDb": -23.8,
+      "sha256": "a5c0749d5c275578218d907fa3e4fe4db88c737d324aec8c1087601ca325798b"
+    },
+    {
+      "file": "shell-impact-natural.wav",
+      "seconds": 2.087,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -7.25,
+      "rmsDb": -25.22,
+      "sha256": "15fe098265c68471a323c949c10e7592a54e71ba68374c15f95a7a0874791824"
+    },
+    {
+      "file": "shell-impact-reinforced.wav",
+      "seconds": 2.696,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -10.16,
+      "rmsDb": -24.03,
+      "sha256": "288f92bbba1ff0963a6207999b9c724cbd1a83335eb553cb61a2b2ced1df74d0"
+    },
+    {
+      "file": "ship-sinking-natural.wav",
+      "seconds": 5.08,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -24.15,
+      "sha256": "0a349edff8308341051d27bcd572b1958bb5c5213441a60474e88a30bd5a975a"
+    },
+    {
+      "file": "ship-sinking-reinforced.wav",
+      "seconds": 5.08,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -6.01,
+      "rmsDb": -21.31,
+      "sha256": "a8555df2dbe14addb0816c63fc9423b4287a00449050f60114ab5949d75a38c1"
+    },
+    {
+      "file": "battle-sequence-natural.wav",
+      "seconds": 23.053,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -23.25,
+      "sha256": "127308e8ea0964f37e80f176aa72db3bf8537763cc2bba5d7131953d66c9e953"
+    },
+    {
+      "file": "everyday-sequence-natural.wav",
+      "seconds": 43.149,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -25.01,
+      "sha256": "c7d8d9405eedc320e477a57699882671ef6159b98867f31fe71361b9b9be61a6"
+    },
+    {
+      "file": "battle-sequence-reinforced.wav",
+      "seconds": 23.753,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -4.71,
+      "rmsDb": -21.85,
+      "sha256": "f41bc83ee418e3592770c3bdd014435ea6635376484a0dbf1b63be4d7ef37b31"
+    },
+    {
+      "file": "everyday-sequence-reinforced.wav",
+      "seconds": 45.773,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -23.57,
+      "sha256": "0765a6615a5dd5329ca8b5db4a1d6000f08ee6e3b88295999035fd0d9c0452b7"
+    },
+    {
+      "file": "layer-machineguns.wav",
+      "seconds": 1.598,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -4.06,
+      "rmsDb": -21.88,
+      "sha256": "cbe137f322537397084c924181bc25bbc1aa1568b484c9121d8553134f42a3ba"
+    },
+    {
+      "file": "layer-tracks.wav",
+      "seconds": 11.3,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -3.15,
+      "rmsDb": -20.61,
+      "sha256": "599992f669e3e759e40c0c23905c373312d831e87229fd41e2aaf933103d991c"
+    },
+    {
+      "file": "layer-artillery.wav",
+      "seconds": 2.78,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.54,
+      "rmsDb": -24.26,
+      "sha256": "dd1a7e181e5e60e6b4cd14c4fc01ca75502dc6e1ee4fbdfb0362ae424a7db862"
+    },
+    {
+      "file": "quiet-fighting-quiet-natural.wav",
+      "seconds": 17.5,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -2.5,
+      "rmsDb": -24.96,
+      "sha256": "3e025c12ab9188c6e3e30495cfcac2430c1df79f9001fd8b7db2ffc8b57aced4"
+    },
+    {
+      "file": "quiet-fighting-quiet-reinforced.wav",
+      "seconds": 17.5,
+      "sampleRate": 48000,
+      "channels": 2,
+      "truePeakDb": -3.43,
+      "rmsDb": -22.89,
+      "sha256": "e499cfaa06b477165a61be6506d0db8a957bea7581512e6b124d2c2d38fe0855"
+    }
+  ],
+  "sourceFiles": {
+    "sources\\artillery.mp3": "6b5d70ee4467a8b4998064a8e01fb5bd5cf58304ab95eccb357558d68ce90a47",
+    "sources\\naval\\qubodup-NavalBattleSoundSet-cc0\\ExplosionMetal.wav": "a4bf43d69c0ca18eff28706cfa61cad29bf18c76adcd92174256d33b5a72dada",
+    "sources\\impacts\\Audio\\impactMetal_heavy_001.ogg": "83554049f81f4db9209379e103c30bfa63f65c42189a03f300b045c2c82e23ae",
+    "sources\\impacts\\Audio\\impactMining_002.ogg": "059558ec751115ca6b1441e00f0adc837c1a3eeb0a066b109e0fd879fc5d0b0c",
+    "sources\\naval\\qubodup-NavalBattleSoundSet-cc0\\Splash.wav": "40a243f245270f024f6eb2ecad047cac65d91293e1d5e301a9a756410ec03d17",
+    "sources\\waves.flac": "afa112a66c4cafe06ef76d5e2d4d00a701d4520c58eef63b862afa771991d77a",
+    "sources\\rocket.mp3": "3e9ad4728c93cbde7228b94c9de4e775cebb5d187d4df991d2ee65aea301b3eb",
+    "sources\\siren-close.mp3": "e25641309003a6c07afed64a45836d7e3a82a63b75504ad5085a42ff44dfd49a",
+    "sources\\impacts\\Audio\\impactMetal_light_003.ogg": "92d5db6bfc672d9dc1b4f390b2900504f013187fa36335472554fafefa9050b1",
+    "sources\\impacts\\Audio\\impactMetal_medium_000.ogg": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003",
+    "sources\\naval\\qubodup-NavalBattleSoundSet-cc0\\GunShot.wav": "9f92266b6d45c83429c7a1e114edb5f10f78dc67ecb6d12d7d1e4549f5c82f12",
+    "sources\\machinegun.mp3": "ac12c79b300f6436519cf5d8978d6aaa994eb3258e9dcd59499378b873135562",
+    "sources\\tracks.mp3": "1492475dd5b0d2f344126b48976aa16f69c4450aab38fe6eccccfc2a955b59d3",
+    "sources\\tank-foley.mp3": "71021d6b67699e1a28f6b0a1a24af1deab84a31df75d99c3b9c414138ec8ad9e",
+    "sources\\fanfare.ogg": "212f67c84422a7aed988e6cdd6e3f5dd92a48b2a99b30c58d16c24d777402dce",
+    "sources\\taps.ogg": "bf8e628bc7ee3bcff67d294a43c3dddad47ba4d5266d753dfeda0ce07cd20ea2",
+    "sources\\hammer.mp3": "70aeb996c09b64556aeb1f1a633059913037453bd9d7bab4b1816966b5f926ce",
+    "sources\\diesel.mp3": "f1aff9a30f28cb2df8f59f59f2e7a7f3bf8010dad3febd1bbce5f70c946f6610",
+    "sources\\ship-horn.wav": "815d8cc325950af6c98da6059631bf54f6ce65417426470d4cd8efb252bc26f5",
+    "sources\\impacts\\Audio\\impactMetal_heavy_003.ogg": "b0f2ba4dabde9a87eb9c188a19d31e0c2300fd321adeba08d3b9b8aa011d7037",
+    "sources\\impacts\\Audio\\impactWood_medium_002.ogg": "3f3f1917428b828f733a963167833c707bf88296ff158e1559c57c5cb813d799",
+    "sources\\impacts\\Audio\\footstep_concrete_000.ogg": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe",
+    "sources\\impacts\\Audio\\footstep_concrete_001.ogg": "507a75eb19b897087855a3be3cf11a12d7fa37d143ad535eeebe0b8031c7325d",
+    "sources\\impacts\\Audio\\footstep_concrete_002.ogg": "b21fa546d74941196b25da8a20b7010abd8c05c4fcf93545d1f344e66a664e13",
+    "sources\\chain.wav": "48efcc0364bf98a47a622b7642254b3e885378f8a241b99885ba5781f3a6c41d",
+    "sources\\ratchet.wav": "844ef9f5005a5d511ff8f80c1918a45e4cbea035def2114f5cf403f4ba08673f",
+    "sources\\contactor.wav": "b5e7b6f8d9357c5978f31298844eeefaaf8b9efb6ff0346109145684ad0b2d1a",
+    "sources\\shutter.wav": "644d30b2a3fe97c85295c5038689e3457c5f286858fab9957fb024b946ba7136",
+    "sources\\camera.wav": "c37fb32b58ef3cfe51df841e39a27e1ba83e916054922dd665ff3857012218ca",
+    "sources\\steam.wav": "2bacf5a9602ebbb6d04080170168e1ed7e2b5d576a780e39de4dde2a341b8e3e",
+    "sources\\interference.wav": "a4590e79f8fc09ccbc493699e6d5ee7a7e14785722d009f2a8512fa15210a072",
+    "sources\\radio.wav": "e53ec91815d493e8046e2a05059ceb7fd179130584befb8b891fd54437e42f8d",
+    "sources\\impacts\\Audio\\impactPlate_heavy_003.ogg": "59775f8979a396c8a793b0a1db206d5bdc651eae808d858e9acaee8ebda5bc6d",
+    "sources\\impacts\\Audio\\impactTin_medium_002.ogg": "c1d2c4f9910d4529581ae56a9a9a01454c4619fbb7d6da7616221d8ec58cc0c4",
+    "sources\\impacts\\Audio\\impactMining_004.ogg": "8ca3a99d85d845751ad8ce7b40509da58263a62e48cde70e5a30b5ccef4c9a3b",
+    "sources\\worksite.mp3": "10aa8fa51d1d806b3d18954c08e4cefc086f3fd1de359998b185fb3f2266ec68",
+    "sources\\cheer.mp3": "0ae92efea5724ce221063e7785f0067443b2d844922961ad8931ba2766a680a9",
+    "sources\\rack.mp3": "ebb3224a6a1d7442d7f656a97d36104ba6993c0b484b1da012f7ddd83e0b5af0",
+    "sources\\sweepmotor.mp3": "c98d760a04ed0b84809ffb1b5ac640cac37470aa4f55f1322e719cc634cb0533",
+    "sources\\chatter.mp3": "f9e37775c77313992ac2dfa06da8d7a1be4639dd8b413b909c903467064b0f30",
+    "sources\\hum.mp3": "b951f7631a256468f35bbbbeb4526b2aa9c272ef1c480acf03532f0daa905001",
+    "sources\\jet.mp3": "3841fe476fbe09d4492cf5d3a3cf1acc55b23951d42f1489ec19ae88c7e803a3",
+    "sources\\ping.mp3": "247e4e848a03f8c2d293980425ce85a34656b244a14be1af31762612644f5d88",
+    "sources\\drill.mp3": "82f470e1e5b5a444f54bded3601b0bea3d59695a6948267d31232f7b40701cf7",
+    "sources\\stadium.mp3": "b621e391cb850ff79d8c215faf295119e747340803429ffbb383b5eaf4a132d2",
+    "sources\\liftservo.mp3": "641491a08fd52bd3a522262a53f1883f094d02dfe986683a17582bd8baea7caa",
+    "sources\\pilotvoice.mp3": "fb62bba7b9a81f97d9d8cdc9db51dde4d7722c2fe0d955915ffa7ef37d7a6948",
+    "sources\\marching.mp3": "1098bd0d710e2ab994b42ec941be8d9968a82ffa2c3fe0fa3672799a874432d5"
+  }
+}

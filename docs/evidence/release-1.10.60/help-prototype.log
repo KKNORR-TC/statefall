@@ -1,0 +1,13 @@
+
+> statefall@1.10.60 test:prototype
+> playwright test --config prototypes/graphics-vertical-slice/playwright.config.js --project=chromium-desktop
+
+
+Running 1 test using 1 worker
+
+(node:45832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] [chromium-desktop] › prototypes\graphics-vertical-slice\graphics-vertical-slice.spec.js:7:1 › renders the deterministic command-map slice
+  1 passed (1.1s)

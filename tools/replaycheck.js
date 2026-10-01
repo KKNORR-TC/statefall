@@ -232,7 +232,7 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
       if(S.stateOracleVersion!==replay.finalDigest.version||typeof S.serializeCanonicalState!=='function') errors.push(`canonical state oracle ${replay.finalDigest.version} is unavailable`);
       else {
         const digest=createHash('sha256').update(S.serializeCanonicalState()).digest('hex');
-        if(digest!==replay.finalDigest.sha256) errors.push(`final canonical digest mismatch: recorded ${replay.finalDigest.sha256}, replay ${digest}`);
+        if(!game.engine.matchesReplayFinalDigest(replay.finalDigest.sha256)) errors.push(`final canonical digest mismatch: recorded ${replay.finalDigest.sha256}, replay ${digest}`);
       }
     }
     if(replay.final!=null){
@@ -240,7 +240,8 @@ function verifyReplay(replay,{diagnostic=false,logger=console,bootOptions={}}={}
       if(S.stateOracleVersion!==replay.final.canonical.version||typeof S.serializeCanonicalState!=='function') errors.push(`canonical state oracle ${replay.final.canonical.version} is unavailable`);
       else {
         const digest=createHash('sha256').update(S.serializeCanonicalState()).digest('hex');
-        if(digest!==replay.final.canonical.sha256) errors.push(`final canonical digest mismatch: recorded ${replay.final.canonical.sha256}, replay ${digest}`);
+        if(!game.engine.matchesReplayFinalDigest(replay.final.canonical.sha256)) errors.push(`final canonical digest mismatch: recorded ${replay.final.canonical.sha256}, replay ${digest}`);
+        if(replay.finalDigest&&replay.finalDigest.sha256!==replay.final.canonical.sha256)errors.push('final canonical digest copies disagree');
       }
       if(S.srandN!==replay.final.rngDraws) errors.push(`final RNG count mismatch: recorded ${replay.final.rngDraws}, replay ${S.srandN}`);
       if(replay.cmds.length!==replay.final.commandCount) errors.push(`final command count mismatch: recorded ${replay.final.commandCount}, replay ${replay.cmds.length}`);

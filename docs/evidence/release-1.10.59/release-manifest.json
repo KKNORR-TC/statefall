@@ -1,0 +1,496 @@
+{
+  "schema": 1,
+  "version": "1.10.59",
+  "build": "2026-09-29-audio-save-resume",
+  "minimumPluginVersion": "1.10.9",
+  "signingKeySha256": "c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53",
+  "entry": "index.html",
+  "flags": "flags.js",
+  "files": [
+    {
+      "path": "assets/airfield-level2.h5hjsl38.png",
+      "size": 1602102,
+      "sha256": "f926d13cd4f05bfdb6b802fcfda799378350e8a3db15ed9fde0db92c5a120fe1"
+    },
+    {
+      "path": "assets/artillery.CO7U-4uP.ogg",
+      "size": 30835,
+      "sha256": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+    },
+    {
+      "path": "assets/attack-failed.Dx12q7w7.ogg",
+      "size": 27217,
+      "sha256": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+    },
+    {
+      "path": "assets/attack-progress.BAHszaEM.ogg",
+      "size": 159811,
+      "sha256": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+    },
+    {
+      "path": "assets/attack-stalled.BuZ-w6O4.ogg",
+      "size": 18018,
+      "sha256": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+    },
+    {
+      "path": "assets/attack-start.CGsRx-b1.ogg",
+      "size": 13265,
+      "sha256": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+    },
+    {
+      "path": "assets/battleship-directions.q9N9MxIe.png",
+      "size": 1094649,
+      "sha256": "af2bda4d2b9c333637304854d46a9854b0fc3860b9f0f6cf5ec271afb81c3598"
+    },
+    {
+      "path": "assets/bomber-directions.B_iZkf5O.png",
+      "size": 1272788,
+      "sha256": "6d760fbd84e629caf1764f4b79249b215ec796941e512154dee7c9f736a59383"
+    },
+    {
+      "path": "assets/capture-enemy.BlL2PXpG.ogg",
+      "size": 37249,
+      "sha256": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+    },
+    {
+      "path": "assets/capture-neutral.7iFR-8an.ogg",
+      "size": 28926,
+      "sha256": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+    },
+    {
+      "path": "assets/carrier-directions.2BGiq__M.png",
+      "size": 1149050,
+      "sha256": "5b6fcc352aad4a5016030173ebac23890c688e8b44afa1eac7b92a38f33f72fc"
+    },
+    {
+      "path": "assets/classic-battlefield.853490ce1855.js",
+      "size": 21714,
+      "sha256": "853490ce1855159dfadb353661649f7293fc70351454aded2aae4cce74d8e300"
+    },
+    {
+      "path": "assets/classic-sam-sequence.cf284416b601.js",
+      "size": 8138,
+      "sha256": "cf284416b6016ae8a5c1319703d735b5514cfacffd4e802d3bf822e29c4292af"
+    },
+    {
+      "path": "assets/classic-terrain-client.3f75e55b3ab1.js",
+      "size": 3192,
+      "sha256": "3f75e55b3ab190b7b7b736904f7fb4e7b69895ed043615fa82f163f180d04487"
+    },
+    {
+      "path": "assets/classic-terrain-worker-DbixG6kC.39990ccba7b0.js",
+      "size": 35524,
+      "sha256": "39990ccba7b010d2599743d1ef1701763c93b6ffa7946aa655209b194e2c0d14"
+    },
+    {
+      "path": "assets/construction-airfield.ByQ9Uzgx.ogg",
+      "size": 42584,
+      "sha256": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+    },
+    {
+      "path": "assets/construction-battery.BPSBhelb.ogg",
+      "size": 40608,
+      "sha256": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+    },
+    {
+      "path": "assets/construction-bertha.B53p2FNk.ogg",
+      "size": 36204,
+      "sha256": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+    },
+    {
+      "path": "assets/construction-city.C06fbj7X.ogg",
+      "size": 54194,
+      "sha256": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+    },
+    {
+      "path": "assets/construction-command.BAV_a7SW.ogg",
+      "size": 25255,
+      "sha256": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+    },
+    {
+      "path": "assets/construction-engcmd.DxYxdTfW.ogg",
+      "size": 16773,
+      "sha256": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+    },
+    {
+      "path": "assets/construction-factory.BdzJTT9Y.ogg",
+      "size": 23271,
+      "sha256": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+    },
+    {
+      "path": "assets/construction-flightops.VIkhw6EU.ogg",
+      "size": 21715,
+      "sha256": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+    },
+    {
+      "path": "assets/construction-fort.CXHjHMam.ogg",
+      "size": 32787,
+      "sha256": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+    },
+    {
+      "path": "assets/construction-jammer.DVBETfl0.ogg",
+      "size": 26735,
+      "sha256": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+    },
+    {
+      "path": "assets/construction-lradar.B9cHv6Lg.ogg",
+      "size": 13347,
+      "sha256": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+    },
+    {
+      "path": "assets/construction-port.5m7qgOz6.ogg",
+      "size": 17709,
+      "sha256": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+    },
+    {
+      "path": "assets/construction-radar.BYMq1I8r.ogg",
+      "size": 11465,
+      "sha256": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+    },
+    {
+      "path": "assets/construction-sam.BCoQ6zaA.ogg",
+      "size": 18168,
+      "sha256": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+    },
+    {
+      "path": "assets/construction-satellite.Bs8hdmou.ogg",
+      "size": 17200,
+      "sha256": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+    },
+    {
+      "path": "assets/construction-shield.41IsRhsw.ogg",
+      "size": 34576,
+      "sha256": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+    },
+    {
+      "path": "assets/construction-shore.BEZndTDf.ogg",
+      "size": 19062,
+      "sha256": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+    },
+    {
+      "path": "assets/construction-silo.CJI6wUu_.ogg",
+      "size": 26797,
+      "sha256": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+    },
+    {
+      "path": "assets/construction-start.D8HmVWzh.ogg",
+      "size": 43477,
+      "sha256": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+    },
+    {
+      "path": "assets/construction-subbase.tLivGB3Z.ogg",
+      "size": 19025,
+      "sha256": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+    },
+    {
+      "path": "assets/construction-troopcmd.XgMfS9rt.ogg",
+      "size": 32350,
+      "sha256": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+    },
+    {
+      "path": "assets/CREDITS.CI7BT1uz.txt",
+      "size": 11214,
+      "sha256": "59f0059caf96fb35160495601b58e945a3b7d2466a3f1273f3a16f79b34d99aa"
+    },
+    {
+      "path": "assets/cruiser-directions.Cmpwy1ko.png",
+      "size": 1082267,
+      "sha256": "daf59419580bc9aacccb25c405383c6b0ca85a61fafe5734616095de82ff8f58"
+    },
+    {
+      "path": "assets/destroyer-directions.Bn0IdzHr.png",
+      "size": 932617,
+      "sha256": "5a155189d1042e97b5888a5b5acee20925232c6fa988ce40c71855212519d420"
+    },
+    {
+      "path": "assets/enemy-eliminated.BG-SPIRF.ogg",
+      "size": 95298,
+      "sha256": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+    },
+    {
+      "path": "assets/fighter-directions.BJodwhUi.png",
+      "size": 1109637,
+      "sha256": "fcb1f0b75a2b7ac768806e74e16a8a6806fe28596112bee5bcbfa01c23176b4b"
+    },
+    {
+      "path": "assets/fort-level2.CJiWC7AM.png",
+      "size": 1439119,
+      "sha256": "d429a5aa35e7e535ac2625733f4fef5e1fc3a09b5be8934f03f2bca6342f9c00"
+    },
+    {
+      "path": "assets/fort-level3.DW81DmkH.png",
+      "size": 1976546,
+      "sha256": "7cf3439f61bf281d73022404fd734972d9357a9d2e79c7393ff5cce41df36b40"
+    },
+    {
+      "path": "assets/heavytransport-directions.DP80JD89.png",
+      "size": 1392202,
+      "sha256": "645ded3679730ed65238be9dd0297e68de41dff1f4e4bc20255cbeb7b6769ff1"
+    },
+    {
+      "path": "assets/hunter-directions.DsmpFbK8.png",
+      "size": 848204,
+      "sha256": "11d0da833ad7dc78c6c67174e45d3de45c73a2eceaca8e760aec3288f07bae57"
+    },
+    {
+      "path": "assets/incoming-warning.B7opzLix.ogg",
+      "size": 38493,
+      "sha256": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+    },
+    {
+      "path": "assets/index.512cc2038bb1.css",
+      "size": 13295,
+      "sha256": "512cc2038bb18bf294d8427b2767de0ad21783bd835dff47902ac543acc3b75e"
+    },
+    {
+      "path": "assets/index.6740cd89a009.js",
+      "size": 3294,
+      "sha256": "6740cd89a009b5250af8db8c177343b7dce16c0c26acdb271a5ba8255d90de42"
+    },
+    {
+      "path": "assets/layer-artillery.QGLdAoRd.ogg",
+      "size": 28247,
+      "sha256": "aac781c141fe785d732bb294a3be1c2ae848dc5979031f7b5b044bdbcd61bdcc"
+    },
+    {
+      "path": "assets/layer-machineguns.B3UI_Zyf.ogg",
+      "size": 22989,
+      "sha256": "5459d1fa30fcfbe4c6b5e9ca0302899eae8583a8ed18a365fcb9ceb86a5e92e0"
+    },
+    {
+      "path": "assets/layer-tracks.CltHjs7U.ogg",
+      "size": 138463,
+      "sha256": "72c321271001026376cdc7b6f2c945a83bf203f344e1d09444f3040d694da3fd"
+    },
+    {
+      "path": "assets/legacy-game.f7701d21519f.js",
+      "size": 832139,
+      "sha256": "f7701d21519f830ccf5115d84b8c95bd98ba7a371187ea3d6f2c8edd7d733e1f"
+    },
+    {
+      "path": "assets/merchant-directions.DU7IfVj-.png",
+      "size": 1097693,
+      "sha256": "5e823437e875b78747b689fb0ef16b2f461c79ed2223ad2aec495e077dede737"
+    },
+    {
+      "path": "assets/missile-launch.DYNKhuog.ogg",
+      "size": 32936,
+      "sha256": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+    },
+    {
+      "path": "assets/module-preload.0bcb72f8ec0d.js",
+      "size": 1232,
+      "sha256": "0bcb72f8ec0d95f592f3a84b3554b9ef5a5325ff5416a9114d6913e03c1c9eb4"
+    },
+    {
+      "path": "assets/nuclear-detonation.8lokG4Ht.ogg",
+      "size": 39426,
+      "sha256": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+    },
+    {
+      "path": "assets/port-level2.B_j6EYvf.png",
+      "size": 1882343,
+      "sha256": "b44347e8b5c72f2b6c7a71deb81d86cad679d25510ec04d22b16094b13083d0c"
+    },
+    {
+      "path": "assets/privateer-directions.lidVSLc7.png",
+      "size": 1277945,
+      "sha256": "a42aa3bdf4d4ca89a3adae2846c73da04f8edebdaca8a715d591573af859bd9c"
+    },
+    {
+      "path": "assets/rship-directions.7lr-mIv4.png",
+      "size": 1050917,
+      "sha256": "6549c7c3512c1950d6a5b562ab6e37f82eb2784a954466d19b2ff8192ab60021"
+    },
+    {
+      "path": "assets/sam-base-v1.Cf8gTYxL.png",
+      "size": 2648241,
+      "sha256": "c22a85fb599d5f6592b71bdc1a558ff551a399d992a4fee8e0103dff092d6988"
+    },
+    {
+      "path": "assets/sam-intercept.ByftU06W.ogg",
+      "size": 20990,
+      "sha256": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+    },
+    {
+      "path": "assets/sam-launch.C7fCzSZS.ogg",
+      "size": 13779,
+      "sha256": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+    },
+    {
+      "path": "assets/scout-directions.8DJqo1uL.png",
+      "size": 838961,
+      "sha256": "1964cb5764e78e835c006f29b8979714c46e3e173e3754402ec3f477dfaac2d7"
+    },
+    {
+      "path": "assets/shell-impact.33uSdFCN.ogg",
+      "size": 20089,
+      "sha256": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+    },
+    {
+      "path": "assets/ship-sinking.BpWdtiaD.ogg",
+      "size": 59968,
+      "sha256": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+    },
+    {
+      "path": "assets/silo-layered-v2.By3OUt3k.png",
+      "size": 855432,
+      "sha256": "1a789d64947986c8ad2086d8fa71cac422f712c71bc8f8d76bc71e2c7dd9e2c1"
+    },
+    {
+      "path": "assets/spy-directions.DtF7O0Lw.png",
+      "size": 739119,
+      "sha256": "d5a5d867d14edbfc09aa509a1d69ef18b3bca2518e9bcf78603e75b4eecbc397"
+    },
+    {
+      "path": "assets/structures-complete.Bm3RzRlB.png",
+      "size": 2030228,
+      "sha256": "45ba61bdf63a7451a09fe12663a2cd5371c6216982c9aecdd899ab6d5dba7a55"
+    },
+    {
+      "path": "assets/sub-directions.UIukOQ0g.png",
+      "size": 797923,
+      "sha256": "97cc85df9f8abe8e9c0fa9cdc304b925933bfa97c80ce86a82ba41f53633fb55"
+    },
+    {
+      "path": "assets/terrain-raster-client.043c2f5c1bac.js",
+      "size": 5049,
+      "sha256": "043c2f5c1bac41ab2d8c1c1195d1b6a21a5ce0f7124bb2ac87403cf1a85fc59f"
+    },
+    {
+      "path": "assets/terrain-raster-worker-CLeriLB5.dafc1d0437ac.js",
+      "size": 8836,
+      "sha256": "dafc1d0437ac2978f845391ea5f11c856ca5ae3fd0c83b8572432571a3d7dd49"
+    },
+    {
+      "path": "assets/terrain.C-2eEVb_.png",
+      "size": 3581888,
+      "sha256": "af88715515f5505ff119d4446ee7eee32d396eec33c8d99ed048fa5cb3a7118c"
+    },
+    {
+      "path": "assets/transport-directions.BLM_oUCL.png",
+      "size": 1079671,
+      "sha256": "fb3cd1c7c95fbda31883ebc8ede27e65ab88435875d7d0e02b51e8ab1cc7903c"
+    },
+    {
+      "path": "assets/truck-directions.CtEFX2Mw.png",
+      "size": 1449865,
+      "sha256": "50991a73a8cb645851d8850b41b3abeb3855544eba970f3728b60e2abf2ca595"
+    },
+    {
+      "path": "assets/unit-art-metadata.d06d83dd807e.js",
+      "size": 4597,
+      "sha256": "d06d83dd807eb67f5745567b5b41a867967fb3cfd19d490dfd1dd10e87269355"
+    },
+    {
+      "path": "assets/units.CPVKFj2k.png",
+      "size": 1515389,
+      "sha256": "829137a6340d48e21d4c238bc2701174e74c14841a11d285e622c056e1500ffb"
+    },
+    {
+      "path": "bundle-report.json",
+      "size": 9705,
+      "sha256": "1400d301c9b85f03ec3f3a0df2655daaa5887dbe64a002a9e7ae942743192b0b"
+    },
+    {
+      "path": "flags.js",
+      "size": 18128,
+      "sha256": "7a63dae908b34c6be170cfa93f12b8c546b89939bf370fe0f90648d265d64096"
+    },
+    {
+      "path": "howto/about.html",
+      "size": 7645,
+      "sha256": "d3c8bf79242db6838dcf3bd08453e9796959858566b4e247a5533f5624f41533"
+    },
+    {
+      "path": "howto/about/index.html",
+      "size": 7645,
+      "sha256": "d3c8bf79242db6838dcf3bd08453e9796959858566b4e247a5533f5624f41533"
+    },
+    {
+      "path": "howto/air.html",
+      "size": 10659,
+      "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+    },
+    {
+      "path": "howto/air/index.html",
+      "size": 10659,
+      "sha256": "da5cd3a4018cccb634e7c8fd8256a72cb015485323104a4a740d36eaada4a37d"
+    },
+    {
+      "path": "howto/basics.html",
+      "size": 6440,
+      "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+    },
+    {
+      "path": "howto/basics/index.html",
+      "size": 6440,
+      "sha256": "a008258ecceef7ac6c6fba29f9ed2ec4faae9352e0fee2a29a629b792e71de5c"
+    },
+    {
+      "path": "howto/build.html",
+      "size": 63697,
+      "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+    },
+    {
+      "path": "howto/build/index.html",
+      "size": 63697,
+      "sha256": "7aec86493029d24fb98c08fa9d5e6428c3e6914f048f77bae167820ab77c7ae4"
+    },
+    {
+      "path": "howto/garrisons.html",
+      "size": 4235,
+      "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+    },
+    {
+      "path": "howto/garrisons/index.html",
+      "size": 4235,
+      "sha256": "77b8de6a603d33ce86644dba866c9d3e9c116b821c0666d3fcf07262cfbac1c7"
+    },
+    {
+      "path": "howto/modes.html",
+      "size": 4820,
+      "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+    },
+    {
+      "path": "howto/modes/index.html",
+      "size": 4820,
+      "sha256": "cc6ab81cd51cdd27e5f188e6337a1a11b816c50aa6ad1c4f41493937a3b09357"
+    },
+    {
+      "path": "howto/ships.html",
+      "size": 12871,
+      "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+    },
+    {
+      "path": "howto/ships/index.html",
+      "size": 12871,
+      "sha256": "d0e9b29a9fa43355fe71e9ab3b59c86c25f8b84536e7cfdb48b47ca71b883578"
+    },
+    {
+      "path": "howto/systems.html",
+      "size": 11018,
+      "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+    },
+    {
+      "path": "howto/systems/index.html",
+      "size": 11018,
+      "sha256": "e8bda0c90fc6202e60b7ed1dae1e087563a7870b36164504c560d53a5def6e5f"
+    },
+    {
+      "path": "howto/tabs.json",
+      "size": 159,
+      "sha256": "b2a774d3611bdf64ddec26c915d7220c17615af453b1ab27c6bd750e6e26cac9"
+    },
+    {
+      "path": "index.html",
+      "size": 20279,
+      "sha256": "b255f7158cf8b601e69cc849d71676f4e867cfd7fc46d5d14e18bfab68092442"
+    },
+    {
+      "path": "VERSION.txt",
+      "size": 43,
+      "sha256": "0d225fb0e47b2897e81258879e1d192d27364980609ec87ba2d5c52ec5aeeca3"
+    }
+  ]
+}

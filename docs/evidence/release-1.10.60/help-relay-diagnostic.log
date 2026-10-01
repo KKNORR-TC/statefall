@@ -1,0 +1,80 @@
+
+[WebServer] (node:25072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+
+(node:43668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/1] [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds
+  1) [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds 
+
+    Error: read ECONNRESET
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-12.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-10.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-11.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-8.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-5.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #7: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #8: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #9: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-9.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #10: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-13.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #11: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-6.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #12: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-7.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #13: screenshot (image/png) ─────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\error-context.md
+
+    attachment #15: trace (application/zip) ────────────────────────────────────────────────────────
+    test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\relay-websocket-real-local-9c27f-very-desync-and-wire-bounds-chromium-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    [chromium-desktop] › tests\browser\relay-websocket.spec.js:66:1 › real localhost relay coordinates isolated browser engines, recovery, desync, and wire bounds 

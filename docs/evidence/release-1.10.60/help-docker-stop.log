@@ -1,0 +1,5 @@
+ Container statefall-sandbox-wordpress-1 Stopping 
+ Container statefall-sandbox-wordpress-1 Stopped 
+ Container statefall-sandbox-db-1 Stopping 
+ Container statefall-sandbox-db-1 Stopped 
+Docker Desktop and the Statefall sandbox are stopped.

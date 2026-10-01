@@ -1,0 +1,502 @@
+{
+  "effects": {
+    "attack-start": {
+      "file": "attack-start.ogg",
+      "seconds": 1.07,
+      "sha256": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+    },
+    "attack-progress": {
+      "file": "attack-progress.ogg",
+      "seconds": 11.5,
+      "sha256": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+    },
+    "attack-stalled": {
+      "file": "attack-stalled.ogg",
+      "seconds": 1.25,
+      "sha256": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+    },
+    "attack-failed": {
+      "file": "attack-failed.ogg",
+      "seconds": 2.3,
+      "sha256": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+    },
+    "capture-neutral": {
+      "file": "capture-neutral.ogg",
+      "seconds": 2.05,
+      "sha256": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+    },
+    "capture-enemy": {
+      "file": "capture-enemy.ogg",
+      "seconds": 2.55,
+      "sha256": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+    },
+    "enemy-eliminated": {
+      "file": "enemy-eliminated.ogg",
+      "seconds": 7.3,
+      "sha256": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+    },
+    "construction-start": {
+      "file": "construction-start.ogg",
+      "seconds": 3.2,
+      "sha256": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+    },
+    "construction-city": {
+      "file": "construction-city.ogg",
+      "seconds": 2.9,
+      "sha256": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+    },
+    "construction-factory": {
+      "file": "construction-factory.ogg",
+      "seconds": 2.15,
+      "sha256": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+    },
+    "construction-port": {
+      "file": "construction-port.ogg",
+      "seconds": 1.45,
+      "sha256": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+    },
+    "construction-fort": {
+      "file": "construction-fort.ogg",
+      "seconds": 2.26,
+      "sha256": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+    },
+    "construction-sam": {
+      "file": "construction-sam.ogg",
+      "seconds": 1.23,
+      "sha256": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+    },
+    "construction-silo": {
+      "file": "construction-silo.ogg",
+      "seconds": 2.2,
+      "sha256": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+    },
+    "construction-command": {
+      "file": "construction-command.ogg",
+      "seconds": 2.0,
+      "sha256": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+    },
+    "construction-shield": {
+      "file": "construction-shield.ogg",
+      "seconds": 2.6,
+      "sha256": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+    },
+    "construction-battery": {
+      "file": "construction-battery.ogg",
+      "seconds": 4.0,
+      "sha256": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+    },
+    "construction-shore": {
+      "file": "construction-shore.ogg",
+      "seconds": 1.4,
+      "sha256": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+    },
+    "construction-bertha": {
+      "file": "construction-bertha.ogg",
+      "seconds": 2.98,
+      "sha256": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+    },
+    "construction-airfield": {
+      "file": "construction-airfield.ogg",
+      "seconds": 3.6,
+      "sha256": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+    },
+    "construction-flightops": {
+      "file": "construction-flightops.ogg",
+      "seconds": 2.51,
+      "sha256": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+    },
+    "construction-subbase": {
+      "file": "construction-subbase.ogg",
+      "seconds": 3.5,
+      "sha256": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+    },
+    "construction-engcmd": {
+      "file": "construction-engcmd.ogg",
+      "seconds": 1.28,
+      "sha256": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+    },
+    "construction-troopcmd": {
+      "file": "construction-troopcmd.ogg",
+      "seconds": 2.9,
+      "sha256": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+    },
+    "construction-radar": {
+      "file": "construction-radar.ogg",
+      "seconds": 1.35,
+      "sha256": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+    },
+    "construction-lradar": {
+      "file": "construction-lradar.ogg",
+      "seconds": 1.85,
+      "sha256": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+    },
+    "construction-jammer": {
+      "file": "construction-jammer.ogg",
+      "seconds": 2.05,
+      "sha256": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+    },
+    "construction-satellite": {
+      "file": "construction-satellite.ogg",
+      "seconds": 1.08,
+      "sha256": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+    },
+    "missile-launch": {
+      "file": "missile-launch.ogg",
+      "seconds": 5.04,
+      "sha256": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+    },
+    "sam-launch": {
+      "file": "sam-launch.ogg",
+      "seconds": 1.48,
+      "sha256": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+    },
+    "sam-intercept": {
+      "file": "sam-intercept.ogg",
+      "seconds": 2.75,
+      "sha256": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+    },
+    "nuclear-detonation": {
+      "file": "nuclear-detonation.ogg",
+      "seconds": 7.05,
+      "sha256": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+    },
+    "incoming-warning": {
+      "file": "incoming-warning.ogg",
+      "seconds": 3.8,
+      "sha256": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+    },
+    "artillery": {
+      "file": "artillery.ogg",
+      "seconds": 3.36,
+      "sha256": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+    },
+    "shell-impact": {
+      "file": "shell-impact.ogg",
+      "seconds": 2.09,
+      "sha256": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+    },
+    "ship-sinking": {
+      "file": "ship-sinking.ogg",
+      "seconds": 5.08,
+      "sha256": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+    },
+    "layer-machineguns": {
+      "file": "layer-machineguns.ogg",
+      "seconds": 1.5981666666666667,
+      "sha256": "5459d1fa30fcfbe4c6b5e9ca0302899eae8583a8ed18a365fcb9ceb86a5e92e0"
+    },
+    "layer-tracks": {
+      "file": "layer-tracks.ogg",
+      "seconds": 11.3,
+      "sha256": "72c321271001026376cdc7b6f2c945a83bf203f344e1d09444f3040d694da3fd"
+    },
+    "layer-artillery": {
+      "file": "layer-artillery.ogg",
+      "seconds": 2.78,
+      "sha256": "aac781c141fe785d732bb294a3be1c2ae848dc5979031f7b5b044bdbcd61bdcc"
+    }
+  },
+  "score": [
+    {
+      "id": "1325bd141e85",
+      "file": "Ashes of Victory.wav",
+      "title": "Ashes of Victory",
+      "sha256": "27ac51ad9c95c0a63700299e7cc3c43d02be5c4d66e9aa6c0de28e7cea2be936",
+      "roles": [
+        "victory"
+      ],
+      "reviewed": true,
+      "seconds": 139.03,
+      "asset": "score-1325bd141e85.ogg",
+      "hosted": {
+        "id": "65232d55",
+        "title": "Ashes of Victory",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/65232d55-Ashes-of-Victory.mp3?v=1788906794",
+        "seconds": 139.032
+      }
+    },
+    {
+      "id": "9f284475d72f",
+      "file": "Drift and Divide.wav",
+      "title": "Drift and Divide",
+      "sha256": "72e17dccf6d3dbd245f8ded3a10aa2e6f4d6a6b3b0f1418937a23ce131122887",
+      "roles": [
+        "building"
+      ],
+      "reviewed": true,
+      "seconds": 204.72,
+      "asset": "score-9f284475d72f.ogg",
+      "hosted": {
+        "id": "42a54b5f",
+        "title": "Drift and Divide",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/42a54b5f-Drift-and-Divide.mp3?v=1788906813",
+        "seconds": 204.72
+      }
+    },
+    {
+      "id": "aa6c0f925c88",
+      "file": "Fallen Banners.wav",
+      "title": "Fallen Banners",
+      "sha256": "0a7a63450a698574b4c43ee86e76ae1c4f83adbf23ed87d59101b87828210b74",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 240.48,
+      "asset": "score-aa6c0f925c88.ogg",
+      "hosted": {
+        "id": "c1bfaf04",
+        "title": "Fallen Banners",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c1bfaf04-Fallen-Banners.mp3?v=1788906749",
+        "seconds": 240.48
+      }
+    },
+    {
+      "id": "55c5ac4f5cfb",
+      "file": "Fallen Field.wav",
+      "title": "Fallen Field",
+      "sha256": "cee1a21320ea08ee9832b51ddd84c127fff24e6fb5d0ff2b1c92e7a4dcae5f11",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 119.69,
+      "asset": "score-55c5ac4f5cfb.ogg",
+      "hosted": {
+        "id": "abbdbdec",
+        "title": "Fallen Field",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/abbdbdec-Fallen-Field.mp3?v=1788906927",
+        "seconds": 119.688
+      }
+    },
+    {
+      "id": "ae48f45e837e",
+      "file": "Iron Banner March.wav",
+      "title": "Iron Banner March",
+      "sha256": "77d8286e2bd13e2bf2976a6714449fb3513602b631adf4abd6c10d072af058f1",
+      "roles": [
+        "battle",
+        "victory"
+      ],
+      "reviewed": true,
+      "seconds": 158.4,
+      "asset": "score-ae48f45e837e.ogg",
+      "hosted": {
+        "id": "02447876",
+        "title": "Iron Banner March",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/02447876-Iron-Banner-March.mp3?v=1788906713",
+        "seconds": 158.4
+      }
+    },
+    {
+      "id": "105db81895da",
+      "file": "Iron Coast.wav",
+      "title": "Iron Coast",
+      "sha256": "a8c769fde1c56080d0f9b24c0de944f47d63b1c5a62570d6f6274cbaaf627369",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 193.13,
+      "asset": "score-105db81895da.ogg",
+      "hosted": {
+        "id": "1a64ff8f",
+        "title": "Iron Coast",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/1a64ff8f-Iron-Coast.mp3?v=1788907012",
+        "seconds": 193.128
+      }
+    },
+    {
+      "id": "a31ac2d4f53c",
+      "file": "Iron Horizon.wav",
+      "title": "Iron Horizon",
+      "sha256": "bba002560599c86926965fd2ba122fa8f2ac7a802cc27d99d19c23b12a61dcee",
+      "roles": [
+        "building",
+        "victory"
+      ],
+      "reviewed": true,
+      "seconds": 179.35,
+      "asset": "score-a31ac2d4f53c.ogg",
+      "hosted": {
+        "id": "f6d91ae9",
+        "title": "Iron Horizon",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/f6d91ae9-Iron-Horizon.mp3?v=1788907052",
+        "seconds": 179.352
+      }
+    },
+    {
+      "id": "9c6aaa97b352",
+      "file": "Iron March.wav",
+      "title": "Iron March",
+      "sha256": "3a9e0fb30b556fd2a8e93f4a208da02acb75a7bfad7a54b4e269381474364d70",
+      "roles": [
+        "menu",
+        "building",
+        "victory"
+      ],
+      "reviewed": true,
+      "seconds": 180.77,
+      "asset": "score-9c6aaa97b352.ogg",
+      "hosted": {
+        "id": "b488cdf5",
+        "title": "Iron March",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/b488cdf5-Iron-March.mp3?v=1788906678",
+        "seconds": 180.768
+      }
+    },
+    {
+      "id": "55d932c0cc04",
+      "file": "Last Banner Falls.wav",
+      "title": "Last Banner Falls",
+      "sha256": "383788348ccb52b3ac7a2e34b07d55ef1a87349ac0589bb399972c9c1be547a6",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 183.72,
+      "asset": "score-55d932c0cc04.ogg",
+      "hosted": {
+        "id": "c3603fc7",
+        "title": "Last Banner Falls",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c3603fc7-Last-Banner-Falls.mp3?v=1788906777",
+        "seconds": 183.72
+      }
+    },
+    {
+      "id": "342198cf7330",
+      "file": "Last Honor Call.wav",
+      "title": "Last Honor Call",
+      "sha256": "97f3caca93afa9ef479bd23e0c6b6a2ac8b911a25b3bca2ed36871d58a7cbffc",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 199.44,
+      "asset": "score-342198cf7330.ogg",
+      "hosted": {
+        "id": "0434532c",
+        "title": "Last Honor Call",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/0434532c-Last-Honor-Call.mp3?v=1788906966",
+        "seconds": 199.44
+      }
+    },
+    {
+      "id": "8cdcf5e0a530",
+      "file": "Salvo.wav",
+      "title": "Salvo",
+      "sha256": "c479f2bcf707ac8524f85764bdbfb1921bb54d07977935ee73667f914ae98a40",
+      "roles": [
+        "battle"
+      ],
+      "reviewed": true,
+      "seconds": 196.13,
+      "asset": "score-8cdcf5e0a530.ogg",
+      "hosted": {
+        "id": "63370d50",
+        "title": "Salvo",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/63370d50-Salvo.mp3?v=1788906694",
+        "seconds": 196.128
+      }
+    },
+    {
+      "id": "9eabe6d66db1",
+      "file": "Seventy-Two Percent.wav",
+      "title": "Seventy-Two Percent",
+      "sha256": "3d88edd63b323169bc0f91b4831f30f954c75c72251f11c99acfe0f7094f12de",
+      "roles": [
+        "building",
+        "battle"
+      ],
+      "reviewed": true,
+      "seconds": 203.83,
+      "asset": "score-9eabe6d66db1.ogg",
+      "hosted": {
+        "id": "c504875f",
+        "title": "Seventy Two Percent",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/c504875f-Seventy-Two-Percent.mp3?v=1788906910",
+        "seconds": 203.832
+      }
+    },
+    {
+      "id": "fcfb2fd761fb",
+      "file": "Siege Heartbeat (1).wav",
+      "title": "Siege Heartbeat (1)",
+      "sha256": "8a890981af5e8cfe49680166f3b5b409a89741a67276e384077b983262dfa22a",
+      "roles": [
+        "building",
+        "defeat"
+      ],
+      "reviewed": true,
+      "seconds": 213.96,
+      "asset": "score-fcfb2fd761fb.ogg",
+      "hosted": {
+        "id": "2fa4ea9d",
+        "title": "Death Comes For Everyone",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/2fa4ea9d-Siege-Heartbeat-1.mp3?v=1788906854",
+        "seconds": 213.96
+      }
+    },
+    {
+      "id": "3a7a9d789b4f",
+      "file": "Siege Heartbeat.wav",
+      "title": "Siege Heartbeat",
+      "sha256": "b7c9fc267dfbe920bfda2d663f1e568ca6822fa70aee620a4fb1a38f4f302064",
+      "roles": [
+        "building",
+        "battle"
+      ],
+      "reviewed": true,
+      "seconds": 169.13,
+      "asset": "score-3a7a9d789b4f.ogg",
+      "hosted": {
+        "id": "db6d886b",
+        "title": "Siege Heartbeat",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/db6d886b-Siege-Heartbeat.mp3?v=1788906888",
+        "seconds": 169.128
+      }
+    },
+    {
+      "id": "3d4bb220eb9f",
+      "file": "Siege Map Drift.wav",
+      "title": "Siege Map Drift",
+      "sha256": "f9df8e7a92bd19c71e6ff39a4aac6dd837efe185ef0b752aab465573fc90dd05",
+      "roles": [
+        "building"
+      ],
+      "reviewed": true,
+      "seconds": 183.36,
+      "asset": "score-3d4bb220eb9f.ogg",
+      "hosted": {
+        "id": "e72d488f",
+        "title": "Siege Map Drift",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/e72d488f-Siege-Map-Drift.mp3?v=1788906837",
+        "seconds": 183.36
+      }
+    },
+    {
+      "id": "626ab7e39343",
+      "file": "Statefall.wav",
+      "title": "Statefall",
+      "sha256": "6679e3c3d9ddda9c6959b4694ea0c42d4cb0211ae81aef61e7643e4676990c72",
+      "roles": [
+        "menu",
+        "victory"
+      ],
+      "reviewed": true,
+      "seconds": 154.75,
+      "asset": "score-626ab7e39343.ogg",
+      "hosted": {
+        "id": "ec1ec3b3",
+        "title": "Statefall",
+        "url": "https://www.worldrts.com/wp-content/uploads/statefall/audio/ec1ec3b3-Statefall.mp3?v=1788906658",
+        "seconds": 154.752
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import {createCanonicalTypedCache} from './canonical-typed-cache.mjs';
 import {STATE_ORACLE_VERSION,serializeCanonicalV1} from './deterministic-runtime.mjs';
 import {sha256} from './sha256.mjs';
 
-export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},getCanonicalLabelPositions=()=>null}){
+export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},getCanonicalLabelPositions=()=>null,allowPausedSaveCompatibility=false}){
   const {players,attacks,missiles,structures,transports,warships,shots,interceptors,shells,links,traders,aircraft,trucks,planes}=engineState.actors;
   const {land,owner,struct,structOwner,region,river,shelled,rough,regions,unclaimed}=engineState.map;
   const {hostile,proposals}=engineState.diplomacy;
@@ -60,7 +60,7 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
     };
   }
 
-  function canonicalState(){
+  function canonicalState(pauseOverride=null){
     const labelPositions=getCanonicalLabelPositions();
     const aliases=new Map(),customBots=engineState.rules.settings.customBots;
     if(Array.isArray(customBots)){
@@ -83,7 +83,9 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
         else flagsByCountry.set(player.country,player.flag);
       }
     }
-    return serializeCanonicalV1(authoritativeState(),{...typedCache,derivedProperties:value=>{
+    const state=authoritativeState();
+    if(pauseOverride)Object.assign(state.clock,pauseOverride);
+    return serializeCanonicalV1(state,{...typedCache,derivedProperties:value=>{
       if(!labelPositions||!players.includes(value)) return null;
       const labelPos=labelPositions[value.id];
       return labelPos?{labelPos}:null;
@@ -173,11 +175,12 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
     replay.finalVerified=true;
     const final=replay.final,failures=[],hash=stateHash(),canonical=()=>sha256(canonicalState());
     if(replay.finalHash!=null&&replay.finalHash!==hash) failures.push(`final hash recorded ${replay.finalHash} vs current ${hash}`);
-    if(replay.finalDigest!=null&&replay.finalDigest.sha256!==canonical()) failures.push(`final canonical digest recorded ${replay.finalDigest.sha256} vs current ${canonical()}`);
+    if(replay.finalDigest!=null&&!matchesReplayFinalDigest(replay.finalDigest.sha256)) failures.push(`final canonical digest recorded ${replay.finalDigest.sha256} vs current ${canonical()}`);
     if(final){
       if(final.tick!==engineState.clock.tickN) failures.push(`final tick recorded ${final.tick} vs current ${engineState.clock.tickN}`);
       if(final.legacyHash!==hash) failures.push(`final hash recorded ${final.legacyHash} vs current ${hash}`);
-      if(final.canonical.sha256!==canonical()) failures.push(`final canonical digest recorded ${final.canonical.sha256} vs current ${canonical()}`);
+      if(!matchesReplayFinalDigest(final.canonical.sha256)) failures.push(`final canonical digest recorded ${final.canonical.sha256} vs current ${canonical()}`);
+      if(replay.finalDigest&&replay.finalDigest.sha256!==final.canonical.sha256)failures.push('final canonical digest copies disagree');
       if(final.rngDraws!==runtime.rngDraws) failures.push(`final RNG draws recorded ${final.rngDraws} vs current ${runtime.rngDraws}`);
       if(final.commandCount!==replay.cmds.length) failures.push(`final command count recorded ${final.commandCount} vs current ${replay.cmds.length}`);
       if(final.replayCursor!=null&&final.replayCursor!==replay.i) failures.push(`final replay cursor recorded ${final.replayCursor} vs current ${replay.i}`);
@@ -188,6 +191,19 @@ export function createStateOracle({engineState,runtime,W,H,ports,warn=()=>{},get
 
   function finalMetadata(replayCursor=null){ const canonical={version:STATE_ORACLE_VERSION,sha256:sha256(canonicalState())}; return {tick:engineState.clock.tickN,legacyHash:stateHash(),canonical,rngDraws:runtime.rngDraws,commandCount:replay.on?replay.cmds.length:commands.log.length,replayCursor}; }
 
+  function matchesReplayFinalDigest(expected){
+    if(expected===sha256(canonicalState()))return true;
+    if(!allowPausedSaveCompatibility)return false;
+    // Single-player pause is a controller action, absent from the command log.
+    // Older Save & quit payloads included these flags. Compare exact canonical
+    // states differing ONLY in those flags, without changing live authority.
+    for(const paused of [false,true])for(const userPaused of [false,true]){
+      if(paused===engineState.lifecycle.paused&&userPaused===engineState.lifecycle.userPaused)continue;
+      if(expected===sha256(canonicalState({paused,userPaused})))return true;
+    }
+    return false;
+  }
+
   Object.defineProperties(stateHash,{oracleVersion:{value:STATE_ORACLE_VERSION},serializeCanonical:{value:canonicalState},checkInvariants:{value:checkStateInvariants}});
-  return Object.freeze({version:STATE_ORACLE_VERSION,stateDetail,stateDiff,stateHash,authoritativeState,canonicalState,checkStateInvariants,checkpoint,finalizeCheckpoint,replayCommandFailed,verifyReplayFinal,finalMetadata});
+  return Object.freeze({version:STATE_ORACLE_VERSION,stateDetail,stateDiff,stateHash,authoritativeState,canonicalState,checkStateInvariants,checkpoint,finalizeCheckpoint,replayCommandFailed,verifyReplayFinal,finalMetadata,matchesReplayFinalDigest});
 }

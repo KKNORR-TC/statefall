@@ -1,0 +1,20 @@
+ Container statefall-sandbox-db-1 Starting 
+ Container statefall-sandbox-db-1 Started 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-wordpress-1 Starting 
+ Container statefall-sandbox-wordpress-1 Started 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-cli-run-b9abf8b6e7b2 Creating 
+ Container statefall-sandbox-cli-run-b9abf8b6e7b2 Created 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-cli-run-58d27cb3c5b9 Creating 
+ Container statefall-sandbox-cli-run-58d27cb3c5b9 Created 
+NAME                            IMAGE                         COMMAND                  SERVICE     CREATED       STATUS                    PORTS
+statefall-sandbox-db-1          mariadb:11.4                  "docker-entrypoint.s…"   db          12 days ago   Up 26 seconds (healthy)   3306/tcp
+statefall-sandbox-wordpress-1   wordpress:7.1-php8.4-apache   "docker-entrypoint.s…"   wordpress   12 days ago   Up 20 seconds             127.0.0.1:8088->80/tcp
+Statefall sandbox: http://localhost:8088/

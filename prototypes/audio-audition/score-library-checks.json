@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "tracks": 16,
+  "checks": [
+    "situational queue",
+    "Radio preserves track on situation changes",
+    "return to situation playback",
+    "seek and 20-second excerpt stop",
+    "saved assignments survive reload",
+    "export available",
+    "all 16 WAV range responses",
+    "unknown file and invalid range rejection",
+    "mobile overflow"
+  ],
+  "errors": []
+}

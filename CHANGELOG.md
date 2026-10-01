@@ -1,5 +1,40 @@
 # Changelog
 
+## 1.10.62 — Tactical pause
+
+- Replace the blocking pause dialog with compact map controls; preserve pan, zoom, inspection and the existing Paused orders rules.
+- Pause running single-player matches while How to Play is open, restoring the prior pause state on close.
+- Preserve pause-save replay verification and update shared instructions and About.
+
+
+## 1.10.61 — Illustrated field guide and allied aid
+
+- Rework all How to Play tabs as a shared illustrated field guide, with opening sequences, practical tactics and expandable reference rules.
+- Refresh About with current features and player-facing release notes. Reject packages with stale About version/build metadata; require its review for every release.
+- Correct outdated music and difficulty guidance; preserve detailed rules and the forty unit/building portraits.
+- Incorporate the reviewed ally-sharing fix: support aid up to one billion, validate each field independently and explain invalid amounts. Preserve its command, replay and browser regression coverage.
+
+## 1.10.60 — Illustrated unit and building guide
+
+- Replace old help icons with 40 large portraits extracted from current gameplay artwork, including building upgrades, logistics vessels and repair trucks.
+- Add practical placement, use and counter advice to every illustrated card; retain costs and timings from the game rules.
+- Share the cards between in-game help and packaged website help; preserve portrait proportions and use compressed, lazy-loaded images.
+- Presentation and documentation only; simulation behavior is unchanged.
+
+## 1.10.59 — Authored audio with paused-save compatibility
+
+- Retain the approved audio and situation score from 1.10.58.
+- Resume single-player saves made from the pause menu by verifying the exact final canonical state with its recorded pause flags. All other state, checkpoint, RNG and command checks remain enforced; multiplayer proof verification stays strict.
+- Correct the pre-existing paused-save mismatch discovered during live acceptance of 1.10.58, which was rolled back to 1.10.57 before this replacement was qualified.
+- Pair with plugin 1.10.10 to accept the existing Overrun defeat result; retain signature, duplicate and score-plausibility validation.
+
+## 1.10.58 — Authored battlefield audio and original score
+
+- Replace procedural music with the 16 reviewed original tracks, following building, battle, victory and defeat situations with a persistent Radio override.
+- Integrate 36 approved effects and three restrained combat layers; distinguish whole neutral/enemy territory captures, duck score for capture bugles and enemy-elimination Taps, and identify each of the 20 building completions by sound.
+- Keep distant bot battles visible-only, quiet combat between attacks, and respect music pause/mute through transitions and credits.
+- Reuse the existing hosted score library and preserve audio attribution; simulation rules and deterministic replay remain unchanged.
+
 ## 1.10.57 — Loading screen unit showcase
 
 - Rotate through six named unit images every three seconds during startup using existing artwork.

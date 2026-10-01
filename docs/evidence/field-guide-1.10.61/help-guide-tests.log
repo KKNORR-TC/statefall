@@ -1,0 +1,78 @@
+[WebServer] (node:56360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 15 tests using 1 worker
+
+(node:60184) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/15] [chromium-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[2/15] [chromium-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[3/15] [chromium-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[4/15] [chromium-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[5/15] [chromium-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+
+(node:58776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[6/15] [firefox-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[7/15] [firefox-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[8/15] [firefox-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[9/15] [firefox-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+  1) [firefox-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      12 |    await card.scrollIntoViewIfNeeded();
+      13 |    const image=card.locator('img');
+    > 14 |    await expect.poll(()=>image.evaluate(i=>i.complete&&i.naturalWidth===480&&i.naturalHeight===360)).toBe(true);
+         |                                                                                                      ^
+      15 |    await expect(card.getByText('How to use',{exact:true})).toBeVisible();
+      16 |    expect(await image.evaluate(i=>getComputedStyle(i).objectFit)).toBe('contain');
+      17 |   }
+        at D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\tests\browser\help-roster.spec.js:14:102
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\help-roster-in-game-guide--e48f7-it-and-practical-usage-note-firefox-desktop\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\help-roster-in-game-guide--e48f7-it-and-practical-usage-note-firefox-desktop\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\help-roster-in-game-guide--e48f7-it-and-practical-usage-note-firefox-desktop\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\help-roster-in-game-guide--e48f7-it-and-practical-usage-note-firefox-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\help-roster-in-game-guide--e48f7-it-and-practical-usage-note-firefox-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:22268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[10/15] [firefox-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+
+(node:59796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[11/15] [webkit-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[12/15] [webkit-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[13/15] [webkit-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[14/15] [webkit-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[15/15] [webkit-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+  1 failed
+    [firefox-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note 
+  14 passed (1.0m)

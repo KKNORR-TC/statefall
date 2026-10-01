@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 /** Allowed values, mirrored from the game. */
 function statefall_enums() {
     return [
-        'result' => ['Victory', 'Total victory', 'Team victory', 'Shared victory', 'Defeat', 'Abandoned'],
+        'result' => ['Victory', 'Total victory', 'Team victory', 'Shared victory', 'Defeat', 'Overrun', 'Abandoned'],
         'map'    => ['random', 'land', 'islands_l', 'islands_m', 'islands_s', 'atoll', 'world', 'europe', 'americas', 'africa', 'asia', 'mideast'],
         'diff'   => ['supereasy', 'easy', 'normal', 'hard', 'superhard', 'impossible'],
     ];
@@ -91,7 +91,7 @@ function statefall_validate(array $in) {
     if ($r['land'] < 0 || $r['land'] > 100)          return ['ok' => false, 'error' => 'implausible', 'message' => 'Land out of range', 'status' => 422];
     if ($r['minutes'] < 0 || $r['minutes'] > 600)    return ['ok' => false, 'error' => 'implausible', 'message' => 'Time out of range', 'status' => 422];
     if (strpos($r['result'], 'ictory') !== false && $r['minutes'] < 1.5) return ['ok' => false, 'error' => 'implausible', 'message' => 'Victory too fast', 'status' => 422];
-    if ($r['result'] === 'Defeat' && $r['land'] >= 72) return ['ok' => false, 'error' => 'implausible', 'message' => 'Defeat with a winning share', 'status' => 422];
+    if (in_array($r['result'], ['Defeat', 'Overrun'], true) && $r['land'] >= 72) return ['ok' => false, 'error' => 'implausible', 'message' => 'Defeat with a winning share', 'status' => 422];
     if ($r['kills'] < 0 || $r['kills'] > 120)          return ['ok' => false, 'error' => 'implausible', 'message' => 'Kills out of range', 'status' => 422];
     if ($r['peak'] < 0 || $r['peak'] > 1000000000000) return ['ok' => false, 'error' => 'implausible', 'message' => 'Peak out of range', 'status' => 422];
     if ($r['gold'] < 0 || $r['gold'] > 1000000000000) return ['ok' => false, 'error' => 'implausible', 'message' => 'Gold out of range', 'status' => 422];

@@ -1,0 +1,1333 @@
+{
+  "round": 4,
+  "decisions": {
+    "attack-start": {
+      "id": "attack-start",
+      "title": "Ground attack: start",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/attack-start-natural.wav": "179e736e7a9e84935fd92064c7252cc78879c4c9cef0b401d66ba796e5902a90",
+        "audio/attack-start-natural.ogg": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+      }
+    },
+    "attack-progress": {
+      "id": "attack-progress",
+      "title": "Ground attack: active fighting",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/attack-progress-natural.wav": "a2e4cb04210aec50af975f3e606e06f3b36ef10bfa3a459be4d8d17f73129d8b",
+        "audio/attack-progress-natural.ogg": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+      }
+    },
+    "attack-stalled": {
+      "id": "attack-stalled",
+      "title": "Ground attack: stalled",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/attack-stalled-natural.wav": "9b0d7f12fee7674dd0034145ab54634daa4bb3103e2c1a3d455c92489646a544",
+        "audio/attack-stalled-natural.ogg": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+      }
+    },
+    "attack-failed": {
+      "id": "attack-failed",
+      "title": "Ground attack: failed",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/attack-failed-natural.wav": "c81b164bc96f3114ed4ecb12c3b71895b1bf2e2a18846c97015afcb76b98017d",
+        "audio/attack-failed-natural.ogg": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+      }
+    },
+    "capture-neutral": {
+      "id": "capture-neutral",
+      "title": "Neutral territory captured",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/capture-neutral-natural.wav": "eee713982b07cbf0b459c6bf050d3213593238187e4a884ac6c56d292afc4e8e",
+        "audio/capture-neutral-natural.ogg": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+      }
+    },
+    "capture-enemy": {
+      "id": "capture-enemy",
+      "title": "Enemy territory captured",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 3,
+      "locked": true,
+      "files": {
+        "audio/capture-enemy-natural.wav": "0e1efcc93c5853b771fa62b44a4aeb422a2943efead9aa4209b070707cd74104",
+        "audio/capture-enemy-natural.ogg": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+      },
+      "soundRevision": 6
+    },
+    "enemy-eliminated": {
+      "id": "enemy-eliminated",
+      "title": "Enemy eliminated: Taps",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/enemy-eliminated-natural.wav": "debecaf8efc7c809b6e72509ea6bd9c65e8581c9cc9e30c0bd847b58a40490a0",
+        "audio/enemy-eliminated-natural.ogg": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+      }
+    },
+    "construction-start": {
+      "id": "construction-start",
+      "title": "Construction: work begins",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-start-natural.wav": "e4ff19b6224fa0ebc2ada24d1779aa91b0a7b987764fc827a723b9d5bcf6a91e",
+        "audio/construction-start-natural.ogg": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+      },
+      "soundRevision": 7
+    },
+    "construction-city": {
+      "id": "construction-city",
+      "title": "City: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-city-natural.wav": "4db46be737942670219a9666087d825231dd2c136117b8a751005502e10de27f",
+        "audio/construction-city-natural.ogg": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+      },
+      "soundRevision": 7
+    },
+    "construction-factory": {
+      "id": "construction-factory",
+      "title": "Factory: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/construction-factory-natural.wav": "98d3bc8041cb531f0a4e13439773283e3d911184c81851ad109d7bf391848164",
+        "audio/construction-factory-natural.ogg": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+      }
+    },
+    "construction-port": {
+      "id": "construction-port",
+      "title": "Port: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/construction-port-natural.wav": "a7a4742947dcc3ce0d3fe01b703ed50806fa290cea5ce1e6bd4c1383c4698eb5",
+        "audio/construction-port-natural.ogg": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+      }
+    },
+    "construction-fort": {
+      "id": "construction-fort",
+      "title": "Bastion: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-fort-natural.wav": "b2eb38374ce48d66e60a7e55b7a3211790ba51ef93bb95670cdbb21183977990",
+        "audio/construction-fort-natural.ogg": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+      },
+      "soundRevision": 6
+    },
+    "construction-sam": {
+      "id": "construction-sam",
+      "title": "SAM site: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-sam-natural.wav": "0c0cf6cf41059c53ac1bfd6c8d0cdcddafc4c9d3e1a404772e8d7fa6e1392809",
+        "audio/construction-sam-natural.ogg": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+      },
+      "soundRevision": 7
+    },
+    "construction-silo": {
+      "id": "construction-silo",
+      "title": "Missile silo: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-silo-natural.wav": "dfa749452df10994bfad4363bc87497768f2934baeba37a5ce6493ba87f780d9",
+        "audio/construction-silo-natural.ogg": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+      },
+      "soundRevision": 7
+    },
+    "construction-command": {
+      "id": "construction-command",
+      "title": "Missile command: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-command-natural.wav": "f02499b5cc87deb1798415c8f64e4403aac3abbea2e6a8814a64cce850ae1bd9",
+        "audio/construction-command-natural.ogg": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+      },
+      "soundRevision": 6
+    },
+    "construction-shield": {
+      "id": "construction-shield",
+      "title": "Shield generator: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-shield-natural.wav": "975cceceb03e2cc9a1e03ee4fa0370acc6f0fd34835edf3584bb0706cb2536ff",
+        "audio/construction-shield-natural.ogg": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+      },
+      "soundRevision": 6
+    },
+    "construction-battery": {
+      "id": "construction-battery",
+      "title": "Coastal battery: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-battery-natural.wav": "3aa2ac344539bcd190dd459588e547b4cf692f75c0bc0636acf948c1dba79e81",
+        "audio/construction-battery-natural.ogg": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+      },
+      "soundRevision": 7
+    },
+    "construction-shore": {
+      "id": "construction-shore",
+      "title": "Shore guns: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-shore-natural.wav": "14a0ccd34ba31773943668474f9d4b2837d07762fe7098f1d180b1cbec2439dc",
+        "audio/construction-shore-natural.ogg": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+      },
+      "soundRevision": 7
+    },
+    "construction-bertha": {
+      "id": "construction-bertha",
+      "title": "Big Bertha: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-bertha-natural.wav": "9137045957d068b262c9eb4c54c1bbc24850c9ecfca7e75abf14025a242a240c",
+        "audio/construction-bertha-natural.ogg": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+      },
+      "soundRevision": 6
+    },
+    "construction-airfield": {
+      "id": "construction-airfield",
+      "title": "Airfield: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-airfield-natural.wav": "e8986bf2ca87f4cdf0cd5a4da980f97fa623a14a5a6a7c584fc0853625dd763a",
+        "audio/construction-airfield-natural.ogg": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+      },
+      "soundRevision": 6
+    },
+    "construction-flightops": {
+      "id": "construction-flightops",
+      "title": "Flight operations: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-flightops-natural.wav": "8418bea71d8e75f9ffb22a13f413592728e9d93b166488996a89261f9acfe837",
+        "audio/construction-flightops-natural.ogg": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+      },
+      "soundRevision": 7
+    },
+    "construction-subbase": {
+      "id": "construction-subbase",
+      "title": "Submarine base: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-subbase-natural.wav": "c65aa0ad4e316c98d57c1f4484b2365e7e048147cc4ceba8474cb663248c63f8",
+        "audio/construction-subbase-natural.ogg": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+      },
+      "soundRevision": 6
+    },
+    "construction-engcmd": {
+      "id": "construction-engcmd",
+      "title": "Engineering command: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/construction-engcmd-natural.wav": "ef523d06e7d56aa6bc7b96612b1e7097700d26491e1e479bf9197bb76daf00bd",
+        "audio/construction-engcmd-natural.ogg": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+      }
+    },
+    "construction-troopcmd": {
+      "id": "construction-troopcmd",
+      "title": "Troop command: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-troopcmd-natural.wav": "bd8ed85b48a093a10d660f9b34039a7b10e01026e9fb491b197b3d1db4f97307",
+        "audio/construction-troopcmd-natural.ogg": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+      },
+      "soundRevision": 7
+    },
+    "construction-radar": {
+      "id": "construction-radar",
+      "title": "Radar station: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-radar-natural.wav": "c1019ae5327322c36d5a48ce7a0f94392a57ce05ee71da484238069c3801dac8",
+        "audio/construction-radar-natural.ogg": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+      },
+      "soundRevision": 7
+    },
+    "construction-lradar": {
+      "id": "construction-lradar",
+      "title": "Long-range radar: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 4,
+      "locked": true,
+      "files": {
+        "audio/construction-lradar-natural.wav": "09b61c5fb0ba3a591a21c5967a8381e98d051f216f46e75735b94b5c2a1e7798",
+        "audio/construction-lradar-natural.ogg": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+      },
+      "soundRevision": 7
+    },
+    "construction-jammer": {
+      "id": "construction-jammer",
+      "title": "Radar jammer: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/construction-jammer-natural.wav": "b55a54b9bab260c38bcf13dbb9ace06bed94f3142c8338043a20eea4b9d5e05f",
+        "audio/construction-jammer-natural.ogg": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+      },
+      "soundRevision": 6
+    },
+    "construction-satellite": {
+      "id": "construction-satellite",
+      "title": "Satellite launch site: complete",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/construction-satellite-natural.wav": "8c34b4cfd3bf73888cbb988b640b091fe226a4bdf856fb93c6567961f28c33ea",
+        "audio/construction-satellite-natural.ogg": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+      }
+    },
+    "missile-launch": {
+      "id": "missile-launch",
+      "title": "Missile launch",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/missile-launch-natural.wav": "04241c2ca6a9661acc84343deae1340a21d8d10be50ca8f78cabeb14b34c62d1",
+        "audio/missile-launch-natural.ogg": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+      }
+    },
+    "sam-launch": {
+      "id": "sam-launch",
+      "title": "SAM: launch",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/sam-launch-natural.wav": "311a21b7701e84f2cdc92837ee0ba38ebc769e2d42faa08d0b6974c5123821c9",
+        "audio/sam-launch-natural.ogg": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+      },
+      "soundRevision": 6
+    },
+    "sam-intercept": {
+      "id": "sam-intercept",
+      "title": "SAM: successful intercept",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/sam-intercept-natural.wav": "c22bcb5aecd94b0f93d49590c94b4f5bf4bee39d3081eee6bad799dbcc344a41",
+        "audio/sam-intercept-natural.ogg": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+      },
+      "soundRevision": 6
+    },
+    "nuclear-detonation": {
+      "id": "nuclear-detonation",
+      "title": "Nuclear detonation",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/nuclear-detonation-natural.wav": "d03b9755bdedb5fc33abdbfe0289368a1d4f13fa8c6d67449a9c3a8ab5b1ca95",
+        "audio/nuclear-detonation-natural.ogg": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+      }
+    },
+    "incoming-warning": {
+      "id": "incoming-warning",
+      "title": "Incoming attack warning",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/incoming-warning-natural.wav": "125efd2525465ab2a349fad6b91c3b8db57c9657eaa47d2abac3bbae16532e79",
+        "audio/incoming-warning-natural.ogg": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+      }
+    },
+    "artillery": {
+      "id": "artillery",
+      "title": "Heavy artillery",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/artillery-natural.wav": "8ba4e4c63b36ea7cb0b5bc309e626070483a452ca7b8699f10d5d452deb1a630",
+        "audio/artillery-natural.ogg": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+      }
+    },
+    "shell-impact": {
+      "id": "shell-impact",
+      "title": "Shell impact",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 1,
+      "locked": true,
+      "files": {
+        "audio/shell-impact-natural.wav": "15fe098265c68471a323c949c10e7592a54e71ba68374c15f95a7a0874791824",
+        "audio/shell-impact-natural.ogg": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+      }
+    },
+    "ship-sinking": {
+      "id": "ship-sinking",
+      "title": "Ship sinking",
+      "choice": "approve",
+      "preferred": "natural",
+      "note": "",
+      "round": 2,
+      "locked": true,
+      "files": {
+        "audio/ship-sinking-natural.wav": "0a349edff8308341051d27bcd572b1958bb5c5213441a60474e88a30bd5a975a",
+        "audio/ship-sinking-natural.ogg": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+      },
+      "soundRevision": 6
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "at": "2026-09-29T14:40:55.251Z",
+      "revision": "566a2670256e5b0eec73735bf50dd0946b5c3c1fd3176b66b4226e838debb6e3",
+      "decisions": [
+        {
+          "id": "attack-start",
+          "title": "Ground attack: start",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/attack-start-natural.wav": "179e736e7a9e84935fd92064c7252cc78879c4c9cef0b401d66ba796e5902a90",
+            "audio/attack-start-natural.ogg": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+          }
+        },
+        {
+          "id": "attack-progress",
+          "title": "Ground attack: active fighting",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/attack-progress-natural.wav": "a2e4cb04210aec50af975f3e606e06f3b36ef10bfa3a459be4d8d17f73129d8b",
+            "audio/attack-progress-natural.ogg": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+          }
+        },
+        {
+          "id": "attack-stalled",
+          "title": "Ground attack: stalled",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/attack-stalled-natural.wav": "9b0d7f12fee7674dd0034145ab54634daa4bb3103e2c1a3d455c92489646a544",
+            "audio/attack-stalled-natural.ogg": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+          }
+        },
+        {
+          "id": "attack-failed",
+          "title": "Ground attack: failed",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/attack-failed-natural.wav": "c81b164bc96f3114ed4ecb12c3b71895b1bf2e2a18846c97015afcb76b98017d",
+            "audio/attack-failed-natural.ogg": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+          }
+        },
+        {
+          "id": "capture-neutral",
+          "title": "Neutral territory captured",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/capture-neutral-natural.wav": "eee713982b07cbf0b459c6bf050d3213593238187e4a884ac6c56d292afc4e8e",
+            "audio/capture-neutral-natural.ogg": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+          }
+        },
+        {
+          "id": "capture-enemy",
+          "title": "Enemy territory captured",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "still a little too long",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "enemy-eliminated",
+          "title": "Enemy eliminated: Taps",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/enemy-eliminated-natural.wav": "debecaf8efc7c809b6e72509ea6bd9c65e8581c9cc9e30c0bd847b58a40490a0",
+            "audio/enemy-eliminated-natural.ogg": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+          }
+        },
+        {
+          "id": "construction-start",
+          "title": "Construction: hammering starts",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "sounds like drums not hammering - think ambient construction site",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-city",
+          "title": "City: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "crowd cheering yay!",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-factory",
+          "title": "Factory: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/construction-factory-natural.wav": "98d3bc8041cb531f0a4e13439773283e3d911184c81851ad109d7bf391848164",
+            "audio/construction-factory-natural.ogg": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+          }
+        },
+        {
+          "id": "construction-port",
+          "title": "Port: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/construction-port-natural.wav": "a7a4742947dcc3ce0d3fe01b703ed50806fa290cea5ce1e6bd4c1383c4698eb5",
+            "audio/construction-port-natural.ogg": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+          }
+        },
+        {
+          "id": "construction-fort",
+          "title": "Bastion: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "maybe a heavy gun racking?",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-sam",
+          "title": "SAM site: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-silo",
+          "title": "Missile silo: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "perhaps steam / gas releasing as a rocket is ready to launch?",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-command",
+          "title": "Missile command: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "sound like muffled digital transmissions",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-shield",
+          "title": "Shield generator: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "oscillating humming noise",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-battery",
+          "title": "Coastal battery: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "big gun rotating noise",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-shore",
+          "title": "Shore guns: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "smaller gun rotating noise",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-bertha",
+          "title": "Big Bertha: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "Heavy weapon racking",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-airfield",
+          "title": "Airfield: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "jets taking off",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-flightops",
+          "title": "Flight operations: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "muffled radio communications",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-subbase",
+          "title": "Submarine base: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "this sounds too much like a toilet flush",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-engcmd",
+          "title": "Engineering command: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/construction-engcmd-natural.wav": "ef523d06e7d56aa6bc7b96612b1e7097700d26491e1e479bf9197bb76daf00bd",
+            "audio/construction-engcmd-natural.ogg": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+          }
+        },
+        {
+          "id": "construction-troopcmd",
+          "title": "Troop command: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "troop marching sound",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-radar",
+          "title": "Radar station: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "radar sweep sound - similar to a sonar beep?",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-lradar",
+          "title": "Long-range radar: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "similar to the radar station suggestion",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-jammer",
+          "title": "Radar jammer: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "not sure but not this",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "construction-satellite",
+          "title": "Satellite launch site: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/construction-satellite-natural.wav": "8c34b4cfd3bf73888cbb988b640b091fe226a4bdf856fb93c6567961f28c33ea",
+            "audio/construction-satellite-natural.ogg": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+          }
+        },
+        {
+          "id": "missile-launch",
+          "title": "Missile launch",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/missile-launch-natural.wav": "04241c2ca6a9661acc84343deae1340a21d8d10be50ca8f78cabeb14b34c62d1",
+            "audio/missile-launch-natural.ogg": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+          }
+        },
+        {
+          "id": "sam-launch",
+          "title": "SAM: launch",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "a little longer",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "sam-intercept",
+          "title": "SAM: successful intercept",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "too high pitch for an explosion",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        },
+        {
+          "id": "nuclear-detonation",
+          "title": "Nuclear detonation",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/nuclear-detonation-natural.wav": "d03b9755bdedb5fc33abdbfe0289368a1d4f13fa8c6d67449a9c3a8ab5b1ca95",
+            "audio/nuclear-detonation-natural.ogg": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+          }
+        },
+        {
+          "id": "incoming-warning",
+          "title": "Incoming attack warning",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/incoming-warning-natural.wav": "125efd2525465ab2a349fad6b91c3b8db57c9657eaa47d2abac3bbae16532e79",
+            "audio/incoming-warning-natural.ogg": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+          }
+        },
+        {
+          "id": "artillery",
+          "title": "Heavy artillery",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/artillery-natural.wav": "8ba4e4c63b36ea7cb0b5bc309e626070483a452ca7b8699f10d5d452deb1a630",
+            "audio/artillery-natural.ogg": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+          }
+        },
+        {
+          "id": "shell-impact",
+          "title": "Shell impact",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 1,
+          "locked": true,
+          "files": {
+            "audio/shell-impact-natural.wav": "15fe098265c68471a323c949c10e7592a54e71ba68374c15f95a7a0874791824",
+            "audio/shell-impact-natural.ogg": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+          }
+        },
+        {
+          "id": "ship-sinking",
+          "title": "Ship sinking",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "drop the clinking noise at the beginning",
+          "round": 1,
+          "locked": false,
+          "files": {}
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "at": "2026-09-29T15:01:26.390Z",
+      "revision": "ee3c6ae46e9ca6a7e3b81618b701a89de70ea69ff140e80e733d8990c3435063",
+      "decisions": [
+        {
+          "id": "construction-start",
+          "title": "Construction: hammering starts",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "still sounds like a drum not a construction site, maybe drill noises with the hammering?",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-city",
+          "title": "City: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "needs to be larger crowd..  stadium maybe?",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-fort",
+          "title": "Bastion: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-fort-natural.wav": "b2eb38374ce48d66e60a7e55b7a3211790ba51ef93bb95670cdbb21183977990",
+            "audio/construction-fort-natural.ogg": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-sam",
+          "title": "SAM site: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-silo",
+          "title": "Missile silo: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "fade out at the end",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-command",
+          "title": "Missile command: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-command-natural.wav": "f02499b5cc87deb1798415c8f64e4403aac3abbea2e6a8814a64cce850ae1bd9",
+            "audio/construction-command-natural.ogg": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-shield",
+          "title": "Shield generator: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-shield-natural.wav": "975cceceb03e2cc9a1e03ee4fa0370acc6f0fd34835edf3584bb0706cb2536ff",
+            "audio/construction-shield-natural.ogg": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-battery",
+          "title": "Coastal battery: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-shore",
+          "title": "Shore guns: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-bertha",
+          "title": "Big Bertha: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-bertha-natural.wav": "9137045957d068b262c9eb4c54c1bbc24850c9ecfca7e75abf14025a242a240c",
+            "audio/construction-bertha-natural.ogg": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-airfield",
+          "title": "Airfield: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-airfield-natural.wav": "e8986bf2ca87f4cdf0cd5a4da980f97fa623a14a5a6a7c584fc0853625dd763a",
+            "audio/construction-airfield-natural.ogg": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-flightops",
+          "title": "Flight operations: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "too similar to missile command",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-subbase",
+          "title": "Submarine base: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-subbase-natural.wav": "c65aa0ad4e316c98d57c1f4484b2365e7e048147cc4ceba8474cb663248c63f8",
+            "audio/construction-subbase-natural.ogg": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-troopcmd",
+          "title": "Troop command: complete",
+          "choice": "retry",
+          "preferred": "natural",
+          "note": "sounds like snare drum not boots marching",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-radar",
+          "title": "Radar station: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-lradar",
+          "title": "Long-range radar: complete",
+          "choice": "close",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": false,
+          "files": {},
+          "soundRevision": 6
+        },
+        {
+          "id": "construction-jammer",
+          "title": "Radar jammer: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/construction-jammer-natural.wav": "b55a54b9bab260c38bcf13dbb9ace06bed94f3142c8338043a20eea4b9d5e05f",
+            "audio/construction-jammer-natural.ogg": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "sam-launch",
+          "title": "SAM: launch",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/sam-launch-natural.wav": "311a21b7701e84f2cdc92837ee0ba38ebc769e2d42faa08d0b6974c5123821c9",
+            "audio/sam-launch-natural.ogg": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "sam-intercept",
+          "title": "SAM: successful intercept",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/sam-intercept-natural.wav": "c22bcb5aecd94b0f93d49590c94b4f5bf4bee39d3081eee6bad799dbcc344a41",
+            "audio/sam-intercept-natural.ogg": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+          },
+          "soundRevision": 6
+        },
+        {
+          "id": "ship-sinking",
+          "title": "Ship sinking",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 2,
+          "locked": true,
+          "files": {
+            "audio/ship-sinking-natural.wav": "0a349edff8308341051d27bcd572b1958bb5c5213441a60474e88a30bd5a975a",
+            "audio/ship-sinking-natural.ogg": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+          },
+          "soundRevision": 6
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "at": "2026-09-29T15:03:26.282Z",
+      "revision": "ee3c6ae46e9ca6a7e3b81618b701a89de70ea69ff140e80e733d8990c3435063",
+      "decisions": [
+        {
+          "id": "capture-enemy",
+          "title": "Enemy territory captured",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 3,
+          "locked": true,
+          "files": {
+            "audio/capture-enemy-natural.wav": "0e1efcc93c5853b771fa62b44a4aeb422a2943efead9aa4209b070707cd74104",
+            "audio/capture-enemy-natural.ogg": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+          },
+          "soundRevision": 6
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "at": "2026-09-29T15:20:19.210Z",
+      "revision": "c20d72fe91b6290683a8387343f00ce159dd8bd593029f98b5a8ed8383e98303",
+      "decisions": [
+        {
+          "id": "construction-start",
+          "title": "Construction: work begins",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-start-natural.wav": "e4ff19b6224fa0ebc2ada24d1779aa91b0a7b987764fc827a723b9d5bcf6a91e",
+            "audio/construction-start-natural.ogg": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-city",
+          "title": "City: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-city-natural.wav": "4db46be737942670219a9666087d825231dd2c136117b8a751005502e10de27f",
+            "audio/construction-city-natural.ogg": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-sam",
+          "title": "SAM site: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-sam-natural.wav": "0c0cf6cf41059c53ac1bfd6c8d0cdcddafc4c9d3e1a404772e8d7fa6e1392809",
+            "audio/construction-sam-natural.ogg": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-silo",
+          "title": "Missile silo: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-silo-natural.wav": "dfa749452df10994bfad4363bc87497768f2934baeba37a5ce6493ba87f780d9",
+            "audio/construction-silo-natural.ogg": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-battery",
+          "title": "Coastal battery: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-battery-natural.wav": "3aa2ac344539bcd190dd459588e547b4cf692f75c0bc0636acf948c1dba79e81",
+            "audio/construction-battery-natural.ogg": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-shore",
+          "title": "Shore guns: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-shore-natural.wav": "14a0ccd34ba31773943668474f9d4b2837d07762fe7098f1d180b1cbec2439dc",
+            "audio/construction-shore-natural.ogg": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-flightops",
+          "title": "Flight operations: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-flightops-natural.wav": "8418bea71d8e75f9ffb22a13f413592728e9d93b166488996a89261f9acfe837",
+            "audio/construction-flightops-natural.ogg": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-troopcmd",
+          "title": "Troop command: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-troopcmd-natural.wav": "bd8ed85b48a093a10d660f9b34039a7b10e01026e9fb491b197b3d1db4f97307",
+            "audio/construction-troopcmd-natural.ogg": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-radar",
+          "title": "Radar station: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-radar-natural.wav": "c1019ae5327322c36d5a48ce7a0f94392a57ce05ee71da484238069c3801dac8",
+            "audio/construction-radar-natural.ogg": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+          },
+          "soundRevision": 7
+        },
+        {
+          "id": "construction-lradar",
+          "title": "Long-range radar: complete",
+          "choice": "approve",
+          "preferred": "natural",
+          "note": "",
+          "round": 4,
+          "locked": true,
+          "files": {
+            "audio/construction-lradar-natural.wav": "09b61c5fb0ba3a591a21c5967a8381e98d051f216f46e75735b94b5c2a1e7798",
+            "audio/construction-lradar-natural.ogg": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+          },
+          "soundRevision": 7
+        }
+      ]
+    }
+  ]
+}

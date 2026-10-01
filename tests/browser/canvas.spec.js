@@ -238,6 +238,38 @@ test('real pointer targeting and context interaction use the expected tile', asy
   expect(await page.evaluate(() => window.__STATEFALL_TEST__.snapshot().input.lastCommand.a[0].act)).toBe(expectedAction);
 });
 
+test('Billionaire allied aid sends gold and troops independently', async ({page}) => {
+  await startFixedMatch(page, {seed:'BILLIONAIRE-AID', mode:MODES.find(mode=>mode.key==='billionaire'), controlled:true});
+  await page.evaluate(()=>window.__STATEFALL_TEST__.installLateGameScene());
+  const target=await page.evaluate(()=>window.__STATEFALL_TEST__.prepareAlliedAid());
+  const box=await page.locator('#map').boundingBox();
+  const open=()=>page.mouse.click(box.x+target.x,box.y+target.y,{button:'right'});
+  const balances=()=>page.evaluate(id=>({sender:window.__STATEFALL_TEST__.snapshot().player,recipient:window.__STATEFALL_TEST__.aidBalances(id)}),target.ally);
+  for(const [kind,other,resource] of [['Gold','Troops','gold'],['Troops','Gold','troops']]){
+    await open();
+    const amount=Number(await page.locator('#aid'+kind).inputValue());
+    expect(amount).toBeGreaterThan(1_000_000);
+    // An invalid unused field must not block the selected transfer.
+    await page.locator('#aid'+other).fill('1000000001');
+    const before=await balances();
+    await page.locator(`[data-act="give${kind}"]`).click();
+    await expect(page.locator('#ctx')).toBeHidden();
+    const after=await balances();
+    expect(after.sender[resource]).toBe(before.sender[resource]-amount);
+    expect(after.recipient[resource]).toBe(before.recipient[resource]+amount);
+    const command=await page.evaluate(()=>window.__STATEFALL_TEST__.status().lastCommand);
+    expect(command.a.slice(5)).toEqual(kind==='Gold'?[amount,0]:[0,amount]);
+  }
+  await open();
+  const before=await balances();
+  const commands=await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().input.commands);
+  await page.locator('#aidGold').fill('1000000001');
+  await page.locator('[data-act="giveGold"]').click();
+  await expect(page.locator('#ctx')).toBeVisible();
+  expect(await balances()).toEqual(before);
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().input.commands)).toBe(commands);
+});
+
 test('dense late-game fixture exposes strategic visual layers', async ({page}, testInfo) => {
   test.skip(testInfo.project.name.includes('mobile'), 'full-game evidence follows the desktop-first policy');
   await startFixedMatch(page, {seed: 'PHASEALATEGAME', mode: MODES.find(mode => mode.key === 'fog'), controlled: true});
@@ -349,6 +381,83 @@ test('browser replay payload includes strong final evidence for a short save', a
   expect(payload.final).toMatchObject({tick:25,legacyHash:payload.finalHash,canonical:{version:'statefall-authoritative-state/v1'},commandCount:0,replayCursor:null});
   expect(payload.final.canonical.sha256).toMatch(/^[0-9a-f]{64}$/);
   expect(payload.final.rngDraws).toBeGreaterThan(0);
+});
+
+test('a save from the pause menu resumes with verified final evidence',async({page},testInfo)=>{
+  test.skip(!['chromium-desktop','firefox-desktop','webkit-desktop'].includes(testInfo.project.name));
+  await startFixedMatch(page,{seed:'PAUSEDSAVE',controlled:true});
+  await page.evaluate(()=>window.__STATEFALL_TEST__.advance(59));
+  await page.locator('#pauseBtn').click();
+  await expect(page.locator('#pausePanel')).toBeVisible();
+  await expect(page.locator('#modal')).toBeHidden();
+  const file=await page.evaluate(()=>window.__STATEFALL_TEST__.replayPayload());
+  await page.reload();
+  await page.waitForFunction(()=>window.__STATEFALL_TEST__&&!document.getElementById('bootStatus'));
+  await page.evaluate(file=>window.__STATEFALL_TEST__.loadReplay(file,'resume'),file);
+  await expect(page.locator('#cuPlay')).toBeVisible();
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status())).toMatchObject({tick:59,replay:{mismatch:false,finalVerified:true,verifiedEvidence:true}});
+  await page.locator('#cuPlay').click();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().tick)).toBeGreaterThan(59);
+});
+
+test('tactical pause leaves the map available for pan and zoom',async({page},testInfo)=>{
+  test.skip(testInfo.project.name.includes('mobile'));
+  await startFixedMatch(page,{seed:'TACTICALPAUSE',controlled:true});
+  await page.locator('#pauseBtn').click();
+  await expect(page.locator('#pausePanel')).toBeVisible();
+  await expect(page.locator('#modal')).toBeHidden();
+  const before=await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot());
+  const tick=await page.evaluate(()=>window.__STATEFALL_TEST__.status().tick);
+  const rect=await page.locator('#map').boundingBox();
+  const x=rect.x+rect.width*.6,y=rect.y+rect.height*.6;
+  await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x+70,y+40,{steps:5});await page.mouse.up();
+  await page.mouse.wheel(0,-100);
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().camera)).not.toEqual(before.camera);
+  await page.waitForTimeout(350);
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status().tick)).toBe(tick);
+  await page.locator('#pmRestart').click();
+  await page.locator('#restartNo').click();
+  await expect(page.locator('#pausePanel')).toBeVisible();
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status().paused)).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#pausePanel')).toBeHidden();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().tick)).toBeGreaterThan(tick);
+});
+
+test('tactical pause preserves the paused-orders construction rule',async({page},testInfo)=>{
+  test.skip(testInfo.project.name.includes('mobile'));
+  for(const enabled of [false,true]){
+    await startFixedMatch(page,{seed:'PAUSEBUILD',controlled:true,mode:enabled?{id:'stPauseBuild'}:undefined});
+    await page.evaluate(()=>window.__STATEFALL_TEST__.advance(200));
+    await page.locator('#pauseBtn').click();
+    const target=await page.evaluate(()=>window.__STATEFALL_TEST__.focusTarget('owned',4));
+    const before=await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().player.gold);
+    await page.keyboard.press('f');
+    await page.locator('#map').click({position:{x:target.x,y:target.y}});
+    const after=await page.evaluate(()=>window.__STATEFALL_TEST__.snapshot().player.gold);
+    expect(after).toBeCloseTo(enabled?before-110:before,5);
+    expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status().paused)).toBe(true);
+  }
+});
+
+test('help stops a running match and preserves an already paused match',async({page},testInfo)=>{
+  test.skip(testInfo.project.name.includes('mobile'));
+  await startFixedMatch(page,{seed:'HELPPAUSE'});
+  await page.locator('#pauseBtn').click();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().paused)).toBe(false);
+  await page.locator('#helpBtn2').click();
+  const tick=await page.evaluate(()=>window.__STATEFALL_TEST__.status().tick);
+  await page.getByRole('button',{name:'Systems',exact:true}).click();
+  await page.waitForTimeout(350);
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status())).toMatchObject({tick,paused:true});
+  await page.locator('#helpClose').click();
+  await expect.poll(()=>page.evaluate(()=>window.__STATEFALL_TEST__.status().tick)).toBeGreaterThan(tick);
+  await page.locator('#pauseBtn').click();
+  await page.locator('#helpBtn2').click();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#help')).toBeHidden();
+  await expect(page.locator('#pausePanel')).toBeVisible();
+  expect(await page.evaluate(()=>window.__STATEFALL_TEST__.status().paused)).toBe(true);
 });
 
 test('credits replay reset clears setup scratch before rebuilding the match', async ({page}, testInfo) => {

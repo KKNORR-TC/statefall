@@ -1,0 +1,34 @@
+
+[WebServer] (node:13664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+
+(node:56720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/15] [chromium-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[2/15] [chromium-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[3/15] [chromium-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[4/15] [chromium-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[5/15] [chromium-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+(node:42272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[6/15] [firefox-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[7/15] [firefox-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[8/15] [firefox-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[9/15] [firefox-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[10/15] [firefox-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+(node:60404) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[11/15] [webkit-desktop] › tests\browser\canvas.spec.js:241:1 › Billionaire allied aid sends gold and troops independently
+[12/15] [webkit-desktop] › tests\browser\help-guide.spec.js:5:1 › field guide stays readable on desktop and mobile, with working reference disclosures
+[13/15] [webkit-desktop] › tests\browser\help-guide.spec.js:30:1 › app guide shares current About and resets the reading position on tab changes
+[14/15] [webkit-desktop] › tests\browser\help-roster.spec.js:3:1 › in-game guide loads every current unit portrait and practical usage note
+[15/15] [webkit-desktop] › tests\browser\help-roster.spec.js:21:1 › packaged website guide is self-contained and readable at narrow widths
+  15 passed (49.3s)

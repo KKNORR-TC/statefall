@@ -1,0 +1,359 @@
+{
+  "note": "Original masters remain read-only outside the repository. Tags are drafts for listening review, not approved assignments.",
+  "tracks": [
+    {
+      "id": "1325bd141e85",
+      "file": "Ashes of Victory.wav",
+      "title": "Ashes of Victory",
+      "seconds": 139.03,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 26707998,
+      "sha256": "27ac51ad9c95c0a63700299e7cc3c43d02be5c4d66e9aa6c0de28e7cea2be936",
+      "rmsDb": -14.21,
+      "peakDb": -1.55,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 115,
+        "ending": 119.03
+      },
+      "suggested": [
+        "victory"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "9f284475d72f",
+      "file": "Drift and Divide.wav",
+      "title": "Drift and Divide",
+      "seconds": 204.72,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 39320094,
+      "sha256": "72e17dccf6d3dbd245f8ded3a10aa2e6f4d6a6b3b0f1418937a23ce131122887",
+      "rmsDb": -12.94,
+      "peakDb": -0.7,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 65,
+        "ending": 184.72
+      },
+      "suggested": [
+        "building"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "aa6c0f925c88",
+      "file": "Fallen Banners.wav",
+      "title": "Fallen Banners",
+      "seconds": 240.48,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 46186014,
+      "sha256": "0a7a63450a698574b4c43ee86e76ae1c4f83adbf23ed87d59101b87828210b74",
+      "rmsDb": -13.58,
+      "peakDb": -0.13,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 200,
+        "ending": 220.48
+      },
+      "suggested": [
+        "defeat"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "55c5ac4f5cfb",
+      "file": "Fallen Field.wav",
+      "title": "Fallen Field",
+      "seconds": 119.69,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 22993950,
+      "sha256": "cee1a21320ea08ee9832b51ddd84c127fff24e6fb5d0ff2b1c92e7a4dcae5f11",
+      "rmsDb": -13.79,
+      "peakDb": -1.06,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 55,
+        "ending": 99.69
+      },
+      "suggested": [
+        "defeat"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "ae48f45e837e",
+      "file": "Iron Banner March.wav",
+      "title": "Iron Banner March",
+      "seconds": 158.4,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 30426654,
+      "sha256": "77d8286e2bd13e2bf2976a6714449fb3513602b631adf4abd6c10d072af058f1",
+      "rmsDb": -13.01,
+      "peakDb": -0.87,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 135,
+        "ending": 138.4
+      },
+      "suggested": [
+        "battle",
+        "victory"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "105db81895da",
+      "file": "Iron Coast.wav",
+      "title": "Iron Coast",
+      "seconds": 193.13,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 37094430,
+      "sha256": "a8c769fde1c56080d0f9b24c0de944f47d63b1c5a62570d6f6274cbaaf627369",
+      "rmsDb": -13.32,
+      "peakDb": -1.52,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 125,
+        "ending": 173.13
+      },
+      "suggested": [
+        "building"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "a31ac2d4f53c",
+      "file": "Iron Horizon.wav",
+      "title": "Iron Horizon",
+      "seconds": 179.35,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 34449438,
+      "sha256": "bba002560599c86926965fd2ba122fa8f2ac7a802cc27d99d19c23b12a61dcee",
+      "rmsDb": -13.29,
+      "peakDb": -0.74,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 110,
+        "ending": 159.35
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "9c6aaa97b352",
+      "file": "Iron March.wav",
+      "title": "Iron March",
+      "seconds": 180.77,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 34721310,
+      "sha256": "3a9e0fb30b556fd2a8e93f4a208da02acb75a7bfad7a54b4e269381474364d70",
+      "rmsDb": -14.18,
+      "peakDb": -1.2,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 150,
+        "ending": 160.77
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "55d932c0cc04",
+      "file": "Last Banner Falls.wav",
+      "title": "Last Banner Falls",
+      "seconds": 183.72,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 35288094,
+      "sha256": "383788348ccb52b3ac7a2e34b07d55ef1a87349ac0589bb399972c9c1be547a6",
+      "rmsDb": -12.74,
+      "peakDb": -0.79,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 70,
+        "ending": 163.72
+      },
+      "suggested": [
+        "defeat"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "342198cf7330",
+      "file": "Last Honor Call.wav",
+      "title": "Last Honor Call",
+      "seconds": 199.44,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 38306334,
+      "sha256": "97f3caca93afa9ef479bd23e0c6b6a2ac8b911a25b3bca2ed36871d58a7cbffc",
+      "rmsDb": -13.96,
+      "peakDb": -0.28,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 145,
+        "ending": 179.44
+      },
+      "suggested": [
+        "defeat"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "8cdcf5e0a530",
+      "file": "Salvo.wav",
+      "title": "Salvo",
+      "seconds": 196.13,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 37670430,
+      "sha256": "c479f2bcf707ac8524f85764bdbfb1921bb54d07977935ee73667f914ae98a40",
+      "rmsDb": -12.15,
+      "peakDb": -0.81,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 155,
+        "ending": 176.13
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "9eabe6d66db1",
+      "file": "Seventy-Two Percent.wav",
+      "title": "Seventy-Two Percent",
+      "seconds": 203.83,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 39149598,
+      "sha256": "3d88edd63b323169bc0f91b4831f30f954c75c72251f11c99acfe0f7094f12de",
+      "rmsDb": -13.15,
+      "peakDb": -0.54,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 125,
+        "ending": 183.83
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "fcfb2fd761fb",
+      "file": "Siege Heartbeat (1).wav",
+      "title": "Siege Heartbeat (1)",
+      "seconds": 213.96,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 41094174,
+      "sha256": "8a890981af5e8cfe49680166f3b5b409a89741a67276e384077b983262dfa22a",
+      "rmsDb": -10.19,
+      "peakDb": -0.26,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 190,
+        "ending": 193.96
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "3a7a9d789b4f",
+      "file": "Siege Heartbeat.wav",
+      "title": "Siege Heartbeat",
+      "seconds": 169.13,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 32486430,
+      "sha256": "b7c9fc267dfbe920bfda2d663f1e568ca6822fa70aee620a4fb1a38f4f302064",
+      "rmsDb": -11.51,
+      "peakDb": -0.32,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 105,
+        "ending": 149.13
+      },
+      "suggested": [
+        "battle"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "3d4bb220eb9f",
+      "file": "Siege Map Drift.wav",
+      "title": "Siege Map Drift",
+      "seconds": 183.36,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 35218974,
+      "sha256": "f9df8e7a92bd19c71e6ff39a4aac6dd837efe185ef0b752aab465573fc90dd05",
+      "rmsDb": -13.46,
+      "peakDb": -1.03,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 150,
+        "ending": 163.36
+      },
+      "suggested": [
+        "building"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    },
+    {
+      "id": "626ab7e39343",
+      "file": "Statefall.wav",
+      "title": "Statefall",
+      "seconds": 154.75,
+      "sampleRate": 48000,
+      "channels": 2,
+      "bytes": 29726238,
+      "sha256": "6679e3c3d9ddda9c6959b4694ea0c42d4cb0211ae81aef61e7643e4676990c72",
+      "rmsDb": -13.85,
+      "peakDb": -1.45,
+      "excerpts": {
+        "opening": 0,
+        "quietest": 0,
+        "strongest": 90,
+        "ending": 134.75
+      },
+      "suggested": [
+        "menu",
+        "victory"
+      ],
+      "suggestionBasis": "Provisional title-based suggestion; not an auditory mood assessment."
+    }
+  ]
+}

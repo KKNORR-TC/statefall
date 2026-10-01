@@ -1,3 +1,5 @@
+import {renderHelpGuide} from './help-guide.mjs';
+import {MAX_AID_AMOUNT} from './sim/command-schema.mjs';
 import {paintSiloRocket} from './rendering/classic-silo-runtime.mjs';
 import {SILO_LIFTOFF} from './rendering/silo-flight-path.mjs';
 import {createClassicMotionLayer} from './rendering/classic-motion-layer.mjs';
@@ -10,6 +12,11 @@ import {MAPS,NE_ALIAS} from './config/maps.js';
 import {COUNTRIES,EMBLEMS,EMBLEM_LABEL,drawEmblem,drawFlag} from './config/flags.mjs';
 import {createPlatform} from './integration/platform.js';
 import {createAudioState,saveAudioLevels} from './audio/audio-state.js';
+import {SOUND_ASSETS,SCORE_TRACKS} from './audio/catalog.mjs';
+import {createSamplePlayer} from './audio/sample-player.mjs';
+import {createSituationModel,createTerritoryObserver,battlePerspective} from './audio/situation-model.mjs';
+import {matchHostedScore} from './audio/hosted-score.mjs';
+const audioCreditsURL=new URL('./audio/assets/CREDITS.txt',import.meta.url).href;
 import {STATEFALL_SIGN_KEY} from './config/signing.js';
 import {createEngine} from './sim/engine.mjs';
 import {renderingRuntime} from './rendering/runtime.mjs';
@@ -115,13 +122,14 @@ const urnd=(a,b)=>a+Math.random()*(b-a), upick=a=>a[Math.floor(Math.random()*a.l
 const {fortRange,commandCover,crowded,snapBuild,maxTroops,density,troopGrowth,goldGrowth,areaAt,areaTouching,relation,missileCost,siloReadyIn,silosReady,missilePosition:missilePos,shipPosition:shipXY,subVisibleTo:subSeenBy,visibleAt:visAt}=Q;
 const fortMult=Q.fortMultiplier,structCost=Q.structureCost,gOn=Q.garrisonEnabled,countryByIdx=Q.countryByIndex,cruiseTargets=Q.cruiseTargets,atPeace=Q.atPeace,airfieldsOf=Q.airfields,hangarCount=Q.hangarCount,hangarMax=Q.hangarMax;
 
-// ---------------------------------------------------------------- audio (all sounds synthesized with Web Audio; no files)
+// ---------------------------------------------------------------- approved recorded audio; presentation only
 const AUD=createAudioState(); // levels persist; Music / Ambient / Mute all always start on, off, off
 function audioInit(){
   if(AUD.ctx||!PLATFORM.audioPermission()) return; const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return; const C=new AC(); AUD.ctx=C;
-  AUD.bus.master=C.createGain(); AUD.bus.master.connect(C.destination);
+  AUD.bus.master=C.createGain(); const limiter=C.createDynamicsCompressor(); limiter.threshold.value=-3;limiter.knee.value=0;limiter.ratio.value=20;limiter.attack.value=.003;limiter.release.value=.15;AUD.bus.master.connect(limiter);limiter.connect(C.destination);
   for(const b of ['sfx','alert','amb','music']){ AUD.bus[b]=C.createGain(); AUD.bus[b].connect(AUD.bus.master); }
-  applyVolumes(); startAmbient(); if(!(AUD.menuMute&&!me())) MUS.start(me()?'game':'menu');
+  SAMPLE=createSamplePlayer({context:C,buses:AUD.bus,catalog:SOUND_ASSETS,canPlay:()=>!AUD.vol.mute&&!SAVES.catchup&&!REPLAY.creditsMode&&!document.hidden});
+  applyVolumes(); if(!(AUD.menuMute&&!me())) MUS.start(me()?'game':'menu');
 }
 function applyVolumes(){ if(!AUD.ctx) return; const v=AUD.vol; AUD.bus.master.gain.value=v.mute?0:v.master; AUD.bus.sfx.gain.value=v.sfx; AUD.bus.alert.gain.value=v.alert; AUD.bus.amb.gain.value=v.ambOn?v.amb:0; AUD.bus.music.gain.value=v.musicOn?v.music:0;
   saveAudioLevels(localStorage,v); }
@@ -129,119 +137,121 @@ window.addEventListener('pointerdown',()=>{ audioInit(); if(AUD.ctx&&AUD.ctx.sta
 window.addEventListener('keydown',()=>{ audioInit(); if(AUD.ctx&&AUD.ctx.state==='suspended') AUD.ctx.resume().then(()=>{ const h=document.getElementById('musicHint'); if(h) h.style.display='none'; }); },{passive:true});
 // try to start immediately: browsers allow it when the visitor arrived from our own site, and the first click covers the rest
 window.addEventListener('load',()=>{ try{ audioInit(); const h=document.getElementById('musicHint'); const check=()=>{ if(!AUD.ctx) return; if(AUD.ctx.state==='running'){ if(h) h.style.display='none'; } else { if(h&&AUD.vol.musicOn) h.style.display=''; AUD.ctx.resume().catch(()=>{}); } }; check(); setTimeout(check,800); AUD.ctx.onstatechange=check; }catch(e){} });
-let SND_MULT=1; // set per call by snd(): importance tier × zoom × ducking
-function tone(o){ // {f, f2, dur, type, g, bus, a, when}
-  if(!AUD.ctx) return; const C=AUD.ctx, t=C.currentTime+(o.when||0), osc=C.createOscillator(), g=C.createGain();
-  osc.type=o.type||'sine'; osc.frequency.setValueAtTime(o.f,t); if(o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2,t+o.dur);
-  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002,(o.g||0.2)*SND_MULT),t+(o.a||0.01)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.dur);
-  osc.connect(g); g.connect(AUD.bus[o.bus||'sfx']); osc.start(t); osc.stop(t+o.dur+0.05);
-}
-let noiseBuf=null;
-function getNoise(){ const C=AUD.ctx; if(!noiseBuf){ noiseBuf=C.createBuffer(1,C.sampleRate*2,C.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; } return noiseBuf; }
-function noise(o){ // {dur, g, bus, lp, lp2, hp, a, when, q}
-  if(!AUD.ctx) return; const C=AUD.ctx;
-  const t=C.currentTime+(o.when||0), src=C.createBufferSource(); src.buffer=getNoise(); src.loop=true;
-  let node=src; if(o.lp){ const f=C.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(o.lp,t); if(o.lp2) f.frequency.exponentialRampToValueAtTime(o.lp2,t+o.dur); f.Q.value=o.q||0.7; node.connect(f); node=f; }
-  if(o.bp){ const f=C.createBiquadFilter(); f.type='bandpass'; f.frequency.setValueAtTime(o.bp,t); if(o.bp2){ if(o.bp3){ f.frequency.exponentialRampToValueAtTime(o.bp2,t+o.dur*0.45); f.frequency.exponentialRampToValueAtTime(o.bp3,t+o.dur); } else f.frequency.exponentialRampToValueAtTime(o.bp2,t+o.dur); } f.Q.value=o.q||1.2; node.connect(f); node=f; }
-  if(o.hp){ const f=C.createBiquadFilter(); f.type='highpass'; f.frequency.value=o.hp; node.connect(f); node=f; }
-  const g=C.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(Math.max(0.0002,SND_MULT*(o.g||0.2)),t+(o.a||0.01)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.dur);
-  node.connect(g); g.connect(AUD.bus[o.bus||'sfx']); src.start(t); src.stop(t+o.dur+0.05);
-}
+let SND_MULT=1, SAMPLE=null;
+const situation=createSituationModel(),territoryAudio=createTerritoryObserver();
+let audioRole='menu',audioResult=null,battleMode=null,battleNext={},battleCount=0;
 function onScreen(x,y){ if(x==null) return true; const px=cam.x+x*cam.s, py=cam.y+y*cam.s; return px>-60&&py>-60&&px<viewWidth()+60&&py<viewHeight()+60; }
 let presentationAudioCalls=0;
+const effectNames={attack:'attack-start',invaded:'incoming-warning',missile:'missile-launch',missile_in:'missile-launch',missile_other:'missile-launch',interceptor:'sam-launch',intercept:'sam-intercept',impact:'nuclear-detonation',impact_other:'nuclear-detonation',siren:'incoming-warning',shell:'artillery',battery:'artillery',bertha:'artillery',shoreguns:'artillery',shellhit:'shell-impact',bomb:'shell-impact',sunk:'ship-sinking',foghorn:'construction-port',jet:'construction-airfield',torpedo:'missile-launch',aam:'sam-launch',dogfight:'layer-machineguns',pushback:'attack-stalled'};
 function snd(name,x,y){
   presentationAudioCalls++;
-  if(!AUD.ctx||AUD.vol.mute||SAVES.catchup||REPLAY.creditsMode) return;
-  const TIER={siren:'A',taps:'A',fanfare:'A',invaded:'A',impact:'A',betray:'A',request:'A',win:'A',lose:'A',pushback:'A',
-    tapsq:'D',fanfareq:'D',missile_in:'A',missile_other:'D',impact_other:'C',
-    shell:'C',shellhit:'C',sunk:'C',intercept:'C',interceptor:'C',shoreguns:'C',battery:'C',bertha:'C',bomb:'C',dogfight:'C',torpedo:'C',aam:'C'};
-  const tier=TIER[name]||'B'; const now=performance.now();
-  if(tier==='C'){ if(!onScreen(x,y)) return; AUD.cRecent=(AUD.cRecent||[]).filter(t=>now-t<1000); AUD.cRecent.push(now); const zoomK=Math.max(0.35,Math.min(1,cam.s/1.2)); const duck=1/(1+0.18*(AUD.cRecent.length-1)); SND_MULT=zoomK*duck; }
-  else if(tier==='B'){ SND_MULT=(x!=null&&!onScreen(x,y))?0.6:1; }
-  else if(tier==='D'){ SND_MULT=0.35; }
-  else SND_MULT=1; const thr={siren:9000,taps:3000,tapsq:3000,fanfare:3000,fanfareq:3000,invaded:4000,shell:250,shellhit:250,sunk:1200,shoreguns:420,battery:400,bertha:600,bomb:250,dogfight:400,jet:800,torpedo:500,attack:300,build:150,error:300,interceptor:300,coin:900,cash:250,intercept:400}[name]; if(thr&&now-(AUD.last[name]||0)<thr) return; AUD.last[name]=now;
-  switch(name){
-    case 'attack': noise({dur:.35,g:.22,bp:180,bp2:90,q:1.5}); tone({f:64,f2:38,dur:.32,g:.28,a:.005}); noise({dur:.08,g:.12,hp:2500,when:.02}); break; // drum hit and snap
-    case 'invaded': for(const w of [0,.45]){ tone({f:330,f2:520,dur:.22,type:'triangle',g:.07,a:.03,bus:'alert',when:w}); tone({f:335,f2:525,dur:.22,type:'triangle',g:.04,a:.03,bus:'alert',when:w}); } break; // rising klaxon, twice
-    case 'missile': case 'missile_in': case 'missile_other': noise({dur:1.3,g:.4,bp:250,bp2:2600,bp3:600,q:1.8,a:.12}); tone({f:40,f2:75,dur:1.1,g:.16,a:.15}); noise({dur:.5,g:.15,lp:300,a:.02}); break; // whoosh: bandpass sweeps up through the mids and falls away
-    case 'interceptor': noise({dur:.05,g:.09,hp:2500,lp:7000}); tone({f:1800,f2:900,dur:.05,g:.04,a:.003}); break; // soft launch click
-    case 'impact': case 'impact_other': // deep detonation: sub-bass drop, long low rumble, a muffled crack, and a slow low-frequency tail
-      tone({f:42,f2:18,dur:3.2,g:.6,a:.004}); tone({f:64,f2:26,dur:2.2,g:.35,a:.004,type:'triangle'});
-      noise({dur:3.8,g:.6,lp:90,a:.02}); noise({dur:2.6,g:.35,lp:220,lp2:60,a:.01,q:1.2});
-      noise({dur:.5,g:.22,lp:700,lp2:120,a:.005}); noise({dur:4.5,g:.25,lp:55,a:.4,when:.3});
-      break;
-    case 'intercept': noise({dur:.09,g:.14,hp:1800,lp:6000}); tone({f:400,f2:180,dur:.12,g:.07,a:.003}); break; // short pop
-    case 'torpedo': noise({dur:.5,g:.12,bp:300,bp2:900,q:2,a:.05}); tone({f:90,f2:70,dur:.4,g:.05,a:.02}); break;
-    case 'jet': noise({dur:.9,g:.16,bp:900,bp2:3200,bp3:1400,q:1.4,a:.15}); tone({f:120,f2:60,dur:.8,g:.05,a:.1}); break;
-    case 'bomb': noise({dur:.5,g:.22,lp:220,lp2:70,a:.005}); tone({f:70,f2:35,dur:.45,g:.2,a:.003}); break;
-    case 'dogfight': noise({dur:.4,g:.12,bp:1200,bp2:4200,bp3:2000,q:2,a:.02}); break;
-    case 'battery': tone({f:70,f2:32,dur:.6,g:.35,a:.004}); noise({dur:.5,g:.3,lp:260,lp2:70,a:.005}); noise({dur:1.4,g:.12,bp:2500,bp2:600,q:3,a:.05,when:.1}); break; // bark and a long whistle
-    case 'shoreguns': { const C=AUD.ctx, t=C.currentTime; const o=C.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(140,t); o.frequency.exponentialRampToValueAtTime(115,t+.45);
-      const f=C.createBiquadFilter(); f.type='lowpass'; f.frequency.value=900; f.Q.value=2; const g=C.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.11,t+.02); g.gain.setValueAtTime(0.11,t+.38); g.gain.exponentialRampToValueAtTime(0.0001,t+.48);
-      const lfo=C.createOscillator(); lfo.type='square'; lfo.frequency.value=16; const lg=C.createGain(); lg.gain.value=0.5; const bias=C.createConstantSource(); bias.offset.value=0.5; // gate: 0..1 square wave
-      const gate=C.createGain(); gate.gain.value=0; lfo.connect(lg); lg.connect(gate.gain); bias.connect(gate.gain);
-      o.connect(f); f.connect(gate); gate.connect(g); g.connect(AUD.bus.sfx); o.start(t); lfo.start(t); bias.start(t); o.stop(t+.5); lfo.stop(t+.5); bias.stop(t+.5);
-      noise({dur:.45,g:.05,bp:2200,q:1.5,a:.02}); break; } // rotary-cannon brrrt: sawtooth gated at 16 Hz
-    case 'bertha': tone({f:38,f2:16,dur:2.2,g:.55,a:.004}); noise({dur:1.6,g:.45,lp:110,a:.01}); noise({dur:2.2,g:.14,bp:3000,bp2:400,q:3,a:.1,when:.15}); break; // the deepest gun, then a falling whistle
-    case 'shell': noise({dur:.35,g:.08,bp:600,bp2:2800,bp3:900,q:2,a:.02}); break;
-    case 'shellhit': noise({dur:.28,g:.16,bp:1200,bp2:150,q:1}); tone({f:90,f2:45,dur:.25,g:.16,a:.003}); break;
-    case 'sunk': noise({dur:.9,g:.18,bp:1400,bp2:150,q:.9,a:.02}); tone({f:80,f2:30,dur:.6,g:.16}); for(let i=0;i<6;i++) tone({f:600+Math.random()*900,f2:900+Math.random()*900,dur:.06,g:.04,a:.01,when:.25+Math.random()*.5}); break; // splash and bubbles
-    case 'foghorn': tone({f:110,dur:.9,type:'triangle',g:.07,a:.15}); tone({f:165,dur:.9,g:.03,a:.2}); tone({f:220,dur:.8,g:.015,a:.2}); noise({dur:.9,g:.025,lp:350,a:.2}); break;
-    case 'build': for(const w of [0,.14]){ noise({dur:.06,g:.16,bp:900,bp2:300,q:1,when:w}); tone({f:180,f2:120,dur:.1,g:.14,a:.003,when:w}); } break; // two hammer knocks
-    case 'city': noise({dur:.9,g:.09,lp:1600,hp:250,a:.35}); [262,330,392].forEach((f,i)=>tone({f,dur:.9,g:.035,a:.25,when:.05+i*.04})); break;
-    case 'error': tone({f:150,dur:.1,g:.09,a:.01}); noise({dur:.06,g:.04,lp:600}); break;
-    case 'cash': noise({dur:.05,g:.18,hp:3500}); [2093,2637].forEach((f,i)=>{ tone({f,dur:.55,g:.09,a:.004,when:.06+i*.05}); tone({f:f*1.01,dur:.45,g:.04,a:.004,when:.06+i*.05}); }); tone({f:1568,dur:.35,g:.05,a:.004,when:.16}); break; // cha-ching: register snap then two bright bell tones
-    case 'coin': tone({f:2637,dur:.22,g:.025,a:.003}); tone({f:3136,dur:.18,g:.018,a:.003,when:.06}); break; // small trade arrival
-    case 'unified': [523,659,784,1047].forEach((f,i)=>{ tone({f,dur:2.2,g:.06,a:.02,when:i*.09}); tone({f:f*1.003,dur:2.2,g:.03,a:.02,when:i*.09}); }); break; // bell chord
-    case 'fanfare': case 'fanfareq': { const q=1; /* herald trumpets: tonic call, dotted answer, held cadence on the fifth and octave */
-      const seq=[[392,0,.22],[392,.25,.1],[392,.37,.22],[523,.62,.35],[392,1.0,.12],[523,1.15,.12],[659,1.3,.5],[784,1.85,1.1]];
-      for(const [f,when,dur] of seq){ tone({f,f2:f,dur:dur+.08,g:.13*q,a:.015,when,type:'sawtooth'}); tone({f,f2:f,dur:dur+.08,g:.06*q,a:.02,when,type:'square'}); tone({f:f*2,f2:f*2,dur:dur,g:.025*q,a:.02,when,type:'sawtooth'}); }
-      tone({f:587,f2:587,dur:1.2,g:.08*q,a:.05,when:1.85,type:'sawtooth'}); tone({f:392,f2:392,dur:1.2,g:.07*q,a:.05,when:1.85,type:'sawtooth'}); noise({dur:.08,g:.05*q,bp:1800,q:2,when:1.85}); break; }
-    case 'siren': { for(let i=0;i<4;i++){ tone({f:420,f2:720,dur:1.1,g:.11,a:.4,when:i*2.2,type:'sawtooth',bus:'alert'}); tone({f:720,f2:420,dur:1.1,g:.11,a:.05,when:i*2.2+1.1,type:'sawtooth',bus:'alert'}); tone({f:422,f2:722,dur:1.1,g:.05,a:.4,when:i*2.2,type:'square',bus:'alert'}); tone({f:722,f2:422,dur:1.1,g:.05,a:.05,when:i*2.2+1.1,type:'square',bus:'alert'}); } break; }
-    case 'taps': case 'tapsq': { const q=1; const notes=[[392,0,.35],[392,.4,.15],[523,.55,.7],[392,1.35,.35],[523,1.75,.15],[659,1.9,.9]]; for(const [f,when,dur] of notes){ tone({f,f2:f,dur:dur+.15,g:.16*q,a:.04,when,type:'triangle'}); tone({f:f*2,f2:f*2,dur:dur+.1,g:.03*q,a:.05,when,type:'sine'}); } break; }
-    case 'conquered': tone({f:110,f2:40,dur:.5,g:.4,a:.003}); noise({dur:.4,g:.22,lp:500,lp2:100}); [196,247,294].forEach((f,i)=>tone({f,dur:.9,type:'triangle',g:.05,a:.12,when:.08+i*.03})); break; // timpani and a short brass swell
-    case 'pushback': for(const w of [0,.3,.6]){ tone({f:290,f2:260,dur:.2,type:'triangle',g:.08,a:.02,bus:'alert',when:w}); } break;
-    case 'victory': if(JUKE.loaded&&JUKE.stings.victory){ break; } [262,330,392,523,659].forEach((f,i)=>{ tone({f,dur:3,g:.07,a:.5,when:i*.22}); tone({f:f*1.004,dur:3,g:.03,a:.5,when:i*.22}); }); noise({dur:2.5,g:.05,lp:2000,hp:400,a:1}); break;
-    case 'defeat': if(JUKE.loaded&&JUKE.stings.defeat){ break; } [220,196,165,131,110].forEach((f,i)=>tone({f,dur:2,g:.07,a:.4,when:i*.5})); tone({f:55,dur:4,g:.08,a:1.5,when:1}); break;
-  }
+  if(!SAMPLE||AUD.vol.mute||SAVES.catchup||REPLAY.creditsMode)return;
+  if(name==='construction-instant'){SAMPLE.play('construction-start',{gain:.55});SAMPLE.play('construction-'+x,{delay:1,gain:.7});return;}
+  if(name==='elimination'){SAMPLE.milestone('enemy-eliminated');return;}
+  const id=effectNames[name]||(SOUND_ASSETS[name]?name:null);if(!id)return;
+  const distant=['missile_other','impact_other','shell','shellhit','sunk','intercept','interceptor','shoreguns','battery','bertha','bomb','dogfight','torpedo','aam','jet'].includes(name);
+  if(distant&&(!Number.isFinite(x)||!Number.isFinite(y)||!onScreen(x,y)||!visAt(x,y)))return;
+  SND_MULT=distant?Math.max(.2,Math.min(.65,cam.s/2)):1;
+  const alert=['invaded','siren'].includes(name);
+  const throttle=alert?9:name==='attack'? .3:id.startsWith('construction-')?.12:id==='artillery'?.65:id==='nuclear-detonation'?1:.35;
+  SAMPLE.play(id,{gain:(id==='layer-machineguns'?.08:.7)*SND_MULT,bus:alert?'alert':'sfx',throttle,lowpass:distant?5000:16000});
+  if(name==='missile_in')SAMPLE.play('incoming-warning',{bus:'alert',gain:.65,throttle:9});
 }
-// ---------------------------------------------------------------- music: a written menu theme and a generative in-game score
+function observeTerritoryAudio(){
+  if(!me()){territoryAudio.reset();return;}
+  const snapshot=regions.filter(r=>r.size>=REGION_MIN).map(r=>({id:r.id,held:me().held.has(r.id),enemy:players.some(p=>p.id!==me().id&&p.kind!=='neutral'&&renderState.map.regCount[r.id*mapState.NP+p.id]>0)}));
+  for(const cue of territoryAudio.update(snapshot,{silent:SAVES.catchup||REPLAY.creditsMode||!SAMPLE}))SAMPLE?.milestone(cue);
+}
+function resetAudioPresentation(){SAMPLE?.stop();territoryAudio.reset();situation.reset();audioRole='menu';audioResult=null;battleMode=null;battleNext={};}
+function updateBattleAudio(){
+  const now=performance.now(),playing=!!me();
+  if(!lifecycleState.over&&!ROLL.on)audioResult=null;
+  const quiet=!playing||lifecycleState.paused||lifecycleState.over||SAVES.catchup||REPLAY.creditsMode||ROLL.on||document.hidden||AUD.vol.mute;
+  const mode=quiet||!SAMPLE?null:battlePerspective(attacks,me().id,t=>onScreen(t%W,Math.floor(t/W))&&visAt(t%W,Math.floor(t/W)));
+  if(mode!==battleMode){SAMPLE?.stop(true);battleMode=mode;battleNext={machineguns:now+200,tracks:now+350,artillery:now+2800};battleCount=0;}
+  if(mode&&AUD.vol.ambOn){
+    const presets={machineguns:{gain:.12,interval:[1700,2600,1900,3200,2100]},tracks:{gain:.52*.65,interval:[9300,10400]},artillery:{gain:.58,interval:[6100,8300,7400]}};
+    for(const [layer,p] of Object.entries(presets)){if(now<battleNext[layer])continue;
+      SAMPLE.play('layer-'+layer,{gain:p.gain*(mode==='bots'?.22:.7),bus:'amb',battle:true,lowpass:mode==='bots'?1800:11000,pan:mode==='bots'?.35:(battleCount%2?.16:-.16),rate:layer==='machineguns'?[1,.94,1.07][battleCount%3]:1});
+      battleNext[layer]=now+p.interval[battleCount%p.interval.length];battleCount++;
+    }
+  }
+  const engaged=!quiet&&attacks.some(a=>!a.dead&&(a.owner===me().id||a.target===me().id));
+  const critical=!quiet&&missiles.some(m=>!m.done&&(m.owner===me().id||owner[m.t]===me().id));
+  const role=situation.update({now,playing,battle:engaged,critical,result:audioResult,paused:quiet});
+  if(role!==audioRole){audioRole=role;if(JUKE.source==='situation'&&!ROLL.on&&!CUSTOM.open)jukeStart(playing?'game':'menu');jukeRender();}
+}
+
 // ---------------------------------------------------------------- jukebox: site-hosted music library with a Red Alert style player
-const JUKE={seq:0,list:{menu:[],game:[]},stings:{},ctx:'menu',cur:null,src:null,gain:null,mode:'order',sel:new Set(),bufs:{},loaded:false,startedAt:0,dur:0,paused:false,hist:[]};
-const BUILTIN={id:'builtin',title:'Dynamic score (built-in)'};
-function jukePrefs(){ try{ const p=JSON.parse(localStorage.getItem('statefall-juke')||'{}'); if(p.mode) JUKE.mode=p.mode; if(Array.isArray(p.sel)) JUKE.sel=new Set(p.sel); JUKE.known=new Set(Array.isArray(p.known)?p.known:[]); }catch(e){} }
-function jukeSave(){ try{ localStorage.setItem('statefall-juke',JSON.stringify({mode:JUKE.mode,sel:[...JUKE.sel],known:[...(JUKE.known||[])]})); }catch(e){} }
-async function jukeLoad(){ if(!WP||!WP.playlist) return; try{ const r=await fetch(WP.playlist,{credentials:'same-origin'}); const j=await r.json(); JUKE.list.menu=j.menu||[]; JUKE.list.game=j.game||[]; JUKE.stings=j.stings||{}; JUKE.loaded=true; jukePrefs(); JUKE.known=JUKE.known||new Set(); let changed=false; for(const t of [...JUKE.list.menu,...JUKE.list.game]){ if(!JUKE.known.has(t.id)){ JUKE.known.add(t.id); JUKE.sel.add(t.id); changed=true; } } // tracks added to the library since the last visit join the rotation automatically
-    if(!JUKE.sel.size){ for(const t of [...JUKE.list.menu,...JUKE.list.game]) JUKE.sel.add(t.id); if(!JUKE.list.menu.length&&!JUKE.list.game.length) JUKE.sel.add('builtin'); changed=true; } if(changed) jukeSave(); jukeRender(); JUKE.ctx=me()?'game':'menu'; if(AUD.ctx&&AUD.vol.musicOn&&!ROLL.on&&!(AUD.menuMute&&!me())) jukeStart(JUKE.ctx); }catch(e){ console.warn('[statefall] playlist unavailable',e); } }
-function jukeTracks(ctx){ const real=JUKE.list[ctx]||[]; return real.length?real:[BUILTIN]; }
-function jukeQueue(ctx){ const all=jukeTracks(ctx); const q=all.filter(t=>JUKE.sel.has(t.id)); return q.length?q:(all.length&&all[0].id!=='builtin'?[all[0]]:all); }
-async function jukeBuf(url){ if(JUKE.bufs[url]) return JUKE.bufs[url]; const r=await fetch(url,{credentials:'same-origin'}); const ab=await r.arrayBuffer(); const b=await AUD.ctx.decodeAudioData(ab); JUKE.bufs[url]=b; return b; }
-function jukeStopSrc(fade=1.2){ if(JUKE.src){ const s=JUKE.src, g=JUKE.gain, t=AUD.ctx.currentTime; try{ g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(0.0001,t+fade); s.stop(t+fade+0.05); }catch(e){} JUKE.src=null; JUKE.gain=null; } }
-async function jukePlay(track,ctx){ if(!AUD.ctx) return; const seq=++JUKE.seq; JUKE.cur=track; JUKE.paused=false; jukeRender();
-  if(track.id==='builtin'){ jukeStopSrc(); MUS._start(ctx); JUKE.startedAt=AUD.ctx.currentTime; JUKE.dur=240; if(JUKE.turn) clearTimeout(JUKE.turn); if(JUKE.mode!=='one'&&jukeQueue(ctx).length>1) JUKE.turn=setTimeout(()=>{ if(JUKE.cur===track&&!JUKE.paused) jukeNext(); },240000); return; }
-  MUS.stop(); jukeStopSrc(); if(JUKE.turn){ clearTimeout(JUKE.turn); JUKE.turn=null; }
-  let buf; try{ buf=await jukeBuf(track.url); }catch(e){ console.warn('[statefall] track failed',track.title,e); return jukeNext(); }
-  if(JUKE.cur!==track||JUKE.seq!==seq) return; // superseded while loading
-  jukeStopSrc();
-  if(me()&&!ROLL.on&&!CUSTOM.previewing&&JUKE.lastAnnounced!==track.id){ JUKE.lastAnnounced=track.id; songBanner=({title:track.title,age:0,life:70}); }
-  const src=AUD.ctx.createBufferSource(); src.buffer=buf; const g=AUD.ctx.createGain(); const t=AUD.ctx.currentTime; g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(1,t+1.5); src.connect(g); g.connect(AUD.bus.music);
-  src.loop=JUKE.mode==='one'&&!JUKE.hold; JUKE.src=src; JUKE.gain=g; JUKE.startedAt=t; JUKE.dur=buf.duration; src.onended=()=>{ if(JUKE.src!==src||JUKE.paused||JUKE.hold) return; if(JUKE.mode==='one'){ jukePlay(track,JUKE.ctx); } else jukeNext(1); }; src.start(t); }
-function jukeStart(ctx){ const same=JUKE.ctx===ctx; JUKE.ctx=ctx; const q=jukeQueue(ctx); if(!q.length) return; let t=q[0]; if(JUKE.mode==='shuffle') t=upick(q); else if(same&&JUKE.cur&&q.includes(JUKE.cur)) t=JUKE.cur; if(JUKE.cur===t&&JUKE.src&&same) return; jukePlay(t,ctx); }
-function jukeNext(dir=1){ const q=jukeQueue(JUKE.ctx); if(!q.length) return; let i=q.indexOf(JUKE.cur); let t; if(JUKE.mode==='shuffle'&&q.length>1){ do{ t=upick(q); }while(t===JUKE.cur); } else t=q[((i<0?0:i)+dir+q.length)%q.length]; jukePlay(t,JUKE.ctx); }
-function jukePause(){ if(!AUD.ctx) return; if(JUKE.paused){ JUKE.paused=false; if(JUKE.cur) jukePlay(JUKE.cur,JUKE.ctx); else jukeStart(JUKE.ctx); } else { JUKE.paused=true; jukeStopSrc(0.3); MUS.stop(); } jukeRender(); }
-function jukeStingPick(kind){ const v=JUKE.stings&&JUKE.stings[kind]; if(!v) return null; return Array.isArray(v)?(v.length?upick(v):null):v; }
-async function jukeSting(kind){ const st=jukeStingPick(kind); if(!st||!AUD.ctx) return false; try{ const buf=await jukeBuf(st.url); const t=AUD.ctx.currentTime; if(JUKE.gain){ JUKE.gain.gain.setValueAtTime(JUKE.gain.gain.value,t); JUKE.gain.gain.linearRampToValueAtTime(0.15,t+0.4); JUKE.gain.gain.setValueAtTime(0.15,t+buf.duration-0.5); JUKE.gain.gain.linearRampToValueAtTime(1,t+buf.duration+1); } const s=AUD.ctx.createBufferSource(); s.buffer=buf; s.connect(AUD.bus.music); s.start(t); return true; }catch(e){ return false; } }
+const JUKE={seq:0,list:{menu:[],game:[]},stings:{},ctx:'menu',cur:null,src:null,gain:null,mode:'order',source:'situation',sel:new Set(),known:new Set(),bufs:new Map(),failed:new Set(),loaded:false,startedAt:0,dur:0,paused:false,hist:[]};
+function jukePrefs(){try{const p=JSON.parse(localStorage.getItem('statefall-juke')||'{}');if(['order','shuffle','one'].includes(p.mode))JUKE.mode=p.mode;if(p.source==='radio')JUKE.source='radio';if(Array.isArray(p.sel))JUKE.sel=new Set(p.sel);JUKE.known=new Set(Array.isArray(p.known)?p.known:[]);}catch{}}
+function jukeSave(){try{localStorage.setItem('statefall-juke',JSON.stringify({mode:JUKE.mode,source:JUKE.source,sel:[...JUKE.sel],known:[...JUKE.known]}));}catch{}}
+function jukeInstall(menu,game,stings={}){
+  JUKE.list={menu,game};JUKE.stings=stings;JUKE.loaded=true;
+  for(const t of [...menu,...game])if(!JUKE.known.has(t.id)){JUKE.known.add(t.id);JUKE.sel.add(t.id);}
+  jukeSave();jukeRender();if(AUD.ctx&&!ROLL.on)jukeStart(me()?'game':'menu');
+}
+async function jukeLoad(){
+  jukePrefs();JUKE.score=SCORE_TRACKS;const menu=SCORE_TRACKS.filter(t=>t.roles.includes('menu')),game=[...SCORE_TRACKS];jukeInstall(menu,game);
+  if(!WP?.playlist)return;
+  try{const r=await fetch(WP.playlist,{credentials:'same-origin'});if(!r.ok)throw Error(r.status);const j=await r.json();
+    JUKE.score=matchHostedScore(SCORE_TRACKS,j);
+    const merge=(local,hosted)=>[...local,...(Array.isArray(hosted)?hosted:[]).filter(t=>t?.url&&t.id&&t.title&&!local.some(v=>v.id===t.id||v.title.toLowerCase()===t.title.toLowerCase()))];
+    jukeInstall(merge(JUKE.score.filter(t=>t.roles.includes('menu')),j.menu),merge(JUKE.score,j.game),j.stings||{});
+  }catch(e){console.warn('[statefall] hosted playlist unavailable; original score remains available',e);}
+}
+function jukeTracks(ctx){return JUKE.list[ctx]||[];}
+function jukeQueue(ctx){
+  const all=JUKE.source==='situation'?(JUKE.score||SCORE_TRACKS).filter(t=>t.roles.includes(ctx==='menu'?'menu':audioRole)):jukeTracks(ctx).filter(t=>JUKE.sel.has(t.id));
+  return all.filter(t=>!JUKE.failed.has(t.url));
+}
+async function jukeBuf(url){
+  if(JUKE.bufs.has(url)){const b=JUKE.bufs.get(url);JUKE.bufs.delete(url);JUKE.bufs.set(url,b);return b;}
+  const pending=(async()=>{const r=await fetch(url,{credentials:'same-origin'});if(!r.ok)throw Error('Music '+r.status);return AUD.ctx.decodeAudioData(await r.arrayBuffer());})();
+  JUKE.bufs.set(url,pending);while(JUKE.bufs.size>3)JUKE.bufs.delete(JUKE.bufs.keys().next().value);
+  try{return await pending;}catch(e){JUKE.bufs.delete(url);throw e;}
+}
+function jukeStopSrc(fade=1.2,invalidate=true){
+  if(invalidate)JUKE.seq++;
+  if(JUKE.src){const s=JUKE.src,g=JUKE.gain,t=AUD.ctx.currentTime;try{g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+fade);s.stop(t+fade+.05);}catch{}JUKE.src=null;JUKE.gain=null;}
+}
+async function jukePlay(track,ctx){
+  if(!AUD.ctx||!track?.url||!AUD.vol.musicOn||AUD.vol.mute||!AUD.vol.master||!AUD.vol.music||JUKE.paused||(AUD.menuMute&&ctx==='menu'))return;
+  const seq=++JUKE.seq;JUKE.cur=track;JUKE.ctx=ctx;MUS.mode=ctx;jukeRender();
+  let buf;try{try{buf=await jukeBuf(track.url);}catch(e){if(!track.fallbackUrl||seq!==JUKE.seq)throw e;buf=await jukeBuf(track.fallbackUrl);}}catch(e){
+    if(seq!==JUKE.seq)return;JUKE.failed.add(track.url);console.warn('[statefall] track unavailable',track.title,e);
+    const next=jukeQueue(ctx)[0];if(next)return jukePlay(next,ctx);jukeStopSrc();return;
+  }
+  if(seq!==JUKE.seq||JUKE.paused||!AUD.vol.musicOn||AUD.vol.mute)return;
+  jukeStopSrc(2,false);
+  if(me()&&!ROLL.on&&!CUSTOM.previewing&&JUKE.lastAnnounced!==track.id){JUKE.lastAnnounced=track.id;songBanner={title:track.title,age:0,life:70};}
+  const src=AUD.ctx.createBufferSource(),g=AUD.ctx.createGain(),t=AUD.ctx.currentTime;src.buffer=buf;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(1,t+2);src.connect(g);g.connect(SAMPLE.musicInput);
+  src.loop=JUKE.source==='radio'&&JUKE.mode==='one'&&!JUKE.hold;JUKE.src=src;JUKE.gain=g;JUKE.startedAt=t;JUKE.dur=buf.duration;
+  src.onended=()=>{src.disconnect();g.disconnect();if(JUKE.src!==src||JUKE.paused)return;JUKE.src=null;JUKE.gain=null;if(!JUKE.hold)jukeNext(1);};src.start(t);jukeRender();
+}
+function jukeStart(ctx){
+  JUKE.ctx=ctx;if(JUKE.paused)return;const q=jukeQueue(ctx);if(!q.length){jukeStopSrc();return;}
+  if(JUKE.cur&&q.includes(JUKE.cur)&&JUKE.src)return;
+  const t=JUKE.mode==='shuffle'||JUKE.source==='situation'?upick(q):q[0];jukePlay(t,ctx);
+}
+function jukeNext(dir=1){const q=jukeQueue(JUKE.ctx);if(!q.length){jukeStopSrc();return;}const i=q.indexOf(JUKE.cur);const others=q.filter(t=>t!==JUKE.cur);const t=(JUKE.mode==='shuffle'||JUKE.source==='situation')&&others.length?upick(others):q[((i<0?-1:i)+dir+q.length)%q.length];jukePlay(t,JUKE.ctx);}
+function jukePause(){if(!AUD.ctx)return;JUKE.paused=!JUKE.paused;if(JUKE.paused)jukeStopSrc(.3);else jukeStart(JUKE.ctx);jukeRender();}
+function jukeStingPick(kind){const local=(JUKE.score||SCORE_TRACKS).filter(t=>t.roles.includes(kind));if(local.length)return upick(local);const v=JUKE.stings?.[kind];return Array.isArray(v)?(v.length?upick(v):null):v||null;}
+async function jukeSting(kind){const st=jukeStingPick(kind);if(!st||!AUD.ctx||!AUD.vol.musicOn||AUD.vol.mute||JUKE.paused)return false;await jukePlay(st,JUKE.ctx);return true;}
+function setMusicSource(source){JUKE.source=source;if(JUKE.src)JUKE.src.loop=source==='radio'&&JUKE.mode==='one'&&!JUKE.hold;jukeSave();jukeStart(me()?'game':'menu');jukeRender();}
+const musicText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function jukeRender(){ const box=$('jukeBox'); if(!box) return; { const mp=$('miniPlayer'); if(mp){ mp.style.display=(JUKE.loaded&&me())?'':'none'; const now=$('mpNow'); if(now){ const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); now.textContent=(JUKE.paused?'▮▮ ':'♪ ')+(JUKE.cur?JUKE.cur.title:'—')+(JUKE.dur&&JUKE.src?' · '+fm(el)+' / '+fm(JUKE.dur):''); } } } if(!JUKE.loaded){ box.style.display='none'; return; } box.style.display='';
-  const q=jukeTracks(JUKE.ctx); const now=JUKE.cur?JUKE.cur.title:'—'; const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
-  $('jukeNow').innerHTML=`<b>${JUKE.paused?'▮▮ ':''}${now}</b>${JUKE.dur&&(JUKE.src||(JUKE.cur&&JUKE.cur.id==='builtin'))?` <span class="muted">${fmt(el)} / ${fmt(JUKE.dur)}</span>`:''}`;
+  const q=jukeTracks(JUKE.ctx); const now=musicText(JUKE.cur?JUKE.cur.title:'—'); const el=JUKE.src&&AUD.ctx?Math.max(0,AUD.ctx.currentTime-JUKE.startedAt):0; const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
+  $('jukeNow').innerHTML=`<b>${JUKE.paused?'▮▮ ':''}${now}</b>${JUKE.dur&&JUKE.src?` <span class="muted">${fmt(el)} / ${fmt(JUKE.dur)}</span>`:''}`;
+  $('musicSource').value=JUKE.source; $('scoreSituation').textContent=JUKE.source==='situation'?'Now: '+audioRole:'Your playlist';
   $('jukeMode').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.mode===JUKE.mode));
-  const row=t=>`<label style="display:flex;gap:6px;align-items:center;padding:1px 0;font-size:12px;${JUKE.cur===t?'color:#ffd27a':''}"><input type="checkbox" data-jt="${t.id}" ${JUKE.sel.has(t.id)?'checked':''}> <span style="flex:1;cursor:pointer" data-jp="${t.id}">${t.title}</span>${t.seconds?`<span class="muted">${fmt(t.seconds)}</span>`:''}</label>`;
+  const row=t=>`<label style="display:flex;gap:6px;align-items:center;padding:1px 0;font-size:12px;${JUKE.cur===t?'color:#ffd27a':''}"><input type="checkbox" data-jt="${musicText(t.id)}" ${JUKE.sel.has(t.id)?'checked':''}> <span style="flex:1;cursor:pointer" data-jp="${musicText(t.id)}">${musicText(t.title)}</span>${t.seconds?`<span class="muted">${fmt(t.seconds)}</span>`:''}</label>`;
   const head=(k,label)=>`<div style="margin:6px 0 2px;font-size:11px;letter-spacing:1px;color:${JUKE.ctx===k?'#ffd27a':'#8fa3b8'};display:flex;justify-content:space-between"><span>${label}${JUKE.ctx===k?' · playing':''}</span><span style="letter-spacing:0"><a href="#" data-jall="${k}">all</a> · <a href="#" data-jnone="${k}">none</a></span></div>`;
   $('jukeList').innerHTML=head('menu','PRE-GAME')+jukeTracks('menu').map(row).join('')+head('game','IN-GAME')+jukeTracks('game').map(row).join('');
   $('jukeList').querySelectorAll('[data-jt]').forEach(c=>c.onchange=()=>{ if(c.checked) JUKE.sel.add(c.dataset.jt); else JUKE.sel.delete(c.dataset.jt); jukeSave(); jukeRender(); });
   $('jukeList').querySelectorAll('[data-jall]').forEach(a=>a.onclick=e=>{ e.preventDefault(); for(const t of jukeTracks(a.dataset.jall)) JUKE.sel.add(t.id); jukeSave(); jukeRender(); });
   $('jukeList').querySelectorAll('[data-jnone]').forEach(a=>a.onclick=e=>{ e.preventDefault(); for(const t of jukeTracks(a.dataset.jnone)) JUKE.sel.delete(t.id); jukeSave(); jukeRender(); });
-  $('jukeList').querySelectorAll('[data-jp]').forEach(sp=>sp.onclick=()=>{ const t=[...jukeTracks('menu'),...jukeTracks('game')].find(x=>x.id===sp.dataset.jp); if(t){ audioInit(); jukePlay(t,JUKE.ctx); } }); }
+  $('jukeList').querySelectorAll('[data-jp]').forEach(sp=>sp.onclick=()=>{ const t=[...jukeTracks('menu'),...jukeTracks('game')].find(x=>x.id===sp.dataset.jp); if(t){ audioInit(); JUKE.source='radio'; JUKE.paused=false; jukeSave(); jukePlay(t,JUKE.ctx); } }); }
 
 // ---------------------------------------------------------------- match record: counters, timeline, superlatives → credit roll
 function showNotice(o){ const box=$('notices'); if(!box||SAVES.catchup||REPLAY.creditsMode||REPLAY.on&&o.buttons) return null; const n=document.createElement('div'); n.className='notice '+(o.kind||''); if(o.flag){ const img=document.createElement('img'); img.src=flagURL(o.flag); img.alt=''; n.appendChild(img); } const text=document.createElement('div'),title=document.createElement('b'),detail=document.createElement('span'); text.className='t'; title.textContent=o.title||''; detail.textContent=o.text||''; text.appendChild(title); text.appendChild(detail); n.appendChild(text); for(const b of (o.buttons||[])){ const bt=document.createElement('button'); bt.textContent=b.label; if(b.primary) bt.style.background='#2f5a8c'; bt.onclick=()=>{ n.remove(); if(b.onClick) b.onClick(); }; n.appendChild(bt); } if(!o.buttons||!o.buttons.length||o.closeable!==false){ const x=document.createElement('button'); x.textContent='✕'; x.title='Dismiss'; x.style.padding='4px 8px'; x.onclick=()=>n.remove(); n.appendChild(x); } box.appendChild(n); while(box.children.length>4) box.firstChild.remove(); if(o.ttl!==0) setTimeout(()=>{ if(n.parentNode) n.remove(); },o.ttl||9000); return n; }
@@ -396,7 +406,8 @@ function rollLines(d){ const L=[]; const won=/ictory/.test(d.result||''); const 
   if(d.rivals&&d.rivals.length){ H('ALSO STARRING','flag'); for(const r of d.rivals){ const fate=r.alive?`survived with ${r.land}% of the land`:(r.killedBy?`fell to ${r.killedBy===d.name?'you':r.killedBy}${r.diedAt!=null?' at '+mm(r.diedAt):''}`:'was eliminated'); P(`${r.name} — ${fate}`,'peak '+fmtN(r.peak),'flag:'+r.name); } G(); }
   if(d.fallen&&d.fallen.length){ H('FALLEN NATIONS','skull'); for(const f of d.fallen) P(`${f.name} — killed by ${f.by===d.name?'you':f.by}`,mm(f.m),'flag:'+f.name); Q(); }
   G(); L.push({k:'card',lines:['PRODUCED AND DIRECTED BY','Ken Knorr']}); G();
-  L.push({k:'card',lines:['MUSIC','the WorldRTS.com library']}); G();
+  L.push({k:'card',lines:['MUSIC','Original Statefall score by Ken']}); G();
+  L.push({k:'card',lines:['SOUND','Tank foley: Department64 · CC BY 4.0','Edited and mixed for Statefall','Full source credits in the Audio menu']}); G();
   L.push({k:'disc'}); G();
   L.push({k:'end',won,dedication:cu&&cu.dedication?cu.dedication:'',goad:won?upick(['The map will not stay yours.','Somewhere, a bot is rebuilding its navy.','Seventy-two percent is not a hundred.','They are already drafting the counter-invasion.']):upick(['They are still out there. Take it back.','The seed is below. The map owes you one.','Every general in these credits is laughing. Prove them wrong.','Same map. Same seed. Different ending.'])}); return L; }
 const DISCLAIMER=["No artificial intelligences were harmed in the making of this game.","Several were mildly inconvenienced.","The bots you defeated have been debriefed, offered tea, and reassured that it was not personal.","Any resemblance between the nations in this game and actual nations is coincidental, approximate, and frankly a little flattering to some of them.","The continents are procedural. The rivers are procedural. The grudges held by the neutrals are entirely real.","No transports were sunk without a reasonable expectation of being sunk.","The missile command AI would like it noted that it 'held fire until the salvo was affordable' and that this was the correct decision.","Shield generators are 100% effective against everything they are 100% effective against.","Coastal batteries outrange battleships. Battleships have been informed.","If you played this on Billionaire mode, the leaderboard has quietly filed your score under 'well, obviously'.","Repair trucks work an eight-second pip and will not be rushed.","Fighter pilots who were recalled in time thank you. The others have been converted to pips.","The seed for this match is printed below so that you can do it all again, or prove it was the map's fault.","This disclaimer is longer than strictly necessary and was written by an assistant that enjoyed doing it.","Thank you for playing."];
@@ -404,10 +415,12 @@ function beginCredits(d,song,watch=false){ try{ audioInit(); }catch(e){}
   ROLL.data=d; ROLL.lines=rollLines(d); ROLL.watch=watch; ROLL.done=false; ROLL.paused=false; ROLL.y=0; ROLL.drift=0; ROLL.playBox=null; ROLL.skipBox=null; ROLL.replay=!!(watch&&ROLL.watchReplay&&REPLAY.creditsMode); ROLL.speedSet=false;
   // a live match replays itself behind the roll: restart from the seed and feed the recorded orders at a pace that ends with the credits
   if(!watch&&!REPLAY.on&&CMD.log.length&&lifecycleState.over){ try{ ROLL.saved={title:ovTitle.textContent,text:ovText.textContent,post:(document.getElementById('ovPost')||{}).textContent||'',tick:clockState.tickN,log:CMD.log.slice(),hashes:CMD.hashes.slice()}; ROLL.replay=true; ROLL.on=true; restartCreditsReplay(); overlay.style.display='none'; }catch(e){ console.warn('[statefall] credits replay',e); ROLL.replay=false; engine.configureReplay({on:false,creditsMode:false}); } }
-  ROLL.dur=90; ROLL.t0=performance.now(); ROLL.on=true; overlay.style.display='none'; $('side').classList.add('rolling'); JUKE.hold=true; MUS.stop(); jukeStopSrc(0.4); if(AUD.ctx){ ROLL.musicWas=AUD.vol.musicOn; AUD.bus.music.gain.value=AUD.vol.mute?0:Math.max(AUD.vol.music,0.25); } cv.style.cursor='default'; hover=-1; hoverShip=null; hoverStruct=null; tip.style.display='none'; hideCtx();
+  ROLL.dur=90; ROLL.t0=performance.now(); ROLL.on=true; overlay.style.display='none'; $('side').classList.add('rolling'); JUKE.hold=true; MUS.stop(); jukeStopSrc(0.4); if(AUD.ctx){ ROLL.musicWas=AUD.vol.musicOn; applyVolumes(); SAMPLE.stop(); } cv.style.cursor='default'; hover=-1; hoverShip=null; hoverStruct=null; tip.style.display='none'; hideCtx();
   // the song joins when it is ready; the roll never waits on the network
-  (async()=>{ try{ if(song&&song!=='builtin'&&JUKE.loaded&&AUD.ctx){ const t=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].find(x=>x&&x.id===song); if(t){ const buf=await Promise.race([jukeBuf(t.url),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]); if(!ROLL.on) return; ROLL.dur=t.seconds||buf.duration||90; JUKE.mode='one'; await jukePlay(t,'game'); if(JUKE.src) JUKE.src.loop=false; return; } }
-      if(AUD.ctx&&ROLL.on) MUS._start('menu'); }catch(e){ console.warn('[statefall] credits music',e); if(AUD.ctx&&ROLL.on) MUS._start('menu'); } })(); }
+  const creditTrack=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].find(x=>x&&x.id===song)||jukeStingPick(/ictory/.test(d.result||'')?'victory':'defeat');
+  audioResult=/ictory/.test(d.result||'')?'victory':'defeat';audioRole=audioResult;
+  if(creditTrack){ROLL.dur=creditTrack.seconds||90;jukePlay(creditTrack,'game');}
+}
 async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+encodeURIComponent(id),{credentials:'same-origin'}); const j=await r.json(); if(!r.ok||!j.stats) throw new Error(j.message||'no stats'); const d=j.stats; d.name=d.name||j.country; d.player=d.player||(j.user&&j.user.name)||d.name; if(j.custom) d.custom=j.custom; const qs2=new URLSearchParams(location.search); const wantEdit=qs2.get('edit')==='1'&&WP.user&&j.user&&WP.user.id===j.user.id; lastPostId=j.id; lastStats=d; // set up the map from the record's seed so the roll has a backdrop
     let rep=null; try{ const rr=await fetch(WP.rest+'scores/'+encodeURIComponent(id)+'/replay',{credentials:'same-origin'}); if(rr.ok){ const rj=await rr.json(); if(rj&&rj.data&&Array.isArray(rj.data.cmds)) rep=rj.data; } }catch(e){}
     if(rep&&!wantEdit){ resetWorld(); engine.loadReplay(rep,{otherVersion:!!(rep.game&&rep.game!==GAME_VERSION)}); engine.configureReplay({creditsMode:true}); Object.assign(START,engineState.rules.settings); ALLOWED.clear(); for(const rule of engineState.rules.allowed) ALLOWED.add(rule); applySettings(rep.settings||{},false); $('seedIn').value=rep.seed||j.seed; ROLL.watchReplay=true; ROLL.on=true; $('startBtn').click(); $('start').style.display='none'; $('overlay').style.display='none'; }
@@ -418,7 +431,7 @@ async function watchCredits(id){ try{ const r=await fetch(WP.rest+'scores/'+enco
 function rollSeek(sec){ if(ROLL.paused){ ROLL.t0-=sec*1000; const now=ROLL.pausedAt; if(now-ROLL.t0<0) ROLL.t0=now; } else { ROLL.t0-=sec*1000; if(performance.now()-ROLL.t0<0) ROLL.t0=performance.now(); } ROLL.done=false; }
 function rollTogglePause(){ if(ROLL.paused){ ROLL.t0+=performance.now()-ROLL.pausedAt; ROLL.paused=false; if(AUD.ctx) AUD.ctx.resume(); } else { ROLL.paused=true; ROLL.pausedAt=performance.now(); if(AUD.ctx) AUD.ctx.suspend(); } }
 function resetPresentationState(){ globalEffectClock.reset(); badges=[]; nukeAlerts=[]; songBanner=null; flashes=[]; floaters=[]; sparks=[]; puffs=[]; wrecks=[]; frags=[]; tracers=[]; scorches=[]; visualShots=[]; flagUrlCache=new WeakMap(); shellRenderState=new WeakMap(); shellRenderSources.clear(); shipRenderState.clear(); labelRenderState.clear(); notificationIdentityMap=new WeakMap(); notificationIdentitySerial=0; selected.clear(); presentationState.matchRecorded=false; presentationState.controllerTasks.length=0; for(const key of Object.keys(centCache)) delete centCache[key]; pickMode=null; hoverPickArea=-1; buildMode=null; STATS.c={}; STATS.tl=[]; STATS.nukedBy={}; STATS.campaigns={}; STATS.bigLoss={n:0,by:''}; for(const k in notedAt) delete notedAt[k]; }
-function resetWorld(){ classicMotion.reset(); classicBattlefield?.resetTerrain?.(); fogTransition.reset(); replayCatchUpCancel(); renderer.reset(); terrainRaster.reset(); terrainHasValidRaster=false; terrainEmergencyMode=false; installTerrainSurface('loading'); terrainDetailLevel=null; renderedPickArea=-1; renderedHighlightId=-1; releaseNotificationRaster(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
+function resetWorld(){ resetAudioPresentation(); jukeStopSrc(.2); classicMotion.reset(); classicBattlefield?.resetTerrain?.(); fogTransition.reset(); replayCatchUpCancel(); renderer.reset(); terrainRaster.reset(); terrainHasValidRaster=false; terrainEmergencyMode=false; installTerrainSurface('loading'); terrainDetailLevel=null; renderedPickArea=-1; renderedHighlightId=-1; releaseNotificationRaster(); const result=engine.reset(); resetPresentationState(); processEngineEvents(); return result; }
 function postedModal(){ const url=(WP&&(WP.creditsUrl||WP.base))+(lastPostId||'')+'/'; const fb='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(url); overlay.style.display='none';
   const m=openModal(`<div class="card" style="text-align:center;width:min(520px,94vw)"><h2 style="margin:0 0 6px;font-size:24px">Your credits are posted</h2><p class="muted" style="font-size:13px;margin:0 0 14px">Anyone with the link can watch them, with the whole match replayed behind the roll.</p><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px"><a href="${fb}" target="_blank" rel="noopener" class="sf-fb">Share on Facebook</a><button id="pmCopy">Copy link</button></div><div style="display:grid;gap:8px;grid-template-columns:1fr 1fr"><button id="pmPlay" style="background:#2f5a8c;font-weight:600;padding:10px">Play another match</button><button id="pmBoard" style="padding:10px">Leaderboard</button><button id="pmHome" style="padding:10px">Home page</button><button id="pmWatch" style="padding:10px">Watch again</button></div></div>`);
   m.querySelector('#pmCopy').onclick=()=>{ const b=m.querySelector('#pmCopy'); (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ b.textContent='Copied'; setTimeout(()=>{ b.textContent='Copy link'; },1800); }).catch(()=>prompt('Copy this link:',url)); };
@@ -505,7 +518,7 @@ function builderHTML(d){ const songs=(JUKE.loaded?[...new Map([...Object.values(
   <h2 style="margin:0 0 6px;font-size:22px">Make custom credits you can share</h2>
   <p class="muted" style="font-size:13px;margin:0 0 12px">These credits get a public page anyone can watch. Choose a song, add your words, preview, then approve. Nothing is public until you approve. Your quote appears right after your name — the generals reply to it.</p>
   <div class="bld">
-    <label>Song<select id="cbSong">${songs.map(t=>`<option value="${t.id}">${t.title}${t.seconds?' ('+Math.floor(t.seconds/60)+':'+String(Math.floor(t.seconds%60)).padStart(2,'0')+')':''}</option>`).join('')||'<option value="builtin">Built-in score</option>'}</select><button id="cbPreviewSong" type="button" style="margin-left:6px;padding:4px 10px">▶ listen</button></label>
+    <label>Song<select id="cbSong">${songs.map(t=>`<option value="${musicText(t.id)}">${musicText(t.title)}${t.seconds?' ('+Math.floor(t.seconds/60)+':'+String(Math.floor(t.seconds%60)).padStart(2,'0')+')':''}</option>`).join('')||'<option value="builtin">Automatic result score</option>'}</select><button id="cbPreviewSong" type="button" style="margin-left:6px;padding:4px 10px">▶ listen</button></label>
     <label>Your quote <span class="muted" id="cbQuoteN">0/200</span><textarea id="cbQuote" maxlength="200" rows="3" placeholder="What the world should remember you saying"></textarea></label>
     <label>Your title <input id="cbTitle" maxlength="40" value="Supreme Commander"></label>
     <label>Dedication <span class="muted">(shown on the final card)</span><input id="cbDed" maxlength="120" placeholder="For anyone who told me to give up"></label>
@@ -587,11 +600,19 @@ function openSaveModal(){ if(!canSave()){ openModal(loginPitch('Save this match'
   const m=openModal(`<div class="card" style="text-align:center;width:min(480px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">Save this match?</h2><p class="muted" style="font-size:13px;margin:0 0 10px">It goes to your account on the site; resume it from Games &amp; replays on any device.</p><label style="display:block;font-size:13px;margin:0 0 12px">Name<input id="svName" value="${name.replace(/"/g,'&quot;')}" maxlength="80" style="display:block;width:100%;margin-top:4px;background:var(--panel2);color:var(--ink);border:1px solid #33475c;border-radius:6px;padding:6px 8px;font:inherit"></label><div style="display:flex;gap:8px;justify-content:center"><button id="svGo" style="background:#2f5a8c;font-weight:600">Save</button><button data-close>Cancel</button></div><p id="svMsg" class="muted" style="font-size:12px;margin:10px 0 0"></p></div>`);
   m.querySelector('#svGo').onclick=async()=>{ const nm=cleanText(m.querySelector('#svName').value,80)||name; m.querySelector('#svMsg').textContent='Saving…'; try{ await siteSave('save',nm); closeModal(); showNotice({kind:'good',title:'Saved to your account',text:nm,ttl:5000}); }catch(e){ m.querySelector('#svMsg').textContent='Could not save: '+e.message; } }; }
 // ---- pause modal
-function openPauseModal(){ if(!me()||lifecycleState.over||ROLL.on) return; if(!lifecycleState.userPaused) togglePause(); const m=openModal(`<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 6px;font-size:26px">Paused</h2><p class="muted" style="margin:0 0 16px;font-size:13px">The clock is stopped. Look around the map if you like.</p><div style="display:grid;gap:8px"><button id="pmResume" style="background:#2f5a8c;font-weight:600;text-align:center;font-size:15px;padding:10px">▶ Resume</button><button id="pmSave" style="text-align:center;padding:10px">Save &amp; quit — keep this match on your account and leave</button><button id="pmRestart" style="text-align:center;padding:10px">Restart — abandon this match</button></div><p class="muted" style="font-size:11px;margin:12px 0 0">Space or Esc resumes.</p></div>`);
-  m.querySelector('#pmResume').onclick=()=>{ closeModal(); if(lifecycleState.userPaused) togglePause(); };
-  m.querySelector('#pmSave').onclick=()=>{ closeModal(); saveAndQuit(); };
-  m.querySelector('#pmRestart').onclick=()=>{ closeModal(); $('restart').style.display='flex'; $('restart').dataset.wasPaused='1'; }; }
-function closePauseModal(){ const m=$('modal'); if(m.style.display!=='none'&&m.querySelector('#pmResume')){ closeModal(); if(lifecycleState.userPaused) togglePause(); return true; } return false; }
+function openPauseModal(){
+  if(!me()||lifecycleState.over||ROLL.on) return;
+  if(!lifecycleState.userPaused) togglePause();
+  hideCtx();
+  $('pauseHint').textContent=START.pauseBuild?'Pan, zoom and give orders. The clock is stopped.':'Pan, zoom and inspect. Resume to give orders.';
+  $('pausePanel').hidden=false;
+}
+function closePauseModal(){
+  if($('pausePanel').hidden) return false;
+  $('pausePanel').hidden=true;
+  if(lifecycleState.userPaused) togglePause();
+  return true;
+}
 // ---- Games & replays
 async function openGamesModal(){ if(!canSave()){ openModal(loginPitch('Games & replays')); return; }
   const m=openModal(`<div class="card" style="text-align:left;width:min(760px,94vw);max-height:90vh;overflow:auto"><div class="row" style="align-items:center"><h2 style="margin:0;font-size:22px">Games &amp; replays</h2><button data-close>Close</button></div><p class="muted" style="font-size:13px;margin:6px 0 10px">Saved matches resume where you left off. Finished matches are kept as replays you can watch at up to 8× — or take over and play differently.</p><div id="gmBody"><p class="muted">Loading…</p></div></div>`);
@@ -634,68 +655,8 @@ function replayCatchUpResume(){ if(CATCHUP.status!=='suspended') return; CATCHUP
 function replayCatchUp(target,label,onDone){ replayCatchUpCancel(); CATCHUP.status='running'; CATCHUP.target=target; CATCHUP.startTick=clockState.tickN; CATCHUP.label=label||'Loading your match'; CATCHUP.onDone=onDone||null; SAVES.catchup=true; engine.beginControllerCatchUp(); replayCatchUpModal(); replayCatchUpUpdate(); replayCatchUpSchedule(CATCHUP.token); }
 function stopReplay(){ replayCatchUpCancel(); closeModal(); if(window.__tickTimer){ clearInterval(window.__tickTimer); window.__tickTimer=null; } resetWorld(); engine.configureReplay({on:false,cmds:[],i:0,speed:1,resume:false,toTick:0,hashes:[],hashv:1,mismatch:false,creditsMode:false,otherVersion:false,fileGame:'',saveId:null,requiresCanonicalCheckpoints:false}); $('replayBar').style.display='none'; $('overlay').style.display='none'; $('start').style.display='flex'; $('pauseBtn').textContent='\u25B6'; }
 
-const MUS={mode:null,next:0,bar:0,timer:null,section:0,intensity:0,lead:0};
-const mtof=m=>440*Math.pow(2,(m-69)/12);
-function mnote(o){ // {m midi, t start, d dur, g gain, type, a attack, det, lp}
-  const C=AUD.ctx; const t=o.t, f=mtof(o.m); const g=C.createGain(); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(o.g,t+(o.a||0.02)); g.gain.setValueAtTime(o.g,t+Math.max(o.a||0.02,o.d-0.08)); g.gain.exponentialRampToValueAtTime(0.0001,t+o.d+0.02);
-  let node=g; if(o.lp){ const fl=C.createBiquadFilter(); fl.type='lowpass'; fl.frequency.setValueAtTime(o.lp,t); if(o.lp2) fl.frequency.exponentialRampToValueAtTime(o.lp2,t+o.d); fl.Q.value=0.8; g.connect(fl); node=fl; }
-  node.connect(AUD.bus.music);
-  const voices=o.det?[-o.det,0,o.det]:[0];
-  for(const dv of voices){ const osc=C.createOscillator(); osc.type=o.type||'triangle'; osc.frequency.value=f*Math.pow(2,dv/1200); osc.connect(g); osc.start(t); osc.stop(t+o.d+0.05); }
-}
-function mperc(kind,t,g){ const C=AudioContextRef(); if(!C) return; const src=C.createBufferSource(); src.buffer=getNoise(); const f=C.createBiquadFilter(); const gn=C.createGain();
-  if(kind==='hat'){ f.type='highpass'; f.frequency.value=6000; gn.gain.setValueAtTime(g,t); gn.gain.exponentialRampToValueAtTime(0.0001,t+0.05); }
-  else { f.type='lowpass'; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(60,t+0.25); gn.gain.setValueAtTime(g,t); gn.gain.exponentialRampToValueAtTime(0.0001,t+0.3); const o=C.createOscillator(); o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(40,t+0.25); const og=C.createGain(); og.gain.setValueAtTime(g*1.2,t); og.gain.exponentialRampToValueAtTime(0.0001,t+0.3); o.connect(og); og.connect(AUD.bus.music); o.start(t); o.stop(t+0.35); }
-  src.connect(f); f.connect(gn); gn.connect(AUD.bus.music); src.start(t); src.stop(t+0.4); }
-function AudioContextRef(){ return AUD.ctx; }
-// --- menu theme: D minor, 84 bpm, 32 bars. chords as root midi + intervals; melody as [bar, beat, midi, beats]
-const MENU={bpm:84,chords:[[50,[0,3,7]],[46,[0,4,7]],[41,[0,4,7]],[48,[0,4,7]],[50,[0,3,7]],[46,[0,4,7]],[43,[0,3,7]],[45,[0,4,7]]],
-  melody:[[0,0,69,2],[0,2,72,1],[0,3,74,1],[1,0,77,3],[1,3,74,1],[2,0,72,2],[2,2,69,1],[2,3,72,1],[3,0,74,4],
-          [4,0,69,2],[4,2,72,1],[4,3,74,1],[5,0,77,2],[5,2,79,2],[6,0,77,1],[6,1,74,1],[6,2,72,1],[6,3,70,1],[7,0,69,4],
-          [8,0,74,1],[8,1,77,1],[8,2,81,2],[9,0,79,3],[9,3,77,1],[10,0,74,2],[10,2,72,2],[11,0,70,4],
-          [12,0,74,1],[12,1,77,1],[12,2,81,2],[13,0,84,2],[13,2,81,2],[14,0,79,2],[14,2,77,1],[14,3,74,1],[15,0,73,3],[15,3,74,1]]};
-// --- game score: sections cycle every 64 bars; each has a progression and a scale for arpeggios
-const GAME={bpm:72,sections:[
-  {chords:[[45,[0,3,7,10]],[41,[0,4,7,11]],[48,[0,4,7]],[43,[0,4,7]]],scale:[57,59,60,62,64,65,67,69,71,72,74,76]},        // A minor / C major
-  {chords:[[41,[0,4,7,11]],[43,[0,4,7,9]],[45,[0,3,7]],[43,[0,4,7]]],scale:[53,55,57,59,60,62,64,65,67,69,71,72]},         // F lydian
-  {chords:[[38,[0,3,7,10]],[46,[0,4,7,11]],[41,[0,4,7]],[45,[0,4,7]]],scale:[50,53,55,57,58,60,62,65,67,69,70,72]},        // D dorian-ish
-]};
-const ARP_PATTERNS=[[0,1,2,3,2,1,0,1],[0,2,1,3,0,2,1,3],[0,1,2,1,3,2,1,0],[3,2,1,0,1,2,3,2],[0,0,2,1,3,3,1,2]];
-MUS._start=function(mode){ if(!AUD.ctx) return; if(MUS.timer) clearInterval(MUS.timer); MUS.mode=mode; MUS.bar=0; MUS.section=0; MUS.next=AUD.ctx.currentTime+0.1; MUS.timer=setInterval(MUS.tick,200); };
-MUS.start=function(mode){ if(JUKE.loaded){ jukeStart(mode); return; } MUS._start(mode); };
-MUS.stop=function(){ if(MUS.timer) clearInterval(MUS.timer); MUS.timer=null; MUS.mode=null; };
-MUS.tick=function(){ if(!AUD.ctx||!MUS.mode||!AUD.vol.musicOn) return; while(MUS.next<AUD.ctx.currentTime+1.2){ MUS.mode==='menu'?MUS.menuBar():MUS.gameBar(); } };
-MUS.menuBar=function(){ const t=MUS.next, bl=60/MENU.bpm*4, b=MUS.bar%16; const [root,iv]=MENU.chords[b%8];
-  // pad: three detuned saws through a slow filter; bass: root every bar with a lift on beat 3
-  for(const i of iv) mnote({m:root+12+i,t,d:bl*0.98,g:0.045,type:'sawtooth',a:0.9,det:7,lp:900,lp2:500});
-  mnote({m:root,t,d:bl*0.5,g:0.12,type:'sine',a:0.02}); mnote({m:root+7,t:t+bl*0.5,d:bl*0.45,g:0.08,type:'sine',a:0.02});
-  for(const [bar,beat,m,beats] of MENU.melody){ if(bar!==b) continue; mnote({m,t:t+beat*bl/4,d:beats*bl/4*0.92,g:0.07,type:'triangle',a:0.05,det:5,lp:2200}); mnote({m:m-12,t:t+beat*bl/4,d:beats*bl/4*0.92,g:0.03,type:'sawtooth',a:0.08,lp:900}); }
-  if(b>=8){ for(let k=0;k<4;k++) mperc('hat',t+k*bl/4+bl/8,0.02); mperc('kick',t,0.18); mperc('kick',t+bl*0.5,0.1); }
-  MUS.next+=bl; MUS.bar++; };
-MUS.gameBar=function(){ const t=MUS.next, bl=60/GAME.bpm*4; if(MUS.bar%64===0&&MUS.bar>0) MUS.section=(MUS.section+1)%GAME.sections.length;
-  const S=GAME.sections[MUS.section]; const [root,iv]=S.chords[MUS.bar%4];
-  // intensity: how hard the player is being pressed right now (0..1), smoothed
-  const pressed=me()?attacks.filter(a=>a.target===me().id).reduce((n,a)=>n+a.troops,0):0; const want=me()?Math.min(1,pressed/Math.max(200,me().troops*0.4)):0; MUS.intensity+=(want-MUS.intensity)*0.25;
-  // pad every bar, quieter when calm
-  for(const i of iv) mnote({m:root+12+i,t,d:bl*0.98,g:0.035+0.02*MUS.intensity,type:'sawtooth',a:1.2,det:6,lp:700+500*MUS.intensity,lp2:450});
-  // bass: root on 1, sometimes the fifth on the and-of-3
-  mnote({m:root,t,d:bl*0.6,g:0.09,type:'sine',a:0.03}); if(Math.random()<0.5) mnote({m:root+7,t:t+bl*0.625,d:bl*0.3,g:0.06,type:'sine',a:0.02});
-  // arpeggio: a pattern from the bank over the chord tones, sparse when calm, denser when pressed
-  const tones=iv.map(i=>root+24+i); const pat=upick(ARP_PATTERNS); const dens=0.35+0.5*MUS.intensity;
-  for(let k=0;k<8;k++){ if(Math.random()>dens&&k%2) continue; const m=tones[pat[k]%tones.length]+(Math.random()<0.15?12:0); mnote({m,t:t+k*bl/8,d:bl/8*0.9,g:0.04,type:'triangle',a:0.01,lp:2600,lp2:900}); }
-  // lead: an occasional short phrase from the scale, more often in the second half of a section
-  if(MUS.lead<=0&&Math.random()<(MUS.bar%64>32?0.35:0.18)){ MUS.lead=2+Math.floor(Math.random()*3); let m=upick(S.scale.slice(4,10)); const n=3+Math.floor(Math.random()*4); let tt=t+bl*(Math.random()<0.5?0:0.5);
-    for(let k=0;k<n;k++){ const step=[-2,-1,-1,1,1,2][Math.floor(Math.random()*6)]; const i=Math.max(0,Math.min(S.scale.length-1,S.scale.indexOf(m)+step)); m=S.scale[i]; const d=bl/4*(k===n-1?1.6:[0.5,1,1,1.5][Math.floor(Math.random()*4)]); mnote({m:m+12,t:tt,d:d*0.9,g:0.05,type:'triangle',a:0.04,det:4,lp:2000}); tt+=d; } }
-  else MUS.lead--;
-  // pulse and hats rise with intensity
-  if(MUS.intensity>0.25){ mperc('kick',t,0.14*MUS.intensity); mperc('kick',t+bl*0.5,0.08*MUS.intensity); if(MUS.intensity>0.5) for(let k=0;k<8;k++) mperc('hat',t+k*bl/8,0.012*MUS.intensity); }
-  MUS.next+=bl; MUS.bar++; };
-function startAmbient(){ const C=AUD.ctx;
-  const src=C.createBufferSource(); src.buffer=getNoise(); src.loop=true; const f=C.createBiquadFilter(); f.type='lowpass'; f.frequency.value=260; const g=C.createGain(); g.gain.value=0.35;
-  const lfo=C.createOscillator(); lfo.frequency.value=0.12; const lg=C.createGain(); lg.gain.value=0.18; lfo.connect(lg); lg.connect(g.gain);
-  src.connect(f); f.connect(g); g.connect(AUD.bus.amb); src.start(); lfo.start();
-  for(const [fr,gn] of [[55,.06],[82.4,.03],[55.5,.04]]){ const o=C.createOscillator(); o.type='sine'; o.frequency.value=fr; const og=C.createGain(); og.gain.value=gn; o.connect(og); og.connect(AUD.bus.amb); o.start(); }
-}
+// Compatibility facade for existing menu / replay controls. No synthesized fallback.
+const MUS={mode:null,start(mode){this.mode=mode;jukeStart(mode);},stop(){this.mode=null;},_start(mode){this.start(mode);}};
 
 // ---------------------------------------------------------------- map generation lives in sim/map-generation.mjs
 // ---------------------------------------------------------------- flags (real countries, drawn from a small layer spec)
@@ -757,13 +718,13 @@ function presentEngineEvent({type,args}){
   else if(type==='attackStarted'){ if(a.id===me()?.id&&b>=0&&!STATS.campaigns[players[b].name]){ STATS.campaigns[players[b].name]={start:sMin()}; if(!STATS.c.firstAttack){ sInc('firstAttack'); sEvent(`First campaign: ${players[b].name}`); } } }
   else if(type==='invasion') invasionNotice(...args);
   else if(type==='tileCaptured'){ if(visAt(a%W,(a-a%W)/W)) fxSpark(a%W,(a-a%W)/W,b.color); }
-  else if(type==='conquest'){ sInc('conquests'); if(a.kind!=='neutral') sInc('kills'); sEvent(a.kind==='neutral'?`Conquered ${a.name}`:`Eliminated ${a.name}`,a.kind==='neutral'?'note':'kill'); if(STATS.campaigns[a.name]) STATS.campaigns[a.name].end=sMin(); }
+  else if(type==='conquest'){ if(a.kind==='neutral')SAMPLE?.milestone('capture-neutral'); sInc('conquests'); if(a.kind!=='neutral') sInc('kills'); sEvent(a.kind==='neutral'?`Conquered ${a.name}`:`Eliminated ${a.name}`,a.kind==='neutral'?'note':'kill'); if(STATS.campaigns[a.name]) STATS.campaigns[a.name].end=sMin(); }
   else if(type==='fell') sEvent(`Fell to ${a.name}`,'death');
   else if(type==='badge'&&c!=null) badges.push({kind:'unify',text:a.name,sub:`unified by ${b.name} — +${c} troops now, +${(a.size*HOLD_BONUS).toFixed(1)} troops/s while held`,flag:b.flag,col:b.color,age:0,life:b.id===me()?.id?130:90,snd:b.id===me()?.id?'fanfare':'fanfareq'});
   else if(type==='badge') badges.push({text:`${a.name}`,sub:`killed by ${b.name}`,flag:a.flag,kflag:b.flag,col:b.color,age:0,life:130,snd:(a.id===me()?.id||b.id===me()?.id)?'taps':'tapsq'});
   else if(type==='plunder'){ snd('cash'); log(`Conquered ${a.name}: +${b} gold plunder${c>1.5?' (early-game bonus)':''}.`,true); cashFloat(centroid(a)[0],centroid(a)[1],b); }
   else if(type==='treasury'){ log(`${a.name} seized ${b.name}'s treasury: ${c} gold.`,a.id===me()?.id||b.id===me()?.id); if(a.id===me()?.id){ snd('cash'); cashFloat(centroid(a)[0],centroid(a)[1],c); } }
-  else if(type==='nuclearAlert'){ sInc('nuked'); STATS.nukedBy[players[a.owner].name]=(STATS.nukedBy[players[a.owner].name]||0)+1; sEvent(`Nuked by ${players[a.owner].name}`,'nuke'); const lx=a.from%W+.5,ly=(a.from-a.from%W)/W+.5; nukeAlerts.push({from:[lx,ly],at:[b+.5,c+.5],owner:a.owner,age:0,life:88}); snd('siren'); }
+  else if(type==='nuclearAlert'){ sInc('nuked'); STATS.nukedBy[players[a.owner].name]=(STATS.nukedBy[players[a.owner].name]||0)+1; sEvent(`Nuked by ${players[a.owner].name}`,'nuke'); const lx=a.from%W+.5,ly=(a.from-a.from%W)/W+.5; nukeAlerts.push({from:[lx,ly],at:[b+.5,c+.5],owner:a.owner,age:0,life:88}); }
   else if(type==='bigLoss'){ if(a>STATS.bigLoss.n) STATS.bigLoss={n:Math.round(a),by:`${b.name}'s missile`}; }
   else if(type==='cleanupSelection'){ const ids=new Set(a.map(value=>value.id)); for(const ship of selected) if(!ids.has(ship.id)) selected.delete(ship); }
   else if(type==='barrageResolved'){ if(a.victim===me()?.id&&a.cas>STATS.bigLoss.n) STATS.bigLoss={n:Math.round(a.cas),by:`${players[a.owner].name}'s ${(SHIPS[a.cls]||STRUCT[a.cls]).label.toLowerCase()}`}; log(`${players[a.owner].name}'s ${(SHIPS[a.cls]||STRUCT[a.cls]).label.toLowerCase()} ${a.cls==='bertha'?'shell':'barrage'} killed ${Math.round(a.cas)} ${players[a.victim].name} troops.`,true); }
@@ -772,6 +733,7 @@ function presentEngineEvent({type,args}){
 }
 function processEngineEvents(){
   engine.renderBuffers();
+  observeTerritoryAudio();
   const {errors}=engine.dispatchEvents(presentEngineEvent);
   for(const item of errors) console.error('[statefall] event adapter failed',item.event.type,item.error);
   while(presentationState.controllerTasks.length){
@@ -805,7 +767,7 @@ function areaChoices(p,exclude){ return p.areas.filter(a=>a!==exclude&&a.coast&&
 
 // ---------------------------------------------------------------- simulation
 function tick(){ const advanced=runEngineOperation(()=>engine.tick()); if(advanced){lastSuccessfulTickAt=performance.now();if(!REPLAY.on)classicShipLoop?.();} return advanced; }
-function togglePause(){ const wasPaused=lifecycleState.userPaused; if(!engine.togglePause()) return; if(!wasPaused) pausedAt=performance.now(); else startTime+=performance.now()-pausedAt; $('pauseBtn').textContent=lifecycleState.userPaused?'\u25B6':'\u275A\u275A'; }
+function togglePause(){ const wasPaused=lifecycleState.userPaused; if(!engine.togglePause()) return; if(!wasPaused) pausedAt=performance.now(); else startTime+=performance.now()-pausedAt; $('pauseBtn').textContent=lifecycleState.userPaused?'\u25B6':'\u275A\u275A'; if(!lifecycleState.userPaused) $('pausePanel').hidden=true; }
 function showAlliedDecision(decision){ const rivals=decision.rivalIds.map(id=>players[id]).filter(Boolean),names=rivals.map(player=>player.name).join(', '); $('decideText').textContent=`${names} ${rivals.length>1?'are':'is'} the last nation${rivals.length>1?'s':''} standing beside you. Share the victory, or break the alliance and finish the war.`; $('decide').style.display='flex'; $('decShare').onclick=()=>issue('decShare'); $('decWar').onclick=()=>issue('decWar'); }
 function closeAlliedDecision(){ $('decide').style.display='none'; }
 const LB_KEY='statefall-board';
@@ -861,9 +823,9 @@ function end(title,text){ return engine.endMatch(title,text); }
 function presentEnd(title,text){ try{ recordMatch(title); }catch(e){ console.error('[statefall] record failed',e); } snd(title.includes('ictory')?'victory':'defeat'); if(title==='Victory'&&me().team!=null) title='Team victory'; ovTitle.textContent=title; ovText.textContent=text;
   overlay.classList.toggle('replay',REPLAY.on); if(REPLAY.on){ ovTitle.textContent='Replay finished — '+title; const d=lastStats||{},verification=REPLAY.mismatch?'This replay diverged from the recording along the way.':REPLAY.verifiedEvidence?'The replay matched the recording throughout.':'The replay completed without strong verification evidence.'; ovText.textContent=`${d.name||me().name}: ${d.result||title} in ${Math.round(clockState.tickN*TICK/6000)/10} min · ${Math.round(me().tiles/mapState.landCount*1000)/10}% of the land · ${(d.c&&d.c.kills)||me().kills||0} nations eliminated. ${verification}`; const el=document.getElementById('ovPost'); if(el) el.textContent=''; $('replayBar').style.display='none'; }
   { const b=loadBoard(); const r=b[b.length-1]; if(r&&!lifecycleState.freeplay&&!REPLAY.on) ovText.textContent+=` Score ${r.score} — ${r.minutes} min, ${r.land}% of the land, ${r.kills} nations eliminated. Board: ${r.cls}.`; const el=document.getElementById('ovPost'); if(el) el.textContent=!WP?'':!WP.user?'Log in on the site to post scores.':lifecycleState.freeplay?'Already recorded when the match first ended.':'Posting to the site…'; }
-  { const sel=document.getElementById('ovSong'); if(sel){ const opts=(JUKE.loaded&&(JUKE.list.game.length||JUKE.list.menu.length))?[]:['<option value="builtin">Built-in score</option>']; if(JUKE.loaded){ const seen=new Set(); const all=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].filter(t=>t&&!seen.has(t.id)&&seen.add(t.id)); for(const t of all) opts.push(`<option value="${t.id}">${t.title}${t.seconds?' ('+Math.floor(t.seconds/60)+':'+String(Math.floor(t.seconds%60)).padStart(2,'0')+')':''}</option>`); } sel.innerHTML=opts.join(''); if(ROLL.autoSong&&[...sel.options].some(o=>o.value===ROLL.autoSong)) sel.value=ROLL.autoSong; } const cb=document.getElementById('ovCredits'); if(cb){ cb.textContent=ROLL.rolled?'Watch credits again':'Roll credits'; cb.onclick=()=>{ if(lastStats){ ROLL.rolled=true; CUSTOM.previewing=false; beginCredits(CUSTOM.approved&&CUSTOM.data?Object.assign({},lastStats,{custom:CUSTOM.data}):lastStats,(CUSTOM.approved&&CUSTOM.data&&CUSTOM.data.song)||ROLL.autoSong||'builtin',false); } }; } const cu=document.getElementById('ovCustom'); if(cu) cu.onclick=()=>{ if(lastStats) openBuilder(lastStats); }; }
+  { const sel=document.getElementById('ovSong'); if(sel){ const opts=(JUKE.loaded&&(JUKE.list.game.length||JUKE.list.menu.length))?[]:['<option value="builtin">Automatic result score</option>']; if(JUKE.loaded){ const seen=new Set(); const all=[...Object.values(JUKE.stings||{}).flat(),...JUKE.list.game,...JUKE.list.menu].filter(t=>t&&!seen.has(t.id)&&seen.add(t.id)); for(const t of all) opts.push(`<option value="${musicText(t.id)}">${musicText(t.title)}${t.seconds?' ('+Math.floor(t.seconds/60)+':'+String(Math.floor(t.seconds%60)).padStart(2,'0')+')':''}</option>`); } sel.innerHTML=opts.join(''); if(ROLL.autoSong&&[...sel.options].some(o=>o.value===ROLL.autoSong)) sel.value=ROLL.autoSong; } const cb=document.getElementById('ovCredits'); if(cb){ cb.textContent=ROLL.rolled?'Watch credits again':'Roll credits'; cb.onclick=()=>{ if(lastStats){ ROLL.rolled=true; CUSTOM.previewing=false; beginCredits(CUSTOM.approved&&CUSTOM.data?Object.assign({},lastStats,{custom:CUSTOM.data}):lastStats,(CUSTOM.approved&&CUSTOM.data&&CUSTOM.data.song)||ROLL.autoSong||'builtin',false); } }; } const cu=document.getElementById('ovCustom'); if(cu) cu.onclick=()=>{ if(lastStats) openBuilder(lastStats); }; }
   const c=document.getElementById('ovCont'); c.textContent=title.includes('ictory')?'Keep playing':'Spectate'; c.style.display=title==='Total victory'?'none':''; overlay.style.display='flex';
-  if(!lifecycleState.freeplay&&lastStats&&!ROLL.on){ try{ MUS.stop(); jukeStopSrc(0.8); const won=title.includes('ictory'); const st=jukeStingPick(won?'victory':'defeat')||jukeStingPick('credits'); ROLL.autoSong=st?st.id:(JUKE.loaded&&JUKE.list.game.length?upick(JUKE.list.game).id:'builtin'); ROLL.rolled=false; }catch(e){ console.error('[statefall] end music',e); } }
+  if(!lifecycleState.freeplay&&lastStats&&!ROLL.on){ try{ const won=title.includes('ictory'); audioResult=won?'victory':'defeat'; audioRole=audioResult; const st=jukeStingPick(won?'victory':'defeat')||jukeStingPick('credits'); ROLL.autoSong=st?st.id:null; ROLL.rolled=false; if(JUKE.source==='situation'){MUS.stop();jukeStopSrc(.8);if(st)jukePlay(st,'game');} }catch(e){ console.error('[statefall] end music',e); } }
   c.onclick=()=>{ overlay.style.display='none'; engine.continueAfterEnd(title.includes('ictory')); }; }
 
 // ---------------------------------------------------------------- rendering
@@ -954,6 +916,7 @@ function installBrowserTestBridge(){
       rendering:{...renderer.diagnostics(),rasterDiagnostics:terrainRaster.diagnostics()}
    });
   Object.defineProperty(window,'__STATEFALL_TEST__',{value:Object.freeze({
+    audio:{state:()=>({role:audioRole,source:JUKE.source,paused:JUKE.paused,current:JUKE.cur?.id,playing:!!JUKE.src,cached:JUKE.bufs.size,battle:battleMode,samples:SAMPLE?.diagnostics()}),sound:snd},
     get me(){ return me(); },
     get difficulty(){ return matchState.difficulty; },
     set difficulty(value){ engine.configure({difficulty:value}); },
@@ -1003,6 +966,15 @@ function installBrowserTestBridge(){
       interpolationFrame:()=>engine.interpolationFrame(),
       interpolationCanvasStatus:()=>({alpha:interpolationAlpha,renderedActors:renderedInterpolatedActors}),
       advanceWithRenderCadence(ticks,cadence=[1,2,5,9]){ const count=Math.max(0,Math.floor(ticks)),steps=new Set(cadence.map(value=>Math.max(0,Math.floor(value)))),wasFrozen=presentationFrozen(); if(!me()||!lifecycleState.paused) throw new Error('advanceWithRenderCadence requires a paused match'); setPresentationFrozen(true); engine.setLifecycleForDiagnostics('paused',false); try{ for(let i=0;i<count;i++){ tick(); if(steps.has(i%10)) render(); } } finally { engine.setLifecycleForDiagnostics('paused',true); setPresentationFrozen(wasFrozen); } return status(); },
+    prepareAlliedAid(){
+      if(!me()||!lifecycleState.paused) throw new Error('aid fixture requires a paused match');
+      const tile=Array.from(owner).findIndex((id,t)=>land[t]&&id>=0&&id!==me().id&&players[id].kind!=='neutral'&&N4.some(([dx,dy])=>{ const x=t%W+dx,y=Math.floor(t/W)+dy; return inb(x,y)&&owner[idx(x,y)]===me().id; }));
+      if(tile<0) throw new Error('aid fixture requires a bordering nation');
+      const ally=players[owner[tile]]; issue('accept',ally.id,'ally',0);
+      cam.focus(tile%W+.5,Math.floor(tile/W)+.5,viewWidth(),viewHeight(),5); render();
+      return {tile,ally:ally.id,x:viewWidth()/2,y:viewHeight()/2};
+    },
+    aidBalances(id){ const p=players[id]; return {gold:p.gold,troops:p.troops}; },
     focusTarget(kind='owned',scale=4){
       if(!me()) throw new Error('match not started');
       let target=-1,best=Infinity;
@@ -2114,14 +2086,18 @@ cv.addEventListener('contextmenu',e=>{ e.preventDefault(); if(ROLL.on||REPLAY.on
     if(o>=0&&players[o].kind!=='neutral'){ const r=relation(me().id,players[o].id); items.push(`<div class="h">Diplomacy</div>`);
       if(!r){ items.push(`<button data-act="nap">Propose non-aggression pact<b>3 minutes, neither side may attack</b></button>`); items.push(`<button data-act="ally">Propose alliance<b>Lasting peace; your SAMs and ships defend each other</b></button>`); }
       else { if(r.type==='ally'){ items.push(`<div class="h">Aid for ${players[o].name}</div>`);
-          items.push(`<div class="aid"><span>Troops</span><input type="number" id="aidTroops" value="${Math.round(me().troops*0.25)}" min="10" step="10"><button data-act="giveTroops">Send</button></div>`);
-          items.push(`<div class="aid"><span>Gold</span><input type="number" id="aidGold" value="${Math.round(me().gold*0.25)}" min="1" step="10"><button data-act="giveGold">Send</button></div>`);
+          items.push(`<div class="aid"><span>Troops</span><input type="number" id="aidTroops" value="${Math.min(MAX_AID_AMOUNT,Math.round(me().troops*0.25))}" min="10" max="${MAX_AID_AMOUNT}" step="10"><button data-act="giveTroops">Send</button></div>`);
+          items.push(`<div class="aid"><span>Gold</span><input type="number" id="aidGold" value="${Math.min(MAX_AID_AMOUNT,Math.round(me().gold*0.25))}" min="1" max="${MAX_AID_AMOUNT}" step="10"><button data-act="giveGold">Send</button></div>`);
           items.push(`<button data-act="askTroops">Request troops<b>They send from their surplus, if they have one</b></button>`); items.push(`<button data-act="askGold">Request gold</button>`); }
         if(!r.team) items.push(`<button data-act="war">Declare war<b>Breaks the ${r.type==='ally'?'alliance':'pact'}: half growth for ${r.type==='ally'?2:1} min and a reputation hit</b></button>`); } }
   }
   ctx_.innerHTML=items.join(''); ctx_.style.display='block';
   const ww=window.innerWidth,wh=window.innerHeight; ctx_.style.left=Math.min(e.clientX,ww-352)+'px'; ctx_.style.top='0px'; ctx_.style.display='block'; const mh=ctx_.offsetHeight; ctx_.style.top=Math.max(4,Math.min(e.clientY,wh-mh-8))+'px';
-  ctx_.onclick=ev=>{ const b=ev.target.closest('button'); if(!b) return; if(b.dataset.act==='toggle'){ const pnl=ctx_.querySelector('#'+b.dataset.panel); pnl.style.display=pnl.style.display==='none'?'':'none'; return; } hideCtx(); issueMenu({...b.dataset},t,sel.map(w=>w.id),ctx_.site?ctx_.site.t:-1,+ratio.value,+(document.getElementById('aidGold')||{value:0}).value,+(document.getElementById('aidTroops')||{value:0}).value);
+  ctx_.onclick=ev=>{ const b=ev.target.closest('button'); if(!b) return; if(b.dataset.act==='toggle'){ const pnl=ctx_.querySelector('#'+b.dataset.panel); pnl.style.display=pnl.style.display==='none'?'':'none'; return; }
+    const aidKind=b.dataset.act==='giveGold'?'Gold':b.dataset.act==='giveTroops'?'Troops':null;
+    const amount=aidKind?Number(ctx_.querySelector('#aid'+aidKind).value):0;
+    if(aidKind&&(!Number.isFinite(amount)||amount<(aidKind==='Troops'?10:1)||amount>MAX_AID_AMOUNT)){ fail(`Enter ${aidKind==='Troops'?'10':'1'} to ${MAX_AID_AMOUNT.toLocaleString('en-US')} ${aidKind.toLowerCase()} to send.`); return; }
+    hideCtx(); issueMenu({...b.dataset},t,sel.map(w=>w.id),ctx_.site?ctx_.site.t:-1,+ratio.value,aidKind==='Gold'?amount:0,aidKind==='Troops'?amount:0);
   };
 });
 window.addEventListener('mousedown',e=>{ if(!e.target.closest('#ctx')) hideCtx(); });
@@ -2145,7 +2121,9 @@ window.addEventListener('mouseup',e=>{ if(ROLL.on){ const local=viewport.local(e
 cv.addEventListener('wheel',e=>{ e.preventDefault(); if(ROLL.on){ rollSeek(e.deltaY>0?2:-2); return; } const {x,y}=viewport.local(e.clientX,e.clientY);
   cam.zoomAt(x,y,cam.s*(e.deltaY<0?1.15:1/1.15)); },{passive:false});
 window.addEventListener('keydown',e=>{ const tg=e.target; if(tg&&(tg.tagName==='INPUT'||tg.tagName==='SELECT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)) return; if(ROLL.on&&!(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'))){ if(e.key===' '){ e.preventDefault(); rollTogglePause(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); rollSeek(-5); } else if(e.key==='ArrowRight'){ e.preventDefault(); rollSeek(5); } else if(e.key==='Escape'){ if(ROLL.paused&&AUD.ctx) AUD.ctx.resume(); endCredits(); } return; }
-  if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'){ if(closePauseModal()) return; return; } if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); return; }
+  if($('help').style.display!=='none'){ if(e.key==='Escape'){ e.preventDefault(); closeHelp(); } return; }
+  if(e.key==='Escape'&&$('modal').style.display==='none'&&$('restart').style.display!=='flex'&&!buildMode&&!pickMode&&!selected.size&&ctx_.style.display!=='block'&&closePauseModal()){ e.preventDefault(); return; }
+  if(e.key===' '){ e.preventDefault(); if($('modal').style.display!=='none'||$('restart').style.display==='flex') return; if(closePauseModal()) return; if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); return; }
   if(e.key==='Escape'&&$('modal').style.display!=='none'){ if(!closePauseModal()) closeModal(); return; }
   if(e.key==='['&&JUKE.loaded){ jukeNext(-1); return; } if(e.key===']'&&JUKE.loaded){ jukeNext(1); return; }
   if(e.key==='Escape'){setBuild(null);hideCtx(); setPickMode(null); if(selected.size){ selected.clear(); updateHint(); } } const k=HOTKEYS[e.key.toLowerCase()]; if(k){ if(k==='nuke'){ if(ALLOWED.has('missile')) setBuild(buildMode===k?null:k); } else if(ALLOWED.has(k)&&!(STRUCT[k]&&STRUCT[k].fog&&!START.fog)) setBuild(buildMode===k?null:k); } });
@@ -2223,6 +2201,9 @@ function log(msg,mine){ if(SAVES.catchup||REPLAY.creditsMode) return; const p=do
 $('ratio').oninput=e=>$('ratioLbl').textContent=e.target.value+'%';
 window.addEventListener('beforeunload',()=>{ if(me()&&!lifecycleState.over&&!presentationState.matchRecorded) recordMatch('Abandoned'); });
 $('pauseBtn').onclick=()=>{ if(closePauseModal()) return; if(me()&&!lifecycleState.over&&!REPLAY.on&&!lifecycleState.userPaused) openPauseModal(); else togglePause(); };
+$('pmResume').onclick=()=>closePauseModal();
+$('pmSave').onclick=()=>saveAndQuit();
+$('pmRestart').onclick=()=>{ $('restart').style.display='flex'; $('restart').dataset.wasPaused='1'; };
 $('restartBtn').onclick=()=>{ if(!me()) return; const wasPaused=lifecycleState.userPaused; if(!lifecycleState.userPaused) togglePause(); $('restart').style.display='flex'; $('restart').dataset.wasPaused=wasPaused?'1':'0'; };
 $('restartNo').onclick=()=>{ $('restart').style.display='none'; if($('restart').dataset.wasPaused!=='1'&&lifecycleState.userPaused) togglePause(); };
 $('restartYes').onclick=()=>{ if(me()&&!lifecycleState.over) recordMatch('Abandoned'); // remember the start-card choices, then reload the page
@@ -2233,8 +2214,8 @@ $('saveBtn').onclick=()=>{ if(!me()) return; if(lifecycleState.over){ openModal(
 $('restartSave').onclick=()=>{ $('restart').style.display='none'; saveAndQuit(); }; const ovS=$('ovSave'); if(ovS) ovS.onclick=()=>{ if(!canSave()){ openModal(loginPitch('Keep a replay of this match')); return; } openModal('<div class="card" style="text-align:center;width:min(440px,94vw)"><h2 style="margin:0 0 8px;font-size:22px">Replay saved</h2><p class="muted" style="font-size:13px;margin:0 0 12px">Every finished match is kept in your account automatically. Open Games &amp; replays on the start card to watch it, share it, or download a copy.</p><button data-close style="padding:7px 14px">OK</button></div>'); };
 $('gamesBtn').onclick=()=>openGamesModal(); $('ovExit').onclick=()=>PLATFORM.navigate(WP&&WP.homeUrl?WP.homeUrl:'/');
 $('rpSpeed').querySelectorAll('button').forEach(b=>b.onclick=()=>{ engine.configureReplay({speed:+b.dataset.sp}); $('rpSpeed').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); }); $('rpTake').onclick=()=>{ replayTakeOver(); log('You have taken control.',true); }; $('rpExit').onclick=()=>PLATFORM.reload();
-$('jukePrev').onclick=()=>{ audioInit(); jukeNext(-1); }; $('jukeNext').onclick=()=>{ audioInit(); jukeNext(1); }; $('jukePause').onclick=()=>{ audioInit(); jukePause(); }; $('jukeMode').querySelectorAll('button').forEach(b=>b.onclick=()=>{ JUKE.mode=b.dataset.mode; jukeSave(); if(JUKE.src) JUKE.src.loop=JUKE.mode==='one'; jukeRender(); });
-if(WP) jukeLoad(); setInterval(()=>{ if(JUKE.loaded&&(JUKE.src||(JUKE.cur&&JUKE.cur.id==='builtin'))) jukeRender(); },1000);
+$('jukePrev').onclick=()=>{ audioInit(); jukeNext(-1); }; $('jukeNext').onclick=()=>{ audioInit(); jukeNext(1); }; $('jukePause').onclick=()=>{ audioInit(); jukePause(); }; $('jukeMode').querySelectorAll('button').forEach(b=>b.onclick=()=>{ JUKE.mode=b.dataset.mode; jukeSave(); if(JUKE.src) JUKE.src.loop=JUKE.source==='radio'&&JUKE.mode==='one'&&!JUKE.hold; jukeRender(); });
+$('musicSource').onchange=e=>setMusicSource(e.target.value); $('audioCredits').href=audioCreditsURL; jukeLoad(); setInterval(updateBattleAudio,250); document.addEventListener('visibilitychange',()=>{if(document.hidden)SAMPLE?.stop();}); setInterval(()=>{ if(JUKE.loaded&&(JUKE.src||(JUKE.cur&&JUKE.cur.id==='builtin'))) jukeRender(); },1000);
 $('recallDmg').onclick=()=>issue('recallAll','dmg');
 $('recallAll').onclick=()=>issue('recallAll','all');
 $('airAuto').onchange=e=>{ issue('airAuto',e.target.checked); };
@@ -2250,140 +2231,19 @@ function airURL(kind,col='#7fb3ff'){ const c=document.createElement('canvas'); c
   else { x.beginPath(); x.moveTo(9,0); x.lineTo(2,-2); x.lineTo(-2,-9); x.lineTo(-5,-9); x.lineTo(-4,-2); x.lineTo(-8,-2); x.lineTo(-9,-4); x.lineTo(-10,-4); x.lineTo(-10,4); x.lineTo(-9,4); x.lineTo(-8,2); x.lineTo(-4,2); x.lineTo(-5,9); x.lineTo(-2,9); x.lineTo(2,2); x.closePath(); }
   x.fill(); x.stroke(); return c.toDataURL(); }
 function shipURL(cls,col='#7fb3ff'){ const c=document.createElement('canvas'); c.width=64; c.height=36; drawShip(cls,32,18,0,cls==='battleship'?13:cls==='scout'?9:cls==='transport'?16:11,col,null,null,c.getContext('2d')); return c.toDataURL(); }
-const HELP={
- basics:()=>`<p>Start small, eat the neutral countries around you, build an economy and a navy, hold 72% of the land. Matches run 15–25 minutes.</p>
- <h3>Controls</h3><table class="ktable">
- <tr><td>Left-click a bordering country</td><td>Invade along the whole shared frontier with the share of your army set by the <b>Send into attack</b> slider. The advance stops when that country falls; click again to reinforce.</td></tr>
- <tr><td>Right-click your land</td><td>Build menu (or cancel a construction site).</td></tr>
- <tr><td>Right-click enemy land</td><td>Send a transport, launch a missile, diplomacy, missile-command focus.</td></tr>
- <tr><td>Right-click water</td><td>Send a ship from your nearest port, or a port on your own coast.</td></tr>
- <tr><td>Click a ship · Shift-drag</td><td>Select ships. Right-click water to move them, an enemy port to blockade. Esc deselects.</td></tr>
- <tr><td>Scroll · drag · Space</td><td>Zoom · pan · pause.</td></tr>
- <tr><td>Saves and replays</td><td>Logged-in players get saves and replays on their account. The game autosaves every 30 seconds; Save & quit on the pause card (Space or ⏸) keeps a named copy and returns to the site; 💾 saves without leaving. Every finished match is kept as a replay. Games & replays on the start card lists them: Resume picks a match up where you stopped on any device, Watch plays a replay at 1–8× with a Take over button, and Download keeps a .state copy. </td></tr>
- <tr><td>Hotkeys</td><td>Press a key, then click a tile. Each key is shown as a badge in the build menu. <kbd>C</kbd> city · <kbd>F</kbd> factory · <kbd>P</kbd> port · <kbd>S</kbd> SAM · <kbd>H</kbd> shield · <kbd>M</kbd> silo · <kbd>K</kbd> missile command · <kbd>D</kbd> bastion · <kbd>G</kbd> shore guns · <kbd>B</kbd> coastal battery · <kbd>T</kbd> Big Bertha · <kbd>A</kbd> airfield · <kbd>O</kbd> flight operations · <kbd>U</kbd> submarine base · <kbd>Y</kbd> troop command · <kbd>E</kbd> engineering command · <kbd>R</kbd> radar · <kbd>L</kbd> long-range radar · <kbd>J</kbd> jammer · <kbd>I</kbd> satellite site · <kbd>N</kbd> missile · <kbd>Space</kbd> pause · <kbd>Esc</kbd> cancel · <kbd>[</kbd> <kbd>]</kbd> previous / next song.</td></tr>
- <tr><td>Economy slider</td><td>Shift growth between troops (1.6× at the end) and gold (1.6× at the other end).</td></tr>
- </table>
- <h3>Rules of thumb</h3><table class="ktable">
- <tr><td>Density</td><td>Troops ÷ tiles. Land costs more to take the denser its defender; a thin army is cheap to invade and invites neutrals and allies to turn on you.</td></tr>
- <tr><td>Neutrals</td><td>Never attack first. Once hit they mobilize and push back for ~40 s, but only against an attacker spread thinner than they are. Conquering one pays plunder — tripled in the first minutes.</td></tr>
- <tr><td>Landmasses</td><td>Own every tile of an island or continent for a one-time troop windfall and a lasting growth bonus. Rivers block land attacks; cross them by transport.</td></tr>
- <tr><td>Nuked</td><td>When a missile lands on your land, a red card at the top of the screen names the attacker ("NUKED BY EGYPT"), an air-raid siren sounds, the launching silo flashes red rings for as long as the siren sounds (about 9 s), and if the silo is off screen a flashing red arrow at the screen edge points toward it with the attacker's name. Right-click their land to concentrate missile command on them.</td></tr>
- <tr><td>Fallen nations</td><td>When a named nation is wiped out, a banner takes the centre of the screen for a few seconds — its flag struck through, "EGYPT — FALLEN, killed by France", the killer's flag at the right — without interrupting play, and a short bugle call sounds (quietly if you weren't involved). Fallen nations stay at the bottom of the sidebar list, struck through, with who killed them. The same banner in gold announces a continent unified — by anyone — or any landmass you unify yourself, with the windfall and the hold bonus it now pays, and a short fanfare.</td></tr>
- <tr><td>Collapse</td><td>A nation whose army hits zero while you're taking its land falls at once on the landmasses you're fighting on — the rest of its territory there is yours without painting it tile by tile. The same happens to anyone reduced to under 25 tiles. Holdings across water are not touched: the nation survives there as a rump state until someone lands on it.</td></tr>
- <tr><td>Unclaimed land</td><td>Craters and burnt ground cost nothing to take — the troops you commit set the speed and come home in full when it's done. Fighting a nation costs troops per tile — more the denser the defender, up to 8 per tile — and never more in total than about 1.5× what the defender has left, plus attrition of 10% of what the fight cost. Everything you didn't spend comes home.</td></tr>
- <tr><td>Force and speed</td><td>An attack that can afford many sweeps of its front advances up to 3× faster; one that can barely pay crawls.</td></tr>
- </table>`,
- build:()=>`<div class="hcards">${Object.values(STRUCT).map(S=>`<div class="hcard"><img src="${iconURL(S.key)}" width="44" height="44" alt=""><div><div class="t">${S.label}</div><div class="m">${S.cost} gold${BUILD_TICKS[S.key]?' · '+Math.round(BUILD_TICKS[S.key]/10)+' s':' · instant'}</div><div class="d">${S.desc.replace(/^\d+ (s|min) to build\. /,'')}</div></div></div>`).join('')}</div>
- <h3>Notes</h3><table class="ktable">
- <tr><td>Spacing</td><td>Buildings need 6 tiles of clearance from each other. You don't have to be exact: click within 5 tiles of a valid spot and the building lands on the nearest tile that fits (coastal buildings on the nearest coast).</td></tr>
- <tr><td>Supply lines</td><td>A factory links to every city and port of yours within 34 tiles (4 per factory, 3 per city, 2 per port). Each line: +30% gold for the factory; +1.2 troops/s per line for a city; +1 gold/s and 15% cheaper ships for a port.</td></tr>
- <tr><td>Construction</td><td>Sites do nothing until finished, can be captured (progress kept) or bombarded, and cancelled for half the gold. A city with three linked factories speeds nearby building by 25%.</td></tr>
- <tr><td>Cities</td><td>+300 troops the moment they're built.</td></tr>
- </table>`,
- ships:()=>`<div class="hcards">${Object.values(SHIPS).map(S=>`<div class="hcard"><img src="${shipURL(S.key)}" width="64" height="36" alt=""><div><div class="t">${S.label}</div><div class="m">${S.cost} gold · ${SHIP_BUILD[S.key]?Math.round(SHIP_BUILD[S.key]/10)+' s':'instant'} · ${S.hp} hp · ${Math.round(S.speed*10)} tiles/s</div><div class="d">Gun ${S.gun}${S.dmg>1?' (×'+S.dmg+')':''}${S.sam?' · SAM '+S.sam+' ('+Math.round(S.samHit*100)+'%)':''}${S.barrage?' · barrage '+S.barrage.count+' missiles / '+S.barrage.range+' tiles every '+Math.round(S.barrage.cd/10)+' s':''}. ${S.desc}</div></div></div>`).join('')}</div>
- <h3>Notes</h3><table class="ktable">
- <tr><td>Cruise missiles</td><td>Select a battleship within 34 tiles of one of your level II ports and right-click water: <b>Refit with cruise missiles</b>, 400 gold, 30 s at anchor. It then fires two cruise missiles every 40 s at targets up to 120 tiles inland — shield generators first, then SAM sites, then anything of a nation it's fighting. They fly straight and low at 25 tiles/s (a silo missile lobs at up to 60), so a 120-tile shot takes about 5 s. Each hit craters a 3-tile radius like a bomb; SAMs engage them at 60% of normal effectiveness; a shield dome absorbs one for 1 hp. The ship shows a "CM" badge.</td></tr>
- <tr><td>Submarines</td><td>A submarine base (450 gold, coast, needs a level II port within 34 tiles) builds <b>attack subs</b> (300 gold, 3 hp, torpedoes: 3 damage, one-shot ordinary transports, 10 s reload, 14 tiles) and <b>hunter subs</b> (300 gold, 3 hp, torpedo only other subs, spot them at 20 tiles). Subs are invisible — and untargetable — unless within 8 tiles of a destroyer or radar ship, or 20 of a hunter; under fog they're hidden outright. Their torpedoes aren't: a torpedo leaves a long foam wake you can see whenever the water is in view, which tells you a sub is out there and roughly where. Guns, batteries and heavy transports can't fire at them at all. They carry no SAM and don't shoot land. Attack subs engage transports headed for their owner and ships of nations they're fighting, plus loitering cruisers and battleships.</td></tr>
- <tr><td>Transports</td><td>Right-click a country you don't border. Embarks from your coast nearest to them, lands on theirs; no port needed. One hit sinks it — unless it's a <b>heavy transport</b>: once you own a level II port (per area with Garrisons, everywhere without), every transport you send — invasions, reinforcements, gifts — sails as a heavy: 4 hp, 25% slower, and a 12-tile gun that returns fire at whatever shot it last (never at subs). A lone destroyer loses the exchange; shore guns in pairs still win.</td></tr>
- <tr><td>Upgrades</td><td>Right-click a finished port or airfield to upgrade it to level II (port 500 gold / 60 s; airfield 600 / 90 s). Level shows as "II" on the icon; captured buildings keep their level; bombardment knocks a level II back to I instead of destroying it. Port II: built-in shore guns with 4 hp of their own, shown as pips under the icon (red when low; right-click the port to repair them, 25 gold per pip) — ships and heavy transports shoot back at them, and when they're shot out the port drops to level I — plus heavy transports and the submarine-base unlock. Airfield II: 6 hangar slots, light shield dome, stealth troop transports.</td></tr>
- <tr><td>Salvage</td><td>Sinking a transport pays 30% of the troops aboard in gold; a merchant pays 60.</td></tr>
- <tr><td>Barrage</td><td>Craters land, kills troops (20 + 0.8% of the army per hit, max 150, plus whoever was standing on the cratered tiles) and suppresses the area for 30 s: half cost to invade, bastions and SAM sites there knocked out. Hunts SAM sites first.</td></tr>
- <tr><td>Merchants</td><td>Every port sends one every ~20 s to any port you aren't fighting. Both sides earn gold on arrival. Blockade an enemy port to starve it — or send privateers: they grapple any non-allied merchant within 8 tiles — it heaves to while the privateer comes alongside, then 2 s of boarding, which then sails to your nearest port and pays double cargo on arrival. One capture per 10 s per privateer; piracy starts hostilities.</td></tr>
- </table>`,
- garrisons:()=>`<p>A toggle at the top of the start card. It changes what an army <i>is</i>, so it gets its own page.</p><p>Normally your army is one number that defends every tile you own. With Garrisons on, troops live where they are: every <b>contiguous area</b> of your land has its own garrison, and water — sea or river — is what separates areas. Growth accrues per area in proportion to its land; a city's +300 goes to the city's area; a continent windfall lands on that continent.</p><p><b>Attacking:</b> left-click a bordering nation and the attack draws the slider's share of the area that shares the border. Survivors return to that area. To send from somewhere else, right-click the target and choose <b>Send troops here from an area you click</b>, then click any of your land: that area sends the slider's share of its own garrison — by land if it borders the target, otherwise by transport. <b>Reinforcing</b> your own area works the same way: right-click it, "Reinforce this area from an area you click", click the source. Transports face shore guns and warships on the way, so a distant stronghold helps only as fast as your navy can carry it. <b>Merging</b> is automatic — conquer the land between two areas and their garrisons combine; lose a corridor and they split. <b>Defense</b> reads the local garrison: neutrals push back and allies betray based on the density of the area they touch, and every casualty from bombardment, bombs and nukes comes off the area that was hit. The sidebar lists your areas (hover to highlight) and the map shows each garrison's count. Bots follow the same rules and ship reinforcements to thin beachheads.</p>
-
- <h3>Why play it</h3><p>Without Garrisons, a big empire is safe everywhere at once. With it, every coastline you hold is only as safe as the troops actually standing on it, and the navy becomes your logistics as well as your weapon. Expect more small wars at the edges, more use of ports and shore guns, and a real reason to consolidate land into connected blocks before pushing on.</p>
- <h3>Tips</h3><table class="ktable"><tr><td>Watch the list</td><td>The sidebar area list is your early warning. A beachhead reading 80 troops next to an enemy at 3,000 is about to be pushed back into the sea.</td></tr><tr><td>Cities on the front</td><td>A city's +300 lands in its own area, so building one on a beachhead is the fastest way to stiffen it.</td></tr><tr><td>Bridge the river</td><td>Two areas split by a river merge the moment you own both banks all the way around — often cheaper than ferrying reinforcements for the rest of the match.</td></tr><tr><td>Escort the convoys</td><td>Reinforcements sail as transports and die to one hit. A destroyer on the lane and shore guns at the landing make the difference.</td></tr></table>`,
- about:()=>`<h3>Statefall RTS</h3><p><b>Version ${GAME_VERSION}</b> · build ${GAME_BUILD}${WP&&WP.version?' · site package '+WP.version:''}</p><p>A real-time strategy game that runs in a browser tab. Start as one small nation among a hundred, eat the neutral countries around you, build an economy and a navy, and hold 72% of the land against nine rival nations. A match runs 15–25 minutes.</p>
- <h3>Community</h3><p>${WP?`Talk strategy, share seeds, and report bugs or suggestions on the <a href="${WP.communityUrl||'/community/'}" target="_blank">community board</a>. Include the seed of the match (shown in the sidebar) when it's about a specific map.`:'Talk strategy and report bugs on the community board at the Statefall site.'}</p>
- <h3>Your data</h3><p>${WP?`Playing here while logged in posts each finished match to the site's community leaderboard under your account. Scores are player-submitted and are not independently verified. See the site's <a href="${WP.privacyUrl||'/privacy-policy/'}" target="_blank">privacy policy</a> for exactly what is kept.`:'Playing from a file keeps everything on this device.'}</p>
- <h3>Credits</h3><p>Designed and built by That Company. Map data: Natural Earth (public domain).</p>
- <h3>Recent changes</h3><table class="ktable">
-  <tr><td>1.10.32</td><td>Phase F2 high-resolution Terrain Direction 02 translation pending in-game human visual review; Canvas remains production.</td></tr>
-  <tr><td>1.10.31</td><td>Superseded Phase F1 1x terrain-raster candidate; changes requested.</td></tr>
-  <tr><td>1.10.30</td><td>Phase E technically complete locally: bounded future-atlas contract and named physical-GPU qualification; migration art remains procedural and Canvas remains production.</td></tr>
-  <tr><td>1.10.29</td><td>Development-only Phase E17 Pixi final pick, selection, draft, paused, and build-cursor visuals after E16 49967b0. Input remains on Canvas.</td></tr>
-  <tr><td>1.10.27</td><td>Development-only Phase E15 Pixi opening marker, region labels, and hovered SAM-network annotations after nation overlays.</td></tr>
-  <tr><td>1.10.26</td><td>Development-only Phase E14 Pixi nation overlays after global effects.</td></tr>
-  <tr><td>1.10.25</td><td>Development-only Phase E13 Pixi global effects after floating text. Canvas retains nation/global labels and every later world layer.</td></tr>
-  <tr><td>1.10.24</td><td>Development-only Phase E12 Pixi floating text after support actors. Canvas retains scorches, sparks, smoke, global effects, and every later world layer.</td></tr>
-  <tr><td>1.10.20</td><td>Development-only Phase E8 Pixi strategic and cruise missiles after projectiles. Canvas retains aircraft and every later world layer.</td></tr>
-  <tr><td>1.10.19</td><td>Development-only Phase E7 Pixi shell projectiles and short visual gun lines after warships.</td></tr>
-  <tr><td>1.10.16</td><td>Development-only Phase E4 Pixi complete ordered structure scene: fronts, routes, pre-base status/ranges, bases, post-base marks, and structure labels. Canvas retains mobile entities, effects, later labels, selection, and input.</td></tr>
-  <tr><td>1.10.15</td><td>Development-only Phase E3 Pixi fronts, routes, pre-base structure status/ranges, and structure bases; Canvas retains post-base overlays, entities, effects, labels, selection, and input.</td></tr>
-  <tr><td>1.10.14</td><td>Development-only Phase E2 Pixi structure-base layer; Canvas retains all structure overlays and input.</td></tr>
-  <tr><td>1.10.13</td><td>First development-only Phase E pixi-hybrid foundation; production and default rendering remain Canvas.</td></tr>
-  <tr><td>1.10.12</td><td>Development-only completed Phase D2 two-human lockstep and shared replay technical proof.</td></tr>
- <tr><td>1.10.11</td><td>Fresh candidate identity with trailer capture output isolated from production builds.</td></tr>
- <tr><td>1.10.10</td><td>Phase D1 deterministic runtime seam: counted RNG, command/replay bookkeeping, canonical v1 serialization, and tick ordering are importable without browser APIs while simulation behavior remains unchanged.</td></tr>
- <tr><td>1.10.9</td><td>Vite and ES modules, with the legacy Canvas renderer and simulation behavior preserved.</td></tr>
- <tr><td>1.10.8</td><td>Seeded target selection is deterministic across JavaScript engines, with one random key generated per candidate before sorting.</td></tr>
- <tr><td>1.10.7</td><td>Site rankings are now explicitly labeled as community-submitted and not independently verified.</td></tr>
- <tr><td>1.10.6</td><td>Security update: saved and public replay nation data is validated and normalized before display, and notices render untrusted text safely.</td></tr>
- <tr><td>1.10.0</td><td>Bastions stack: every bastion covering a tile doubles the cost of taking it again, up to 64×; bastions upgrade to level II (24-tile range) and III (32 tiles); each one you own makes the next dearer. Shelling still cancels the bonus. Hover any tile to see its fortification.</td></tr>
- <tr><td>1.9.0</td><td>The credit roll replays your whole match behind the text, from the first province to the final shape of the map, paced to end with the credits.</td></tr>
- <tr><td>1.8.0</td><td>Your own nation: design a flag at 10 qualifying wins (fields, stripes, crosses, stars and 25 emblems), name it at 15, and at 25 it joins the world as a rival nation in other players' matches. Flags on the leaderboard and public player pages.</td></tr>
- <tr><td>1.7.0</td><td>Super hard and Impossible bots have an economy brain: city openings, no gold hoarding, coastal guns, gun-aware landings, earlier port upgrades and earlier coalitions against the leader. Replays are exact (three clock and random-number leaks fixed); divergences can be reported from the game; replays never post scores.</td></tr>
- <tr><td>1.6.0</td><td>Saves and replays live on your account: autosave, Save & quit from a new pause card, automatic replays of every finished match, and a Games & replays library with Resume, Watch, Rename, Delete and Download. Loading shows a progress bar and waits for Play now.</td></tr>
- <tr><td>1.5.0</td><td>Saves and replays: every order is recorded, matches are fully deterministic from the seed, and a match can be saved, resumed, watched at up to 8× and taken over. Groundwork for multiplayer.</td></tr>
- <tr><td>1.4.0</td><td>Custom credits builder: your own quote (the generals reply), a title, a dedication, a nemesis card, a highlight moment, a tone, and your choice of song, with a preview and Edit / Approve before anything is public. Draft picks are marked with flags and numbers. In-game music rotation fixed.</td></tr>
- <tr><td>1.3.0</td><td>Credits roll automatically to the victory or defeat track, open with a fade and a STARRING card, pan the whole map without leaving it, close with producer, music and disclaimer cards, and can be shared with Copy link. Watch pages end with a Play-this-map button.</td></tr>
- <tr><td>1.2.0</td><td>Credit roll: the match's campaign timeline, numbers, honours, rivals and fallen nations scroll over the final map to a song of your choice; every posted score has a public Watch page and a Facebook share; profiles show career totals.</td></tr>
- <tr><td>1.1.0</td><td>Music player: the site's music library with in-order, shuffle and loop-one modes, per-song selection, stings for victory, defeat and a #1 placement. Leaderboard Play buttons open the right class.</td></tr>
- <tr><td>1.0.0</td><td>Garrisons mode; airfields with fighters, bombers and troop transports; submarines; level II ports and airfields; shield generators; coastal guns and Big Bertha; missile, flight, troop and engineering command; seeded maps and restart; leaderboards with classes; banners for fallen nations and unified continents; tiered sound; the animation pass.</td></tr>
- </table>`,
- modes:()=>`<p>Modes change how a match starts or how the world works. Quick start, Risky start and End game are exclusive; everything else combines. Garrisons has its own tab. Each combination has its own leaderboard class.</p>
- <h3>Fog of war</h3><p>Ownership and names stay visible; troop counts, buildings, ships and missiles are hidden outside your vision. You see 8 tiles past your own and allied land, plus radar stations (45), long-range radar (110), radar ships (60), your warships (gun range), fighter patrols, spy planes (need an airfield) and the satellite. Radar jammers blank enemy radar within 30 tiles but not eyes. Your SAMs only engage missiles you can see; missile command only targets what you can see.</p>
- <h3>Quick start</h3><p>Everyone begins with a large contiguous holding absorbed from the neutrals around them, 4× troops and 5× gold. The land grab is mostly done; the match starts at the point where ports, factories and fronts matter.</p>
- <h3>Risky start</h3><p>Nobody starts with land. Players and bots draft neutral countries round-robin in a shuffled order, 2–8 picks each depending on the map, then the war begins. Picks can be anywhere — a concentrated block or a gamble spread across the map.</p>
- <h3>End game</h3><p>The whole map is divided between players and bots at the start by flood-fill from each spawn, no neutrals, everyone at 45,000 troops and 15,000 gold. It's the late game from minute zero.</p>
- <h3>Instant build</h3><p>No construction or shipyard timers — except shield generators and level II upgrades, which keep their timers so a shield can be worn down and not simply rebuilt on the spot. Repairs always take time.</p>
- <h3>Billionaire</h3><p>You alone start with a billion troops and a billion gold.</p>
- <h3>Paused orders</h3><p>Normally a paused game is for looking: no building, buying, launching or attacking until you unpause. This mode lets you give orders on a stopped clock. Because that's an advantage, matches played with it sit on their own leaderboard class ("Standard + Paused orders", and so on).</p>
- <h3>Teams</h3><p>Nations are dealt round-robin into 2, 3 or 4 permanent teams. Teammates can't declare war, share vision under fog, defend each other's land with SAMs and ships, trade automatically and can send aid. A team's combined land wins at 72%; map colors tint toward the team color.</p>
- <h3>Difficulty</h3><p>Difficulty changes what the bots <i>do</i>, not only how fast they grow. Super easy bots never learn. Easy bots place defenses sensibly. <b>Normal</b> bots also manage their economy slider and reinforce an attack that's winning — that's the level the game is balanced around. Hard bots remember where they were hit (missiles, landings, bombs, torpedoes, blockades) and build the answer there, pick a focus enemy for a few minutes at a time, break off attacks that stall, refuse pacts from a nation past 45% of the land and ally with each other against it. Super hard adds air power — an airfield by minute six, patrols, bombers, paradrops on thin coasts. Impossible does all of it with the biggest growth and aggression multipliers.</p>
- <h3>Settings</h3><p>Starting troops and gold (with an option to give bots the same), No troop cap (armies grow past the cap at full rate), and the list of allowed buildings, ships and weapons — disabling a unit removes it for everyone.</p>`,
- air:()=>`<div class="hcards">${[['fighter','Stealth fighter',`${AIR.fighter.cost} gold · ${AIR.fighter.build/10} s · ${AIR.fighter.hp} hp · ${Math.round(AIR.fighter.speed*10)} tiles/s`,'Patrols a 25-tile circle for 10 min, then 2 min refueling. Untouchable by SAMs. Kills bombers, troop transports and spy planes in its circle; dogfights enemy patrols with air-to-air missiles. Recall from the Air panel; repairs 1 pip per 20 s at base.'],['bomber','Stealth bomber',`${AIR.bomber.cost} gold · ${AIR.bomber.build/10} s · 1 hp · ${Math.round(AIR.bomber.speed*10)} tiles/s · range ${AIR.bomber.range}`,'Runs a 30-tile strip through the target dropping 8 bombs, each 1/8 of a nuke, cratering and suppressing. Holds bombs over friendly ground. Ignores SAMs and guns; stopped by fighters and shield domes.'],['carrier','Stealth troop transport',`${AIR.carrier?AIR.carrier.cost:500} gold · ${AIR.carrier?AIR.carrier.build/10:40} s · range ${AIR.carrier?AIR.carrier.range:200}`,'Airfield II only. Carries up to 1,500 troops and drops them by parachute anywhere in range — a beachhead with no coast, no port and no shore guns to face. Shot down by fighters; troops aboard are lost.'],['spy','Spy plane',`${FOG.plane.cost} gold · ${FOG.plane.cd/10} s cooldown`,'Fog of war only. Flies from an airfield, circles a 35-tile area for 45 s revealing everything in it. After 15 s on station SAM sites get up to three 15% shots; an enemy fighter patrol kills it.']].map(([k,n,m,d])=>`<div class="hcard"><img src="${airURL(k)}" width="64" height="40" alt=""><div><div class="t">${n}</div><div class="m">${m}</div><div class="d">${d}</div></div></div>`).join('')}</div>
- <h3>Notes</h3><table class="ktable">
- <tr><td>Airfield</td><td>600 gold, 90 s. 4 hangar slots (6 at level II). Buy aircraft from its right-click menu; aircraft have a combat radius from their home field (fighters 160, bombers 260, transports 200). Losing the field loses its aircraft. Upgrade to level II (600 gold, 90 s) adds a light shield dome (6 hp, 8 tiles) and the troop transport.</td></tr>
- <tr><td>Flight operations</td><td>400 gold, 60 s. Buys aircraft with a 300-gold reserve, keeps patrols over SAM belts, airfields, silos and guns, recalls fighters at 2 hp or when outnumbered, and strikes enemy targets not under fighters or a dome. Toggle in the Air panel.</td></tr>
- <tr><td>Dogfights</td><td>Overlapping enemy patrols exchange air-to-air missiles every 3 s — 85% to hit if you're outnumbered in the overlap, 60% otherwise. A recalled fighter takes parting shots while it escapes; at 0 hp it's gone.</td></tr>
- <tr><td>Recall</td><td>Air panel in the sidebar (per aircraft, Recall damaged, Recall all) or right-click near a patrol.</td></tr>
- </table>`,
- systems:()=>`<table class="ktable">
- <tr><td>Diplomacy</td><td>Right-click a nation: 3-minute pact or lasting alliance. Nobody can attack, land on, bombard or nuke the other; allies' SAMs and ships defend each other and trade automatically. Bots accept more readily when you're stronger, when they're already at war, and when your reputation is good — and break pacts with soft partners once the neutrals are gone. Declaring war halves your growth for a while and costs reputation.</td></tr>
- <tr><td>Allied aid</td><td>Right-click an ally to send gold or troops (by land if you share a border, else by transport) or to request either from their surplus. Allies under attack ask you for help in the Diplomacy panel.</td></tr>
- <tr><td>Air defense</td><td>SAM sites and ship SAMs engage missiles passing through their range — flight path, not just target — when the missile is aimed at their owner's or an ally's land, or their owner is at war with the launcher. 96% kill, 2.5 s reload: one site can stop two spaced missiles, not three together. Hover one of your SAM sites or ships to see your whole network (allies' too); enemy coverage isn't shown.</td></tr>
- <tr><td>Coast & artillery</td><td>Shore guns (14 tiles, rapid fire) sink transports and light ships; against armored hulls their damage is divided by 2 (destroyer), 3 (cruiser), 5 (battleship). Guns never fire on merchant ships. They fire at warships of nations you're in conflict with — attacks, bombardment, missiles or ship-to-ship fire in the last minute — plus any transport at all that comes within range (unless its owner is your ally or pact partner — sinking one starts hostilities), and any cruiser or battleship loitering in range. Nothing fires until the progress arc completes. Coastal batteries outrange a battleship's guns (34 tiles) and hit for 3 every 8 s. Both are knocked out while under bombardment, destroyed if overrun, and have hit points (shore guns 3, batteries 6): any armed ship of a nation you're fighting — or one your gun has fired on — shoots back with its main gun, and cruiser and battleship barrages target guns first. Big Bertha lobs an uninterceptable shell every 20 s at the nearest enemy building within 60 tiles — SAM sites, bastions and guns first — cratering and suppressing like a barrage. Ships hunt guns the way they hunt SAM sites, and a level II port's guns count as guns.</td></tr>
- <tr><td>Air</td><td><b>Airfield</b> 600 gold, 90 s: hangar for 4 aircraft, bought from its right-click menu; spy planes need one within 150 tiles. <b>Stealth fighter</b> 350 gold: right-click → Fighter patrol here — a 25-tile circle for 10 minutes, then 2 minutes refueling. Untouchable by SAMs. Kills any enemy bomber or spy plane in its circle. Overlapping enemy patrols dogfight: every 3 s each fighter risks 1 HP — 85% if outnumbered, 60% otherwise. Recall from the Air panel in the sidebar, or right-click near the patrol; a recalled fighter takes parting shots while it escapes, lands, repairs 1 pip per 20 s, and flies again — or dies en route at 0 HP. <b>Stealth bomber</b> 450 gold: right-click → Bomber strike here — flies to the point and runs a 30-tile strip dropping 8 bombs, each 1/8 of a nuke, cratering and suppressing. Bombs are held over your own or allied ground and the run extends until all 8 have found enemy land. Ignores SAMs and guns; stopped only by fighters and shield domes (1 dome HP per bomb). Big Bertha, batteries, silos and shields shrug off a single bomb 30% of the time. <b>Flight operations</b> 400 gold, 60 s: buys aircraft (2 fighters and 1 bomber per field, keeping a 300-gold reserve), patrols your SAM belts, airfields, silos and guns, recalls fighters at 2 HP or when outnumbered, and strikes enemy targets that aren't under fighters or a dome. Toggle in the Air panel.</td></tr>
- <tr><td>Shield generator</td><td>900 gold, 150 s. A 12-tile dome that stops every missile aimed inside it — the SAMs shoot first, and whatever they miss the dome absorbs at 100% — at a cost of 2 of its 10 hit points per missile. A nuke landing nearby can't reach under the dome either — the ground inside is untouched and the dome takes a hit for it. It never decays; it dies to hits, to barrages (cruisers hunt it first), or to being overrun. Right-click it to repair at 25 gold per pip, one pip per 6 s (pauses for 15 s after each hit; never instant). Naval guns, barrages and Big Bertha pass through the dome, so a shielded strongpoint has to be taken by fleet or by land.</td></tr>
- <tr><td>Missiles</td><td>280 gold from a silo (20 s reload each). A hit craters a 20-tile radius, destroys buildings and kills the troops standing on the cratered ground: a quarter of a big area's garrison if the circle covers a quarter of it, all of a small island's if it covers the island. To get through a defended coast, bombard the SAMs with cruisers first, or salvo.</td></tr>
- <tr><td>Engineering command</td><td>450 gold, 60 s. Keeps up to four repair trucks. Whenever something repairable on your contiguous land is damaged — a shield generator, an airfield II's shield, a coastal battery, shore guns, Big Bertha, a port II's guns — a truck drives out over your own land, repairs one pip every 8 s at 15 gold a pip (keeping a 150-gold reserve), and drives back. Any repair — truck or manual — pauses for 15 s after the target takes a hit. Trucks are lost if the ground under them is captured, and they can't cross water.</td></tr>
- <tr><td>Troop command</td><td>400 gold, 90 s. Each center adds 10% to troop growth, stacking to four (+40%). With Garrisons on it also runs logistics: every 4 s it looks for areas of 40+ tiles that are threatened — bordering a nation it's fighting or a provoked neutral, or under attack — and brings the most threatened up toward 60% of the home area's density (bare areas under 20% get topped up to 20%), counting troops already in transit, one shipment per area per 20 s, never more than 15% of home per shipment and never below a 30% home reserve. Before a convoy sails it checks the route: hostile warships within 20 tiles of the path, subs it can see, and enemy guns at the landing. If the lane is contested it paradrops instead when a troop transport is in range; otherwise it holds the convoy and tells you — except when the destination is actually under attack, when it runs the lane with half the shipment. Toggle in the sidebar.</td></tr>
-  <tr><td>Command links</td><td>Command buildings draw dashed links to what they control — orange from missile command to the silos in its 45-tile range, cyan from flight operations to airfields, green from troop command to nearby cities and ports — with a pulse running along each, like the gold supply lines between factories and cities.</td></tr>
- <tr><td>Missile command</td><td>Controls silos within 45 tiles and fires them at the most valuable targets of nations you're fighting, waiting to fire the full salvo a SAM site needs. Overlapping centers cut missile prices 15% each (max 45%). Right-click a nation to focus it; toggle in the sidebar.</td></tr>
- <tr><td>Teams</td><td>Permanent alliances dealt round-robin; a team's combined land wins. Map colors tint toward the team color.</td></tr>
- <tr><td>End game</td><td>72% wins; you can keep playing. If only allies remain you choose between a shared victory proposal and war. 100% ends the match outright.</td></tr>
- <tr><td>Music player</td><td>On the site, the mixer gains a player: the site's music library for the start card and for matches, with ◀ ▮▮ ▶, In order / Shuffle / Loop one, and a checkbox per song to choose the rotation (one tick = just that song). Click a title to play it now; [ and ] skip. Victory and defeat stings duck the music; a #1 placement on the site has its own sting. The game's own generative score plays only when a list is empty or the game is played from a file.</td></tr>
- <tr><td>Music</td><td>The start card plays a written theme; the match plays a generative score that shifts sections every couple of minutes, never repeats exactly, and swells with percussion while you're under attack. Mixer has a Music slider and toggle.</td></tr>
-
-
-
- <tr><td>Leaderboard</td><td>Every finished match is recorded in this browser: result, country, map, difficulty, modes, time, land, nations eliminated, peak troops and the seed (click it to replay that map). Score = land% × difficulty × mode bonus (fog 1.25, risky 1.15) × result ÷ minutes. Each class of match has its own board: Standard, Billionaire, Quick start, End game, Risky start, Instant build, No cap, Custom start, teams — and combinations like "Quick start + Instant build". The dropdown opens on a combined view — the top 3 of every class you've played, each with a "Play a random … match" button that sets that class up with a random map, difficulty, country and seed and starts immediately; pick a class from the dropdown for its full board. A match you restart or leave is recorded as Abandoned. Best time per map and difficulty is highlighted in gold.</td></tr>
- <tr><td>Map seed</td><td>The seed on the start card decides the map, rivers, neutral borders and start positions. Restart keeps it, so you can retry the same opening; type a friend's seed to play their map; press New for a fresh one.</td></tr>
- <tr><td>Maps</td><td>Generated: Continents, Land (lakes and rivers, no ocean), Large / Medium / Small islands, Atoll. Real: World, Europe, Americas, Africa, Asia, Middle East — real countries in place, big ones split into provinces.</td></tr>
- </table>`
-};
-function showHelp(tab='basics'){ $('helpBody').innerHTML=HELP[tab](); document.querySelectorAll('.htab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab)); $('help').style.display='flex'; }
+const HELP=Object.fromEntries(['basics','build','ships','air','systems','garrisons','modes','about'].map(tab=>[tab,()=>renderHelpGuide(tab)]));
+let helpPausedMatch=false;
+function closeHelp(){ $('help').style.display='none'; if(helpPausedMatch&&lifecycleState.userPaused&&!lifecycleState.over) togglePause(); helpPausedMatch=false; }
+function showHelp(tab='basics'){ if($('help').style.display==='none'&&me()&&!lifecycleState.over&&!lifecycleState.paused&&!REPLAY.on&&!ROLL.on){ togglePause(); helpPausedMatch=true; } $('helpBody').innerHTML=HELP[tab](); document.querySelectorAll('.htab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab)); $('help').style.display='flex'; $('helpBody').scrollTop=0; $('helpBody').closest('.card').scrollTop=0; }
 document.querySelectorAll('.htab').forEach(b=>b.onclick=()=>showHelp(b.dataset.tab));
 $('helpBtn1').onclick=()=>{ if(WP&&WP.howtoUrl) PLATFORM.navigate(WP.howtoUrl); else showHelp('basics'); }; $('helpBtn2').onclick=()=>showHelp('basics'); // start card → site pages when hosted; the in-game ? button keeps the modal
 $('boardBtn').onclick=()=>{ if(WP&&WP.boardUrl) PLATFORM.navigate(WP.boardUrl); else showBoard(); }; $('ovBoard').onclick=()=>{ if(WP&&WP.boardUrl) window.open(WP.boardUrl,'_blank'); else showBoard(); }; // start card navigates; the end card keeps the match open
- $('lbClose').onclick=()=>{ $('lb').style.display='none'; }; $('lbClass').onchange=showBoard; $('lbClear').onclick=()=>{ if(confirm('Clear the leaderboard?')){ saveBoard([]); showBoard(); } }; $('helpClose').onclick=()=>{ $('help').style.display='none'; };
+ $('lbClose').onclick=()=>{ $('lb').style.display='none'; }; $('lbClass').onchange=showBoard; $('lbClear').onclick=()=>{ if(confirm('Clear the leaderboard?')){ saveBoard([]); showBoard(); } }; $('helpClose').onclick=closeHelp;
 function syncMixer(){ document.querySelectorAll('.vol').forEach(r=>{ r.value=Math.round(AUD.vol[r.dataset.k]*100); $('v_'+r.dataset.k).textContent=r.value+'%'; }); $('ambOn').checked=AUD.vol.ambOn; $('musicOn').checked=AUD.vol.musicOn; $('muteAll').checked=AUD.vol.mute; }
-document.querySelectorAll('.vol').forEach(r=>r.oninput=e=>{ AUD.vol[r.dataset.k]=r.value/100; $('v_'+r.dataset.k).textContent=r.value+'%'; applyVolumes(); });
-$('ambOn').onchange=e=>{ AUD.vol.ambOn=e.target.checked; applyVolumes(); };
+document.querySelectorAll('.vol').forEach(r=>r.oninput=e=>{ AUD.vol[r.dataset.k]=r.value/100; $('v_'+r.dataset.k).textContent=r.value+'%'; applyVolumes(); if(!JUKE.src&&AUD.vol.master&&AUD.vol.music)jukeStart(me()?'game':'menu'); });
+$('ambOn').onchange=e=>{ AUD.vol.ambOn=e.target.checked; if(!AUD.vol.ambOn)SAMPLE?.stop(true); applyVolumes(); };
 $('musicOn').onchange=e=>{ AUD.vol.musicOn=e.target.checked; applyVolumes(); if(AUD.vol.musicOn){ if(!MUS.mode&&!JUKE.src) MUS.start(me()?'game':'menu'); } else { jukeStopSrc(0.3); MUS.stop(); } };
-$('muteAll').onchange=e=>{ AUD.vol.mute=e.target.checked; applyVolumes(); };
+$('muteAll').onchange=e=>{ AUD.vol.mute=e.target.checked; applyVolumes(); if(AUD.vol.mute){SAMPLE?.stop();jukeStopSrc(.1);}else if(AUD.vol.musicOn)jukeStart(me()?'game':'menu'); };
 $('sndTest').onclick=()=>{ audioInit(); snd('missile'); setTimeout(()=>snd('impact'),900); setTimeout(()=>snd('cash'),2400); };
 syncMixer();
 $('focus').oninput=e=>{ issue('focus',e.target.value/100); $('focusLbl').textContent=`${e.target.value}% troops · ${100-e.target.value}% gold`; updateUI(); };

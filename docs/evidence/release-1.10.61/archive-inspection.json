@@ -1,0 +1,10 @@
+{
+  "version": "1.10.61",
+  "build": "2026-09-30-field-guide-ally-aid",
+  "minimumPlugin": "1.10.9",
+  "signingKeySha256": "c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53",
+  "entries": 138,
+  "payloads": 137,
+  "sha256": "875712a095f7e7fb2d79aab0af9b7967ba2a6498e4b4ae7b61b279023e3bf82d",
+  "allPayloadsVerified": true
+}

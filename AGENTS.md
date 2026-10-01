@@ -6,6 +6,7 @@
 - Do not access, upload to, or modify production without Ken's explicit authorization.
 - Preserve deterministic simulation behavior. Any simulation-relevant change must pass the applicable replay and determinism gates.
 - Follow `docs/build-a-release.md` for releases and `docs/graphics-modernization-plan.md` for modernization sequencing and test gates.
+- Every game release must update the player-facing About note in `game/src/help-release.mjs`, review the shared How to Play content for changed behavior, and verify About in both the app and packaged website. The build rejects stale About version/build metadata.
 
 ## Docker sandbox
 

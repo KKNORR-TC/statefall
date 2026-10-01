@@ -7,7 +7,7 @@ This is the authoritative local build and manual WordPress deployment runbook. T
 ## Release gate
 
 1. Confirm the intended source commit and inspect `git status` so the artifact's exact inputs are known.
-2. Update every changed component's version and changelog. Verify the game's `REQUIRES_PLUGIN` value against the plugin being deployed.
+2. Update every changed component's version and changelog. Update `game/src/help-release.mjs` with the matching game version/build and player-facing changes for About. Review current features, instructions, data handling and credits for accuracy; verify the About page in the app and packaged website. `build-howto.js` rejects stale About metadata. Verify the game's `REQUIRES_PLUGIN` value against the plugin being deployed.
 3. Run `npm ci`, `npm run verify`, and `npm run test:build-reproducibility`. Require `DETERMINISTIC ✓` for simulation changes.
 4. Run `.\sandbox\start.ps1` before any Docker-backed command. Then run `.\sandbox\verify.ps1`, `.\sandbox\security-regression.ps1`, and `npm run verify:artifacts`. The artifact command builds deterministic game/plugin ZIPs, installs those exact files into disposable WordPress, and tests package lifecycle and headers.
 5. Treat the ZIPs produced and installed by the successful `npm run verify:artifacts` invocation as the final candidates. Inspect their internal paths and embedded versions and calculate SHA-256 checksums without rebuilding or rezipping them.

@@ -1,0 +1,14 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {get,submit}=require('./feedback-store.cjs');
+const parent=path.resolve('.artifacts');fs.mkdirSync(parent,{recursive:true});const root=fs.mkdtempSync(path.join(parent,'feedback-test-'));fs.mkdirSync(path.join(root,'audio'));
+const rows=['a','b','c'].map(id=>({id,title:id,versions:['natural','reinforced'].map(kind=>({kind,file:`audio/${id}-${kind}.wav`,compressed:`audio/${id}-${kind}.ogg`}))}));
+fs.writeFileSync(path.join(root,'manifest.json'),JSON.stringify(rows));for(const r of rows)for(const v of r.versions)for(const k of ['file','compressed'])fs.writeFileSync(path.join(root,v[k]),r.id+v.kind+k);
+const initial=get(root),decision=(id,choice)=>({id,choice,preferred:'natural',note:'Test feedback'});
+let saved=submit(root,{round:0,revision:initial.revision,decisions:[decision('a','approve'),decision('b','close'),decision('c','retry')]});
+assert.equal(saved.round,1);assert.equal(saved.decisions.a.locked,true);assert.equal(Object.keys(saved.decisions.a.files).length,2);assert.equal(saved.decisions.b.locked,false);assert.equal(get(root).round,1);
+assert.throws(()=>submit(root,{round:0,revision:initial.revision,decisions:[decision('b','approve')]}),/changed/);
+assert.throws(()=>submit(root,{round:1,revision:initial.revision,decisions:[decision('a','retry')]}),/locked/);
+assert.throws(()=>submit(root,{round:1,revision:'stale',decisions:[decision('b','approve')]}),/changed/);
+assert.throws(()=>submit(root,{round:1,revision:initial.revision,decisions:[decision('../bad','approve')]}),/Invalid/);
+saved=submit(root,{round:1,revision:initial.revision,decisions:[decision('b','approve')]});assert.equal(saved.rounds.length,2);assert.equal(saved.decisions.b.locked,true);assert.equal(saved.decisions.c.choice,'retry');assert.equal(saved.rounds[0].decisions[1].choice,'close');
+console.log(JSON.stringify({passed:true,checks:['durable rounds','approved files hashed','approved choices immutable','close and retry editable','history retained','stale round and revision rejected','unknown ID rejected'],fixture:root}));

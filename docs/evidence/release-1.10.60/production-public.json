@@ -1,0 +1,598 @@
+{
+  "checkedAt": "2026-09-30T21:01:14.001Z",
+  "version": "1.10.60",
+  "anonymous": true,
+  "manifestMatches": true,
+  "payloads": [
+    {
+      "path": "assets/airfield-level2.Dm-AO7Ce.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/artillery.CO7U-4uP.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/airfield-level2.h5hjsl38.png",
+      "status": 200
+    },
+    {
+      "path": "assets/airfield.DoaqS2Go.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/attack-failed.Dx12q7w7.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/attack-stalled.BuZ-w6O4.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/attack-progress.BAHszaEM.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/attack-start.CGsRx-b1.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/battery.Dp8hAS9O.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/battleship-directions.q9N9MxIe.png",
+      "status": 200
+    },
+    {
+      "path": "assets/battleship.CMa6Vr3I.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/bertha.iuxoryxl.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/bomber-directions.B_iZkf5O.png",
+      "status": 200
+    },
+    {
+      "path": "assets/bomber.vCyUYVmX.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/capture-enemy.BlL2PXpG.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/capture-neutral.7iFR-8an.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/carrier-directions.2BGiq__M.png",
+      "status": 200
+    },
+    {
+      "path": "assets/carrier.DTDHsreo.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/city.C-_ns83z.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/classic-battlefield.853490ce1855.js",
+      "status": 200
+    },
+    {
+      "path": "assets/classic-sam-sequence.cf284416b601.js",
+      "status": 200
+    },
+    {
+      "path": "assets/classic-terrain-client.3f75e55b3ab1.js",
+      "status": 200
+    },
+    {
+      "path": "assets/classic-terrain-worker-DbixG6kC.39990ccba7b0.js",
+      "status": 200
+    },
+    {
+      "path": "assets/command.BGJc27jO.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-airfield.ByQ9Uzgx.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-battery.BPSBhelb.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-bertha.B53p2FNk.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-city.C06fbj7X.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-command.BAV_a7SW.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-engcmd.DxYxdTfW.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-factory.BdzJTT9Y.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-flightops.VIkhw6EU.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-fort.CXHjHMam.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-jammer.DVBETfl0.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-port.5m7qgOz6.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-lradar.B9cHv6Lg.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-radar.BYMq1I8r.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-sam.BCoQ6zaA.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-satellite.Bs8hdmou.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-shield.41IsRhsw.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-shore.BEZndTDf.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-silo.CJI6wUu_.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-start.D8HmVWzh.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-subbase.tLivGB3Z.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/construction-troopcmd.XgMfS9rt.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/CREDITS.CI7BT1uz.txt",
+      "status": 200
+    },
+    {
+      "path": "assets/cruiser-directions.Cmpwy1ko.png",
+      "status": 200
+    },
+    {
+      "path": "assets/cruiser.Btcxe4wS.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/destroyer-directions.Bn0IdzHr.png",
+      "status": 200
+    },
+    {
+      "path": "assets/enemy-eliminated.BG-SPIRF.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/engcmd.b7DNwJxR.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/factory.CszCQo-B.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/fighter-directions.BJodwhUi.png",
+      "status": 200
+    },
+    {
+      "path": "assets/fighter.LyTzn5bp.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/flightops.CmlKgzna.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/fort-level3.DW81DmkH.png",
+      "status": 200
+    },
+    {
+      "path": "assets/fort-level2.CGk7IK6i.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/fort-level2.CJiWC7AM.png",
+      "status": 200
+    },
+    {
+      "path": "assets/fort-level3.SPfiemnC.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/heavytransport-directions.DP80JD89.png",
+      "status": 200
+    },
+    {
+      "path": "assets/fort.C9uNcj6U.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/heavytransport.jiwASQRd.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/hunter-directions.DsmpFbK8.png",
+      "status": 200
+    },
+    {
+      "path": "assets/incoming-warning.B7opzLix.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/hunter.u1BIKrVw.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/index.37672d1b6030.js",
+      "status": 200
+    },
+    {
+      "path": "assets/index.512cc2038bb1.css",
+      "status": 200
+    },
+    {
+      "path": "assets/layer-artillery.QGLdAoRd.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/jammer.BCFhSz4o.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/layer-machineguns.B3UI_Zyf.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/layer-tracks.CltHjs7U.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/lradar.BHDBiBak.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/legacy-game.54fa90a0ea64.js",
+      "status": 200
+    },
+    {
+      "path": "assets/merchant-directions.DU7IfVj-.png",
+      "status": 200
+    },
+    {
+      "path": "assets/merchant.CmaNDhnI.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/module-preload.0bcb72f8ec0d.js",
+      "status": 200
+    },
+    {
+      "path": "assets/missile-launch.DYNKhuog.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/port-level2.B_j6EYvf.png",
+      "status": 200
+    },
+    {
+      "path": "assets/nuclear-detonation.8lokG4Ht.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/port.C8LDPiM1.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/port-level2.DsxvAANN.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/privateer-directions.lidVSLc7.png",
+      "status": 200
+    },
+    {
+      "path": "assets/privateer.BoNvWPSJ.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/rship-directions.7lr-mIv4.png",
+      "status": 200
+    },
+    {
+      "path": "assets/radar.DOCXPpIw.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/rship.Du93rFD7.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/sam-base-v1.Cf8gTYxL.png",
+      "status": 200
+    },
+    {
+      "path": "assets/sam-intercept.ByftU06W.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/sam-launch.C7fCzSZS.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/sam.CkktHUk3.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/satellite.wsAf_yqE.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/scout.Cub5FsSa.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/scout-directions.8DJqo1uL.png",
+      "status": 200
+    },
+    {
+      "path": "assets/shield.DyrkHtE0.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/shell-impact.33uSdFCN.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/ship-sinking.BpWdtiaD.ogg",
+      "status": 200
+    },
+    {
+      "path": "assets/shore.DkoBowlT.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/silo.CGocG91k.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/silo-layered-v2.By3OUt3k.png",
+      "status": 200
+    },
+    {
+      "path": "assets/spy-directions.DtF7O0Lw.png",
+      "status": 200
+    },
+    {
+      "path": "assets/spy.DVlcTsjA.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/structures-complete.Bm3RzRlB.png",
+      "status": 200
+    },
+    {
+      "path": "assets/sub-directions.UIukOQ0g.png",
+      "status": 200
+    },
+    {
+      "path": "assets/subbase.8JWbtTrM.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/sub.BPrUd6iE.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/terrain-raster-client.043c2f5c1bac.js",
+      "status": 200
+    },
+    {
+      "path": "assets/terrain-raster-worker-CLeriLB5.dafc1d0437ac.js",
+      "status": 200
+    },
+    {
+      "path": "assets/terrain.C-2eEVb_.png",
+      "status": 200
+    },
+    {
+      "path": "assets/transport-directions.BLM_oUCL.png",
+      "status": 200
+    },
+    {
+      "path": "assets/troopcmd.BBHa6HYX.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/transport.uFOOuNMF.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/truck-directions.CtEFX2Mw.png",
+      "status": 200
+    },
+    {
+      "path": "assets/truck.CQFV7wMD.webp",
+      "status": 200
+    },
+    {
+      "path": "assets/unit-art-metadata.d06d83dd807e.js",
+      "status": 200
+    },
+    {
+      "path": "assets/units.CPVKFj2k.png",
+      "status": 200
+    },
+    {
+      "path": "assets/warship.CsCdiM_8.webp",
+      "status": 200
+    },
+    {
+      "path": "bundle-report.json",
+      "status": 200
+    },
+    {
+      "path": "flags.js",
+      "status": 200
+    },
+    {
+      "path": "howto/about.html",
+      "status": 200
+    },
+    {
+      "path": "howto/air.html",
+      "status": 200
+    },
+    {
+      "path": "howto/basics.html",
+      "status": 200
+    },
+    {
+      "path": "howto/air/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/about/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/build.html",
+      "status": 200
+    },
+    {
+      "path": "howto/basics/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/garrisons.html",
+      "status": 200
+    },
+    {
+      "path": "howto/modes.html",
+      "status": 200
+    },
+    {
+      "path": "howto/build/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/garrisons/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/ships.html",
+      "status": 200
+    },
+    {
+      "path": "howto/modes/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/systems.html",
+      "status": 200
+    },
+    {
+      "path": "howto/ships/index.html",
+      "status": 200
+    },
+    {
+      "path": "howto/tabs.json",
+      "status": 200
+    },
+    {
+      "path": "VERSION.txt",
+      "status": 200
+    },
+    {
+      "path": "howto/systems/index.html",
+      "status": 200
+    },
+    {
+      "path": "index.html",
+      "status": 200
+    }
+  ],
+  "help": [
+    {
+      "tab": "basics",
+      "cards": 0,
+      "status": 200
+    },
+    {
+      "tab": "build",
+      "cards": 25,
+      "status": 200
+    },
+    {
+      "tab": "ships",
+      "cards": 11,
+      "status": 200
+    },
+    {
+      "tab": "air",
+      "cards": 4,
+      "status": 200
+    },
+    {
+      "tab": "systems",
+      "cards": 0,
+      "status": 200
+    },
+    {
+      "tab": "garrisons",
+      "cards": 0,
+      "status": 200
+    },
+    {
+      "tab": "modes",
+      "cards": 0,
+      "status": 200
+    },
+    {
+      "tab": "about",
+      "cards": 0,
+      "status": 200
+    }
+  ]
+}
