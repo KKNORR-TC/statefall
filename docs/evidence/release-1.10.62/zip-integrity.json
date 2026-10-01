@@ -1,0 +1,10 @@
+{
+  "version": "1.10.62",
+  "build": "2026-09-30-tactical-pause",
+  "entries": 138,
+  "verifiedPayloads": 137,
+  "zipSha256": "bce72f6c05bd62609c12386b107719651868c5d453f412786c2027bbfed1f336",
+  "bytes": 42583242,
+  "minimumPlugin": "1.10.9",
+  "signingKeySha256": "c51b9460b645bc8d2f6e365ecec86408afb6949289ff3afab057e3938a1a1c53"
+}

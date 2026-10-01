@@ -2,13 +2,13 @@
 
 Real-time browser strategy hosted at [WorldRTS.com](https://www.worldrts.com) on WordPress.
 
-- `game/` — qualified game 1.10.57: deterministic simulation, classic Canvas artwork, continuous silo flight, and rotating loading-screen images. Pixi remains a development renderer.
-- `plugin/statefall-scores/` — repository plugin version 1.10.9: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools, and immutable manifest-based game releases.
+- `game/` — deployed game 1.10.62: tactical pause, illustrated field guide, authored audio and classic Canvas artwork. Pixi remains a development renderer.
+- `plugin/statefall-scores/` — deployed plugin version 1.10.10: leaderboard, profiles, saves and replays, nations and flags, trophies, reports, admin tools, and immutable manifest-based game releases.
 - `tools/` — direct-engine harness, determinism proof, replay checker, opening benchmark, release builders, and browser/Playwright trailer capture.
 - `sandbox/` — localhost-only WordPress 7.1 / PHP 8.4 integration environment restored from an authorized site backup.
 - `docs/` — current status and findings, release runbook and record template, graphics modernization plan, historical website handoff, and multiplayer plan.
 
-Game 1.10.57 with plugin 1.10.9 is qualified for manual handoff. The release record documents local verification, the corrected WebKit test, and segmented reruns. The currently installed production version has not been reverified, and no deployment is claimed. Simulation baseline remains 1.10.8. See [current status](docs/current-status.md), [release record](docs/release-record-1.10.57.md), and [installation instructions](docs/installation-handoff-1.10.57.md).
+Game 1.10.62 with plugin 1.10.10 is live and passed local qualification and production acceptance. GitHub main was synchronized with all accumulated source and release history at `f8c1ade`; later documentation commits record the completed deployment. Simulation baseline remains 1.10.8. See [current status](docs/current-status.md), [release record](docs/release-record-1.10.62.md), and the [release runbook](docs/build-a-release.md). GitHub contains source; WordPress database/uploads backups are separate.
 
 Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN` requirement, and run the applicable release gates. Game and plugin version numbers do not need to match when only one component changes.
 

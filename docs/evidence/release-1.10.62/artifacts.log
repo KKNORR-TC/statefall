@@ -1,0 +1,357 @@
+
+> statefall@1.10.62 verify:artifacts
+> npm run build:artifacts && powershell -NoProfile -ExecutionPolicy Bypass -File sandbox/verify-artifacts.ps1
+
+
+> statefall@1.10.62 build:artifacts
+> npm run build:release && node tools/build-plugin.js && node tools/build-previous-plugin.js && node tests/build-package-fixtures.js
+
+
+> statefall@1.10.62 build:release
+> npm run build:game && node tools/build-release.js
+
+
+> statefall@1.10.62 build:game
+> vite build && node tools/build-howto.js dist/howto && node tools/build-flags.js dist/flags.js && node tools/finalize-game-build.js
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 100 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/assets/terrain-raster-worker-CLeriLB5.js           8.84 kB
+../dist/assets/CREDITS.CI7BT1uz.txt                       11.21 kB │ gzip:   3.66 kB
+../dist/assets/construction-radar.BYMq1I8r.ogg            11.47 kB
+../dist/assets/attack-start.CGsRx-b1.ogg                  13.27 kB
+../dist/assets/construction-lradar.B9cHv6Lg.ogg           13.35 kB
+../dist/assets/sam-launch.C7fCzSZS.ogg                    13.78 kB
+../dist/assets/construction-engcmd.DxYxdTfW.ogg           16.77 kB
+../dist/assets/construction-satellite.Bs8hdmou.ogg        17.20 kB
+../dist/assets/construction-port.5m7qgOz6.ogg             17.71 kB
+../dist/assets/attack-stalled.BuZ-w6O4.ogg                18.02 kB
+../dist/assets/construction-sam.BCoQ6zaA.ogg              18.17 kB
+../dist/assets/construction-subbase.tLivGB3Z.ogg          19.03 kB
+../dist/assets/construction-shore.BEZndTDf.ogg            19.06 kB
+../dist/assets/transport.uFOOuNMF.webp                    19.07 kB
+../dist/assets/sam.CkktHUk3.webp                          19.37 kB
+../dist/assets/shell-impact.33uSdFCN.ogg                  20.09 kB
+../dist/assets/flightops.CmlKgzna.webp                    20.49 kB
+../dist/index.html                                        20.54 kB │ gzip:   6.07 kB
+../dist/assets/airfield.DoaqS2Go.webp                     20.78 kB
+../dist/assets/sam-intercept.ByftU06W.ogg                 20.99 kB
+../dist/assets/construction-flightops.VIkhw6EU.ogg        21.72 kB
+../dist/assets/sub.BPrUd6iE.webp                          21.90 kB
+../dist/assets/battery.Dp8hAS9O.webp                      21.95 kB
+../dist/assets/radar.DOCXPpIw.webp                        22.00 kB
+../dist/assets/silo.CGocG91k.webp                         22.39 kB
+../dist/assets/city.C-_ns83z.webp                         22.44 kB
+../dist/assets/layer-machineguns.B3UI_Zyf.ogg             22.99 kB
+../dist/assets/hunter.u1BIKrVw.webp                       23.27 kB
+../dist/assets/construction-factory.BdzJTT9Y.ogg          23.27 kB
+../dist/assets/engcmd.b7DNwJxR.webp                       23.44 kB
+../dist/assets/scout.Cub5FsSa.webp                        23.95 kB
+../dist/assets/port.C8LDPiM1.webp                         24.70 kB
+../dist/assets/warship.CsCdiM_8.webp                      24.71 kB
+../dist/assets/factory.CszCQo-B.webp                      24.96 kB
+../dist/assets/construction-command.BAV_a7SW.ogg          25.26 kB
+../dist/assets/heavytransport.jiwASQRd.webp               25.26 kB
+../dist/assets/jammer.BCFhSz4o.webp                       25.59 kB
+../dist/assets/rship.Du93rFD7.webp                        25.61 kB
+../dist/assets/construction-jammer.DVBETfl0.ogg           26.74 kB
+../dist/assets/construction-silo.CJI6wUu_.ogg             26.80 kB
+../dist/assets/cruiser.Btcxe4wS.webp                      26.81 kB
+../dist/assets/satellite.wsAf_yqE.webp                    27.16 kB
+../dist/assets/attack-failed.Dx12q7w7.ogg                 27.22 kB
+../dist/assets/spy.DVlcTsjA.webp                          27.48 kB
+../dist/assets/battleship.CMa6Vr3I.webp                   27.90 kB
+../dist/assets/bertha.iuxoryxl.webp                       27.96 kB
+../dist/assets/airfield-level2.Dm-AO7Ce.webp              27.98 kB
+../dist/assets/troopcmd.BBHa6HYX.webp                     28.12 kB
+../dist/assets/layer-artillery.QGLdAoRd.ogg               28.25 kB
+../dist/assets/command.BGJc27jO.webp                      28.90 kB
+../dist/assets/capture-neutral.7iFR-8an.ogg               28.93 kB
+../dist/assets/shore.DkoBowlT.webp                        29.02 kB
+../dist/assets/merchant.CmaNDhnI.webp                     29.13 kB
+../dist/assets/bomber.vCyUYVmX.webp                       29.51 kB
+../dist/assets/truck.CQFV7wMD.webp                        29.81 kB
+../dist/assets/lradar.BHDBiBak.webp                       29.99 kB
+../dist/assets/fighter.LyTzn5bp.webp                      30.48 kB
+../dist/assets/artillery.CO7U-4uP.ogg                     30.84 kB
+../dist/assets/privateer.BoNvWPSJ.webp                    31.80 kB
+../dist/assets/subbase.8JWbtTrM.webp                      32.02 kB
+../dist/assets/construction-troopcmd.XgMfS9rt.ogg         32.35 kB
+../dist/assets/construction-fort.CXHjHMam.ogg             32.79 kB
+../dist/assets/missile-launch.DYNKhuog.ogg                32.94 kB
+../dist/assets/fort-level2.CGk7IK6i.webp                  33.30 kB
+../dist/assets/shield.DyrkHtE0.webp                       33.57 kB
+../dist/assets/construction-shield.41IsRhsw.ogg           34.58 kB
+../dist/assets/carrier.DTDHsreo.webp                      35.13 kB
+../dist/assets/classic-terrain-worker-DbixG6kC.js         35.52 kB
+../dist/assets/port-level2.DsxvAANN.webp                  35.61 kB
+../dist/assets/construction-bertha.B53p2FNk.ogg           36.20 kB
+../dist/assets/fort.C9uNcj6U.webp                         36.86 kB
+../dist/assets/capture-enemy.BlL2PXpG.ogg                 37.25 kB
+../dist/assets/incoming-warning.B7opzLix.ogg              38.49 kB
+../dist/assets/nuclear-detonation.8lokG4Ht.ogg            39.43 kB
+../dist/assets/fort-level3.SPfiemnC.webp                  39.63 kB
+../dist/assets/construction-battery.BPSBhelb.ogg          40.61 kB
+../dist/assets/construction-airfield.ByQ9Uzgx.ogg         42.58 kB
+../dist/assets/construction-start.D8HmVWzh.ogg            43.48 kB
+../dist/assets/construction-city.C06fbj7X.ogg             54.19 kB
+../dist/assets/ship-sinking.BpWdtiaD.ogg                  59.97 kB
+../dist/assets/enemy-eliminated.BG-SPIRF.ogg              95.30 kB
+../dist/assets/layer-tracks.CltHjs7U.ogg                 138.46 kB
+../dist/assets/attack-progress.BAHszaEM.ogg              159.81 kB
+../dist/assets/spy-directions.DtF7O0Lw.png               739.12 kB
+../dist/assets/sub-directions.UIukOQ0g.png               797.92 kB
+../dist/assets/scout-directions.8DJqo1uL.png             838.96 kB
+../dist/assets/hunter-directions.DsmpFbK8.png            848.20 kB
+../dist/assets/silo-layered-v2.By3OUt3k.png              855.43 kB
+../dist/assets/destroyer-directions.Bn0IdzHr.png         932.62 kB
+../dist/assets/rship-directions.7lr-mIv4.png           1,050.92 kB
+../dist/assets/transport-directions.BLM_oUCL.png       1,079.67 kB
+../dist/assets/cruiser-directions.Cmpwy1ko.png         1,082.27 kB
+../dist/assets/battleship-directions.q9N9MxIe.png      1,094.65 kB
+../dist/assets/merchant-directions.DU7IfVj-.png        1,097.69 kB
+../dist/assets/fighter-directions.BJodwhUi.png         1,109.64 kB
+../dist/assets/carrier-directions.2BGiq__M.png         1,149.05 kB
+../dist/assets/bomber-directions.B_iZkf5O.png          1,272.79 kB
+../dist/assets/privateer-directions.lidVSLc7.png       1,277.95 kB
+../dist/assets/heavytransport-directions.DP80JD89.png  1,392.20 kB
+../dist/assets/fort-level2.CJiWC7AM.png                1,439.12 kB
+../dist/assets/truck-directions.CtEFX2Mw.png           1,449.87 kB
+../dist/assets/units.CPVKFj2k.png                      1,515.39 kB
+../dist/assets/airfield-level2.h5hjsl38.png            1,602.10 kB
+../dist/assets/port-level2.B_j6EYvf.png                1,882.34 kB
+../dist/assets/fort-level3.DW81DmkH.png                1,976.55 kB
+../dist/assets/structures-complete.Bm3RzRlB.png        2,030.23 kB
+../dist/assets/sam-base-v1.Cf8gTYxL.png                2,648.24 kB
+../dist/assets/terrain.C-2eEVb_.png                    3,581.89 kB
+../dist/assets/index.BwZoAT1f.css                         13.77 kB │ gzip:   3.57 kB
+../dist/assets/module-preload.PPVm8Dsz.js                  1.23 kB │ gzip:   0.71 kB
+../dist/assets/classic-terrain-client.CacUzfzd.js          3.18 kB │ gzip:   1.59 kB
+../dist/assets/index.DeC8i5zK.js                           3.27 kB │ gzip:   1.45 kB
+../dist/assets/unit-art-metadata.B1x0u96r.js               4.60 kB │ gzip:   1.89 kB
+../dist/assets/terrain-raster-client.2__AgCLY.js           5.05 kB │ gzip:   1.90 kB
+../dist/assets/classic-sam-sequence.BL3iuRRN.js            8.14 kB │ gzip:   3.44 kB
+../dist/assets/classic-battlefield.Co918GEZ.js            21.71 kB │ gzip:   9.01 kB
+../dist/assets/legacy-game.BwvdDFu9.js                   847.06 kB │ gzip: 276.21 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.28s
+copied 8 pages to dist/howto
+(node:26720) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///D:/One%20Drive/projects%20-%20local/statefall/statefall-repo-2026-09-12/game/src/config/build.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+flags.js 18128 bytes
+dist/release.json 137 files sha256 61d2fd1b26b35da2a91c108cde44b3a37dc2c7d18f5844e4c95398db40ed39ba
+.artifacts\statefall-release-1.10.62.zip sha256 bce72f6c05bd62609c12386b107719651868c5d453f412786c2027bbfed1f336
+.artifacts\statefall-scores-1.10.10.zip sha256 a3a34f7ff11fa2b50a4821ee1ab56766ad73cdd042f94b8d88dd1e18e46de289
+.artifacts\statefall-scores-1.10.6.zip sha256 fd68feca05c7023c8b7dcb120d1deb5884a210e294cb2e029770e3ca45f8ee20
+Built package fixtures in D:\One Drive\projects - local\statefall\statefall-repo-2026-09-12\.artifacts\package-fixtures
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-wordpress-1 Starting 
+ Container statefall-sandbox-artifact-wordpress-1 Started 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-6a29b8c29181 Creating 
+ Container statefall-sandbox-artifact-cli-run-6a29b8c29181 Created 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-0f5d9f3454e1 Creating 
+ Container statefall-sandbox-artifact-cli-run-0f5d9f3454e1 Created 
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+WARNING: option --ssl-verify-server-cert is disabled, because of an insecure passwordless login.
+Success: Tables dropped.
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-27b958c5fb28 Creating 
+ Container statefall-sandbox-artifact-cli-run-27b958c5fb28 Created 
+Success: WordPress installed successfully.
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-75785b667027 Creating 
+ Container statefall-sandbox-artifact-cli-run-75785b667027 Created 
+Unpacking the package...
+Installing the plugin...
+Plugin installed successfully.
+Activating 'statefall-scores'...
+Plugin 'statefall-scores' activated.
+Success: Installed 1 of 1 plugins.
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-682e3fd20e3e Creating 
+ Container statefall-sandbox-artifact-cli-run-682e3fd20e3e Created 
+Success: Updated 'statefall_upgrade_data_marker' option.
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-481d8a75d402 Creating 
+ Container statefall-sandbox-artifact-cli-run-481d8a75d402 Created 
+Success: Created user 2.
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-c9d9d0a7e3d8 Creating 
+ Container statefall-sandbox-artifact-cli-run-c9d9d0a7e3d8 Created 
+Unpacking the package...
+Installing the plugin...
+Removing the old version of the plugin...
+Plugin updated successfully.
+Activating 'statefall-scores'...
+Warning: Plugin 'statefall-scores' is already active.
+Success: Installed 1 of 1 plugins.
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-57f47de2bded Creating 
+ Container statefall-sandbox-artifact-cli-run-57f47de2bded Created 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-acc17cc123c8 Creating 
+ Container statefall-sandbox-artifact-cli-run-acc17cc123c8 Created 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-ae7fb04001e9 Creating 
+ Container statefall-sandbox-artifact-cli-run-ae7fb04001e9 Created 
+Success: Updated 'permalink_structure' option.
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-08e38dc660b2 Creating 
+ Container statefall-sandbox-artifact-cli-run-08e38dc660b2 Created 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-874d8a036059 Creating 
+ Container statefall-sandbox-artifact-cli-run-874d8a036059 Created 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-5762fbb268db Creating 
+ Container statefall-sandbox-artifact-cli-run-5762fbb268db Created 
+PASS manifest install, validation, activation, rollback, reinstall, staging, retention and data preservation
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-9313a3a8d910 Creating 
+ Container statefall-sandbox-artifact-cli-run-9313a3a8d910 Created 
+PASS exact artifact score accepts the matching key and rejects a mismatch
+PASS signed Overrun, duplicate protection, invalid result and winning-share rejection
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-352e39b93c28 Creating 
+ Container statefall-sandbox-artifact-cli-run-352e39b93c28 Created 
+Unpacking the package...
+Installing the plugin...
+Removing the old version of the plugin...
+Plugin updated successfully.
+Activating 'statefall-scores'...
+Warning: Plugin 'statefall-scores' is already active.
+Success: Installed 1 of 1 plugins.
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-afeb728118a1 Creating 
+ Container statefall-sandbox-artifact-cli-run-afeb728118a1 Created 
+ Container statefall-sandbox-artifact-wordpress-1 Running 
+ Container statefall-sandbox-db-1 Running 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-db-1 Waiting 
+ Container statefall-sandbox-db-1 Healthy 
+ Container statefall-sandbox-artifact-cli-run-1bb2dceee8c3 Creating 
+ Container statefall-sandbox-artifact-cli-run-1bb2dceee8c3 Created 
+PASS synthetic player and opponent flag fixtures installed in disposable WordPress
+
+> statefall@1.10.62 test:wordpress:artifact
+> playwright test --config playwright.wordpress.config.js
+
+
+Running 4 tests using 1 worker
+
+(node:62444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] tests\browser\wordpress-artifact.spec.js:5:1 › installed exact release loads on anonymous without missing chunks
+[2/4] tests\browser\wordpress-artifact.spec.js:5:1 › installed exact release loads on static-host without missing chunks
+[3/4] tests\browser\wordpress-artifact.spec.js:5:1 › installed exact release loads on logged-in-custom-flag without missing chunks
+[4/4] tests\browser\wordpress-artifact.spec.js:53:1 › custom-nation credits link restores an existing -1 country replay
+  4 passed (17.0s)
+PASS exact plugin/game ZIP installation and runtime MIME/cache paths

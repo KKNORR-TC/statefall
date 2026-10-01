@@ -1,0 +1,3974 @@
+{
+  "algorithm": "sha256",
+  "manifestSha256": "70b8ca0f4429be759eb253830a65ca0d45a40b87e61d67ca4fada4bec60a7f66",
+  "fileCount": 990,
+  "files": [
+    {
+      "path": "game/index.html",
+      "sha256": "584428f6805e0d5fdf285152e393b61e1541f1e6791ef9b2b8c4cbe6ee89e720"
+    },
+    {
+      "path": "game/src/audio/approval-manifest.json",
+      "sha256": "8c936ebee9a6aaa94f1d2d9532ee89243c38d7708d8573cab8f55ae32c187db9"
+    },
+    {
+      "path": "game/src/audio/assets/artillery.ogg",
+      "sha256": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+    },
+    {
+      "path": "game/src/audio/assets/attack-failed.ogg",
+      "sha256": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+    },
+    {
+      "path": "game/src/audio/assets/attack-progress.ogg",
+      "sha256": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+    },
+    {
+      "path": "game/src/audio/assets/attack-stalled.ogg",
+      "sha256": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+    },
+    {
+      "path": "game/src/audio/assets/attack-start.ogg",
+      "sha256": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+    },
+    {
+      "path": "game/src/audio/assets/capture-enemy.ogg",
+      "sha256": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+    },
+    {
+      "path": "game/src/audio/assets/capture-neutral.ogg",
+      "sha256": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+    },
+    {
+      "path": "game/src/audio/assets/construction-airfield.ogg",
+      "sha256": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+    },
+    {
+      "path": "game/src/audio/assets/construction-battery.ogg",
+      "sha256": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+    },
+    {
+      "path": "game/src/audio/assets/construction-bertha.ogg",
+      "sha256": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+    },
+    {
+      "path": "game/src/audio/assets/construction-city.ogg",
+      "sha256": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+    },
+    {
+      "path": "game/src/audio/assets/construction-command.ogg",
+      "sha256": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+    },
+    {
+      "path": "game/src/audio/assets/construction-engcmd.ogg",
+      "sha256": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+    },
+    {
+      "path": "game/src/audio/assets/construction-factory.ogg",
+      "sha256": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+    },
+    {
+      "path": "game/src/audio/assets/construction-flightops.ogg",
+      "sha256": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+    },
+    {
+      "path": "game/src/audio/assets/construction-fort.ogg",
+      "sha256": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+    },
+    {
+      "path": "game/src/audio/assets/construction-jammer.ogg",
+      "sha256": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+    },
+    {
+      "path": "game/src/audio/assets/construction-lradar.ogg",
+      "sha256": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+    },
+    {
+      "path": "game/src/audio/assets/construction-port.ogg",
+      "sha256": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+    },
+    {
+      "path": "game/src/audio/assets/construction-radar.ogg",
+      "sha256": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+    },
+    {
+      "path": "game/src/audio/assets/construction-sam.ogg",
+      "sha256": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+    },
+    {
+      "path": "game/src/audio/assets/construction-satellite.ogg",
+      "sha256": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+    },
+    {
+      "path": "game/src/audio/assets/construction-shield.ogg",
+      "sha256": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+    },
+    {
+      "path": "game/src/audio/assets/construction-shore.ogg",
+      "sha256": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+    },
+    {
+      "path": "game/src/audio/assets/construction-silo.ogg",
+      "sha256": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+    },
+    {
+      "path": "game/src/audio/assets/construction-start.ogg",
+      "sha256": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+    },
+    {
+      "path": "game/src/audio/assets/construction-subbase.ogg",
+      "sha256": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+    },
+    {
+      "path": "game/src/audio/assets/construction-troopcmd.ogg",
+      "sha256": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+    },
+    {
+      "path": "game/src/audio/assets/CREDITS.txt",
+      "sha256": "59f0059caf96fb35160495601b58e945a3b7d2466a3f1273f3a16f79b34d99aa"
+    },
+    {
+      "path": "game/src/audio/assets/enemy-eliminated.ogg",
+      "sha256": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+    },
+    {
+      "path": "game/src/audio/assets/incoming-warning.ogg",
+      "sha256": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+    },
+    {
+      "path": "game/src/audio/assets/layer-artillery.ogg",
+      "sha256": "aac781c141fe785d732bb294a3be1c2ae848dc5979031f7b5b044bdbcd61bdcc"
+    },
+    {
+      "path": "game/src/audio/assets/layer-machineguns.ogg",
+      "sha256": "5459d1fa30fcfbe4c6b5e9ca0302899eae8583a8ed18a365fcb9ceb86a5e92e0"
+    },
+    {
+      "path": "game/src/audio/assets/layer-tracks.ogg",
+      "sha256": "72c321271001026376cdc7b6f2c945a83bf203f344e1d09444f3040d694da3fd"
+    },
+    {
+      "path": "game/src/audio/assets/missile-launch.ogg",
+      "sha256": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+    },
+    {
+      "path": "game/src/audio/assets/nuclear-detonation.ogg",
+      "sha256": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+    },
+    {
+      "path": "game/src/audio/assets/sam-intercept.ogg",
+      "sha256": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+    },
+    {
+      "path": "game/src/audio/assets/sam-launch.ogg",
+      "sha256": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+    },
+    {
+      "path": "game/src/audio/assets/score-105db81895da.ogg",
+      "sha256": "46cd26bd35cd7577746e6d6c900805ab9e61bd17de309ba45f5ad0366ec62d30"
+    },
+    {
+      "path": "game/src/audio/assets/score-1325bd141e85.ogg",
+      "sha256": "db65359111fa5d47b4b18da7648b06e40005416b18881c0b9f4773043c99f107"
+    },
+    {
+      "path": "game/src/audio/assets/score-342198cf7330.ogg",
+      "sha256": "b6ff00febf270c5cbf8006058d6992c90e3818ea48106a52468cc874dbf1fe95"
+    },
+    {
+      "path": "game/src/audio/assets/score-3a7a9d789b4f.ogg",
+      "sha256": "7d21aa005cb213040477ac4fa9e0cfc1a0a18e9709c871b5cdb7afe735711c58"
+    },
+    {
+      "path": "game/src/audio/assets/score-3d4bb220eb9f.ogg",
+      "sha256": "42a9432263ee07b77f35aa5a45f6123dc13c8b4231207036c8439ab73225a718"
+    },
+    {
+      "path": "game/src/audio/assets/score-55c5ac4f5cfb.ogg",
+      "sha256": "94790d4f5efbafa80e130ea990a7b50d3f65c6a4aa6ae8c42958cabfa593e2e4"
+    },
+    {
+      "path": "game/src/audio/assets/score-55d932c0cc04.ogg",
+      "sha256": "2ab1b4ae51ecde17184345922f487971616139462cdb5b9e84c9d4e51c389ebc"
+    },
+    {
+      "path": "game/src/audio/assets/score-626ab7e39343.ogg",
+      "sha256": "6252b12a17b6d1f356336f61668b95d2715f55ddba28e7f97a8e5b51805f067b"
+    },
+    {
+      "path": "game/src/audio/assets/score-8cdcf5e0a530.ogg",
+      "sha256": "65a1601715d6eddd3e19a3f08572fc65babc6bf4034bd0c1ed7739b5c247db05"
+    },
+    {
+      "path": "game/src/audio/assets/score-9c6aaa97b352.ogg",
+      "sha256": "d935474d348f36e3670ce8f6cc363d9c9deedbc108a1867b2f7e8151d267f8da"
+    },
+    {
+      "path": "game/src/audio/assets/score-9eabe6d66db1.ogg",
+      "sha256": "0ec137aa4475ac4b76f411ec22d6a87627871191112acc90147a4646fd220850"
+    },
+    {
+      "path": "game/src/audio/assets/score-9f284475d72f.ogg",
+      "sha256": "f9f034b52848f2fa4973fe0b288caea62116858a478c2be9724b6bcaa957dc90"
+    },
+    {
+      "path": "game/src/audio/assets/score-a31ac2d4f53c.ogg",
+      "sha256": "5545297800f2005f4641eb9fa44d806330f53c76ba45c6c687ebacbb5274987b"
+    },
+    {
+      "path": "game/src/audio/assets/score-aa6c0f925c88.ogg",
+      "sha256": "d3fbd1eae546a60f9c4bfb776d6585bb48fcdfa08361eade26ca1f93de10e7f7"
+    },
+    {
+      "path": "game/src/audio/assets/score-ae48f45e837e.ogg",
+      "sha256": "0e0837efaf7df8ffed58e205ed9270c26d8dfc004f427efa8a0c76c63977ea8a"
+    },
+    {
+      "path": "game/src/audio/assets/score-fcfb2fd761fb.ogg",
+      "sha256": "ad84e7eefb0fab7c2565c673ee77041baa83185ffd4f210c57867188577bb092"
+    },
+    {
+      "path": "game/src/audio/assets/shell-impact.ogg",
+      "sha256": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+    },
+    {
+      "path": "game/src/audio/assets/ship-sinking.ogg",
+      "sha256": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+    },
+    {
+      "path": "game/src/audio/audio-state.js",
+      "sha256": "bbb11a609870f80f057504950e8274e481c6042418afd9b63a6a1826ac6a1ff0"
+    },
+    {
+      "path": "game/src/audio/catalog.mjs",
+      "sha256": "e9b03ca1f0c109ea956677895317751cc2a3aa5b0d997136197306d143a48c17"
+    },
+    {
+      "path": "game/src/audio/hosted-library.json",
+      "sha256": "6d3fdf8f58843598df20cf591d43681bb525f8a7be56b5f986c8751a2501dfa5"
+    },
+    {
+      "path": "game/src/audio/hosted-score.mjs",
+      "sha256": "7b3a641bd8ae0d84a8b37055e3f6baabaa5a73abb17d637aaa0f214c66753151"
+    },
+    {
+      "path": "game/src/audio/sample-player.mjs",
+      "sha256": "872abe0325b35cb545cae931c11c254eeb6f1d5ee94a414c7727fb4647fa5cce"
+    },
+    {
+      "path": "game/src/audio/situation-model.mjs",
+      "sha256": "fcc6863f2c332f29ae282de87c7b363d861d5ee0fd93bcff8bb3ff22cd61bfe4"
+    },
+    {
+      "path": "game/src/config/build.js",
+      "sha256": "adb64000e11575ff721e38ef04c699fc39101624408fa3e6c87d7677bbf6c416"
+    },
+    {
+      "path": "game/src/config/flags.mjs",
+      "sha256": "cb5fa08802c8d63facbc10605d25c286cb841b698d508a89d0c8cb163b06fdff"
+    },
+    {
+      "path": "game/src/config/maps.js",
+      "sha256": "b7be67505207d85576fff310fe26395acdceb7fa0d337056cdc2f24ae266c81e"
+    },
+    {
+      "path": "game/src/config/signing.js",
+      "sha256": "177775c5230a533b7da8dc117da3bc0be174a9449ea3d79d2826f7784b9e2853"
+    },
+    {
+      "path": "game/src/help-art.mjs",
+      "sha256": "ba1936c6f8ac43840ee8bdbd7e6b17fd3d07cf6a3e1da9693e8a87a579956c77"
+    },
+    {
+      "path": "game/src/help-art/airfield-level2.webp",
+      "sha256": "bb379a7add0dbbda9ee4ca65877b2c8f53d3493c572460b792f7f4de4bca3548"
+    },
+    {
+      "path": "game/src/help-art/airfield.webp",
+      "sha256": "6316012dd92459854948e5547245246ceb2ffd408e9e1ea440fed02927663980"
+    },
+    {
+      "path": "game/src/help-art/battery.webp",
+      "sha256": "f2ee458e92c6d0847a5b0d52769352e58328a5a6e5108340b488ac7d5e61f160"
+    },
+    {
+      "path": "game/src/help-art/battleship.webp",
+      "sha256": "9916152cb5a5550ff19c9f39c51268e7f33455662888634eddd9b5ac3869dbb0"
+    },
+    {
+      "path": "game/src/help-art/bertha.webp",
+      "sha256": "f7895dd59786f50ec558dca2aa042f917aaaa98ebdce81e4a9ec9e3078d76695"
+    },
+    {
+      "path": "game/src/help-art/bomber.webp",
+      "sha256": "bf6536927c9b0d78d7c8d0406a51b0050780afd9cdfbb733aeab400b16ad17a9"
+    },
+    {
+      "path": "game/src/help-art/carrier.webp",
+      "sha256": "2bbc49eb68500982f305956d0e4e496489e583881de2e661b004c9f78a9d7644"
+    },
+    {
+      "path": "game/src/help-art/city.webp",
+      "sha256": "49dd11e764865b3582884a70680a7ed86eb6bcf1163a34febf5a7ab99449d989"
+    },
+    {
+      "path": "game/src/help-art/command.webp",
+      "sha256": "611a36ce413b9c77cafea1d526ad071002b3f9114e66973179aa5185c369eba2"
+    },
+    {
+      "path": "game/src/help-art/cruiser.webp",
+      "sha256": "b931ea00439ff0f7acd49c06f0a8d71c3387157ba5d37ec7f23a5a087d4a87fd"
+    },
+    {
+      "path": "game/src/help-art/engcmd.webp",
+      "sha256": "681e786aa439be607b8422823396ca54d715ec7560a6ee3b1a200004feed909b"
+    },
+    {
+      "path": "game/src/help-art/factory.webp",
+      "sha256": "acb1d61f51bbbc0f6e51b668192ee238f070cda46f31274bb1c2a179d61199b1"
+    },
+    {
+      "path": "game/src/help-art/fighter.webp",
+      "sha256": "63371cda41f3a16571e770f94c4eb96b311ccd3dee2c42ac802c2e1f3762d057"
+    },
+    {
+      "path": "game/src/help-art/flightops.webp",
+      "sha256": "16dbd14b60e8ae9bfead51ef24a0071ce8f7990c26f43f82c092e3370dadcdec"
+    },
+    {
+      "path": "game/src/help-art/fort-level2.webp",
+      "sha256": "048a83159738bcdb97265ec817d7c6142e48fb41cbe24a73acbe7e9095475c1b"
+    },
+    {
+      "path": "game/src/help-art/fort-level3.webp",
+      "sha256": "9acc179912e44c2826b8b7bbbedde6735d9d3a560f6f3456ff3876ba1cc67726"
+    },
+    {
+      "path": "game/src/help-art/fort.webp",
+      "sha256": "772b5f7d0babc3d1a054dbf6beacaabb2b781c2174b2d40baa1381277415c822"
+    },
+    {
+      "path": "game/src/help-art/heavytransport.webp",
+      "sha256": "5bd6434c6b545099355f256aa4b606c7351b64f406fde72920e0b362b4fc7003"
+    },
+    {
+      "path": "game/src/help-art/hunter.webp",
+      "sha256": "34710c67c9517defbe0fb0a005405d56bb6d4a47e751e3d58c26272140debf18"
+    },
+    {
+      "path": "game/src/help-art/jammer.webp",
+      "sha256": "711dd0495565c9f51ff5e712cd6f0ce242aa23a9b58a70170fb090181c3a2426"
+    },
+    {
+      "path": "game/src/help-art/lradar.webp",
+      "sha256": "5baa044c941f2eff22b2aa4584622a29fe5dcd044f9d797d84d55e0f97a54d5e"
+    },
+    {
+      "path": "game/src/help-art/merchant.webp",
+      "sha256": "b1dca61fb2abae3a83eadb5cfe120265e94efe4907f007a6a280709752927ee7"
+    },
+    {
+      "path": "game/src/help-art/port-level2.webp",
+      "sha256": "3665cbb26745efb24c0fea5cefc785b2c8d2631f0690e6a5a7cc9326e0cc0e68"
+    },
+    {
+      "path": "game/src/help-art/port.webp",
+      "sha256": "35d51234c4d5a916143a356cdd3436fed08cf78e566213d4557d8098e6ece76a"
+    },
+    {
+      "path": "game/src/help-art/privateer.webp",
+      "sha256": "21bf9d963fddd13292459b60f3ebf9464fabb770ccdcfb3a382d4c1247c66605"
+    },
+    {
+      "path": "game/src/help-art/radar.webp",
+      "sha256": "e0ec4b1a85d29c2076acc93f648ab6431dd2a776f901dd5a74227591dace5546"
+    },
+    {
+      "path": "game/src/help-art/rship.webp",
+      "sha256": "fae7fd508444616c0ba262e87a813248e96cdf5f368ff0120905a0dee4cb6384"
+    },
+    {
+      "path": "game/src/help-art/sam.webp",
+      "sha256": "a248f6842fa4592973773c38a3bf8c5caa185b6cf81229a98f8bb25ac0c200a9"
+    },
+    {
+      "path": "game/src/help-art/satellite.webp",
+      "sha256": "b9c834bf106c364572504e054c900698a355b39c6ffc61f4cf4338f727e58c6f"
+    },
+    {
+      "path": "game/src/help-art/scout.webp",
+      "sha256": "2cb04a8913f6fd5a2cf36ec744a63984a8475417120a783b0270d93fc10faef3"
+    },
+    {
+      "path": "game/src/help-art/shield.webp",
+      "sha256": "ce3e815d065a77f63d72b2daf48d0e4a2af7cfa152b185917f98410f411bb246"
+    },
+    {
+      "path": "game/src/help-art/shore.webp",
+      "sha256": "61cf35abec874aa03489f60b6c699629f1b9da482a4b1b2d918ccc4a724b0f46"
+    },
+    {
+      "path": "game/src/help-art/silo.webp",
+      "sha256": "92ee12172969937361a23fab35ac7db193fa14ba4da4f5c99682a19dae2ed048"
+    },
+    {
+      "path": "game/src/help-art/spy.webp",
+      "sha256": "21e5ab7956917d236daaba00e2a879e9c8e6f349706cef7ef43910c562c45ec5"
+    },
+    {
+      "path": "game/src/help-art/sub.webp",
+      "sha256": "a7bfd7a32434dcd06d8876b601a3466103f03ee057e32de1cbbee0c49c1ebe79"
+    },
+    {
+      "path": "game/src/help-art/subbase.webp",
+      "sha256": "e5d8cd20aab570162a44405d09cff6b6962c266a008d26abfba8bf0fc2031470"
+    },
+    {
+      "path": "game/src/help-art/transport.webp",
+      "sha256": "db5b51e53b94efc469ff172d90266537974147452898351124e9337609d80793"
+    },
+    {
+      "path": "game/src/help-art/troopcmd.webp",
+      "sha256": "90596814ec944f039251d57d3c15c45ce2ab5536e941078ef9157d73ce611f2e"
+    },
+    {
+      "path": "game/src/help-art/truck.webp",
+      "sha256": "dea85653e96dec55f89396a140ed59798652fbb6c550eb86b68c94bf287f888c"
+    },
+    {
+      "path": "game/src/help-art/warship.webp",
+      "sha256": "64434ce1bba9103f51598e71ac7998b78581aa16c9114315d7a0aeab1ad2875e"
+    },
+    {
+      "path": "game/src/help-contract.mjs",
+      "sha256": "e28b8db03850ba34a6c755c04a37cf8c564e2c475cb25b9d4cde3359719367aa"
+    },
+    {
+      "path": "game/src/help-guide.mjs",
+      "sha256": "7a09bcc9b987c4aa414f9a517d90b24b15c42555823ccef5fc4f2b09a4c77243"
+    },
+    {
+      "path": "game/src/help-pages/about.html",
+      "sha256": "704eba3d7209347f16338531db34a749ba49ac683e5eff997b3813684e2393ec"
+    },
+    {
+      "path": "game/src/help-pages/about/index.html",
+      "sha256": "704eba3d7209347f16338531db34a749ba49ac683e5eff997b3813684e2393ec"
+    },
+    {
+      "path": "game/src/help-pages/air.html",
+      "sha256": "98cd35ecdfd50684d0339cd6b97c4af47827339d4147ceed338b7f2e68defaa0"
+    },
+    {
+      "path": "game/src/help-pages/air/index.html",
+      "sha256": "98cd35ecdfd50684d0339cd6b97c4af47827339d4147ceed338b7f2e68defaa0"
+    },
+    {
+      "path": "game/src/help-pages/basics.html",
+      "sha256": "7fe5eb33dedd70dcf2b8fdd64565f0bee28647470685cbbdaa61ee4bb3aec6fd"
+    },
+    {
+      "path": "game/src/help-pages/basics/index.html",
+      "sha256": "7fe5eb33dedd70dcf2b8fdd64565f0bee28647470685cbbdaa61ee4bb3aec6fd"
+    },
+    {
+      "path": "game/src/help-pages/build.html",
+      "sha256": "6d513069766e757d6ff16aa225287556087791684067603dca36bf715290e0d9"
+    },
+    {
+      "path": "game/src/help-pages/build/index.html",
+      "sha256": "6d513069766e757d6ff16aa225287556087791684067603dca36bf715290e0d9"
+    },
+    {
+      "path": "game/src/help-pages/garrisons.html",
+      "sha256": "da3b4184688f26506f3316cfc82e5b1a7214fdfcfe02430a8b9c061327da44e4"
+    },
+    {
+      "path": "game/src/help-pages/garrisons/index.html",
+      "sha256": "da3b4184688f26506f3316cfc82e5b1a7214fdfcfe02430a8b9c061327da44e4"
+    },
+    {
+      "path": "game/src/help-pages/modes.html",
+      "sha256": "f0036dab0d90e8b3c0449918d9f1fe85637b63d044fadce85cfd4f92fce5bec9"
+    },
+    {
+      "path": "game/src/help-pages/modes/index.html",
+      "sha256": "f0036dab0d90e8b3c0449918d9f1fe85637b63d044fadce85cfd4f92fce5bec9"
+    },
+    {
+      "path": "game/src/help-pages/ships.html",
+      "sha256": "9be50703badf9f1d30d3d76e90e22d19682d3e20a0bea1da10c3da639203d3c1"
+    },
+    {
+      "path": "game/src/help-pages/ships/index.html",
+      "sha256": "9be50703badf9f1d30d3d76e90e22d19682d3e20a0bea1da10c3da639203d3c1"
+    },
+    {
+      "path": "game/src/help-pages/systems.html",
+      "sha256": "3dcabb4597ce4892771290584fb939b65a28da1df66094ccd4dd66c538bfb2ce"
+    },
+    {
+      "path": "game/src/help-pages/systems/index.html",
+      "sha256": "3dcabb4597ce4892771290584fb939b65a28da1df66094ccd4dd66c538bfb2ce"
+    },
+    {
+      "path": "game/src/help-pages/tabs.json",
+      "sha256": "b2a774d3611bdf64ddec26c915d7220c17615af453b1ab27c6bd750e6e26cac9"
+    },
+    {
+      "path": "game/src/help-reference.mjs",
+      "sha256": "c3f4e8964a6026ebe4211276528ad224b9c36eb37bbe344d647f72a98df6ee52"
+    },
+    {
+      "path": "game/src/help-release.mjs",
+      "sha256": "a81a11a33ad12db715e5300fdc0580c2a91f2e7107da9a40c19472f32c21fab0"
+    },
+    {
+      "path": "game/src/help-roster.mjs",
+      "sha256": "ae45adf9c13bcd82640660bed177839c4539981d866bfea47d1abea0299080eb"
+    },
+    {
+      "path": "game/src/integration/local-platform.js",
+      "sha256": "ef1806aaa7a67df23069ed81c6e5eb4c7884e168e3449ae5282eb381c23fb060"
+    },
+    {
+      "path": "game/src/integration/platform.js",
+      "sha256": "efb0bc262422f2b5b3c2490d081ee7f4ca94cb36b9d8cf64d4c823f274aef608"
+    },
+    {
+      "path": "game/src/integration/wordpress-platform.js",
+      "sha256": "424310cbfed953f11c617bb5a8aef179468d7c2dd5f65d882034ecb5430c365f"
+    },
+    {
+      "path": "game/src/legacy-game.js",
+      "sha256": "38b9ab10ad301d4af178da63aa0c2447f52807a6d99b0db67a85290aeac57854"
+    },
+    {
+      "path": "game/src/loading-units.js",
+      "sha256": "cf277b0d16a90779ed21d54f3bd3754d57ab60617453337f482506285262609f"
+    },
+    {
+      "path": "game/src/main.js",
+      "sha256": "24c5656e0ec93706454384fe7566128824565abfe8198cfd9a7d7bc361fb6c1f"
+    },
+    {
+      "path": "game/src/multiplayer/proof-capability.mjs",
+      "sha256": "c0e686e8234c121fb0f477374ce6e2d2b1e888b9fce0365eceb14fd96378b278"
+    },
+    {
+      "path": "game/src/multiplayer/proof-engine.mjs",
+      "sha256": "7e77a611efcacd233b9c514e2793c99293a0594f5237afe2e73132aed08dd669"
+    },
+    {
+      "path": "game/src/multiplayer/relay-websocket-client.mjs",
+      "sha256": "a74f4a41fb1bbf2f9e13d5026b4f6d9a80ead7ed0e9f5a2291a3bd824ef5dd2f"
+    },
+    {
+      "path": "game/src/multiplayer/relay/lockstep-client.mjs",
+      "sha256": "5f55a80589792790aa7d26efd8e214201e513cf1a2160937e2fc650a9c107563"
+    },
+    {
+      "path": "game/src/multiplayer/relay/room.mjs",
+      "sha256": "1f7380c647e0c8aebad37a3e0ea63b635912fd19ecec45b60817f8d7e4685c7e"
+    },
+    {
+      "path": "game/src/multiplayer/room-configuration.mjs",
+      "sha256": "e28961811a1672fd517590f347e5383aca32c5b7ce3026547018f8c952dddc0d"
+    },
+    {
+      "path": "game/src/rendering/aircraft-layer-model.mjs",
+      "sha256": "e3263b67d228181c61ab3836a99a4bb00b88ba84f7fba9ec270b231db221caa1"
+    },
+    {
+      "path": "game/src/rendering/area-labels.mjs",
+      "sha256": "2414ab44511deb9746a6948593239beddd65fa2a990d400318cbaddf3c892121"
+    },
+    {
+      "path": "game/src/rendering/atlas-manifest.mjs",
+      "sha256": "fb455a24d57aa81ef01a3950ca51805d27f7f68a4d295cde15f8381dbcf291cc"
+    },
+    {
+      "path": "game/src/rendering/camera.mjs",
+      "sha256": "0f200342de05b983c1f0aef6fe6200c624c9b82d46cb14a3a68a353f84bcecae"
+    },
+    {
+      "path": "game/src/rendering/canvas-renderer.mjs",
+      "sha256": "a25b623d1aa52bab3e747fd177617b68c818903f596d65ceed1b6b39d7a9350c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/airfield-level2.png",
+      "sha256": "f926d13cd4f05bfdb6b802fcfda799378350e8a3db15ed9fde0db92c5a120fe1"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/battleship-directions.png",
+      "sha256": "af2bda4d2b9c333637304854d46a9854b0fc3860b9f0f6cf5ec271afb81c3598"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/bomber-directions.png",
+      "sha256": "6d760fbd84e629caf1764f4b79249b215ec796941e512154dee7c9f736a59383"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/carrier-directions.png",
+      "sha256": "5b6fcc352aad4a5016030173ebac23890c688e8b44afa1eac7b92a38f33f72fc"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/cruiser-directions.png",
+      "sha256": "daf59419580bc9aacccb25c405383c6b0ca85a61fafe5734616095de82ff8f58"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/destroyer-directions.png",
+      "sha256": "5a155189d1042e97b5888a5b5acee20925232c6fa988ce40c71855212519d420"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/directional-metadata.json",
+      "sha256": "dc5e01e2e889762b6534df7c2d6b13c214e1c4a33bee6022edae969174ac7a5f"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fighter-directions.png",
+      "sha256": "fcb1f0b75a2b7ac768806e74e16a8a6806fe28596112bee5bcbfa01c23176b4b"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fort-level2.png",
+      "sha256": "d429a5aa35e7e535ac2625733f4fef5e1fc3a09b5be8934f03f2bca6342f9c00"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/fort-level3.png",
+      "sha256": "7cf3439f61bf281d73022404fd734972d9357a9d2e79c7393ff5cce41df36b40"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/generated-roster.json",
+      "sha256": "594837ac23505fd7b100d8aee636fe4e6f24ac1a0ae0bee72fba5c0be2803643"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/heavytransport-directions.png",
+      "sha256": "645ded3679730ed65238be9dd0297e68de41dff1f4e4bc20255cbeb7b6769ff1"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/hunter-directions.png",
+      "sha256": "11d0da833ad7dc78c6c67174e45d3de45c73a2eceaca8e760aec3288f07bae57"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/merchant-directions.png",
+      "sha256": "5e823437e875b78747b689fb0ef16b2f461c79ed2223ad2aec495e077dede737"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/port-level2.png",
+      "sha256": "b44347e8b5c72f2b6c7a71deb81d86cad679d25510ec04d22b16094b13083d0c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/privateer-directions.png",
+      "sha256": "a42aa3bdf4d4ca89a3adae2846c73da04f8edebdaca8a715d591573af859bd9c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/rship-directions.png",
+      "sha256": "6549c7c3512c1950d6a5b562ab6e37f82eb2784a954466d19b2ff8192ab60021"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/sam-base-v1.png",
+      "sha256": "c22a85fb599d5f6592b71bdc1a558ff551a399d992a4fee8e0103dff092d6988"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/scout-directions.png",
+      "sha256": "1964cb5764e78e835c006f29b8979714c46e3e173e3754402ec3f477dfaac2d7"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/silo-layered-v2.png",
+      "sha256": "1a789d64947986c8ad2086d8fa71cac422f712c71bc8f8d76bc71e2c7dd9e2c1"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/spy-directions.png",
+      "sha256": "d5a5d867d14edbfc09aa509a1d69ef18b3bca2518e9bcf78603e75b4eecbc397"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/structure-metadata.json",
+      "sha256": "232f9eba48bc0ad5cb039668762defb2d68d115650a585d2d17ee41b01792d0c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/structures-complete.png",
+      "sha256": "45ba61bdf63a7451a09fe12663a2cd5371c6216982c9aecdd899ab6d5dba7a55"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/sub-directions.png",
+      "sha256": "97cc85df9f8abe8e9c0fa9cdc304b925933bfa97c80ce86a82ba41f53633fb55"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/terrain.png",
+      "sha256": "af88715515f5505ff119d4446ee7eee32d396eec33c8d99ed048fa5cb3a7118c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/transport-directions.png",
+      "sha256": "fb3cd1c7c95fbda31883ebc8ede27e65ab88435875d7d0e02b51e8ab1cc7903c"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/truck-directions.png",
+      "sha256": "50991a73a8cb645851d8850b41b3abeb3855544eba970f3728b60e2abf2ca595"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/units.png",
+      "sha256": "829137a6340d48e21d4c238bc2701174e74c14841a11d285e622c056e1500ffb"
+    },
+    {
+      "path": "game/src/rendering/classic-assets/upgrade-metadata.json",
+      "sha256": "9a0f6a987b057d75db7b7795fa02f2498d27aca0edd6348db48917135315d473"
+    },
+    {
+      "path": "game/src/rendering/classic-battlefield.mjs",
+      "sha256": "25434ca97ecade019f5354e4ef3089844a72e7a838836a1ab2785ab64a2158cb"
+    },
+    {
+      "path": "game/src/rendering/classic-combat-effects.mjs",
+      "sha256": "0213f939e8e9f12e585987c4a4dbd809d8ef2b5aed2943409b70fa07f50c2c15"
+    },
+    {
+      "path": "game/src/rendering/classic-motion-effects.mjs",
+      "sha256": "89b420c832af986737f5eb6d7978c0c20f7100fa385235d223c469de02442b32"
+    },
+    {
+      "path": "game/src/rendering/classic-motion-layer.mjs",
+      "sha256": "7b383e69eaec4ebc2b4130cad61458dd61c1f95d553939984e46bc8618c2dfaf"
+    },
+    {
+      "path": "game/src/rendering/classic-motion-state.mjs",
+      "sha256": "6f192a11b435414d40639ce88f9f25e731ba1a2e8a1a31bcc08d42129d9b8d9b"
+    },
+    {
+      "path": "game/src/rendering/classic-sam-sequence.mjs",
+      "sha256": "3321b54645a5c211e3db17efd5dbd09715542fda8386ca6f2f1b1a5887cb8715"
+    },
+    {
+      "path": "game/src/rendering/classic-silo-runtime.mjs",
+      "sha256": "0ad6ad26a84c650b7ba6002cc6c70bb3687c8d764ef6fdc5fa24dc9bbf7bc7d7"
+    },
+    {
+      "path": "game/src/rendering/classic-silo-sequence.mjs",
+      "sha256": "575f0df6e70e77486c78a7c40e62ef8bfdab0dc4b0d35f16866b4dd27bd55083"
+    },
+    {
+      "path": "game/src/rendering/classic-terrain-client.mjs",
+      "sha256": "6d040ffb4d34e82ecd6fd267b16bbde99353b9fce4aef70cdcde854dcfa45a7b"
+    },
+    {
+      "path": "game/src/rendering/classic-terrain-worker.mjs",
+      "sha256": "132cff0967ddd05d89a21c019a068086bec907289a9a45e37a843f95c3fde651"
+    },
+    {
+      "path": "game/src/rendering/floating-text-layer-model.mjs",
+      "sha256": "5df07df0a9881041a2ac20838177af64c8a32d38ee9781701d3a0f6d49625db4"
+    },
+    {
+      "path": "game/src/rendering/fog-transition.mjs",
+      "sha256": "9fc4500c9c614f189a893b07a3dad0f7c5760b622aebced6d1158ef00119fe74"
+    },
+    {
+      "path": "game/src/rendering/global-effects-layer-model.mjs",
+      "sha256": "31f30983087658a13f07a5a7b990e9379a15de39402e05e98978f4df145776ec"
+    },
+    {
+      "path": "game/src/rendering/interaction-overlay-layer-model.mjs",
+      "sha256": "d4060d1692e6932c036ff0d908632a8a86a732d157e8557c1cb28927781dd906"
+    },
+    {
+      "path": "game/src/rendering/map-label-layer-model.mjs",
+      "sha256": "2e420eb60cf9372da33e80aff05ed21a11826e2243d1e823e2c270a09b4e60c3"
+    },
+    {
+      "path": "game/src/rendering/missile-layer-model.mjs",
+      "sha256": "039b05e2fbcd3638c9935fefe705a75e528920967e297d43c49b0a5e71ac9791"
+    },
+    {
+      "path": "game/src/rendering/nation-overlay-layer-model.mjs",
+      "sha256": "fb817467f89726452326a35a130a5eb5eaf65c57c16a3fd32fe9d362d65fceda"
+    },
+    {
+      "path": "game/src/rendering/naval-logistics-model.mjs",
+      "sha256": "7d9ba79a50d38c6e3f1787211688be9cacec8a86c37199672b9363c67262c33c"
+    },
+    {
+      "path": "game/src/rendering/notification-overlay-layer-model.mjs",
+      "sha256": "acd7a62587762227d1b3c4b04e0a7206a36bbe4a1a9599b3f0a6a50f2e4d015b"
+    },
+    {
+      "path": "game/src/rendering/paint-bounds.mjs",
+      "sha256": "fc3f719a0b3f366deaefc79ca99c172eb30c1dafcc68f081ec809c04821bfd36"
+    },
+    {
+      "path": "game/src/rendering/pixi-atlas-registry.mjs",
+      "sha256": "57b529347c804ff9b7133479e6a62b6c2e2785473480114569d78afbb9afe697"
+    },
+    {
+      "path": "game/src/rendering/pixi-hybrid-renderer.mjs",
+      "sha256": "1b5567152874dcb73de735e3cfadf02e44ad4a7c4d6c5f7b8fe5a8db1d342220"
+    },
+    {
+      "path": "game/src/rendering/pre-structure-layer-model.mjs",
+      "sha256": "78fc6656f91604f0ab8df36e1e0decb1b1b4fef956caa0ecf6e13cbb664685d0"
+    },
+    {
+      "path": "game/src/rendering/presentation-step-clock.mjs",
+      "sha256": "bdcc3a8caccdcfe5a9c5e9e3d2b712182fa36e6267345cbc80964f969e992ba8"
+    },
+    {
+      "path": "game/src/rendering/projectile-layer-model.mjs",
+      "sha256": "a0fbaf2bf063fc30967c528947345e8db4e9149e658c7ffb6c98a13babb20452"
+    },
+    {
+      "path": "game/src/rendering/renderer-factory-production.mjs",
+      "sha256": "8e16bf5d1abe3998460075836618082af687691797ae81363a49c3e00e4aea5d"
+    },
+    {
+      "path": "game/src/rendering/renderer-factory.mjs",
+      "sha256": "ad700565a58274eb90d951095f12a2d85384794b9f034a9738be2cea2346d553"
+    },
+    {
+      "path": "game/src/rendering/runtime.mjs",
+      "sha256": "cebc283307a748d6cfb8e7d0fc2e9039a392637ae3091d14943befe135f3ff7a"
+    },
+    {
+      "path": "game/src/rendering/silo-flight-path.mjs",
+      "sha256": "731919a7070596e49c37d23d3eb484e09dd8cda25177cd5d82d68b843c98b6b1"
+    },
+    {
+      "path": "game/src/rendering/structure-layer-model.mjs",
+      "sha256": "3fdb762d3be11eb990ac2ad525a1d91b66dda9eabf61baae4c9c2554bbd48de5"
+    },
+    {
+      "path": "game/src/rendering/support-actor-layer-model.mjs",
+      "sha256": "710165dc0f74f7cd8587a54dd6e2c4ae1fcdac98a056500747889f489cfceda6"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-client.mjs",
+      "sha256": "4edfffde14b72659118087dfcb9c9dfb21b8fc166573ede8ad71bf18d3667240"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-model.mjs",
+      "sha256": "80e49aad20e0c353fd6c6b344dd44aeb60a178139420ac332b02af1e8098e514"
+    },
+    {
+      "path": "game/src/rendering/terrain-raster-worker.mjs",
+      "sha256": "76e33493c2eb06eb18bf7e126e99c016767e3d0d351dbec0456a736dbb95854e"
+    },
+    {
+      "path": "game/src/rendering/unit-art-direction.mjs",
+      "sha256": "964ef122496175bce0c11b9b68878020f20d0114db9269cdd43076b265d0f85a"
+    },
+    {
+      "path": "game/src/rendering/viewport.mjs",
+      "sha256": "7fda0f721d8c795eb6c2287eb7b0897d021f41dcce519155339b152e0dae2f84"
+    },
+    {
+      "path": "game/src/rendering/warship-layer-model.mjs",
+      "sha256": "319feb010e113882ba8221d0f6087d3435d21ded325c59243ce2461c6224f871"
+    },
+    {
+      "path": "game/src/rendering/world-annotation-layer-model.mjs",
+      "sha256": "4d5111533fd468c627a944a6d73b4d31242163b3df06620b3dfe676ef353647f"
+    },
+    {
+      "path": "game/src/sim/authoritative-state.mjs",
+      "sha256": "bccb04de82dc48c16f311e36e7d40f661f9ed48039c5fdcfb7b7c4112fcb7be1"
+    },
+    {
+      "path": "game/src/sim/authority-value.mjs",
+      "sha256": "fa4bbf215b55993e5ecbe780e462d2ee55808812e29f596b884e642b33ce3d59"
+    },
+    {
+      "path": "game/src/sim/canonical-typed-cache.mjs",
+      "sha256": "2481a915d23f883a7b8a51de3801ae6d25cd9f638e7e95a3929ebc748a0b186f"
+    },
+    {
+      "path": "game/src/sim/command-router.mjs",
+      "sha256": "70fd8094d9e6429cfbd5980c43c0ecf4da82dadb675aed9dddfe9e6858ebdf63"
+    },
+    {
+      "path": "game/src/sim/command-schema.mjs",
+      "sha256": "c6a2075bc2f705c01b513a4f3c082b955dce9d2b57b2f02406de9397c13c9233"
+    },
+    {
+      "path": "game/src/sim/compatibility-effects.mjs",
+      "sha256": "68ba6bc8be2587427ec50bc47d91de597f2be766f0498f7f61d883a56efbbf14"
+    },
+    {
+      "path": "game/src/sim/configuration-schema.mjs",
+      "sha256": "a0d8a08a588122897dd735173764ad6b7c5142d5cb509c68dbf49f62e958048f"
+    },
+    {
+      "path": "game/src/sim/deterministic-runtime.mjs",
+      "sha256": "835e3e0aa58465797b956a249c08354d8bcd3fa8895e62c54e48a0aeab6ff69b"
+    },
+    {
+      "path": "game/src/sim/engine-checkpoint.mjs",
+      "sha256": "2ac0963d5992454a357323517023fb51ad488b602437cf974cb909ed39c2fb0f"
+    },
+    {
+      "path": "game/src/sim/engine.mjs",
+      "sha256": "0f4ea861b810d7c06f04bf0264165bab13706d2ab1066b9774ad044808fd27d7"
+    },
+    {
+      "path": "game/src/sim/geometry.mjs",
+      "sha256": "9f3c1d0e73a0dfccf2a6fe2f7a2c7e4fd503d46c73fa8073634288181c683f2d"
+    },
+    {
+      "path": "game/src/sim/graph-codec.mjs",
+      "sha256": "92e14db8f59483a5f3da806b2dc4b96a883273b4f4d9959380484e6a7125be49"
+    },
+    {
+      "path": "game/src/sim/map-generation.mjs",
+      "sha256": "329a3a497ce2e93f060371dba04b98f52c2501ace0c31022f0dfd749e5794615"
+    },
+    {
+      "path": "game/src/sim/match-flow.mjs",
+      "sha256": "7886f4f83a3a40428052bdde5c65bf5fc53d40564803621f657247e65ef2b366"
+    },
+    {
+      "path": "game/src/sim/replay-constraints.json",
+      "sha256": "1a0174ef129b22f489176cac3245f67654318339e7e7d8e6ff30338c2003820e"
+    },
+    {
+      "path": "game/src/sim/replay-schema.mjs",
+      "sha256": "5701c0702999c07c5f860a42e37aad0cdf08ab70f76e23556fb364ae0c5d20b4"
+    },
+    {
+      "path": "game/src/sim/rollback-copy.mjs",
+      "sha256": "e3e0d8cba75709cdab78013d4eccc7228fea43375f01711468dbe304fdb1b701"
+    },
+    {
+      "path": "game/src/sim/rules.mjs",
+      "sha256": "502872f9e3c284cb1879a8d9f1b600291cbe3f774fe257ec8d4e46ea124d9487"
+    },
+    {
+      "path": "game/src/sim/sha256.mjs",
+      "sha256": "4cf81502519cddcfa7ad21ed749fb1079347546b3b8db1c527ba587d5beae09f"
+    },
+    {
+      "path": "game/src/sim/simulation-ports.mjs",
+      "sha256": "309a8b3bdeed9c0bccde4538f1fab859d61cfc9cc4a8ffe8497a3511a746ed22"
+    },
+    {
+      "path": "game/src/sim/state-oracle.mjs",
+      "sha256": "71df9ae3b63788ff9351d654a9817051561e8a23615971226f694d9e2ca58a81"
+    },
+    {
+      "path": "game/src/sim/state-reset.mjs",
+      "sha256": "68ae5084c809a820b3774facb8c614fbd25b518321dc0f7242dfd31e3f5ca627"
+    },
+    {
+      "path": "game/src/sim/strict-math.mjs",
+      "sha256": "548b8a4d2f1e169cf5955571d1afc09842e167ec35dfd7616abc48b3cb0e2c40"
+    },
+    {
+      "path": "game/src/sim/systems/ai.mjs",
+      "sha256": "287a365ec50d404e27613671bacd7c1d864ca9d249ae325c98fcde0d295eea10"
+    },
+    {
+      "path": "game/src/sim/systems/air.mjs",
+      "sha256": "3b719f7f451f81f25eaa6fd020f74f0650a0c7b1b80c4bb727e4f2c49adf3154"
+    },
+    {
+      "path": "game/src/sim/systems/diplomacy.mjs",
+      "sha256": "11021991330ca567c86404943bb6620d921bd040332b226c9dbb5428001a3f7f"
+    },
+    {
+      "path": "game/src/sim/systems/economy.mjs",
+      "sha256": "22897b1706facd0b916193788219c1ecbfa3cf5df41cb5c925504c2326feb125"
+    },
+    {
+      "path": "game/src/sim/systems/fog.mjs",
+      "sha256": "06dd26fe16f46fd3441d6cfb0814a775d7280942a96c12e1a04d0d874e466c99"
+    },
+    {
+      "path": "game/src/sim/systems/land-combat.mjs",
+      "sha256": "989bca092de33d5ffcde3dfa89542e8cffb2e028ecdfef364cc2054ca600e3ac"
+    },
+    {
+      "path": "game/src/sim/systems/logistics.mjs",
+      "sha256": "836885c5268fda0370f079c1c94ca462cfc9ed42eb42b91f3c4363987eb44987"
+    },
+    {
+      "path": "game/src/sim/systems/missiles.mjs",
+      "sha256": "1965b34cd1f4c642e0543e89e41758b6f9853b8ec19a7731eb4215afe4923dd1"
+    },
+    {
+      "path": "game/src/sim/systems/naval.mjs",
+      "sha256": "c1bf817fafc3428f356e2b68c05fd1c988dfd87aa3e6e491e07f779af8fec726"
+    },
+    {
+      "path": "game/src/sim/systems/structures.mjs",
+      "sha256": "e0bf86faf5ef67945e1896cdca4943fc01ec78fd8022c3908b616873e347cab1"
+    },
+    {
+      "path": "game/src/sim/world-loop.mjs",
+      "sha256": "b6d8788549ae99e31a316e728866c2486bfb5f57e4488722a092e411c6dd4b34"
+    },
+    {
+      "path": "game/src/sim/world-setup.mjs",
+      "sha256": "7cad3790fc7bde7979b2533cdfb32f36fb6613e5ccc85ddb5cdb6d79ffaac3c9"
+    },
+    {
+      "path": "game/src/styles.css",
+      "sha256": "caba184356e821bb150ff8e9c72f22943f63596c0d06f4e315f755793ef14b6c"
+    },
+    {
+      "path": "game/src/utils/storage.js",
+      "sha256": "e4b9d7f9df4534f97926e231e9bf92bb5572ef0819af774d22eeb6066f64332f"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "802c574a36806af37def0f3d9f03786e41e74e20c1df7affb710616b5481e999"
+    },
+    {
+      "path": "package.json",
+      "sha256": "909c889baa46806f487afa82aea8154a4000822e7faf3c9d2fdb0fbe9d233af7"
+    },
+    {
+      "path": "playwright.config.js",
+      "sha256": "f3cdf560a0c5b4f566f176e366d4c357ccd3d5a85c02df24cce10917212f21c4"
+    },
+    {
+      "path": "playwright.wordpress.config.js",
+      "sha256": "b8ee235ce3073785ebbb4a3d019abeaf8d9c44d14187f9da53c960cc6e231980"
+    },
+    {
+      "path": "prototypes/animation-study/index.html",
+      "sha256": "fe8cd2f37ee4d51995c38cefd6d5f20211e5f718be791bdd056915cc96453b13"
+    },
+    {
+      "path": "prototypes/animation-study/README.md",
+      "sha256": "710633f3ce07ccc20635e2be1c431c2dd867962e3e58b67265406325e836e982"
+    },
+    {
+      "path": "prototypes/animation-study/study.js",
+      "sha256": "df2d2149175799ee23c5d522b64f7befbe70a194934f561738c7fb983501bd16"
+    },
+    {
+      "path": "prototypes/animation-study/vite.config.cjs",
+      "sha256": "7be3a1ebc48351921dacfe18a5b2ec1d57007356012a856bc658324eb3c5a3b7"
+    },
+    {
+      "path": "prototypes/audio-audition/__pycache__/locked_audio.cpython-312.pyc",
+      "sha256": "ffa31a5654cd11d9f006aa67e6571480f62e04ef4144b208f9a358fad371bd54"
+    },
+    {
+      "path": "prototypes/audio-audition/acquire-bugles.py",
+      "sha256": "f66610ae3a493d0ca87d9321ce6911418ab4db3cf0caf9c6bb464596444842f7"
+    },
+    {
+      "path": "prototypes/audio-audition/acquire-building-materials.py",
+      "sha256": "a72523bb91e99f4f8e013d705c621ce90de9f2c489027bda44718bf64b2fb1dd"
+    },
+    {
+      "path": "prototypes/audio-audition/acquire-construction.py",
+      "sha256": "ec4411dbab0b79b735c395d296d5095e4edcd1bfcd78b91bbe8783dfd74dee71"
+    },
+    {
+      "path": "prototypes/audio-audition/acquire-round2.py",
+      "sha256": "574de8c889ae8de7c2956d4e77de9adec2874acdb22493361a5f984b35056014"
+    },
+    {
+      "path": "prototypes/audio-audition/audio-checks.json",
+      "sha256": "e34e8333b95198b93d33c42208ef83d91948f2352a7e804e0ba75d0864ea4afd"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/artillery-natural.ogg",
+      "sha256": "f223ff20306eda0a8450d31eb52063e863c49ed5bc7992f3422aa99b28267aae"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/artillery-natural.wav",
+      "sha256": "8ba4e4c63b36ea7cb0b5bc309e626070483a452ca7b8699f10d5d452deb1a630"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/artillery-reinforced.ogg",
+      "sha256": "57a8908e526fc17f8cdbc84b86cf6d4d389cdf8311e093257ff525a2b6bad9a5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/artillery-reinforced.wav",
+      "sha256": "a5c0749d5c275578218d907fa3e4fe4db88c737d324aec8c1087601ca325798b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-failed-natural.ogg",
+      "sha256": "aa8658217d5c2efac76bff63bc396e6c20e90839eaacf007a48e040af6f42f05"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-failed-natural.wav",
+      "sha256": "c81b164bc96f3114ed4ecb12c3b71895b1bf2e2a18846c97015afcb76b98017d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-failed-reinforced.ogg",
+      "sha256": "b69d07a07a995f99c2756a6cd52966ddd3d6b1b8d52e558a9711e79a0b61c9f0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-failed-reinforced.wav",
+      "sha256": "a0a63e3bf41b32de1ab0e8bc372ce3f7cfae9c5fc3539143dde4c19e9d2f1c0f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-progress-natural.ogg",
+      "sha256": "221db8d625aad90cefdcbd44deefaa15d7986acc8db53f1d5cfe0a562972e984"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-progress-natural.wav",
+      "sha256": "a2e4cb04210aec50af975f3e606e06f3b36ef10bfa3a459be4d8d17f73129d8b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-progress-reinforced.ogg",
+      "sha256": "316f0438f74e641d9bc69e5e9b34c0bbf62398b1d46c7271ac4c07effaa2edef"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-progress-reinforced.wav",
+      "sha256": "3210ed02ea679375fc29ef4ba04f75865cdb13ae95c2e20e2689d7d2d45d77e1"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-stalled-natural.ogg",
+      "sha256": "c65489c2625a370520ee728c90d67463f61e0d0418d52d1be193306f7290e77b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-stalled-natural.wav",
+      "sha256": "9b0d7f12fee7674dd0034145ab54634daa4bb3103e2c1a3d455c92489646a544"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-stalled-reinforced.ogg",
+      "sha256": "bc3118f19689d261b90d594446e96f1e994ea3a48d2f0cda170e5b136629725a"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-stalled-reinforced.wav",
+      "sha256": "639088c4ee1cd1d7000db8785e2d0ca2c35e24c5729adfafeb7d0a7314008d6c"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-start-natural.ogg",
+      "sha256": "f31c5cc7a6225b2a8f034371f262d6501bcd62e62889c22238aa858ebda025b4"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-start-natural.wav",
+      "sha256": "179e736e7a9e84935fd92064c7252cc78879c4c9cef0b401d66ba796e5902a90"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-start-reinforced.ogg",
+      "sha256": "8f51ab8524436f734d9dd8f27bf5de6f0dd484a1a6723815576ebc8676317141"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-start-reinforced.wav",
+      "sha256": "54000ff6d83d80e913d209b9dc35518c755c9a651b615b2956305a5f5ed281d5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-success-natural.ogg",
+      "sha256": "2215acc2c9d2050508893e4a409ff33a1d36598ea7ecee53977cd452ffa867ec"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-success-natural.wav",
+      "sha256": "c9a91d77f11e38aa71165fa738f3dd58558818857ed44ab3360f12045448c5b0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-success-reinforced.ogg",
+      "sha256": "e10640bd50de52b32e6669f8611d05241f49dcf765d70f8d11bdcdcedf621d7d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/attack-success-reinforced.wav",
+      "sha256": "77193ab5e655e95bd29db5b8fbd00ce433077d9482a3a70c41aca7fefea0cd36"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/battle-sequence-natural.ogg",
+      "sha256": "b081f1da84ab4de4ad825029472748e75caf67fd7498f4993aec54c8ee15478d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/battle-sequence-natural.wav",
+      "sha256": "127308e8ea0964f37e80f176aa72db3bf8537763cc2bba5d7131953d66c9e953"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/battle-sequence-reinforced.ogg",
+      "sha256": "690e20f0b797ab67c13ee6a8e6f7b89ae0759bf479fae8e3a0b2b63757a0ce27"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/battle-sequence-reinforced.wav",
+      "sha256": "f41bc83ee418e3592770c3bdd014435ea6635376484a0dbf1b63be4d7ef37b31"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-enemy-natural.ogg",
+      "sha256": "2659fed3672f56e4d341fb5d31cb24debe1cc62caafbc49ed39d2749d41b2579"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-enemy-natural.wav",
+      "sha256": "0e1efcc93c5853b771fa62b44a4aeb422a2943efead9aa4209b070707cd74104"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-enemy-reinforced.ogg",
+      "sha256": "b11e84949c79548f1ee13856e7f1c38af69df76e3e06f2ba7ef5c2ee9b5d0104"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-enemy-reinforced.wav",
+      "sha256": "eae27546a050dcb8a9a881f5a46a4a7dc1ffde80c8f38564b9c1b95f71677558"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-neutral-natural.ogg",
+      "sha256": "bfefdf8bbd51eba624f446a5bcebcb382f5fd506d904e3f1d2cb7b5602f47841"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-neutral-natural.wav",
+      "sha256": "eee713982b07cbf0b459c6bf050d3213593238187e4a884ac6c56d292afc4e8e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-neutral-reinforced.ogg",
+      "sha256": "9fddf84d7e20ba2012f7afe86725a16f8029e04bf72c2ba54c8abca33534218f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/capture-neutral-reinforced.wav",
+      "sha256": "8a81d6e4a7820c98199a036189e2f0f9bf3415908401f59d4cb8a93853fb4bad"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-airfield-natural.ogg",
+      "sha256": "45fac6ec430b2338d76daf1ee2517bd8be8535f66bdb6c2c929b48c25ec10ed0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-airfield-natural.wav",
+      "sha256": "e8986bf2ca87f4cdf0cd5a4da980f97fa623a14a5a6a7c584fc0853625dd763a"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-airfield-reinforced.ogg",
+      "sha256": "182fb4ed255c3be79a82a67bc97274037aa67b90393fca4c243b95c478544b65"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-airfield-reinforced.wav",
+      "sha256": "b266ec902d646532b02a17b357720a928dec0a293180043fd763e33978b0d2b8"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-battery-natural.ogg",
+      "sha256": "faaadea2a8b9e9b501f54714d7eaca09d1131effe04a5322d33b0fcf2d5d3810"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-battery-natural.wav",
+      "sha256": "3aa2ac344539bcd190dd459588e547b4cf692f75c0bc0636acf948c1dba79e81"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-battery-reinforced.ogg",
+      "sha256": "e1568702b2c4ecf50887ccb94a706ae34b38ae68b6b739362b23623008291981"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-battery-reinforced.wav",
+      "sha256": "416f2b03037c31b9b38dc5fe6144d440b62002983c8375e38842f7ac6c0360b6"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-bertha-natural.ogg",
+      "sha256": "d06eeb33c1a7c76f0ad0c6664931fd2c8eb8a592da8be6fd090d761ae309da1f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-bertha-natural.wav",
+      "sha256": "9137045957d068b262c9eb4c54c1bbc24850c9ecfca7e75abf14025a242a240c"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-bertha-reinforced.ogg",
+      "sha256": "59f1099792c6fc77b317d51404112e99e644bbd31dfe93a53f3d2fe9bf5a91a3"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-bertha-reinforced.wav",
+      "sha256": "f817112e90191469367bfac07bcdf285992d8bfdfaedc7bea225813d79cbf4a0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-city-natural.ogg",
+      "sha256": "a3d8c09d9824cad9dc11e4c3f767a320524f633737ccc32cda2682a5ded62cb7"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-city-natural.wav",
+      "sha256": "4db46be737942670219a9666087d825231dd2c136117b8a751005502e10de27f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-city-reinforced.ogg",
+      "sha256": "057b796e157bbab17384eabe5fd7a56683ac686fb22833107da5636d672c6472"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-city-reinforced.wav",
+      "sha256": "dd25ddacc16b52e8528963d51fb82bb9ee6e23dcc7870745ff641a1fda854dac"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-command-natural.ogg",
+      "sha256": "b2b7b157aea3bd8737736f171483742b1cff55a89735af601475a49893fcec92"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-command-natural.wav",
+      "sha256": "f02499b5cc87deb1798415c8f64e4403aac3abbea2e6a8814a64cce850ae1bd9"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-command-reinforced.ogg",
+      "sha256": "261e8bbb5aca33bf5df9f70c0310b0f20299bc8312f16c46e5535ee2382daeb5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-command-reinforced.wav",
+      "sha256": "e5a7d8d3fbcf44c9e5fa1e7d114446256a35981152f5e9623497bb005f85a1d2"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-complete-natural.ogg",
+      "sha256": "a1afca58fc672430c1f959663a7cceb2478cd24fb2d20435af939088e42dde87"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-complete-natural.wav",
+      "sha256": "e46d249281b4091d325751422f8d730dbe5399820c08f8d535aa94a16f2bc340"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-complete-reinforced.ogg",
+      "sha256": "b45eb90de54733df90de0dff084749c22ea474ff08fa38cdaed74526ce8245a5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-complete-reinforced.wav",
+      "sha256": "32c3716475aece1f5875d1a7025524949c9f1c0c27cce7e848b53feb4120439e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-engcmd-natural.ogg",
+      "sha256": "cc45b37dd91dced59d25bdd5bc645b2c899ad8cac038d4f378b3ea647214ffd9"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-engcmd-natural.wav",
+      "sha256": "ef523d06e7d56aa6bc7b96612b1e7097700d26491e1e479bf9197bb76daf00bd"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-engcmd-reinforced.ogg",
+      "sha256": "958084b5f8eb11d07cad908a888830bd3e2d7db436c95d725e0bdea735487f1b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-engcmd-reinforced.wav",
+      "sha256": "ca3d979ded03394c40946bb52514dbc9554e00cad2c20acc249179550eb35c85"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-factory-natural.ogg",
+      "sha256": "13354914f741c75dd4e76707bfd1c84d39304f89275f56ff48c9b83e0fab8aea"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-factory-natural.wav",
+      "sha256": "98d3bc8041cb531f0a4e13439773283e3d911184c81851ad109d7bf391848164"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-factory-reinforced.ogg",
+      "sha256": "eb994da697d9fc326304038128842f82f75c78b2290e68238055436891760b8c"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-factory-reinforced.wav",
+      "sha256": "78129de796d361ede28fc9827ba1228d0d2cf959b8d291616aa3cfda2e133497"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-flightops-natural.ogg",
+      "sha256": "25b69a5c2b8f59c9afe1af99f7bfdf25d3b95cc790b6fdd3718e310370a9e397"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-flightops-natural.wav",
+      "sha256": "8418bea71d8e75f9ffb22a13f413592728e9d93b166488996a89261f9acfe837"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-flightops-reinforced.ogg",
+      "sha256": "a3635ec8ed3ff68b4765d0bd6775f70b667d3409e89dbc22bd7b6419a37d7cef"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-flightops-reinforced.wav",
+      "sha256": "adefbebc5e89495011aee9fb7a50fe6c343348cd2467924039c8380b18f7e979"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-fort-natural.ogg",
+      "sha256": "1c9694c8a6a6352c1172a8bf1ffdd71fd9a5b2255f00a827ebdcfd0613979f09"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-fort-natural.wav",
+      "sha256": "b2eb38374ce48d66e60a7e55b7a3211790ba51ef93bb95670cdbb21183977990"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-fort-reinforced.ogg",
+      "sha256": "3dd63b73a1e9f1a9e430cb07fb848e9f970c58aa0dd948cf616cd5f604a6a82f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-fort-reinforced.wav",
+      "sha256": "a40e8b05bd66a85aa621249bc640b08d1128b43561f8f7fc297213f459cb3178"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-jammer-natural.ogg",
+      "sha256": "abc7a753ff60cd0d45e658b3a3edde721bcfeaec517ce0d06db4f06f5e003ec4"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-jammer-natural.wav",
+      "sha256": "b55a54b9bab260c38bcf13dbb9ace06bed94f3142c8338043a20eea4b9d5e05f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-jammer-reinforced.ogg",
+      "sha256": "6ed7cd96e9b1431076ac68689252e8aaa09e6a2e97c61be4edac839d06d8f221"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-jammer-reinforced.wav",
+      "sha256": "83e4997484c21492b4c9b770a1666fb4e32b27e6680b4c5b0ed02ac7c9904c54"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-lradar-natural.ogg",
+      "sha256": "c1f679fea3bd34cc187238dc4c8d9e1f6699e9c9e9f72f47fd142aacfbcaa29d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-lradar-natural.wav",
+      "sha256": "09b61c5fb0ba3a591a21c5967a8381e98d051f216f46e75735b94b5c2a1e7798"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-lradar-reinforced.ogg",
+      "sha256": "f3b753d813aa5fa43965ed8e1c2bca71bfb40c58263bec2825d2a98dfb0af621"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-lradar-reinforced.wav",
+      "sha256": "325e67f14b15ab0e416a9812a791c6bf5bc64a54ed262e0e34c4ea1f4db6c9e3"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-port-natural.ogg",
+      "sha256": "d1416e00424e264e0d1040fe004d5bfe9f8b670d08891a2ba1f289f28d3a261e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-port-natural.wav",
+      "sha256": "a7a4742947dcc3ce0d3fe01b703ed50806fa290cea5ce1e6bd4c1383c4698eb5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-port-reinforced.ogg",
+      "sha256": "7a1503d3771dc887f46349438f649fa42bbd465979a8c2447799ca91fc7bf253"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-port-reinforced.wav",
+      "sha256": "d3b53df226875b5cadc05a52e4c4d6dcedbc4211c72665886fa777d9f2d21206"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-radar-natural.ogg",
+      "sha256": "8e9c8cf89bf13c312a6d23b65b43192795b19cae1ac2ea758e439d72b78d80e3"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-radar-natural.wav",
+      "sha256": "c1019ae5327322c36d5a48ce7a0f94392a57ce05ee71da484238069c3801dac8"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-radar-reinforced.ogg",
+      "sha256": "ba44d1d30d845e66004c325f625330d047b43405b8cbeb5978839c74c2e713d6"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-radar-reinforced.wav",
+      "sha256": "a1974ba393888fa2868197bebb0cc90a2698a69bd8efcdf35762e0fadd90c32d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-sam-natural.ogg",
+      "sha256": "ecac549d64b0acfc9a6e585471e00e33be09e4fdd0d49a890b1cac79ca9e31ee"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-sam-natural.wav",
+      "sha256": "0c0cf6cf41059c53ac1bfd6c8d0cdcddafc4c9d3e1a404772e8d7fa6e1392809"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-sam-reinforced.ogg",
+      "sha256": "76958f440fafa8b4733bd74d1ff4367227095124929adda1b715be4ef9f0f0b9"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-sam-reinforced.wav",
+      "sha256": "3b7fe417388a81989a60f1b8c5f8b1ac8fcb8287d3ea8b58b73a6f89f21a5339"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-satellite-natural.ogg",
+      "sha256": "b378a9d2e0c72dc1f90c4a82a6707f1a8f1bc8c4052558d123a76b0dc93aac67"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-satellite-natural.wav",
+      "sha256": "8c34b4cfd3bf73888cbb988b640b091fe226a4bdf856fb93c6567961f28c33ea"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-satellite-reinforced.ogg",
+      "sha256": "4a7a71f70bcfdc8a99ad7d26a35b9db3c3172b07a147f8bc7c755096d6deefe5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-satellite-reinforced.wav",
+      "sha256": "5a236d2e0108424278a81406812c610e0d69d4d813aab2f612c705609896fc6b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shield-natural.ogg",
+      "sha256": "943f493fca6fa5886c08fa8d15a3336e566d646f8733ee8bfed2becee3c4088b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shield-natural.wav",
+      "sha256": "975cceceb03e2cc9a1e03ee4fa0370acc6f0fd34835edf3584bb0706cb2536ff"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shield-reinforced.ogg",
+      "sha256": "fb7093ba8549ffaf870e894d2eee0790918c69d6089893f10b5d54197c05f78d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shield-reinforced.wav",
+      "sha256": "5c319d33029cb2446b22383e6fb168371a66980c53e4ad9967f6c23dc7d44fe7"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shore-natural.ogg",
+      "sha256": "06d5e7625c02268ef034d69e10e296ace8b1b190823d56b648cb8a81170943c0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shore-natural.wav",
+      "sha256": "14a0ccd34ba31773943668474f9d4b2837d07762fe7098f1d180b1cbec2439dc"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shore-reinforced.ogg",
+      "sha256": "5ac4b25b71fc0686bab91aa71ef04cf2f42c1d578429662a5ebcfdc8a1a8f4fb"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-shore-reinforced.wav",
+      "sha256": "6810ac49432a082bfa0ee6958bdf27c38a716ff934844da79cf6aba2a316ffc5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-silo-natural.ogg",
+      "sha256": "f450f5e319551127fe1d4136b8248e4fa769df3bf4ccdf9bd2cd1cdfea7e40d3"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-silo-natural.wav",
+      "sha256": "dfa749452df10994bfad4363bc87497768f2934baeba37a5ce6493ba87f780d9"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-silo-reinforced.ogg",
+      "sha256": "f65895e6de4b07046e74fbf87d00341bfbf07c8599b14cc9e614b6e8b13d2240"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-silo-reinforced.wav",
+      "sha256": "9bf5754b29674119d831089e7038b9804a35c412512ba6e5b5a5cbc8f379e3e6"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-start-natural.ogg",
+      "sha256": "5807dc5926ef8b0a4a8e1713510b87e25a16f7886e9ddaf8530cc09a9d44f5d2"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-start-natural.wav",
+      "sha256": "e4ff19b6224fa0ebc2ada24d1779aa91b0a7b987764fc827a723b9d5bcf6a91e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-start-reinforced.ogg",
+      "sha256": "7877f5f27d74b720cb458f609372cee05ca5a33090f318bd43f95edb355b6913"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-start-reinforced.wav",
+      "sha256": "0ec959f1155433d3aae988da6e572ff8cffe02c5a5478b47cf8f7182b2a4d0ac"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-subbase-natural.ogg",
+      "sha256": "4a64c0e507470d3f0ba4cb3616e054d12f3956d2f79ed18767f91d9b43261e34"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-subbase-natural.wav",
+      "sha256": "c65aa0ad4e316c98d57c1f4484b2365e7e048147cc4ceba8474cb663248c63f8"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-subbase-reinforced.ogg",
+      "sha256": "8d2fcc0f9dbdc405c1fc4542361f47f706dbecc72aafb7d75e5b37dda0a46190"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-subbase-reinforced.wav",
+      "sha256": "10a5c8594dc9b6ffb044ebdd25cfe5b2129796341344c4dc56bdfabeb3591b4f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-troopcmd-natural.ogg",
+      "sha256": "87545ea225754d2bb63991001fa26a41a8551e44b5afb357013860a47ec33a78"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-troopcmd-natural.wav",
+      "sha256": "bd8ed85b48a093a10d660f9b34039a7b10e01026e9fb491b197b3d1db4f97307"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-troopcmd-reinforced.ogg",
+      "sha256": "96fb182dca3d36b64f6cdfe180c3c229299959ff8dd68a251f9fa77a86840d5e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/construction-troopcmd-reinforced.wav",
+      "sha256": "5bafff5eb22be390d6af7d8e2a6010d64e2aca13c48fe1b7e4f20b28c56ee6ee"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/enemy-eliminated-natural.ogg",
+      "sha256": "382eb7728b8d3b6e4b69269c254424f1cc92c173c52fa6e77022c3d6c449189f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/enemy-eliminated-natural.wav",
+      "sha256": "debecaf8efc7c809b6e72509ea6bd9c65e8581c9cc9e30c0bd847b58a40490a0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/enemy-eliminated-reinforced.ogg",
+      "sha256": "3cd69bcadb9b043f2a68d86ab9f30b2cc6c29661de155e6e0667c9b967336310"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/enemy-eliminated-reinforced.wav",
+      "sha256": "f8ae0eed62db4132f78cc5c3ab8f2d9b40b58e009d6ee33b4646fa10596e3e24"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/everyday-sequence-natural.ogg",
+      "sha256": "8b531ff567d6c5de76a1db9fb7e1acde7c934423ce829397709b4f9ad54fa424"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/everyday-sequence-natural.wav",
+      "sha256": "c7d8d9405eedc320e477a57699882671ef6159b98867f31fe71361b9b9be61a6"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/everyday-sequence-reinforced.ogg",
+      "sha256": "9f45cb194805199e15c1f6d014f0ea5d49c3ed11a61c6e5b9696f8fa64104f8e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/everyday-sequence-reinforced.wav",
+      "sha256": "0765a6615a5dd5329ca8b5db4a1d6000f08ee6e3b88295999035fd0d9c0452b7"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/incoming-warning-natural.ogg",
+      "sha256": "26684876d64adaf11d6891e99b0a5668baa1d8cce155e3c3a85fc0aca76c026e"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/incoming-warning-natural.wav",
+      "sha256": "125efd2525465ab2a349fad6b91c3b8db57c9657eaa47d2abac3bbae16532e79"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/incoming-warning-reinforced.ogg",
+      "sha256": "8841150e5185897c30a06fd01c2b8438ec575dacd69e9e9516a67937d78047d6"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/incoming-warning-reinforced.wav",
+      "sha256": "ab2374723559193981d3b2cfbd1ffa14d3bb1b6109977bda30483e44f2128cd0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-artillery.ogg",
+      "sha256": "aac781c141fe785d732bb294a3be1c2ae848dc5979031f7b5b044bdbcd61bdcc"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-artillery.wav",
+      "sha256": "dd1a7e181e5e60e6b4cd14c4fc01ca75502dc6e1ee4fbdfb0362ae424a7db862"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-machineguns.ogg",
+      "sha256": "5459d1fa30fcfbe4c6b5e9ca0302899eae8583a8ed18a365fcb9ceb86a5e92e0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-machineguns.wav",
+      "sha256": "cbe137f322537397084c924181bc25bbc1aa1568b484c9121d8553134f42a3ba"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-tracks.ogg",
+      "sha256": "72c321271001026376cdc7b6f2c945a83bf203f344e1d09444f3040d694da3fd"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/layer-tracks.wav",
+      "sha256": "599992f669e3e759e40c0c23905c373312d831e87229fd41e2aaf933103d991c"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/missile-launch-natural.ogg",
+      "sha256": "74eebfd62e6c1b6c6c4792a3448bc45139ee6be9feb6e5c3126e9c6b5774a37b"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/missile-launch-natural.wav",
+      "sha256": "04241c2ca6a9661acc84343deae1340a21d8d10be50ca8f78cabeb14b34c62d1"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/missile-launch-reinforced.ogg",
+      "sha256": "478aabc246e60b11541e085b78283d217335ed61283ea2e8afc07d62c812935d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/missile-launch-reinforced.wav",
+      "sha256": "de7ccb7c2832e0a1cfea58f378247d0a15d5af98180274a91f75fdcf44e79a25"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/nuclear-detonation-natural.ogg",
+      "sha256": "12e7a2ce9d020a2779519f007ede2a6114f9226ed278a5345d2bc257e6982a58"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/nuclear-detonation-natural.wav",
+      "sha256": "d03b9755bdedb5fc33abdbfe0289368a1d4f13fa8c6d67449a9c3a8ab5b1ca95"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/nuclear-detonation-reinforced.ogg",
+      "sha256": "b5e17f7cda18ba3969836f0bc845773f895250acba541df61748c4594f5d70b8"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/nuclear-detonation-reinforced.wav",
+      "sha256": "7a62b236d64527b48cc933a5b53be8996910b2c02338cf92e04bc9e709d0ce7d"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/quiet-fighting-quiet-natural.ogg",
+      "sha256": "2b5045e6f83ee5c063e08d65957e4982de6239888e6dd3dbd26387f3fb83c2ab"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/quiet-fighting-quiet-natural.wav",
+      "sha256": "3e025c12ab9188c6e3e30495cfcac2430c1df79f9001fd8b7db2ffc8b57aced4"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/quiet-fighting-quiet-reinforced.ogg",
+      "sha256": "09f94d4367726698bd2875ea814972d844df57019837e44e30d7367b49a6341f"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/quiet-fighting-quiet-reinforced.wav",
+      "sha256": "e499cfaa06b477165a61be6506d0db8a957bea7581512e6b124d2c2d38fe0855"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-intercept-natural.ogg",
+      "sha256": "0bf37d3667db6b2159026cc3330b1c77b146e7c96dd871dd57f3d483124b5a64"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-intercept-natural.wav",
+      "sha256": "c22bcb5aecd94b0f93d49590c94b4f5bf4bee39d3081eee6bad799dbcc344a41"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-intercept-reinforced.ogg",
+      "sha256": "525700c7e19891a44e27dc2cfdc6f98965a6b6e7fcc66cce73c6422f2d715637"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-intercept-reinforced.wav",
+      "sha256": "803721d53868167a0c86b96bcb13145d2bff453b499cf5ef11b7c81263b011f3"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-launch-natural.ogg",
+      "sha256": "bf801c6c5bb417d03abd898b9a8d84f637995f768e4327dc5da41330b0631a51"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-launch-natural.wav",
+      "sha256": "311a21b7701e84f2cdc92837ee0ba38ebc769e2d42faa08d0b6974c5123821c9"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-launch-reinforced.ogg",
+      "sha256": "3a3ea9e38c5bffb052b6001fcff00e3c9ac923b959957a89d513fb2b195e7ba5"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/sam-launch-reinforced.wav",
+      "sha256": "d3dcdb2bd0030dd9fff7877c28013d33c167bd077aa3551f91bbf1bc32389581"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/shell-impact-natural.ogg",
+      "sha256": "7c4a64683e503ae82d00fbc17322d0377fbd897fce679e280c43f4ebe69511d0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/shell-impact-natural.wav",
+      "sha256": "15fe098265c68471a323c949c10e7592a54e71ba68374c15f95a7a0874791824"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/shell-impact-reinforced.ogg",
+      "sha256": "3bab7a532411ff6925a9f3e51dc7f31529eebf13d47023705d2eefcd547787bd"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/shell-impact-reinforced.wav",
+      "sha256": "288f92bbba1ff0963a6207999b9c724cbd1a83335eb553cb61a2b2ced1df74d0"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/ship-sinking-natural.ogg",
+      "sha256": "88673e2e5ffd064e283b29ddb68c413c693859a0c9492024fa879f03bc66bfd7"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/ship-sinking-natural.wav",
+      "sha256": "0a349edff8308341051d27bcd572b1958bb5c5213441a60474e88a30bd5a975a"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/ship-sinking-reinforced.ogg",
+      "sha256": "99626f49682a27793169c4e6a32775cfa087215844e79f4cbcb404713ee7bb76"
+    },
+    {
+      "path": "prototypes/audio-audition/audio/ship-sinking-reinforced.wav",
+      "sha256": "a8555df2dbe14addb0816c63fc9423b4287a00449050f60114ab5949d75a38c1"
+    },
+    {
+      "path": "prototypes/audio-audition/audition.js",
+      "sha256": "d0420a28dbf3f1ff8165a140b3262612f7ec02b1603950ceba412e650559cee3"
+    },
+    {
+      "path": "prototypes/audio-audition/author.py",
+      "sha256": "8c1cac00e5791d94e7b56f6c1cb8c8dd1dc91001252fdcfefd0e6049d7b04504"
+    },
+    {
+      "path": "prototypes/audio-audition/browser-checks.json",
+      "sha256": "f1fe0062508398707ac4e73a70cdd21f65e3780aaa05f0ab856b24e9a3eeef24"
+    },
+    {
+      "path": "prototypes/audio-audition/catalog-score.py",
+      "sha256": "cf6e10090a11b3768e9570916fc42e8fe12111a3adea2ebd0c05e114e225ec0e"
+    },
+    {
+      "path": "prototypes/audio-audition/check-feedback.cjs",
+      "sha256": "22f98be8ab31ba22324b359c5e07581cf7d8d83df6a5d3c350b0650a345354b3"
+    },
+    {
+      "path": "prototypes/audio-audition/check-revision-3.cjs",
+      "sha256": "a0564fc571d242518b5e020e1a1d3672b653cf773b81b91c8303c3d93b4b1f68"
+    },
+    {
+      "path": "prototypes/audio-audition/check-revision-4.cjs",
+      "sha256": "83c3959474c482357af8b80f36a3b06d578c3f132548a5662c87013976871629"
+    },
+    {
+      "path": "prototypes/audio-audition/check-score-library.cjs",
+      "sha256": "5667fa2749395e2e9559cee5f079d543469c8afd4de9d11742b3d6261c02db69"
+    },
+    {
+      "path": "prototypes/audio-audition/download-sources.py",
+      "sha256": "3a7a5408c143f3df4996e0b7adb7499514a6229e784a26f3a2ea84b4ae2a7235"
+    },
+    {
+      "path": "prototypes/audio-audition/feedback-store.cjs",
+      "sha256": "693d226c56dcaf2818ca6b8884100f53fd0cbd68bbec00d2f41ae85c520fefc1"
+    },
+    {
+      "path": "prototypes/audio-audition/feedback.css",
+      "sha256": "f48992337abeab0d821863ce092b18431d228f27d720bc2c9cc80256e5bc0107"
+    },
+    {
+      "path": "prototypes/audio-audition/feedback.js",
+      "sha256": "05d1fc6b6b6b9f140c77553a5aedf39c1a1acd395e831d1b6c0f1fd31e1026e5"
+    },
+    {
+      "path": "prototypes/audio-audition/feedback.json",
+      "sha256": "c46d16537122de4bed152878bfd8ab68b93852c64e2c8e2ad911a09cdd96bf36"
+    },
+    {
+      "path": "prototypes/audio-audition/index.html",
+      "sha256": "0511ecfdf63c1db916e636c36d6fcc6e0081431542d0ab99e5a4b68b3958e386"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/artillery.html",
+      "sha256": "76968c4878d814b4fb67962800d54592243b4164e7597b69451f1ceaaa936181"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/camera.html",
+      "sha256": "028910fbdddf5aadc544f623ccf1bf94cba0de494cd85a7ef09da73aca8fc0cc"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/chain.html",
+      "sha256": "6c98c734a27c825500365d913275ed6947088d2e3f07699f9bd23c8b91d094ab"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/chatter.html",
+      "sha256": "373ce4ce3d4dac108f87eae80f29c120ff9e6889e5d26753473eba06deafad5a"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/cheer.html",
+      "sha256": "54b7ecbf0068527a2689f0ad99997e1130aa650d96852988392134ab73216a95"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/contactor.html",
+      "sha256": "62e12d5f60f44096e6bb4cef27c1c447c0a236bc2d26c8cdc140e78ce54ede8b"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/diesel.html",
+      "sha256": "8722b763b77df284da1a247066a16dc7bb8dd7c16bf47781e23d4d707cbd9456"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/drill.html",
+      "sha256": "22b379bb84c6a4509bd068ce9194bce887102f59d541db179e239cb72f4d6aa5"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/fanfare.html",
+      "sha256": "d3c6462621a3c658657cc0b9ab7977e57a68cb2f79b3a38036eb2a69f8fa93b2"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/hammer.html",
+      "sha256": "b79f029adb4d43bb6e9ee6d216da35ef6d36477601bcaeb12bfcd9093e0f73af"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/hum.html",
+      "sha256": "98c9ab1df2476b528801e57e2415c9a0c255daa8a8889bdeb233db632b4324aa"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/impacts.html",
+      "sha256": "51ee47e9b4b2a9c57ebd3ba068c6c7fb1117d499d2aded44435a456f078d3f40"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/interference.html",
+      "sha256": "5c93b9357bca7acca2c3c7ae35516a8db80358ab69080fca250b708cbc2ccb85"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/jet.html",
+      "sha256": "7ddc22cf0f3450ba04588e05b6d4a8e6085c58497b3d8b0f95d6168f36d18a00"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/liftservo.html",
+      "sha256": "27c96358fc16867ebdc800b6363d9887e515f6412b192049c97baa2b3cf0643f"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/machinegun.html",
+      "sha256": "8ada75d3c76a43ada845d252ec229e37534f057f3d5ad0d230adcb6c011853c2"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/marching.html",
+      "sha256": "235bd4c865c2674e809d02bf6809746af9b717b0afa5badad153574e9bd74f50"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/naval.html",
+      "sha256": "6dd599609cb41429b88abdb73e9f8d4b4722c98790bad5b27f39fdcf667b7a38"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/pilotvoice.html",
+      "sha256": "9f61d20745adbb18e5a1a07c5bc19a1d635665c873cae9da6458df133f475d85"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/ping.html",
+      "sha256": "fb1db71cc120d6c18ea821e99a93bf13bf78e2011c0018066889126e91f0c54c"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/rack.html",
+      "sha256": "fa2158cdf8cc32a73bae5f4ca2914ef1172e9c16c0c1b34792d2cbf545dd86fc"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/radio.html",
+      "sha256": "0a138b04dce1c8d6477b742a03fcaf42be58da411a849feb72d57aa64f172d8b"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/ratchet.html",
+      "sha256": "1d9ab680005ea3148656315f12745cb571826929451a6acb23be7c1d03087dfc"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/rocket.html",
+      "sha256": "2260a986ac80323fa49b2eefd92728e1a3d2988886e3eafc74449637425b8d05"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/ship-horn.html",
+      "sha256": "5fbc4bfebba47f07d5f780f63b1a68845f6333462d475a4ff6dd6e91e2d5a83c"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/shutter.html",
+      "sha256": "da6f754bc425dda1828f58ee461718624a72cc34d8f5539baa8521b330ac5efe"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/siren-close.html",
+      "sha256": "848609c304ce9ddb5b4c7e70655da4493f36c8561d1da0f6d7fe5491e7453960"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/siren.html",
+      "sha256": "be2b53a620d6636481fb76510dea03f9873f2a53f0aaff8ca6605e93c5dc4b18"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/stadium.html",
+      "sha256": "be738b73ffdb77caa0a768753a2a15ca6254b05cc717e5b46549f608f418d725"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/steam.html",
+      "sha256": "0734badb51c58ffe146357c975a0969a54c128529fc1765e02b400e53c54b070"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/sweepmotor.html",
+      "sha256": "110bdeba363931f78ee9d5383f7f48342bdd0873cee0f503eecb32110398faef"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/tank-foley.html",
+      "sha256": "3d09d1890d9b7629a3caeecd8fb04afd19a0e9fcffef044155b84fb8a6e7fcef"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/taps.html",
+      "sha256": "b34102c5004e2ffd597623ececaf723b85bca06932ade6d7302fa8d8731e50ec"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/tracks.html",
+      "sha256": "4cd33a0dd027e74cd53c5d0932bc8aa5182ffd858511a57dac945a98bdfe1312"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/waves.html",
+      "sha256": "503c1d3fb4eb8dce79782057f68a1f9d508b8fe478ab9ac9b56a1efc8caf646d"
+    },
+    {
+      "path": "prototypes/audio-audition/licenses/worksite.html",
+      "sha256": "a83e0213f569238c619988ba0a8eef994302e7a469b90ab194d6aab33b7dccdc"
+    },
+    {
+      "path": "prototypes/audio-audition/locked_audio.py",
+      "sha256": "fa95598968e2e5b5761509919ff05365e4e705eced3503af6b1a4227b8dbfd43"
+    },
+    {
+      "path": "prototypes/audio-audition/manifest.js",
+      "sha256": "2e96f36986bc5108c727d1b35cf69d7925a946aa92031ed451213847f1407cac"
+    },
+    {
+      "path": "prototypes/audio-audition/manifest.json",
+      "sha256": "c20d72fe91b6290683a8387343f00ce159dd8bd593029f98b5a8ed8383e98303"
+    },
+    {
+      "path": "prototypes/audio-audition/opportunity-map.md",
+      "sha256": "6ad51108fa675b0de63ef2d83be533d195499ad60e8052b634b93d6b7035bc32"
+    },
+    {
+      "path": "prototypes/audio-audition/README.md",
+      "sha256": "33c818f0c2d9dd425b8b15ba0490f7285d5b802e0b2543b85735a2247449137f"
+    },
+    {
+      "path": "prototypes/audio-audition/review-desktop.png",
+      "sha256": "7e7e2043c939152106a6c82890bb246b6665fd5f039c91b7f6564a5872739c52"
+    },
+    {
+      "path": "prototypes/audio-audition/review-mobile.png",
+      "sha256": "bff7e99650d72a70744a3e8017c64c5d04f80ff80eed9e333156c263e46aab1b"
+    },
+    {
+      "path": "prototypes/audio-audition/reviewed-score-selections.json",
+      "sha256": "16ce14fdb10aee8388d0c0e5cdbf9efd36f92aa8ed3139461a6df78a973044ab"
+    },
+    {
+      "path": "prototypes/audio-audition/revise-3.py",
+      "sha256": "18881ed054bec09019fe010fa58d56f8abebff84277326b21c69980e54b110ea"
+    },
+    {
+      "path": "prototypes/audio-audition/revise-4.py",
+      "sha256": "8f1e1fa2165f250c71496f2bfbdcd8116566321d1250eb998b4de57b8e763b11"
+    },
+    {
+      "path": "prototypes/audio-audition/revise-5.py",
+      "sha256": "688179fe11b3a2989508bc80beb240f1f3bcf53c0be489e34a5a8e9e1a6160b5"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-2-checks.json",
+      "sha256": "cd2ed2e9ae650b3e5a2d90a8e5e3e1d3e2e55862721e973e285593c25797b0ee"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-3-before.json",
+      "sha256": "d560f0e288d9f3b708b2403d3eb570fefd2212556820984050c87e2c47593915"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-3-checks.json",
+      "sha256": "d65d4cdd30fa1be351c819321ce235ed1df7c337b70fe37c5b72741f4726aef0"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-4-before.json",
+      "sha256": "c83479f19f5c6baafe08380c64d3cb75d7d59fef477d1bc46535361a5284d18a"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-4-buildings.png",
+      "sha256": "7db73934b29520670596b1c63da6f263d8bbde7f1a3cfbf89e386f668919a6cc"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-4-checks.json",
+      "sha256": "f0548328c94cf7c42d0dc4d6cb930452f441b6a064e15ce498d7368926b46796"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-4-mobile.png",
+      "sha256": "b5fedd9d80bcdeedc2b374affca1a74a45172212f151803719073c9932172b9f"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-5-before.json",
+      "sha256": "8678117082a69d307691fe5c47d011f3c990be717c4d36fd90adcff2a3479d7c"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-5-checks.json",
+      "sha256": "6fd29dfd990a5cd08ab485ba19e13808868e7a3c4b345968a7a3297c9bc5648c"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-6-checks.json",
+      "sha256": "83edb777fce719d991ed1e9882b521ab1d05588d27ac4a5bdc64168909b575fc"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-7-before.json",
+      "sha256": "2e8657fcfca60af4af60cefcf8f2b8813d783cefb13909d2f5c4638026e9f841"
+    },
+    {
+      "path": "prototypes/audio-audition/revision-7-checks.json",
+      "sha256": "eb53fe89637242269c952c6a42f854952d2a255526c1fffe289f6c7b3124ee8b"
+    },
+    {
+      "path": "prototypes/audio-audition/round2.py",
+      "sha256": "4d74e3f593adbcf0ab2908964bdb0f848b7f0e898174e13f0d6e41c16b9dcb93"
+    },
+    {
+      "path": "prototypes/audio-audition/round3.py",
+      "sha256": "3abcab565fff8927c600ed006f06bb12c71e81dc208748a19fd1cfc3fa7336d3"
+    },
+    {
+      "path": "prototypes/audio-audition/score-assignments.json",
+      "sha256": "3ab1acdd67b894c11e49b0ac06688cd0feee4dcec1b5ce956b0dd4de385c274d"
+    },
+    {
+      "path": "prototypes/audio-audition/score-assignments.md",
+      "sha256": "6130b8fef99b084b85feb9b06c613a51f3d7e23b64e6595187da1ead17e5740a"
+    },
+    {
+      "path": "prototypes/audio-audition/score-library-checks.json",
+      "sha256": "82b9fb730d26f6282b27e8a0ea7f01ddd5bd12824bb7abf9b74361a217402972"
+    },
+    {
+      "path": "prototypes/audio-audition/score-library.html",
+      "sha256": "592be7d2591c91bdcda5ed42356f073899ca6828f6eb465a262842954e8c6dd6"
+    },
+    {
+      "path": "prototypes/audio-audition/score-library.js",
+      "sha256": "6d45e1b22416df9aa5cc2a6aee89530b9188cdb5802845a7c51190eebeb3690f"
+    },
+    {
+      "path": "prototypes/audio-audition/score-library.json",
+      "sha256": "70a14675a2817a3eb8afc9f480d405b05354a4870404de9261d4edf41c3e7ee1"
+    },
+    {
+      "path": "prototypes/audio-audition/score-review-desktop.png",
+      "sha256": "f4c67fed028a36215c496249884ab42e9beba58c4d7bbc7bfe3f14bf5d440056"
+    },
+    {
+      "path": "prototypes/audio-audition/score-review-mobile.png",
+      "sha256": "f4fbc32c4997ef52b6888d4487e7eb5652e7106c59ee9b195f68a1e24dc8a982"
+    },
+    {
+      "path": "prototypes/audio-audition/serve.cjs",
+      "sha256": "549a3b5ca57b1ee82489379673c8418cd49b397ae7d517a880b8b302aec10d23"
+    },
+    {
+      "path": "prototypes/audio-audition/situation-score-plan.md",
+      "sha256": "d525bc62a22e9685ab3498e6ddd586c42b3370b1a38b20b4a6b58f377fd6a692"
+    },
+    {
+      "path": "prototypes/audio-audition/sources.json",
+      "sha256": "3714a045f099056908362234ce7c32b97a4b67609ba31fdee7bed29b8f636322"
+    },
+    {
+      "path": "prototypes/audio-audition/SOURCES.md",
+      "sha256": "59f0059caf96fb35160495601b58e945a3b7d2466a3f1273f3a16f79b34d99aa"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/artillery.mp3",
+      "sha256": "6b5d70ee4467a8b4998064a8e01fb5bd5cf58304ab95eccb357558d68ce90a47"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/camera.wav",
+      "sha256": "c37fb32b58ef3cfe51df841e39a27e1ba83e916054922dd665ff3857012218ca"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/chain.wav",
+      "sha256": "48efcc0364bf98a47a622b7642254b3e885378f8a241b99885ba5781f3a6c41d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/chatter.mp3",
+      "sha256": "f9e37775c77313992ac2dfa06da8d7a1be4639dd8b413b909c903467064b0f30"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/cheer.mp3",
+      "sha256": "0ae92efea5724ce221063e7785f0067443b2d844922961ad8931ba2766a680a9"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/contactor.wav",
+      "sha256": "b5e7b6f8d9357c5978f31298844eeefaaf8b9efb6ff0346109145684ad0b2d1a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/diesel.mp3",
+      "sha256": "f1aff9a30f28cb2df8f59f59f2e7a7f3bf8010dad3febd1bbce5f70c946f6610"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/drill.mp3",
+      "sha256": "82f470e1e5b5a444f54bded3601b0bea3d59695a6948267d31232f7b40701cf7"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/fanfare.ogg",
+      "sha256": "212f67c84422a7aed988e6cdd6e3f5dd92a48b2a99b30c58d16c24d777402dce"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/hammer.mp3",
+      "sha256": "70aeb996c09b64556aeb1f1a633059913037453bd9d7bab4b1816966b5f926ce"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/hum.mp3",
+      "sha256": "b951f7631a256468f35bbbbeb4526b2aa9c272ef1c480acf03532f0daa905001"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_carpet_000.ogg",
+      "sha256": "b9524658b52a99a20590f8feefc103088637fd13ea8ec35811aee785e1f2f330"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_carpet_001.ogg",
+      "sha256": "9af3c3f76705107339e72036e4053bdca3eaa50ad31c8c929f42ce8d40e5d781"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_carpet_002.ogg",
+      "sha256": "9af3c3f76705107339e72036e4053bdca3eaa50ad31c8c929f42ce8d40e5d781"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_carpet_003.ogg",
+      "sha256": "4ae7454338d57c7d102145919ae653c7d010eb542797c4f25a1c7470be3a7e4c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_carpet_004.ogg",
+      "sha256": "4ae7454338d57c7d102145919ae653c7d010eb542797c4f25a1c7470be3a7e4c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_concrete_000.ogg",
+      "sha256": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_concrete_001.ogg",
+      "sha256": "507a75eb19b897087855a3be3cf11a12d7fa37d143ad535eeebe0b8031c7325d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_concrete_002.ogg",
+      "sha256": "b21fa546d74941196b25da8a20b7010abd8c05c4fcf93545d1f344e66a664e13"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_concrete_003.ogg",
+      "sha256": "8b513c2f0316324060b9174b8f28df6c2147418c506e6a53b77f18e149a5547b"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_concrete_004.ogg",
+      "sha256": "24dd8db2413e5b81ad181e1205c12a1c7801da5f85715d471b92a4b2f632e45e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_grass_000.ogg",
+      "sha256": "9d49497777405d78d7cf7f2888e28277f3a23192300cfd1d79d54876b20f479f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_grass_001.ogg",
+      "sha256": "fb28781bd22b2eefdc14077f1adf5c94d7fe9c3a130194633b55f3e0d39d9f04"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_grass_002.ogg",
+      "sha256": "73a520139f5be716a403bfe9c80e0e94d1e61d8e9de04a354b336392164b53dc"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_grass_003.ogg",
+      "sha256": "0546e1d8ab2def714425701a18bd34c5ee2794b12e858e5b595aabcf38a34137"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_grass_004.ogg",
+      "sha256": "086fd4ab3546a507ea5f5c759a9a10e535c95ade13705c238bc0eeffd7d4e8ba"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_snow_000.ogg",
+      "sha256": "c05fa4a9dc9a7aabc04996466fb589537e49af76de9998d8f9e6270ec92dcef7"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_snow_001.ogg",
+      "sha256": "980fb9a1c9227aed7995067b0357f373053337f2416316db8ea0438418542fb4"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_snow_002.ogg",
+      "sha256": "db52bafdc66304f3b999f2c29227826c65993916e630ac2ffbca17d07b263178"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_snow_003.ogg",
+      "sha256": "68272e3f1cabcabd02d328fd344454d7c04cb58b5a86972fcdd858f845e3d007"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_snow_004.ogg",
+      "sha256": "7fe9ce5f5732aaa0a50ef02bb1ac162c27f6bd85214e86aaea6e13e7a41dbc00"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_wood_000.ogg",
+      "sha256": "5f1c252942a220d658121bd9417448cd19649ded9fff2ff15f6e50899373ce8e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_wood_001.ogg",
+      "sha256": "e4f68e1c9fd55b4dc8ca89ed2bbab6f200171bc54bdc18aa96b80d8e7336f462"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_wood_002.ogg",
+      "sha256": "9ff095b05cee5eec40b081defe3f0eef7232bb16d4865ce03b9f6dbab875cfdd"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_wood_003.ogg",
+      "sha256": "2a68a083daa9eda08fed0ea5da5280dfbe0de226196c576be02f95259dd139d9"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/footstep_wood_004.ogg",
+      "sha256": "b33e0854e2b3f6b6492e25c25ef8f90447a332f7c6bb25dd02edced9581d3441"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactBell_heavy_000.ogg",
+      "sha256": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactBell_heavy_001.ogg",
+      "sha256": "9df61e3ae9a83dc65e5a1fd3ed19d480876f3b22b963a1b9ef6fa293592dcec4"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactBell_heavy_002.ogg",
+      "sha256": "a4171ed1a4a17fb858a38de1c59b5b42e50d8f046c525706c0e3ac8671f189f5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactBell_heavy_003.ogg",
+      "sha256": "5572ccdeb3b62373b86fa955355b3a222c36e815f0636ba16165189a21cf2514"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactBell_heavy_004.ogg",
+      "sha256": "49fe4fafa2001bd0d312976796824571ca8429851f285997e1327d17bb34fd00"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGeneric_light_000.ogg",
+      "sha256": "f0e982611e97512fee5f777986b67e8b435434b601f94992ec044f7e89fb5acb"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGeneric_light_001.ogg",
+      "sha256": "c3cd1c073d186ae8fa35788ba94de581f1826e7427a7bb26490b2695fac18efa"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGeneric_light_002.ogg",
+      "sha256": "d0bf60905b59ff630ffe01eb0edeeacd2504eaa8fb6523aeef7d2458b78264d3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGeneric_light_003.ogg",
+      "sha256": "0e8896706130f6bc88cdf1f0157aaacdbe88dce86cf0330f9136e44eb1209e81"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGeneric_light_004.ogg",
+      "sha256": "f906fa3a37acc4372787b496efcedefa2856045d5ec9456a3bd6c303c0eabb41"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_heavy_000.ogg",
+      "sha256": "b44b39a940e8948e74b9bd3776bff980df43cf220abdaf0d467dc4c43c0244a5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_heavy_001.ogg",
+      "sha256": "58686e0e562612cc566791844a10e269f8d1921f4766c14ba43976fd0a429f4e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_heavy_002.ogg",
+      "sha256": "4978654ac840ad519692d5d5ba48a8101cabce13b9a577be73ad589185e5e9ed"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_heavy_003.ogg",
+      "sha256": "aed07b154f24410c17e5262bbef832842fb275d41fe297f721af7501d0e9c23a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_heavy_004.ogg",
+      "sha256": "c7742b0e33c1733ddaf902aa68464a4f5364e4d4cb6ff11b76a7aa4151a138dd"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_light_000.ogg",
+      "sha256": "d750cf88097d0c3e69920e6e14496e1444e1a9da01aa4cca8f5ec8cb44c57b4f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_light_001.ogg",
+      "sha256": "05e513fbd42829060eb37855f8c3866722ec5c39a8937c9bfde518cc609effa2"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_light_002.ogg",
+      "sha256": "710db7451bb7857b9140dfe6afe4621ea2188ad65eda3919c569d1bb285b933d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_light_003.ogg",
+      "sha256": "765290ce32fa108c939a0dbd6fbacbcd05abde622b57b708eb8a64058ef4225a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_light_004.ogg",
+      "sha256": "f535b7cb7835400d8d28bcf9e1cf047ce3c0eb7a6456bdb1a4a27acbec1ed2cb"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_medium_000.ogg",
+      "sha256": "9252d50bfb85edb17d6073c4a7806e10cdb9de56d3dbfc93a4b9727146d2df6d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_medium_001.ogg",
+      "sha256": "d3d806cb3012c9ddd87010b30295ccb74d6d8b690077d19e67afd09a9d8feb03"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_medium_002.ogg",
+      "sha256": "48616f22c95589ed9fe55babf0fd012721d7b2ef1b9e85c2ad6408a2cd7c164f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_medium_003.ogg",
+      "sha256": "dccea1ecc3d942ee5fd217c684632638f6c039c97cd3ae59c75ab15d0c3f0b59"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactGlass_medium_004.ogg",
+      "sha256": "853fe77ad46bd0cf106e40e741b039e15b90f73edecd92cde524fbad9e3ebe00"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_heavy_000.ogg",
+      "sha256": "e07045693e4a2b3d165c424e3dab4c781d9ff8880a386880ac89a51315d7f831"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_heavy_001.ogg",
+      "sha256": "83554049f81f4db9209379e103c30bfa63f65c42189a03f300b045c2c82e23ae"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_heavy_002.ogg",
+      "sha256": "b914c8f1eb7c0f34bb165d7c77f4be0351f6be0660c13c53e65424e262e2c093"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_heavy_003.ogg",
+      "sha256": "b0f2ba4dabde9a87eb9c188a19d31e0c2300fd321adeba08d3b9b8aa011d7037"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_heavy_004.ogg",
+      "sha256": "6d65b463c0555dd5be16b8db6d2cbe23a94e07a4637779b8ad17d0db3e500a87"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_light_000.ogg",
+      "sha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_light_001.ogg",
+      "sha256": "fba69c467ddd85da7b1d82e259f936b876d9ba6a3d6f1b24bdd10468e46bfe08"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_light_002.ogg",
+      "sha256": "25a96f90a9a1f88a531e824e126f0519504625e5635e65a72e4f31611428db29"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_light_003.ogg",
+      "sha256": "92d5db6bfc672d9dc1b4f390b2900504f013187fa36335472554fafefa9050b1"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_light_004.ogg",
+      "sha256": "9b1c35820fba507081261f19ab5f461f69a5e2627a7d91acdb73ca3cfc997979"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_medium_000.ogg",
+      "sha256": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_medium_001.ogg",
+      "sha256": "e8a9eaba7c4d27422e4eeb3e6c7100d5d7dc0f83e005efc98c960adcc5265337"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_medium_002.ogg",
+      "sha256": "7e89ce2ca0dbda95ea2b78d4b50791cab35c10d20e9f5ccd45dd0b00e99ff548"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_medium_003.ogg",
+      "sha256": "2a185e2e57211d02c1bdd33b872d6b6a2fe83e6c14f4e56f426a95e717acf08e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMetal_medium_004.ogg",
+      "sha256": "03e10f800199c7166208e41c11cf4acfac6cc265467f02357da71972bc967295"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMining_000.ogg",
+      "sha256": "36b4ea107222d073c67ca64dde26944975609202d5090b2f2021213c1a7e35cd"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMining_001.ogg",
+      "sha256": "61235a18de3f3d92118235398222dbf51d448f1be70b1c8bc962b10b86f2d9c6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMining_002.ogg",
+      "sha256": "059558ec751115ca6b1441e00f0adc837c1a3eeb0a066b109e0fd879fc5d0b0c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMining_003.ogg",
+      "sha256": "4237fa2cd80364ad81cd0af44f67d7497f1c5edcc7bdb02cd22be2ba4580c83d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactMining_004.ogg",
+      "sha256": "8ca3a99d85d845751ad8ce7b40509da58263a62e48cde70e5a30b5ccef4c9a3b"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlank_medium_000.ogg",
+      "sha256": "8403cd7a043f0391574c88c55dd205743725b5363d2407f6de145f201690b68f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlank_medium_001.ogg",
+      "sha256": "d7c304319f8beac616231b62041fa8da74045b62d7155965516efb9b19303df4"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlank_medium_002.ogg",
+      "sha256": "f6a14da45994229676b4f29e6a35f504b5c2ec2b8166fb1a3b1aa004bc6911ef"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlank_medium_003.ogg",
+      "sha256": "0602a7b3eab5f53484f10fe775ee4204e7a2ba9703c886b302e012f7f6fab8de"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlank_medium_004.ogg",
+      "sha256": "6a51318c1c63821ea757622b57fafbf44c16c28129f6d39406a784260d87c447"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_heavy_000.ogg",
+      "sha256": "112d4f93ddcc370b410630f971c0f5d991856102da9c76bc5c5540d388e75aaa"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_heavy_001.ogg",
+      "sha256": "142fd6c77f13d25f318265901163f70f8dfe12f87829169a570025be43de7011"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_heavy_002.ogg",
+      "sha256": "b0cab75d1befa32b4cf215d8ee7e1c400a39182e8b105963b8e310f825b198a1"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_heavy_003.ogg",
+      "sha256": "59775f8979a396c8a793b0a1db206d5bdc651eae808d858e9acaee8ebda5bc6d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_heavy_004.ogg",
+      "sha256": "e31bfec90630155bcc6af541d1d14ae8202c435c52b42e6b6183fdb6ffb248b0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_light_000.ogg",
+      "sha256": "6e797cf8a5bfc52d7ed5eb47c227974c1cf2a674954fec5b539cea7d62c7282c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_light_001.ogg",
+      "sha256": "947915c2eb6ac57ee08fd3a48b297fd108d69abc72076e79882c21cad0eef56e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_light_002.ogg",
+      "sha256": "8ac5869ea434cf0d364872774efe70b2d666a4f02ba35ddfc1e051d336721be8"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_light_003.ogg",
+      "sha256": "dbfb7c1d002576696df3e9a43d6639ee3f342068398b5e7b55bc2389d20508a9"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_light_004.ogg",
+      "sha256": "9cb33b0c0cce948313f078b60769d2f8e4075472494fc8f8129aa4a23c951897"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_medium_000.ogg",
+      "sha256": "b670d30452983369771081319c268475edaaafe782bf4e8d70bd7eef09d8823c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_medium_001.ogg",
+      "sha256": "68ba7701b71ef620f498f3038e832157d71ac8db7ad59424545890b250ceb24e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_medium_002.ogg",
+      "sha256": "68762e1ed49bb59ae6602fad6ce2ebac61958478ddb2668de9106f010cd4b6b0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_medium_003.ogg",
+      "sha256": "964c5fcfb91e7710e2af25c2243c8b7160756b223b0984bacc9eb25bfeea057b"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPlate_medium_004.ogg",
+      "sha256": "f0e8164081190839caff6c2958361b22780ffba5617f77f2d4ee3a4275b318bf"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_heavy_000.ogg",
+      "sha256": "b33a8f14068aec24ec69ba85e5e87fdc41228975f6a1a3e44a6e7d6fc3d9f8d8"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_heavy_001.ogg",
+      "sha256": "f92f5cb6ba4ff2766497292ffd90865654317eeca976f5652e0708dbdcdc0dd9"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_heavy_002.ogg",
+      "sha256": "7993dd4c156b9979ad69f17be5ebe31850b16039a3857f8477141be54dfee1b3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_heavy_003.ogg",
+      "sha256": "4ab53b26f4ea575120dcc1348526c9e0db2afc6af7a442aa0489bdead2ca80b6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_heavy_004.ogg",
+      "sha256": "f4c0c3eb8ab6517583b8218ed03f28923d1b687379aab4c1d5a6d4c10cf8e500"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_medium_000.ogg",
+      "sha256": "486988aa2d6440ffc4c62a0e8ccf3c23673ba84424bd4723378d451b7255eb5c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_medium_001.ogg",
+      "sha256": "e71d23abcc3f10d9d6bc9615b2a431fff70b12333a5fcdd9964457564ace4349"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_medium_002.ogg",
+      "sha256": "6492f9ccbc8d24dcef607bb1b48790b7870961474561f7fe5601e1c73a3018ef"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_medium_003.ogg",
+      "sha256": "2d7c719c05999e0532f4384e1018e04cd916db715140bf16dee2dff3f820e908"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactPunch_medium_004.ogg",
+      "sha256": "4a256878a3afb994ec9a4399336687748e68c7c136872c08c9c797d8c4e2464a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_heavy_000.ogg",
+      "sha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_heavy_001.ogg",
+      "sha256": "4d0096364ba9e46119d2ff6df493fdc101bd2e1efae061da5e5f77a53b3fdcb6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_heavy_002.ogg",
+      "sha256": "d130ae541951243d3f6ed963d0057450a445ffe117fbf9a084d34eb1635cb563"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_heavy_003.ogg",
+      "sha256": "d00286a2dc62ee5cb4d42bf56120e7050a855f69e655fc1294410aadd337eba3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_heavy_004.ogg",
+      "sha256": "e008f0b6b14f62339c8fe9f9b45cbd6317ba4f66604c4899053b8017020a36f0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_medium_000.ogg",
+      "sha256": "7d3ba0bb5e60a11b5d3e558c141303dcf494256675fbf753c0d252d2cf0481e3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_medium_001.ogg",
+      "sha256": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_medium_002.ogg",
+      "sha256": "5069e3571a77d7f7aae9ef71d0364aa245fb7d64a7c8cc9956f221d03088c089"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_medium_003.ogg",
+      "sha256": "5c4a1f35fde7e14046931da7bc3d1b23736541b7190ba107e08a379c4ca43cd6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactSoft_medium_004.ogg",
+      "sha256": "b0a4dea90eed47accf50b768beff1166f2f1486fb139e4d025b2427637624bca"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactTin_medium_000.ogg",
+      "sha256": "f4bbee66ca191ec744b84fc07ac9ed2a6fda955d51cfed8360f12b62815d3cbd"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactTin_medium_001.ogg",
+      "sha256": "84253095543c094d83cd749f42ecfbc96e356b60385f18a192c18eafb25b3cc6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactTin_medium_002.ogg",
+      "sha256": "c1d2c4f9910d4529581ae56a9a9a01454c4619fbb7d6da7616221d8ec58cc0c4"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactTin_medium_003.ogg",
+      "sha256": "0d18737d93ba7aa0669f751094cbc1671bbebac4fe207783922938ce75e24334"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactTin_medium_004.ogg",
+      "sha256": "fd53e24efec3d5c1cee5a46fee70f97efd4bd01e53ac5d9b5f3b6719dfe9f5aa"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_heavy_000.ogg",
+      "sha256": "15ff82332f342c30e469215539e1cc57e11b221aa2cf7e11e811d313a9927f3d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_heavy_001.ogg",
+      "sha256": "f1b07a53ac10c615fff9ba470511fdeb722b5902e1a8520759fc20ad6f546015"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_heavy_002.ogg",
+      "sha256": "ce1e06f2a05f2634c645cb72f6a1623e64bc2d92be34917430a61031fb6597d4"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_heavy_003.ogg",
+      "sha256": "af07511902b309b3f6d8f0e1fafbe93869127fb88099ebdc0aa6a00a98dc3cb0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_heavy_004.ogg",
+      "sha256": "2c647ae6bd29c72ae2523f7e16e325d8d331b75cc99ab4f637c48a0e11c34677"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_light_000.ogg",
+      "sha256": "eb45e35b4bed784d3f120de4afec4b0d6ac09d9e143cce8cfcb7d739e1b1f3c3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_light_001.ogg",
+      "sha256": "4b76bf3ccc8e60d19188f3165b778a7817786faa6887c55d9049bcbeef3b425f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_light_002.ogg",
+      "sha256": "b183cf7a5bd783817e0e4b82af34ac6658fa1927049089dadc8b15c2ecc771dc"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_light_003.ogg",
+      "sha256": "cdfbe8af2fe7ff9ee28f337a0a989deee0f327620da456c8413644880e9d0004"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_light_004.ogg",
+      "sha256": "e10009f67ddaeb3a59a3e1129cfc1615d84ba60ab578eae07e7092ac223f099c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_medium_000.ogg",
+      "sha256": "1723a9fd25103ed41af06054814e84e65f4a772bac86ab2dc927da93d9592ff5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_medium_001.ogg",
+      "sha256": "15271dbe8e2872dbb0ff1aeb7b12b2d2b92b7c1951c88532b9ab9158c36dfc73"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_medium_002.ogg",
+      "sha256": "3f3f1917428b828f733a963167833c707bf88296ff158e1559c57c5cb813d799"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_medium_003.ogg",
+      "sha256": "635c37cfcd854b187d643d450ff0397798dcc29ae94da32192b814fae6bd854c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Audio/impactWood_medium_004.ogg",
+      "sha256": "7ba48f2f99c91c71be420841a91f1e69c0cbc4fe887fcd7213144d67bb87b13a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Kenney.url",
+      "sha256": "0dd1a0b295582cd3185547f0c1d92b4d5392c7782b90a428e192944a496052e0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/License.txt",
+      "sha256": "b49aa9c56b04528b95913de13e506a0f7c5e807b9925db9bfef86af1f91120db"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/impacts/Patreon.url",
+      "sha256": "84be5ef26b07905fa7e196e943c9807bf84138c3a71d87f51c6fd57b85c48c34"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/interference.wav",
+      "sha256": "a4590e79f8fc09ccbc493699e6d5ee7a7e14785722d009f2a8512fa15210a072"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/jet.mp3",
+      "sha256": "3841fe476fbe09d4492cf5d3a3cf1acc55b23951d42f1489ec19ae88c7e803a3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/liftservo.mp3",
+      "sha256": "641491a08fd52bd3a522262a53f1883f094d02dfe986683a17582bd8baea7caa"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/machinegun.mp3",
+      "sha256": "ac12c79b300f6436519cf5d8978d6aaa994eb3258e9dcd59499378b873135562"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/marching.mp3",
+      "sha256": "1098bd0d710e2ab994b42ec941be8d9968a82ffa2c3fe0fa3672799a874432d5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval.7z",
+      "sha256": "c2a75c2f93a558dd2a5d8420b6bc0375c2d0e41c1f59a78a925ac6052d6ef05c"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/BattleShipMovementAmbient.wav",
+      "sha256": "907a202ca86e7717a9c6441b1d6b36719799a4e91077e9fe5227b0af75237df6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ExplosionMetal.wav",
+      "sha256": "a4bf43d69c0ca18eff28706cfa61cad29bf18c76adcd92174256d33b5a72dada"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ExplosionMetalGverb.wav",
+      "sha256": "e5cb0b327f30c4aa751c231766afadaf09097a6b79d68b6402fc227afb181570"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/GunShot.wav",
+      "sha256": "9f92266b6d45c83429c7a1e114edb5f10f78dc67ecb6d12d7d1e4549f5c82f12"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/GunShotGverb.wav",
+      "sha256": "5b18da439c22207abe170eccae15206de55d8a4bd44d68a2b14833017bf66c02"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/BattleShipMovementAmbient.ogg",
+      "sha256": "3ec826e04e28d4f6a6900fb31dbd136ea000e0677070cb5c1bfa440030e011dd"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/ExplosionMetal.ogg",
+      "sha256": "1e9f1342bff53e65f778dab99b22256b2160fe4c7587e595a016d941456f7ad6"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/ExplosionMetalGverb.ogg",
+      "sha256": "ac12aeafaa23c3eba5d5b16a789b785f51e53b7c6abf5731e3bc0c3bbe86c19d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/GunShot.ogg",
+      "sha256": "2c5e73237c9883cae9ffdc1e324b0bdc469954bdca1e46a049e781c9c13d0d46"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/GunShotGverb.ogg",
+      "sha256": "382c36bc7ce33248692cce436b25bba13fe562a8f9a965c7009c0e87ca59d00e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/Splash.ogg",
+      "sha256": "25d5a95bc838900dad1c2386e3c57234aca92905f681c2d07f2da189cba93da3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/SplashGverb.ogg",
+      "sha256": "f578615ade2fe5b2d840f3b6c5610d83ccff89cae59d2cf1c9d1e80279493648"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion01.ogg",
+      "sha256": "ff7bcfb007ecbf6cee74d56d448893bab062b365aae74052aef229739087422b"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion02.ogg",
+      "sha256": "3a4b09913a0358e7da635d84ddf1284cf7db05ff67143c08653cf124bb873e6e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion03.ogg",
+      "sha256": "56e0a6d3aa1b72a594ea31071107775917d9b2c032e83a139443b778a5a26363"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion04.ogg",
+      "sha256": "66d75cb3b614469d5ceac06ae7012d38093d9afdb69d55ee896a4406a696c830"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion05.ogg",
+      "sha256": "f1e1b2deecc375306dbad66f10c49a0b8ae3aa49a0198cbe6b08a90e28b3e7ff"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion06.ogg",
+      "sha256": "dc994f338e76a0d3c9f411bad174cf0f337a1549a75d016416beb5157bd9e8e0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion07.ogg",
+      "sha256": "35a2932ac1560dec31c5e13c5233818ad43054464a7bc2372da5865c11bcddd1"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/ogg/WaterSurfaceExplosion08.ogg",
+      "sha256": "a32d6d0d5ff0970a9709d4650668b0652ed1bca5cc1aaeaff7f7221cc790e65f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/README.txt",
+      "sha256": "502d78e9078907cbe3d8a7397b416daa8ea25b39f4b609c0207c45e1960386a5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/Splash.wav",
+      "sha256": "40a243f245270f024f6eb2ecad047cac65d91293e1d5e301a9a756410ec03d17"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/SplashGverb.wav",
+      "sha256": "6e7615248bae30844c1d8a6ac21576ff79a940edacd5786e8862d105f5b65370"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion01.wav",
+      "sha256": "8078fc23e0322845cf4c41bae787a0a98572224dc36de809de465e232972db8e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion02.wav",
+      "sha256": "4effed93dec1351e7a9e2d58497b0ab3a395b16301102192bf00bb03ea1b2897"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion03.wav",
+      "sha256": "1b45569091cf4b2d3c7a2f33dc3716421d2e231da54d5ea3d6ee23f6e78cd5ae"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion04.wav",
+      "sha256": "b6008704715d19a42f883029249cb944b0cbe32e27492c543d69726a6c91b426"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion05.wav",
+      "sha256": "414d2cf5bd6124f78db632a3bc8c0f9d6c8fc3151146af9cb50c15e1817c7915"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion06.wav",
+      "sha256": "435ed944ee427484a026ebaeb0e30cbc9df652c652f7765a1c322a74b4908d7a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion07.wav",
+      "sha256": "f9c43fa8ca64a5ffb007967222b00334013f3d6658197d3fe455832a17df0e5b"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/naval/qubodup-NavalBattleSoundSet-cc0/WaterSurfaceExplosion08.wav",
+      "sha256": "dc08f7741964bad2ea0ba493adf6a9df774086f1953e81fbcdf5c2418542bd90"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/pilotvoice.mp3",
+      "sha256": "fb62bba7b9a81f97d9d8cdc9db51dde4d7722c2fe0d955915ffa7ef37d7a6948"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/ping.mp3",
+      "sha256": "247e4e848a03f8c2d293980425ce85a34656b244a14be1af31762612644f5d88"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/rack.mp3",
+      "sha256": "ebb3224a6a1d7442d7f656a97d36104ba6993c0b484b1da012f7ddd83e0b5af0"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/radio.wav",
+      "sha256": "e53ec91815d493e8046e2a05059ceb7fd179130584befb8b891fd54437e42f8d"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/ratchet.wav",
+      "sha256": "844ef9f5005a5d511ff8f80c1918a45e4cbea035def2114f5cf403f4ba08673f"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/rocket.mp3",
+      "sha256": "3e9ad4728c93cbde7228b94c9de4e775cebb5d187d4df991d2ee65aea301b3eb"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/ship-horn.wav",
+      "sha256": "815d8cc325950af6c98da6059631bf54f6ce65417426470d4cd8efb252bc26f5"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/shutter.wav",
+      "sha256": "644d30b2a3fe97c85295c5038689e3457c5f286858fab9957fb024b946ba7136"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/siren-close.mp3",
+      "sha256": "e25641309003a6c07afed64a45836d7e3a82a63b75504ad5085a42ff44dfd49a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/siren.ogg",
+      "sha256": "3658a27bde10028531371ffbc2d57810fad0cecbff4b2d496714cd4aa7176d99"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/stadium.mp3",
+      "sha256": "b621e391cb850ff79d8c215faf295119e747340803429ffbb383b5eaf4a132d2"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/steam.wav",
+      "sha256": "2bacf5a9602ebbb6d04080170168e1ed7e2b5d576a780e39de4dde2a341b8e3e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/sweepmotor.mp3",
+      "sha256": "c98d760a04ed0b84809ffb1b5ac640cac37470aa4f55f1322e719cc634cb0533"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/tank-foley.mp3",
+      "sha256": "71021d6b67699e1a28f6b0a1a24af1deab84a31df75d99c3b9c414138ec8ad9e"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/taps.ogg",
+      "sha256": "bf8e628bc7ee3bcff67d294a43c3dddad47ba4d5266d753dfeda0ce07cd20ea2"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/tracks.mp3",
+      "sha256": "1492475dd5b0d2f344126b48976aa16f69c4450aab38fe6eccccfc2a955b59d3"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/waves.flac",
+      "sha256": "afa112a66c4cafe06ef76d5e2d4d00a701d4520c58eef63b862afa771991d77a"
+    },
+    {
+      "path": "prototypes/audio-audition/sources/worksite.mp3",
+      "sha256": "10aa8fa51d1d806b3d18954c08e4cefc086f3fd1de359998b185fb3f2266ec68"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/asset-prompts.json",
+      "sha256": "59ccb4e82a7cabfbeaca684e715caae920237770c4b6c5fd70e4a17bef312a87"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-10.png",
+      "sha256": "7c1be438fdc79ed713ba51e0f1954ccec3cde8b936be99d0e3e16007a443f845"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-24.png",
+      "sha256": "e6c44f887c5638f09494426fab43aa71eaa2ef581b35ef83ca4709e9eabbcbe4"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/attack-zoom-5.png",
+      "sha256": "fa0b60e6ab9b4f554a8e8e7b7612047fe2429a284f973c1c320a0e0fe610d765"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/battlefield-concept-01.png",
+      "sha256": "cbe6c02f0a11371e31c8311ba7796e81eb8303cfd1e4d146a66b06e33aa52a0d"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/commanded-example-replay.json",
+      "sha256": "5b6ed2cc80d7a7ce00239c58f8e148c72a38d7b1a7c055627c95bc77a82afe36"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/credits-performance-comparison.json",
+      "sha256": "47ac2d84fd671635ee0fa24d422906b4566420a2b04692db6e172aea5da0833a"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/credits-performance.json",
+      "sha256": "273f8f1395f8c9edf503a391b158447e405fad04bac1786824ae8c1b8f4bee2b"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-headings.png",
+      "sha256": "483a92504fdeb6ba564a830f7a98784e2d6daea8fe1ddc58a921b771d5d22e45"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-loop.png",
+      "sha256": "757d86050c071aa570346fb18ed8af0a2cdf1b3a55befee14c1998ca8d25ad64"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-prompt.txt",
+      "sha256": "6281ec6910312bf0cb576c02b71d24f581ee2f766dbf25d8f346bd7062ac0c78"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/destroyer-verification.json",
+      "sha256": "47374f4c01ec5001a456dc9e1eaebb1c750c79760c1e697825029eb4291b7850"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/in-game-example.png",
+      "sha256": "57410a57462e64995296816433d55b4bc3ab636a732002ed7c077e6a8735106e"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/live-territory.png",
+      "sha256": "8e06f03db68f01cfb3317189985102f758f9bfe82388ce03f6f0aaf9cf120940"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/live-verification.json",
+      "sha256": "3ca04584ca2471b3fe7dca069eeeb12f0143a3162181fe146d61cf7d6a149939"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/medium-attack-performance.json",
+      "sha256": "fa23dddc57e09a038f6f4e7ea051eee635e32e21024fd930bc4ebf4e2955d48f"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/pan-performance.json",
+      "sha256": "6c01e96b3191ee03d6586e46ebb6057ac82beb0caad8a63bf5ece36136cb801b"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/PROMPT.md",
+      "sha256": "c38c6773ce34c59307a1026418db8ed30b1aed5d7a99ed7b63645928f2093a1d"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/README.md",
+      "sha256": "c25eb7085ffe851fb4a81a819b721afb6022e401cc54b013799b3c1727ee7ba6"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/replay-after.json",
+      "sha256": "595052c935b84287d81c60aeecd9e9aea1408d4bba120cc9ca02903d5f41b0d0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/replay-before.json",
+      "sha256": "595052c935b84287d81c60aeecd9e9aea1408d4bba120cc9ca02903d5f41b0d0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-10.png",
+      "sha256": "1a371d550cd8f68f2b6f53609c131291e84f77d57578f613974232dc5e612ea0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-2.2.png",
+      "sha256": "21a82673fe1ec866a4b2aa961be2304b58d25b6579d2839fb251612d39c0d32d"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-after-4.png",
+      "sha256": "b7e6e11e3a6917f61c8cf62f4bd021e38841940b1d9b677dd87c357b579a767e"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/river-before.png",
+      "sha256": "19c4826da3a55920a9251b94deb3395ac92ab6a0a9363109de20a5bc9b8d1ec6"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/rollback-performance.json",
+      "sha256": "763d3ec18563c52ed1a6a78c9fbdc06266936ed5eed08bfed5887f50962d36e0"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/study-01-before-terrain.png",
+      "sha256": "c3f9aac681532762f8b77973c3da0d52e51d88c7a5340d0a69ac12265583156c"
+    },
+    {
+      "path": "prototypes/classic-battlefield-direction/verification.json",
+      "sha256": "ffd50430643283303e768fc13e6a21df7984bdc0bc0f1fea7b9ab59c9c80065e"
+    },
+    {
+      "path": "prototypes/combat-effects/index.html",
+      "sha256": "b08cb130e90020cfe0cd8a12babf6bc0a76193f979dd35d4e983b7dbc6dc127a"
+    },
+    {
+      "path": "prototypes/combat-effects/README.md",
+      "sha256": "010177945953f32f72ed534d5029f3290524016ab12e565ba61a600188911058"
+    },
+    {
+      "path": "prototypes/combat-effects/sam-approved-lock.json",
+      "sha256": "742185062ae12da27b0d09b23aa26466e48b765a3b8198e702e7c4f940feab10"
+    },
+    {
+      "path": "prototypes/combat-effects/sam-art-prompt.txt",
+      "sha256": "ee2e38047989042119007027ec1bf9732adcb60238309960ea382c760e283aa1"
+    },
+    {
+      "path": "prototypes/combat-effects/sam-base-v1.png",
+      "sha256": "c22a85fb599d5f6592b71bdc1a558ff551a399d992a4fee8e0103dff092d6988"
+    },
+    {
+      "path": "prototypes/combat-effects/sam-sequence.mjs",
+      "sha256": "65830aeff98256a1d5709af0c5d44d3c0ec4c2f631c44b23a1e685b3f598e9df"
+    },
+    {
+      "path": "prototypes/combat-effects/silo-approved-lock.json",
+      "sha256": "b79923a15b8cae8b3365c1f5f4e4b969661ad3c5b94afd0ac2ec3d3372b06c3a"
+    },
+    {
+      "path": "prototypes/combat-effects/study.js",
+      "sha256": "75e0c119581f0a23e15c6f5eec594798d2ca6bb4e975027145eebf64cc8205e0"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js",
+      "sha256": "318416a59deee91ec338f78f1f1e08b2f72b6258d2bec05a2f59712744682729"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-desktop-win32.png",
+      "sha256": "e087c3ca66e8d37eb6a986468b389b1bb49fdd2c770da0f3feec961397305838"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/graphics-vertical-slice.spec.js-snapshots/command-map-chromium-mobile-win32.png",
+      "sha256": "f34f240852e7791e1ac32e01cc36944e7a43f36110e0eeeda168d13186765804"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/index.html",
+      "sha256": "f87ec132b164e78912a413d562316b74b42f70a67daef9e5e3f1a8f2721aff11"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/playwright.config.js",
+      "sha256": "3c20a3e154737619d19382addb49ad37ded655d52e41ac0fcb70d242c4b7f983"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/README.md",
+      "sha256": "edeafffd9db5b85d98b2bdeb541ef9383d3512e4cdd23fc5f93a6f34467a93cc"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/scene.js",
+      "sha256": "b2ed0d844696b69be2b1e583f160042c380628f50b1fdf47a646e524e4370f9e"
+    },
+    {
+      "path": "prototypes/graphics-vertical-slice/styles.css",
+      "sha256": "ef99056b0a358902a7a35477bd5f5537d83d04553c4d98d8793168224f0af472"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/DECISIONS.md",
+      "sha256": "fd0725270a9b16e921fdfb5d027c9f4d0116c443158724286183d99376a97d0c"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/playwright.config.js",
+      "sha256": "9cf8b918321f1ca07edfc6beec8e855103876044bc9a3a8e8176e3066f5d6ea4"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/README.md",
+      "sha256": "6b70c315f79d96bc4aa2f9221902cb7c8f7eeb87ab47e2c44e52b1227fffd7db"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/styles.css",
+      "sha256": "f3c7ccc450ddcd3290150b62ac6dd412c435405b486dd2a4fb1ac689968e94d3"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.html",
+      "sha256": "f6504e66c95574bc23bcc99b9cfa2f4304ee9759c272fadb458b6bb052b87d80"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.js",
+      "sha256": "16c25a7fe392abb1174e4f44a146d544b7a899d27ea4e5ca7212ce3a7475f6c3"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.spec.js",
+      "sha256": "27672e4f7c3d2e04f635bb6798360a55b10049b396982d14fe9089a8fc1adfe1"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/terrain.spec.js-snapshots/terrain-direction-chromium-desktop-win32.png",
+      "sha256": "db8fbc5efba3f002db23fb87f7b69cf67c785687b8303a7e0ab2334c6cfc8988"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.html",
+      "sha256": "581589f59700ccbf0b009e9f5e09b94af7dbbcc3aa6d16b56378c9e3693c400d"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.js",
+      "sha256": "1d6d53eda26a468097b438966f7c591c893f9e49c857a98f5f674660142c9e05"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.spec.js",
+      "sha256": "e9a7b65569a2de4dbfd8d2fa7020c6b7c1de301b6845d9ca966705e8f4b91d7d"
+    },
+    {
+      "path": "prototypes/high-resolution-direction/units.spec.js-snapshots/unit-direction-chromium-desktop-win32.png",
+      "sha256": "46471b1c25c5424bea30be053cd55a8b0f1c5aa3459892c10e349dede0671e00"
+    },
+    {
+      "path": "tests/adversarial-boundaries.js",
+      "sha256": "6971238484373fc35eca23b5f752c0caa7d3ca00cac33b90006ed8447ce848e5"
+    },
+    {
+      "path": "tests/ai.js",
+      "sha256": "a2174e918fc695db004899f3020cbe4eaa7b0674a58338d3b6bdcfcb02702a92"
+    },
+    {
+      "path": "tests/air.js",
+      "sha256": "5140c78a75cd0588a54b1e3472f814665a30c7705975f4d2970c8474572f73dd"
+    },
+    {
+      "path": "tests/aircraft-layer-model.js",
+      "sha256": "6e58e4be96435a12c1d1d12ee7663cdee3acd68a1f2634615f920a9b49df5310"
+    },
+    {
+      "path": "tests/area-labels.js",
+      "sha256": "61aaa0f968b270ba9d14acd16fe2f66b55165078c40d007e317820b2911cb1a7"
+    },
+    {
+      "path": "tests/atlas-manifest.js",
+      "sha256": "4cc4b9fad659a28523d83feb9f07de38a186509e0cf9d39a83d882b39749a11e"
+    },
+    {
+      "path": "tests/audio-presentation.js",
+      "sha256": "2bbeed63132f45e6ecb8c115d1567f4e0b800f3c78e8eee7a4c776ce4a8bc47d"
+    },
+    {
+      "path": "tests/authoritative-state.js",
+      "sha256": "f330cab806145209aaa0b5805d2c417cbe75d726bac5edb110263fe5de2130c9"
+    },
+    {
+      "path": "tests/browser-server.js",
+      "sha256": "49497fc8dd6edfdfddbac99cb1fdbe058b260e1bf23983f1b52fe864e92d08e1"
+    },
+    {
+      "path": "tests/browser/audio.spec.js",
+      "sha256": "84495ba36d3457b7f7f1938e7af852a12daff4ce60a90e71367335c500b9aab0"
+    },
+    {
+      "path": "tests/browser/build-contract.spec.js",
+      "sha256": "e0c7f092a2def102fdb230b3348f9fb61f96586508a304f537aed2c649c393c2"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js",
+      "sha256": "c0b932d4b7727aa2ac3a1c545a6bcc306a05b445060d3e6232b53db636362196"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/current-map-chromium-desktop-win32.png",
+      "sha256": "caa3997fb3556f8771415a393c99dfcbc648b8c09e6688a3407ef25e20e54c14"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/dense-late-game-chromium-desktop-win32.png",
+      "sha256": "b6e286ff71e59e3d4b2592ca0e14d238e204819f300dc59411b4c427a78df2e8"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-close-chromium-desktop-win32.png",
+      "sha256": "7a315f064bacfcdec053591cb0a8d7205c8339d1f28b654253e94550fb6b42ca"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-africa-strategic-chromium-desktop-win32.png",
+      "sha256": "9212e4ddedd07181bb7ca2428cf7ccce42c284ddcf7e66cf251c981b3ea1b045"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-close-chromium-desktop-win32.png",
+      "sha256": "468412a3a1e5216f5bfc2255b9370a6d1c8bc735a92972f3e251958dd1d63772"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-americas-strategic-chromium-desktop-win32.png",
+      "sha256": "6057bd66e0a8b71c737869441512a0c6ea155ddd3e8552dd1163dea7631ed964"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-close-chromium-desktop-win32.png",
+      "sha256": "e196aba8c579538af2cf332e590806efc966d580b76fc46d623fc39b9e318b13"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-asia-strategic-chromium-desktop-win32.png",
+      "sha256": "83c9f6e27fb621283e77d0884247ff19ed157c2a495c0cdb60015e30a7d7138c"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-close-chromium-desktop-win32.png",
+      "sha256": "20fdee40d57da621f966f0cf47655d61a37adbc440575c097620caa061bca386"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-atoll-strategic-chromium-desktop-win32.png",
+      "sha256": "2a160c70c4e172a64e2aa5b6f09b101372136ce00f1d0f84408fac339fd05a05"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-close-chromium-desktop-win32.png",
+      "sha256": "fb80eec06c4c814994ef6540edcb6958c695fc60c41d18c9ba483197f4f9ca23"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-europe-strategic-chromium-desktop-win32.png",
+      "sha256": "526bdf1499e78b6d6406286254d2a327ca338bfa0e6f0ec60adc76af2ae40e19"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-close-chromium-desktop-win32.png",
+      "sha256": "c108d1265053049be8fd090885220bc69440cedcffd1f916f3ef5b59f2f07f69"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-l-strategic-chromium-desktop-win32.png",
+      "sha256": "38b905b2f169752978f60a8b9e708cc14a2f0a5e9a632fc84de8615c76414f3d"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-close-chromium-desktop-win32.png",
+      "sha256": "3a8c5f58b9b6bd9282d3a1c5a6dc3696df6851d25a5ae5eab22d45a8a4a1c8c8"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-m-strategic-chromium-desktop-win32.png",
+      "sha256": "5992ce1ecc6cd5154730e8cdc1cff0942f578756cf83d0fe27a008c020c6b908"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-close-chromium-desktop-win32.png",
+      "sha256": "b0e27c326e353653c8ff30eb1158bbdaefed015385b3a736fd94fed6c32aedec"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-islands-s-strategic-chromium-desktop-win32.png",
+      "sha256": "080c84955d4c2d195ad9c0f28cac6926bfd69142a653f947582651a464884194"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-land-close-chromium-desktop-win32.png",
+      "sha256": "263361bd38ec187b7ba3c0bef5f2175fee9c0ac2a141a0efc049544fcfc5b6fd"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-land-strategic-chromium-desktop-win32.png",
+      "sha256": "32fcb3caf7fc14a6829b1ddb85f1af580dedcc77e1531073f1bbeadd53461906"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-close-chromium-desktop-win32.png",
+      "sha256": "838da8ef8466331fee0bb10375495e9dc2a195720e2b14886df65fb017b19852"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-mideast-strategic-chromium-desktop-win32.png",
+      "sha256": "19c688f8c79b1e64e71da60a64abf56ac4fa1b9ec0c15cad31b246da88a3f96b"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-random-close-chromium-desktop-win32.png",
+      "sha256": "43cfcc7d5095fd638e84675d86fad3e31fd925433c4c051df7358d262753dbdc"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-random-strategic-chromium-desktop-win32.png",
+      "sha256": "fbe712aff1611dd84f928f78c81b0cb386053b65b56ec900d24a9a5b3ff06c4d"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-world-close-chromium-desktop-win32.png",
+      "sha256": "7b9e3afb6630c19b35087eae4590114efeeda597bc746de655b1e36c4483cea1"
+    },
+    {
+      "path": "tests/browser/canvas.spec.js-snapshots/maps-world-strategic-chromium-desktop-win32.png",
+      "sha256": "6a765c504e85a46a2a6026273f0adba2f23e1eaf371d372d04632b8b6aa2c855"
+    },
+    {
+      "path": "tests/browser/classic-combat-effects.spec.js",
+      "sha256": "ef46d000ee2c287da5641b99c9712cf627fad3e43ddb1bc3f8728bfb35600083"
+    },
+    {
+      "path": "tests/browser/classic-map-edge.spec.js",
+      "sha256": "1b013d1bd5be3779a2e622e523b805bae9ed0d46f7b0bd79b92e1a477794944d"
+    },
+    {
+      "path": "tests/browser/classic-motion.spec.js",
+      "sha256": "35a6ee60bbea24d9eb72c912781f4106bed1eeade447a7b26bda0b2e877dab75"
+    },
+    {
+      "path": "tests/browser/classic-sam-runtime.spec.js",
+      "sha256": "b1a11af349e2b5a984f25f227946eb083ba00b995f0c16c1936d531c1ec7ec4b"
+    },
+    {
+      "path": "tests/browser/classic-silo-sequence.spec.js",
+      "sha256": "c812da42cd5af6deae9b96974038e73b2b626d292e006b8454def0a003eb064b"
+    },
+    {
+      "path": "tests/browser/classic-tree-coverage.spec.js",
+      "sha256": "2717511f62f1aa6f701b51ef59bf37c430e978e01f3cd871c28fffc8fa074893"
+    },
+    {
+      "path": "tests/browser/desktop-scale.spec.js",
+      "sha256": "a01380bd9f8cdbe747d756916e4880d32a3ee927827f6a1fe22f7abe01410d12"
+    },
+    {
+      "path": "tests/browser/deterministic-math.spec.js",
+      "sha256": "940608f2d64337bb012a06c49dd1e2676be6e9aba44e51eda8f350a03fa4897b"
+    },
+    {
+      "path": "tests/browser/help-guide.spec.js",
+      "sha256": "c536c4d1d162a3ef5be594091e4df45c7402b691aed76426342b4e56d98a58aa"
+    },
+    {
+      "path": "tests/browser/help-roster.spec.js",
+      "sha256": "d145d477cf730660514813164fbe47882cc78b3f2a120ca7b28635393fa4231e"
+    },
+    {
+      "path": "tests/browser/phase-g-all-units.spec.js",
+      "sha256": "57b1453ad4f54dc67b2b80c329c90a4cfd1f7f615ad2f1891baf96b572e40502"
+    },
+    {
+      "path": "tests/browser/phase-g-projectiles.spec.js",
+      "sha256": "ead5704e1bdc025ca13142dd6dc22270c2e802780e064cf6f4706553285c1b0b"
+    },
+    {
+      "path": "tests/browser/phase-g-radar-sam.spec.js",
+      "sha256": "20cb48284b0e7dc560ef28b060ca8d61974627f79e0e806118520bbb6274d78d"
+    },
+    {
+      "path": "tests/browser/pixi-aircraft.spec.js",
+      "sha256": "369ff10c6ac8a5dcd0231e7ca56e5ecc16bba334ef7abaafd2c285ca0a9ab2ef"
+    },
+    {
+      "path": "tests/browser/pixi-atlas.spec.js",
+      "sha256": "a3a38674308a08ba532fc17869b36cf6124c96e984d36925a89aa9e8e55f4d36"
+    },
+    {
+      "path": "tests/browser/pixi-floating-text.spec.js",
+      "sha256": "6f9da4f7ea0d98258bf426e65115d12851e3db93ea8071219cc7f7193eec34e8"
+    },
+    {
+      "path": "tests/browser/pixi-global-effects.spec.js",
+      "sha256": "d0069ef1fb04cd03d61af827a7b05c0f6df1857eb1a36d5dccd4dfe81f355201"
+    },
+    {
+      "path": "tests/browser/pixi-interaction-overlays.spec.js",
+      "sha256": "0d52d70c462a4c141f17bd0a33cc9f0d876d99f8595b7df157de8bce82b1383d"
+    },
+    {
+      "path": "tests/browser/pixi-map-labels.spec.js",
+      "sha256": "95d3e1df74ab460597557a49bdec252f5933edfa37d1aef8d6005c5892749764"
+    },
+    {
+      "path": "tests/browser/pixi-missiles.spec.js",
+      "sha256": "12fe6c03856eec673ccc44b8fb4df558a5f4cadcabf5a61e23fd3d49fea76da4"
+    },
+    {
+      "path": "tests/browser/pixi-nation-overlays.spec.js",
+      "sha256": "61214bf440abbd51cdf2dedc79a53bec1fafa79a54819596eb08496246b86c3e"
+    },
+    {
+      "path": "tests/browser/pixi-naval-logistics.spec.js",
+      "sha256": "f3b286979fc6d7f8a131acf2129ff9b0bd7e91f87477182fc0f0f5645722c19b"
+    },
+    {
+      "path": "tests/browser/pixi-notifications.spec.js",
+      "sha256": "90f1df66858fdf135baf0ea54a42c78371b2fc7c82eb7eb87a7b1a75c5f8851b"
+    },
+    {
+      "path": "tests/browser/pixi-projectiles.spec.js",
+      "sha256": "ad72aa804f1406f59eb47a0a32532c854fdc642d5810ff02f17d6322898eddb6"
+    },
+    {
+      "path": "tests/browser/pixi-structures.spec.js",
+      "sha256": "183846c0408ca3f0d017a0d2758b8eb64dd48fa5fc8bd9467fc9bb793af9bb62"
+    },
+    {
+      "path": "tests/browser/pixi-support-actors.spec.js",
+      "sha256": "a36bb357f25191906ed60c903829cbfc7f826a1dfd8d393454783ace370ca712"
+    },
+    {
+      "path": "tests/browser/pixi-warships.spec.js",
+      "sha256": "8dbd04ab6a5e86f62dda94330091566ae9f62f22ba8596fadc34b3cd1d185ac9"
+    },
+    {
+      "path": "tests/browser/pixi-world-annotations.spec.js",
+      "sha256": "a830025a9b2ed2f7bc5481f53088c1c913bc539508d0c58a8f31a74ba3298151"
+    },
+    {
+      "path": "tests/browser/platform.spec.js",
+      "sha256": "1ba474c3eaf76cd09ccae552f6c747595ac850adc0102eef9ecccff35098e29d"
+    },
+    {
+      "path": "tests/browser/relay-websocket.spec.js",
+      "sha256": "4ce106a6f5526ff6d70d09754cefbcfb2c3b7fecda21089ccbd723bcdf45d08e"
+    },
+    {
+      "path": "tests/browser/renderer-foundation.spec.js",
+      "sha256": "21aea58c33e1082e129ecc9cf430f56d22ea0eca27b1c8689e36a685b8e17f84"
+    },
+    {
+      "path": "tests/browser/score-retry.spec.js",
+      "sha256": "76e0bc4393545739195cca1c8c7be42a06b10ec00ab7dca8855f00890a0afe4c"
+    },
+    {
+      "path": "tests/browser/silo-flight-handoff.spec.js",
+      "sha256": "3f3ba557338e55b0f79781b8155f192fff8c80351b80f28dc40bcf82d7845e58"
+    },
+    {
+      "path": "tests/browser/startup.spec.js",
+      "sha256": "499629039c1092022c323c57c61282592dc9bd0a1da7e2a94992cfed544863d9"
+    },
+    {
+      "path": "tests/browser/terrain-raster.spec.js",
+      "sha256": "cf1cbede7872a39ca251a483206816d6610e34f67eb8175562ae89f1b3feabd8"
+    },
+    {
+      "path": "tests/browser/wordpress-artifact.spec.js",
+      "sha256": "168bc43c7f9e3c05d9c285dfc7730a620986c3d1b465830b4a70fbd4685c5831"
+    },
+    {
+      "path": "tests/build-package-fixtures.js",
+      "sha256": "52ba6ba2438b7d57552e8bdf57df0409b4c64cb8f27dd0ac94716e8b8139adb4"
+    },
+    {
+      "path": "tests/build-reproducibility.js",
+      "sha256": "004d642ed886eb08926b023781ad4388c110265399e0c06fbead29c4395f98a9"
+    },
+    {
+      "path": "tests/canonical-typed-cache.js",
+      "sha256": "16216b3a414c41ea666385c775a4a9f1590d92245eec42528b274372e9a33a41"
+    },
+    {
+      "path": "tests/checkpoint-origins.js",
+      "sha256": "f0732010b30f42d1cee8ad21f33624589f357f38a3e36f50f9d167b7aee85d24"
+    },
+    {
+      "path": "tests/classic-motion.js",
+      "sha256": "ddb9923ac9acb6b13f8f546d83820db557a5043235757abbdeddedc272fdfe5e"
+    },
+    {
+      "path": "tests/classic-terrain-client.js",
+      "sha256": "1209aa1114c1316ef03d834a57a83062c6b7fc1637e58da04b6738d2a6bb47f6"
+    },
+    {
+      "path": "tests/command-router.js",
+      "sha256": "96265005031ffdada1886b1f62455ceca9bcb7631cb69ea3317991448437405f"
+    },
+    {
+      "path": "tests/compatibility-effects.js",
+      "sha256": "02f456aa2b851f4257544adbec98eed57ec8a6568c10668cb9b71689e50b4e42"
+    },
+    {
+      "path": "tests/custom-country-replay.js",
+      "sha256": "a626f08dce64784eb4fbed42f30c175caab2d77b8928e44cf13cc3d0d1561616"
+    },
+    {
+      "path": "tests/custom-flag-null.js",
+      "sha256": "a7c890148906b30a4f66fc0785001af7c3036e321a6901de3fc2e1112425579e"
+    },
+    {
+      "path": "tests/deterministic-runtime.js",
+      "sha256": "ddfc994eb36642501630b0b8caf63755a59dab35413e32d3d8ea9cda47be5a1d"
+    },
+    {
+      "path": "tests/diplomacy.js",
+      "sha256": "efc55fe9019ed65a8a0855d16c7c01276c5cf5c23b4fcc68321a4608475367f7"
+    },
+    {
+      "path": "tests/economy.js",
+      "sha256": "fadeadbc9016b0a93cc512171c8590609d37e1944d2ea5d611c22cb91ba5c256"
+    },
+    {
+      "path": "tests/engine-isolation.js",
+      "sha256": "699640988c95422d6590f280f884269abf20f5fb90a226cf6361c6e41dd6dd5b"
+    },
+    {
+      "path": "tests/engine.js",
+      "sha256": "d800f49e870fe15e13c6f459de7e2e1f17c880e23bd7ea96e23480f0c91b359e"
+    },
+    {
+      "path": "tests/fixtures/browser-performance-ceilings.json",
+      "sha256": "a7f4ef5cfc2edc4b8a31a6f77d6ded75edf4e4a1ab4ce65cfbe28874cc51100f"
+    },
+    {
+      "path": "tests/fixtures/phase-d-parity-corpus-ad30188.json",
+      "sha256": "c081ed5defaa9844410882d5cf9f17ef3a87146a925e574f865839e81c81dcdb"
+    },
+    {
+      "path": "tests/fixtures/replays/public-v1.10.7-focus.json",
+      "sha256": "cb217545e16b0da5c55e9bf486a5e699397f872972783a685d71d8c6a4514021"
+    },
+    {
+      "path": "tests/fixtures/simulation-baselines-v1.10.8.json",
+      "sha256": "8f9bdc61eb50ef5ddcd3dd03103bf78f38348f43177e23a8f0c0f0982272005a"
+    },
+    {
+      "path": "tests/floating-text-layer-model.js",
+      "sha256": "776628602759e33fee4e641a4035ccdd490932e2c5b9d141f2281b4471714b7b"
+    },
+    {
+      "path": "tests/fog-transition.js",
+      "sha256": "70dea2924109740c89530db12fb4495b2f32701ffb436f5405dec0fe55440e8d"
+    },
+    {
+      "path": "tests/fog.js",
+      "sha256": "a867ea29dd64fc7f02d635f37bbe954c1040abdd7870f2282197dee297650d7e"
+    },
+    {
+      "path": "tests/global-effects-layer-model.js",
+      "sha256": "495e1318da480889a89b33bc3831420dbab12dc6e01b96c2dc722b834bf5f59e"
+    },
+    {
+      "path": "tests/harness-hardening.js",
+      "sha256": "486c543bcb809b0963eaabdbd7cca28dc5ce9fa87a71a71b663c1809d976e6c3"
+    },
+    {
+      "path": "tests/help-contract.js",
+      "sha256": "63bab1c4691bc02ba6442449cdf974cf7301220b03e232fa5411af7e06b4967f"
+    },
+    {
+      "path": "tests/interaction-overlay-layer-model.js",
+      "sha256": "86f253885118f81721b0e116f8c9d7a93189cc179d5a55b54f3089b3911ee340"
+    },
+    {
+      "path": "tests/land-combat.js",
+      "sha256": "268f94accb35c68362bd000944b80fadadca04cc11248dcdccaa47a3b2a3b953"
+    },
+    {
+      "path": "tests/logistics.js",
+      "sha256": "871bffec76850eea9842ea227a409e3211ab09180e1308c5dd304080d17f56da"
+    },
+    {
+      "path": "tests/map-generation.js",
+      "sha256": "3aa8eb3d932b7541fc3f72d87e7f1e9926556d5c0541501d28077af9828a2fd9"
+    },
+    {
+      "path": "tests/map-label-layer-model.js",
+      "sha256": "a3d87b3abb59eccdcbbc26f05851cdb748ca2f6f5c2256c58eab565cca38476e"
+    },
+    {
+      "path": "tests/match-flow.js",
+      "sha256": "4eb51dc8fa7ab8f1e12dd264b9d271ce67648413e733c5cacc2cf0cddcf06b28"
+    },
+    {
+      "path": "tests/missile-layer-model.js",
+      "sha256": "948d34c481f4c6e11c3a3f36340d04768c3d869bed6f9b15c6bd495a44c1865c"
+    },
+    {
+      "path": "tests/missiles.js",
+      "sha256": "46e32f24656427f49a2c94b77a82594eb1c841663844e38282f1fb02c8a91790"
+    },
+    {
+      "path": "tests/multiplayer-relay.js",
+      "sha256": "4bc290f8d712f7d909b55ab26029f8e9c1bf04d101db7b0eda510f4bb72f624e"
+    },
+    {
+      "path": "tests/nation-overlay-layer-model.js",
+      "sha256": "8c71a479d3e81d4873450e6117254e0de5834b8688a5895319a43452fc2bc457"
+    },
+    {
+      "path": "tests/naval-logistics-model.js",
+      "sha256": "33c3a1715e8ae644c7263111155dc1e9e4152a7558b104df1e1042909790668d"
+    },
+    {
+      "path": "tests/naval.js",
+      "sha256": "405eedb38f6ed8e33c9ee30329ad7d1826abe5e33b96c4e07c92da7714c8a981"
+    },
+    {
+      "path": "tests/notification-overlay-layer-model.js",
+      "sha256": "e4fb33f05d34896fdadd929b90db0d3a52fbf0519c843ef2e667da0832a3f5c9"
+    },
+    {
+      "path": "tests/phase-d-parity-corpus.js",
+      "sha256": "fbf175938a2fc4e4436134a4eb946dce88573f8d2fec239052aab8081c19f4c9"
+    },
+    {
+      "path": "tests/phase-e-hardware-harness.js",
+      "sha256": "1db77c4350a8d77201452337c4e76be3c00f3eae58c073fde9a1b00c8668c5a7"
+    },
+    {
+      "path": "tests/phase-f1-source-evidence.js",
+      "sha256": "f35c02790cdf7928d8c5f9c04cbae5ce740ed4974cc81cee2f142021d0b130a5"
+    },
+    {
+      "path": "tests/php/custom-flag-fixtures.php",
+      "sha256": "a1c2c464069d38803d6d53d29d3372065792e169b98b7c53f30cd7054b1b7596"
+    },
+    {
+      "path": "tests/php/exact-score-key.php",
+      "sha256": "863cf60b11b14b12a4da5677e985be65a1dea23f9504c738271c35f14c887aa2"
+    },
+    {
+      "path": "tests/php/package-integration.php",
+      "sha256": "e6816b467d68e47a0cc2115f4fb99215f7f35807c6a486f7ccad5ef07989aabb"
+    },
+    {
+      "path": "tests/pre-structure-layer-model.js",
+      "sha256": "86e8989dadfdc85513ae3bde92bfe9873bb096c93c3a2619dab989a144d54a87"
+    },
+    {
+      "path": "tests/presentation-step-clock.js",
+      "sha256": "7c62ee6a6818198228baf89871eb2a24ec356c3389d278c6d5c145ec700a02b7"
+    },
+    {
+      "path": "tests/projectile-layer-model.js",
+      "sha256": "5ee35611ec8361a92584095856ea79466638cf233d9a80b31474de095b9abce0"
+    },
+    {
+      "path": "tests/renderer-independence.js",
+      "sha256": "915cff94c39f3b362ee0bb138337cc820d6cb0b049561d0ad343cc2a101aa8e7"
+    },
+    {
+      "path": "tests/rendering-contract.js",
+      "sha256": "376d94354830a4b4163e12dac29869bfdc96ab1aec1723dacdd08f0c589a5a21"
+    },
+    {
+      "path": "tests/replaycheck.js",
+      "sha256": "f9764180324913234899d28dc5ff1e2bdc66740fb807fdf01395a4f625759eda"
+    },
+    {
+      "path": "tests/restart-replay.js",
+      "sha256": "359700ee9fcdb86f880e8a043e74ff408bb32db7b035eb29903d08a32e79a340"
+    },
+    {
+      "path": "tests/rollback-copy.js",
+      "sha256": "5972d97459230e391b6f02835692b8a1ac991183be6bf2b83e64a98b274443bf"
+    },
+    {
+      "path": "tests/rules-geometry.js",
+      "sha256": "405f4cf4d062ee83b56b84adb043483951fb6b5167d4b1eddf32069f33593d43"
+    },
+    {
+      "path": "tests/security.js",
+      "sha256": "8a3f0663d08b07819dd789727d4094097087bd3ad614ff19ff7c2d2f035f813b"
+    },
+    {
+      "path": "tests/seeded-tier-order.js",
+      "sha256": "0b6d2ba6a24914836a131c6b8a11271d974b2ff3a149bcf314919c85ab99c767"
+    },
+    {
+      "path": "tests/sha256.js",
+      "sha256": "03a0ab097e55cbae84fc1e67bcdd21686d1488b9e0fbf34c6006ad62008409ec"
+    },
+    {
+      "path": "tests/silo-flight-path.js",
+      "sha256": "93585c96a3c0cdcc874c5b29b77fc0a9d590df0f93ecfb4dc7b56cdf88ee6aa8"
+    },
+    {
+      "path": "tests/simulation-ports.js",
+      "sha256": "0b75e01daba92aa38990178c8624de4cfdb2a51d43143ee1a60e353d00555112"
+    },
+    {
+      "path": "tests/smoke.js",
+      "sha256": "c8c896abbd9292555b6842e6d4e6cb21e0bebcee2b1b7c56d7c7f4330aa7a2b5"
+    },
+    {
+      "path": "tests/state-oracle.js",
+      "sha256": "b2b44d38f97366d454a3d3dbedc3e38c8e7f2a5e0b88cdef4218f00bf4f944ce"
+    },
+    {
+      "path": "tests/strict-math.js",
+      "sha256": "ad520182ac07a5f6eb862d82e155a64c4322ea5d86c20d590e42b8a790155330"
+    },
+    {
+      "path": "tests/structure-layer-model.js",
+      "sha256": "10942d571820a66c4e66ce6f762870817f76977f505125aafb806018daec744d"
+    },
+    {
+      "path": "tests/structures.js",
+      "sha256": "fc66d40c553535c48d504a941d4962db47a2cc50f9b5911e02d3d1a312cce2cd"
+    },
+    {
+      "path": "tests/support-actor-layer-model.js",
+      "sha256": "da77329a3126246494412cddf43ca626abe3e615169ff51fa3ed403b74f7b8d6"
+    },
+    {
+      "path": "tests/terrain-raster-client.js",
+      "sha256": "3ba786d6bf8a99125f8c9d97e43534b4cbb24fc1f679dfae7aa1978f6f0c3e4d"
+    },
+    {
+      "path": "tests/terrain-raster-model.js",
+      "sha256": "f8fd2c76a827a3b8f6a72ff9ca5adf456aea994062b44823831cbd88a5ce4550"
+    },
+    {
+      "path": "tests/tools/simulation-baselines.js",
+      "sha256": "ee936ffc30745ccce7ef564d69255ce62e02a31261fa4a5f22ce6a960f1fc9c7"
+    },
+    {
+      "path": "tests/tools/state-oracle.js",
+      "sha256": "09d88b972d558a1e58ca9d19c563964ab485cc0df15b3c095286bfc3b100a3c1"
+    },
+    {
+      "path": "tests/trailer-smoke.js",
+      "sha256": "6e4ff8a832217c1489c9dcdd186b253187e0eea94697ef6dc869d460b12b8ad8"
+    },
+    {
+      "path": "tests/warship-layer-model.js",
+      "sha256": "363abc53dacbba28d176e2434695760fa6ad37f3e8960477d1d192efe237219b"
+    },
+    {
+      "path": "tests/world-annotation-layer-model.js",
+      "sha256": "3df9708695afe3aa1e3d72e1f9f8fa964c45f7efad295b9035613c1bf91fed16"
+    },
+    {
+      "path": "tests/world-loop.js",
+      "sha256": "c67f056c021d18885d4cd38e782dc977ef95b7b3bf5fad08a0798496999c9f0e"
+    },
+    {
+      "path": "tests/world-setup.js",
+      "sha256": "1f66a6ddcae8df2635fae161916d1bf287d0bae1c937c0c1e006f3fe7093a7b3"
+    },
+    {
+      "path": "tools/browser-performance.js",
+      "sha256": "7dd24cdd39a608479326e3c664a721540c339a380663d3598dc4fa946ba98a2d"
+    },
+    {
+      "path": "tools/browser-server.js",
+      "sha256": "665c7ea65767a4ff1bb52e441729fa99537c727169cb78faddc83d2b01341f52"
+    },
+    {
+      "path": "tools/build-flags.js",
+      "sha256": "33b08b48430bf07342524505fc9a2d51de87f17d45eccb84160bc8d326b75904"
+    },
+    {
+      "path": "tools/build-help-art.js",
+      "sha256": "7cdd96c1c6e7bf5324e68e306e16885114dea95f81790195cb90e3fa33143eee"
+    },
+    {
+      "path": "tools/build-howto.js",
+      "sha256": "7fbda6d7afd7af975f8ad777153b07454a3e0d039f545f1d43864d175c55010a"
+    },
+    {
+      "path": "tools/build-plugin.js",
+      "sha256": "a1fdf574d5a2e1ede58b06bca1843e08530fb878ed3e10600757df429a319666"
+    },
+    {
+      "path": "tools/build-previous-plugin.js",
+      "sha256": "1a65d026455e3cb63a2088e8d5699801588c7c82d7f4a867fefd54bcf96cc691"
+    },
+    {
+      "path": "tools/build-release.js",
+      "sha256": "4d05ddc4d1c03db13b7bc4d0197140dcd746d50d742884db2173bdef407b7bbc"
+    },
+    {
+      "path": "tools/check-game-syntax.js",
+      "sha256": "f8b8e3f9e0b13704a3d09f8c1e707b18ac17bb2ed84486f1744a0259c74e1534"
+    },
+    {
+      "path": "tools/classic-attack-performance.js",
+      "sha256": "486e8a2c2b60896992ad85528075e86a729fd9dd7ce4ac221b7bff30fd81d2d3"
+    },
+    {
+      "path": "tools/classic-battlefield-review.js",
+      "sha256": "9b4db5836d30a967c1772155a0f3e1d70248e7b7988acb4643730d74c0d96062"
+    },
+    {
+      "path": "tools/classic-credits-performance.js",
+      "sha256": "944248c6f2e7dc8a7398c8ca7a43e5d6c9678a7e4572f41249194cdf1ebb8f6e"
+    },
+    {
+      "path": "tools/classic-credits-replay-review.js",
+      "sha256": "2dde447412e2fef414b3c6fb94be1c5fd4160e1d209be109a62b7dafa7513f19"
+    },
+    {
+      "path": "tools/classic-destroyer-review.js",
+      "sha256": "69abd6b2cf5ef83236c82b5ab1a326e061cab598edfec3dc0f1272fd398e4796"
+    },
+    {
+      "path": "tools/classic-live-review.js",
+      "sha256": "c6bb47811d4db66cac5c94e704b1db11dc15847cb28028428a3f5cd64602f877"
+    },
+    {
+      "path": "tools/classic-loop-performance.js",
+      "sha256": "706928d62ddbf5db3d5a6805633c80570317d13baae6bf22a6252b1a8d431ded"
+    },
+    {
+      "path": "tools/classic-naval-menu-review.js",
+      "sha256": "b1a0342da72e348e1a8c6ebf14de404213998fec82189c48d07ef56b70d6ef89"
+    },
+    {
+      "path": "tools/classic-pan-performance.js",
+      "sha256": "81413b3564c64dd78dc0c41d54e34683d0c10702ca031cff45af625cbb46e6b8"
+    },
+    {
+      "path": "tools/classic-submarine-base-review.js",
+      "sha256": "ca7a04c7c05ff83d12994e7422714261aef4e385e8392d26306f71225c0f0e36"
+    },
+    {
+      "path": "tools/classic-transport-fog-review.js",
+      "sha256": "707cb604fa0959a6920445ab37bb3a9e446cfd0b1fa4bd5701d27af9cf2b7e40"
+    },
+    {
+      "path": "tools/classic-upgrade-art-review.js",
+      "sha256": "8ebbb3bc261f15e5a848df2e672a921f0874ff4bb4299005da62f69eb8e9b037"
+    },
+    {
+      "path": "tools/classic-upgrade-game-review.js",
+      "sha256": "342e072da3168678eb058fbc222983f6e973bb3ad1bf5bcbe1a961c3292d6bc9"
+    },
+    {
+      "path": "tools/determinism.js",
+      "sha256": "3f6512cc7a1747dcfc91e4bcef3fe40f084e00f87abe6a566808951ef474b695"
+    },
+    {
+      "path": "tools/dist-server.js",
+      "sha256": "778bc1b1ad36394122548a3c45aebb471e518ffd48c423c4019db5cf87ea9ff9"
+    },
+    {
+      "path": "tools/export-approved-audio.py",
+      "sha256": "4f0d8c7697bbcd9d4110ea91ff2041964d02a1d8b35a7779d45533a43ada8294"
+    },
+    {
+      "path": "tools/finalize-game-build.js",
+      "sha256": "f3288c62e98f1b60ed5eab871648eb5a77548e388a322dd95830d9ce1c857c3f"
+    },
+    {
+      "path": "tools/generate-parity-corpus.js",
+      "sha256": "a4d9988b76dfcc49031d9a5d89a827754c85f7887ade9efc92df106f1750ebfc"
+    },
+    {
+      "path": "tools/harness.js",
+      "sha256": "8debd045fb211046269f052b601ac0c871d82709937d68acef38328e92f7e7c7"
+    },
+    {
+      "path": "tools/kenbot.js",
+      "sha256": "d51af5e4577a548709cdc93ccb3fb3bd8d576e8874552a38809ec1956eb970a2"
+    },
+    {
+      "path": "tools/local-score-middleware.cjs",
+      "sha256": "d5edb4bca15e79db7a2d31318c2ff111c50b81ee2ffcc39158b167061e972090"
+    },
+    {
+      "path": "tools/package-zip.js",
+      "sha256": "099d49f652c581d5010b5cc3f4404d6541ac03bb0eeeb0b1c0387c7ef6fcc12e"
+    },
+    {
+      "path": "tools/parity-corpus-driver.js",
+      "sha256": "ae74268a9ee6bb12c92e49e92aa6df4968bb585549497a0927cd57893bbc3abf"
+    },
+    {
+      "path": "tools/phase-e-browser-matrix.js",
+      "sha256": "1a125631b4cbc850595078ec92714823f39602d2cbc84ee402ce2f909b8aa9f0"
+    },
+    {
+      "path": "tools/phase-e-hardware-qualification.js",
+      "sha256": "5c1169dd9ca5bdbf6bc21f31ee5ea3bbd2ab428a53be988a37e35374cca7225b"
+    },
+    {
+      "path": "tools/phase-e-qualification-contract.js",
+      "sha256": "21243ee583a24366a040195916b3336ee1f2726be355fbb1fa1dfb631f9582da"
+    },
+    {
+      "path": "tools/phase-f1-review.js",
+      "sha256": "95f2ba39a4d1342fa170914dd5e1907bceb6d213998b799faf73c0480f15074f"
+    },
+    {
+      "path": "tools/phase-f2-browser-matrix.js",
+      "sha256": "a273eee3e0a349bd436088bd07343c17d28f1d6e32900d7bea7b614e4418688c"
+    },
+    {
+      "path": "tools/phase-f2-technical.js",
+      "sha256": "b4e869282483323e523deef72b5b5bb8e7e98053e0b6cd85c1639f00f43906c1"
+    },
+    {
+      "path": "tools/phase-g-all-units-review.js",
+      "sha256": "323a69c0fd3eb19b0f9997065731bf3f9798ca4d69631668fade5af2645b2bc9"
+    },
+    {
+      "path": "tools/phase-g-projectiles-review.js",
+      "sha256": "d6f9d4f3814341f53a7dd57090c61aaef4790f7d88df723a23921639282b8df5"
+    },
+    {
+      "path": "tools/phase-g-radar-sam-review.js",
+      "sha256": "e666297dc6c10c55cf8f03502cbf7a3b7d9b71c164a4d4409f93aa090abd7220"
+    },
+    {
+      "path": "tools/qualification/atlas-metadata.js",
+      "sha256": "ecd85c4accd250626e8e1899a231303a32bab70c3411666891a1d948a4126198"
+    },
+    {
+      "path": "tools/qualification/catchup-timer-browser.js",
+      "sha256": "e0725f1984b85555baafa10ace23f35a7b86d1e02c1348244cdac32ca47e7ea6"
+    },
+    {
+      "path": "tools/qualification/classic-worker-browser.js",
+      "sha256": "2f39571bc9417596a71afec8adecf96b6040490992ff1ea85a8931cbcac176a1"
+    },
+    {
+      "path": "tools/qualification/fingerprint.js",
+      "sha256": "3e143a9780b90275bf1a05b0701030b0ba41bb226963b8c1cdac9d2b8faadb83"
+    },
+    {
+      "path": "tools/qualification/front-path-browser.js",
+      "sha256": "6ef2b3c900742950332adb6a264083f9cda9fc12ccfb7459a46399996cc2ae3d"
+    },
+    {
+      "path": "tools/qualification/late-game-browser.js",
+      "sha256": "83844f274d574e66b3b9860caa6d5c0667dfe8cbcca2b0d8bb0226056d22d975"
+    },
+    {
+      "path": "tools/qualification/match-campaign.js",
+      "sha256": "8882c85c3c236b005554140d34f5087d241a2c71d2b098cdbdf8b3376c825d4e"
+    },
+    {
+      "path": "tools/qualification/matrix.js",
+      "sha256": "94943aae29fc3f433ec1efe88ee7f0b8fb16ba3d52b63fb9407158683c5c8a8b"
+    },
+    {
+      "path": "tools/qualification/README.md",
+      "sha256": "113aea9fd869584c0f84d7cb02d22e5780bb262f87575038607d470aa0e02a03"
+    },
+    {
+      "path": "tools/qualification/roster-art.js",
+      "sha256": "64ae07f5ac60e725323616fd956a63db082a13a583d1d897ac8252c5dc82903b"
+    },
+    {
+      "path": "tools/qualification/roster-cache-stress.js",
+      "sha256": "2d3483f993b8a5a87c80fca6a17bd12716e6dd89829564a7bc4e7f1311b5abf9"
+    },
+    {
+      "path": "tools/qualification/roster-replay-browser.js",
+      "sha256": "614458e635600145a1d852ad15b91154679e6f6ab16849355d46235e8d1e6210"
+    },
+    {
+      "path": "tools/qualification/soak-matrix.js",
+      "sha256": "12a3724907c4b527d60bd20fab4dc9f26db34ba4ef95200bef020a548042b379"
+    },
+    {
+      "path": "tools/qualification/sprite-culling-browser.js",
+      "sha256": "443185ed1982cc8b3204b916e4951aec0584deec5951133f48c93350bfc649f9"
+    },
+    {
+      "path": "tools/qualification/summarize.js",
+      "sha256": "a832dcc7d3c1675150369974d85158621c9f48b4cac979f0a6bae5e02f999a9e"
+    },
+    {
+      "path": "tools/qualification/unit-campaign.js",
+      "sha256": "55aa365b73096fdbbfdaab73097469efcc324bab66ac0f968a9e5a8607b73d61"
+    },
+    {
+      "path": "tools/relay-websocket-server.mjs",
+      "sha256": "ff9afca686751a3827739aa4246105d93f3f2a1a0bf445f7ae209ec3be98958e"
+    },
+    {
+      "path": "tools/release-metadata.js",
+      "sha256": "43de2ed1cd3bd1b8cad1584a6a3461e99c43fc1fd697ade2506f271499d5ef06"
+    },
+    {
+      "path": "tools/replaycheck.js",
+      "sha256": "fe9c6b5d5c32b9c2126976e540538830bb83b59cb539d488f264f38ec5d1e444"
+    },
+    {
+      "path": "tools/source-evidence-manifest.js",
+      "sha256": "5cdff3d1e6d7b9d946891c52045f834ba7b24fb5b9c8531f6f5d022311dafd02"
+    },
+    {
+      "path": "tools/trailer-capture.js",
+      "sha256": "dbaecb17f2f896420b844b14c3ab00774d3547e5f967879e98c3ae6c36615231"
+    },
+    {
+      "path": "tools/trailer.js",
+      "sha256": "e2f243c91a2c8f95a2d1b9011164ecd113496460c04f2d282c3226312d0a16a9"
+    },
+    {
+      "path": "tools/trailer2.js",
+      "sha256": "a8ccf8134a8e54c798c09a786f19440cb0a09061b2949615bd4c3634fc62b13b"
+    },
+    {
+      "path": "vite.config.js",
+      "sha256": "bed12c5406e0e08500291c9f30765b3288e20c7a0c28e534dd16e690568eb86c"
+    }
+  ],
+  "head": "f8c1ade044be697504d45913f76e9a31d08ed17c",
+  "dirty": false,
+  "dirtyStatus": [],
+  "dirtyStatusSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "dirtyDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "version": "1.10.62",
+  "build": "2026-09-30-tactical-pause"
+}
