@@ -12,6 +12,8 @@ Game 1.10.62 with plugin 1.10.10 is live and passed local qualification and prod
 
 Working rules: bump every changed component, verify the game's `REQUIRES_PLUGIN` requirement, and run the applicable release gates. Game and plugin version numbers do not need to match when only one component changes.
 
+Next campaign: [First Command tutorial design](docs/tutorial-campaign-design.md) and [interactive opening preview](prototypes/tutorial-campaign/README.md). Nine chapters cover every roster entry; this is a design/prototype deliverable, not part of the deployed game.
+
 ## Local testing
 
 Requirements: Node.js 22.12 or newer within the 22.x line. Node 24 on Windows is currently excluded because local simulation runs have been unstable; CI and the supported development runtime use Node 22. From the repository root:
